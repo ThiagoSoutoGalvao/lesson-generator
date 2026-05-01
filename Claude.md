@@ -116,19 +116,26 @@ git push origin main
 
 ---
 
-### PHASE 1 — Project Setup
+### PHASE 1 — Project Setup ✅ COMPLETED
 **Goal:** Working Laravel + React app running locally on Herd with a Hello World screen.
 
 Tasks:
-- Create Laravel project via Herd
-- Install and configure Vite + React inside Laravel
-- Install Tailwind CSS and Shadcn/ui
-- Create a basic layout component with header
-- Set up Git repo and push initial commit to GitHub
-- Confirm app loads at local Herd URL
+- ✅ Create Laravel project via Herd
+- ✅ Install and configure Vite + React inside Laravel
+- ✅ Install Tailwind CSS and Shadcn/ui
+- ✅ Create a basic layout component with header
+- ✅ Set up Git repo and push initial commit to GitHub
+- ✅ Confirm app loads at local Herd URL
 
 **Test:** App loads in browser, shows layout. No errors in console.
 **Commit:** `Phase 1: Project setup — Laravel + React + Tailwind + Shadcn`
+
+**Notes:**
+- Laravel 13.6 with SQLite (default) — switch to MySQL when needed
+- Shadcn/ui initialised with Radix + Vega preset (Lucide icons, Inter font)
+- Entry point: `resources/js/app.jsx` — on Windows, this is case-insensitive with `App.jsx`
+- `@viteReactRefresh` directive required in Blade template for React Fast Refresh to work
+- `npm run dev` must be running in a terminal for local development
 
 ---
 
@@ -291,4 +298,4 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 1 — Project Setup** is next. The folder `lesson-generator` has been created at `C:\Users\thiag\Herd\lesson-generator`.
+**Phase 2 — PDF Upload** is next.

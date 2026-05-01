@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(composer require spatie/pdf-to-text 2>&1)",
+      "PowerShell(php artisan make:migration create_documents_table 2>&1)",
+      "PowerShell(php artisan make:model Document 2>&1)",
+      "PowerShell(php artisan make:controller DocumentController 2>&1)"
+    ]
+  }
+}
