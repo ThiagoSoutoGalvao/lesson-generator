@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import UploadPage from '@/pages/UploadPage';
+import GeneratePage from '@/pages/GeneratePage';
 
 function Home() {
     return (
@@ -21,6 +22,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/upload" element={<UploadPage />} />
+                    <Route path="/generate" element={<GeneratePage />} />
                 </Routes>
             </Layout>
         </BrowserRouter>

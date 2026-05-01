@@ -10,6 +10,7 @@ export default function Layout({ children }) {
                     </Link>
                     <nav className="flex gap-6 text-sm text-gray-500">
                         <Link to="/upload" className="hover:text-gray-900">Upload PDF</Link>
+                        <Link to="/generate" className="hover:text-gray-900">Generate</Link>
                         <Link to="#" className="hover:text-gray-900">Library</Link>
                     </nav>
                 </div>
