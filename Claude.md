@@ -198,17 +198,24 @@ Tasks:
 
 ---
 
-### PHASE 5 — Flashcard Activity
+### PHASE 5 — Flashcard Activity ✅ COMPLETED
 **Goal:** Generate and display a working flashcard set.
 
 Tasks:
-- Define JSON schema for flashcards
-- Build flashcard component: word front, definition back, flip animation
-- Add "Got it / Still learning" buttons
-- Show progress and end-of-deck summary
+- ✅ Define JSON schema for flashcards
+- ✅ Build flashcard component: word front, definition back, flip animation
+- ✅ Add "Got it / Still learning" buttons
+- ✅ Show progress and end-of-deck summary
 
 **Test:** Generate 8 flashcards from a unit. Flip and marking work correctly.
 **Commit:** `Phase 5: Flashcard activity`
+
+**Notes:**
+- `ActivityController` now accepts a `type` field (`quiz` | `flashcards`) and routes via `match()`
+- `GeneratePage` has a segmented toggle (Quiz | Flashcards); toggle buttons need `e.preventDefault()` inside a form
+- Flip animation uses inline `preserve-3d` / `backface-visibility` styles — Tailwind has no built-in 3D transform utilities
+- Deck logic: "Still Learning" cards loop back at end of round; "Got It" cards are removed; finishes when all are known
+- Per-card Unsplash backgrounds reuse the same `/api/background` endpoint with each card's `keyword`
 
 ---
 
@@ -312,4 +319,4 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 5 — Flashcard Activity** is next.
+**Phase 6 — Unjumble Activity** is next.

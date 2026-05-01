@@ -63,6 +63,70 @@ class ClaudeService
         return $data;
     }
 
+    public function generateFlashcards(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 2048,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildFlashcardsPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        if ($response->failed()) {
+            throw new RuntimeException('Claude API error: ' . $response->body());
+        }
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildFlashcardsPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "flashcards",
+  "topic": "<1-2 word topic keyword in English for an image search, e.g. 'travel' or 'cooking'>",
+  "cards": [
+    {
+      "word": "<vocabulary word or phrase>",
+      "definition": "<clear, student-friendly definition>",
+      "example": "<a natural example sentence using the word in context>",
+      "keyword": "<1-2 word visual image search term specific to this word>"
+    }
+  ]
+}
+
+Rules:
+- Definitions must be simple and clear for B1-B2 English learners — avoid complex words in the definition itself
+- Example sentences should feel natural and contextual, not textbook-stiff
+- Each card's keyword must be visually distinct from the others (different image per card)
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     private function sanitizeUtf8(string $text): string
     {
         $clean = iconv('UTF-8', 'UTF-8//IGNORE', $text);

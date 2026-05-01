@@ -1,8 +1,8 @@
-# ActivityController — Handles activity generation requests from the frontend
+# ActivityController — Routes activity generation requests to the correct Claude method
 
 ## Overview
 
-This is a Laravel controller that receives HTTP requests from the React frontend when the teacher submits a generation prompt. It validates the input (checking that a document exists and the prompt is not empty), retrieves the document's extracted text from the database, calls the ClaudeService to generate activity content via the Claude API, and returns the response to the frontend as JSON.
+This is a Laravel controller that receives HTTP requests from the React frontend when the teacher submits an activity generation prompt. It validates the input (checking that a document exists, a prompt is provided, and an activity type is specified), retrieves the document's extracted text from the database, and calls the appropriate ClaudeService method (`generateQuiz` or `generateFlashcards`) based on the requested activity type. The structured JSON response from Claude is returned directly to the frontend.
 
 A "controller" in Laravel is a class that handles HTTP requests. It receives data from the frontend, performs business logic (or delegates to services), and sends back a response.
 
@@ -12,54 +12,61 @@ A "controller" in Laravel is a class that handles HTTP requests. It receives dat
 ## Dependencies & Imports
 
 - `App\Models\Document` — The Document model, used to retrieve document records from the database
-- `App\Services\ClaudeService` — The Claude API service class that generates activity content
+- `App\Services\ClaudeService` — The Claude API service class that generates quiz and flashcard content
 - `Illuminate\Http\Request` — Laravel's request object, containing data from the HTTP request (form inputs, query parameters, etc.)
 
 ## Methods
 
 ### `generate(Request $request, ClaudeService $claude): JsonResponse`
 
-**What it does:** Validates the incoming request, fetches the document's extracted text from the database, asks the ClaudeService to generate activity content, and returns the response as JSON.
+**What it does:** Validates the incoming request, fetches the document's extracted text, and uses a PHP `match` statement to route to the correct generation method based on the activity type. Returns the structured activity JSON directly to the frontend.
 
 **Parameters:**
-- `$request` — The HTTP request object containing the form data from the frontend. Should include:
+- `$request` — The HTTP request object containing form data from the frontend. Must include:
   - `document_id` (required): The ID of the PDF document to use
   - `prompt` (required): The teacher's natural language instruction
+  - `type` (required): Either "quiz" or "flashcards"
 - `$claude` — An instance of ClaudeService, automatically injected by Laravel's dependency injection system. You do not pass this yourself; Laravel provides it.
 
-**Returns:** A JSON response object. On success, the JSON body looks like:
+**Returns:** A JSON response containing the complete activity data, e.g.:
 ```json
 {
-  "response": "Claude's generated content here..."
+  "type": "flashcards",
+  "topic": "vocabulary",
+  "cards": [
+    { "word": "...", "definition": "...", "example": "...", "keyword": "..." }
+  ]
 }
 ```
 
 **Side effects:**
 - Validates the request (throws HTTP 422 if validation fails)
 - Queries the database to fetch the Document record
-- Makes an HTTPS request to the Claude API (via ClaudeService)
+- Makes an HTTPS request to the Claude API (via ClaudeService method)
 - If Claude API fails, the exception bubbles up and Laravel returns a 500 error to the frontend
 
 **Validation rules:**
-- `document_id` must be present, must be a number, and must exist in the `documents` table (checked with the `exists:documents,id` rule)
-- `prompt` must be present, must be a string, and must not exceed 1000 characters
+- `document_id` — must be present, must exist in the `documents` table
+- `prompt` — must be present, must be a string, max 1000 characters
+- `type` — must be present, must be exactly "quiz" or "flashcards"
 
 **How it works (step-by-step):**
 
-1. Validates the incoming request using Laravel's validation system. If any rule fails, it throws an exception and sends a 422 response with error messages.
-2. Retrieves the Document record from the database using `Document::findOrFail($request->document_id)`. If the document doesn't exist, this throws an exception (404 not found).
-3. Extracts the `extracted_text` field from the document (this was populated during PDF upload in Phase 2).
-4. Calls `$claude->generate()` with the document text and the teacher's prompt, getting back Claude's response as a string.
-5. Wraps the response in a JSON object with a `response` key and sends it back to the frontend.
+1. Validates the request using Laravel's validation system. If any validation rule fails, an HTTP 422 response is returned with error details.
+2. Retrieves the Document record from the database. If not found, throws 404 not found.
+3. Uses a PHP `match` expression (a newer, cleaner version of `switch`) to route to the appropriate method:
+   - If `type === 'quiz'`, calls `$claude->generateQuiz()`
+   - If `type === 'flashcards'`, calls `$claude->generateFlashcards()`
+4. Returns the generated activity array as JSON. The activity includes `type`, `topic`, and either `questions` or `cards` depending on the type.
 
 ## How It Fits Into the App
 
 **GeneratePage.jsx** (the React component) calls this controller:
-1. Teacher selects a document from the dropdown and types a prompt
+1. Teacher selects a document from the dropdown, chooses an activity type (quiz or flashcards), and types a prompt
 2. Teacher clicks the "Generate" button
-3. GeneratePage calls `POST /api/generate` via axios, sending the document ID and prompt
-4. ActivityController receives the request, validates it, and processes it
-5. ActivityController returns the Claude-generated content as JSON
-6. GeneratePage displays the response (raw in Phase 3, or formatted in Phase 4+)
+3. GeneratePage calls `POST /api/generate` via axios, sending the document ID, prompt, and activity type
+4. ActivityController receives the request, validates it, and determines which ClaudeService method to call based on the `type` parameter
+5. ActivityController returns the structured activity JSON to the frontend
+6. GeneratePage receives the response and mounts either QuizActivity or FlashcardActivity (both expect the same JSON structure with `type` and `topic` fields)
 
-This controller is the entry point for activity generation. Later phases will extend it to handle different activity types (quiz, flashcard, unjumble) and possibly add save/load functionality.
+This controller is the routing hub for activity generation. It accepts a single POST endpoint that handles multiple activity types, keeping the API simple while delegating type-specific logic to ClaudeService.

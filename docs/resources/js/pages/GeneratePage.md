@@ -1,77 +1,60 @@
-# GeneratePage — UI for selecting a document and typing a prompt to generate activities
+# GeneratePage — Activity generation form and display
 
 ## Overview
 
-This is a React page component that allows a teacher to generate activities from their uploaded PDF documents. The page displays a form with two fields: a dropdown to select a document and a textarea to type a natural language prompt (like "Give me 5 quiz questions about vocabulary"). When the teacher submits the form, the component calls the backend `/api/generate` endpoint, displays the raw response from Claude, and shows error messages if something goes wrong.
+This page is where the teacher creates interactive classroom activities. They select a course book (PDF), choose an activity type (quiz or flashcards), type a natural language prompt describing what they want, and submit the form. The app sends the request to the backend, which uses Claude AI to generate the activity content. Once generated, the activity is displayed fullscreen for immediate use.
 
-This is Phase 3's minimal UI. In later phases, the raw response will be parsed and rendered as formatted quizzes, flashcards, or unjumble activities.
+This component manages the entire workflow: loading the list of uploaded documents, collecting the teacher's input, handling the API request, displaying loading/error states, and routing to the correct activity display component (QuizActivity or FlashcardActivity). The teacher can close the activity and return to the form to generate another one.
 
 ## File Location
+
 `resources/js/pages/GeneratePage.jsx`
 
 ## Props
 
-This component takes no props. It is a page component that manages all its own state and API calls.
+This component takes no props. It is a page displayed by the layout when the teacher navigates to the generate route.
 
 ## State
 
-This component uses `useState` to track several pieces of information:
-
-- `documents` — Array of document objects fetched from the backend. Each object has an `id` and `original_name`. Initialized as an empty array.
-- `documentId` — The ID of the currently selected document in the dropdown. A string. Initialized as an empty string (no selection).
-- `prompt` — The text the teacher typed in the prompt textarea. A string. Initialized as an empty string.
-- `status` — A simple state machine tracking the form submission state. One of:
-  - `'idle'` — Initial state, or after a successful response
-  - `'loading'` — Request is in flight to the backend
-  - `'success'` — Response received successfully
-  - `'error'` — Request failed or backend returned an error
-- `response` — The raw text response from Claude's API (only populated if status is 'success'). A string. Initialized as an empty string.
-- `errorMsg` — The error message to display to the user (only populated if status is 'error'). A string. Initialized as an empty string.
+- `documents` — Array of uploaded documents fetched from the backend. Each document has an `id` and `original_name` (the filename). Used to populate the dropdown select.
+- `documentId` — String. The id of the selected document. Sent to the backend in the POST request. Initially empty (blank option selected).
+- `activityType` — String. Either "quiz" or "flashcards". Controls which placeholder text shows in the prompt textarea and which activity component is rendered after generation. Starts as "quiz".
+- `prompt` — String. The teacher's natural language instruction, e.g. "Give me 5 multiple choice questions about vocabulary". Sent to the backend and passed to Claude API.
+- `status` — String. One of "idle", "loading", "success", or "error". Used to show loading spinner, hide/show error message, and disable the submit button during request. Starts as "idle".
+- `activity` — Object (or null). The generated activity data returned by the Claude API. Contains `type`, `topic`, and either `questions` (for quiz) or `cards` (for flashcards). Initially null.
+- `errorMsg` — String. Human-readable error message shown to the user if the request fails. Initially empty.
 
 ## Key Hooks Used
 
-**`useEffect` (on mount):** Runs once when the component first renders. It calls the backend's `GET /api/documents` endpoint to fetch the list of available documents and populates the `documents` state. This populates the dropdown menu.
-
-**Form submission (`handleSubmit`):** An async function that:
-1. Prevents the browser's default form submission
-2. Resets `status` to `'loading'` and clears previous response/error
-3. Makes a POST request to `/api/generate` with the selected document ID and prompt
-4. On success: sets the response text and status to `'success'`
-5. On error: extracts the error message and sets status to `'error'`
+- `useState` — Manages all form input (documentId, activityType, prompt), loading state (status, errorMsg), and the generated activity result.
+- `useEffect` (on mount) — Fetches the list of available documents from `/api/documents` and stores them in the `documents` state. Runs once when the component loads.
 
 ## User Interactions
 
-**Document dropdown:** Teacher clicks to select a document. The selection is stored in `documentId`. Validation requires a document to be selected before the form can be submitted.
-
-**Prompt textarea:** Teacher types their prompt here. The text is stored in `prompt`. Validation requires at least some text before submission.
-
-**Generate button:** When clicked, the form's `handleSubmit` function runs. While the request is in flight (`status === 'loading'`), the button is disabled and shows "Generating…" instead of "Generate". This prevents double-submission.
+- **Document dropdown** — Select a course book. Updates `documentId` state. Must select one before submitting.
+- **Activity type buttons** — Click "Quiz" or "Flashcards" to toggle `activityType` between "quiz" and "flashcards". The button styling changes to show which is selected (blue background for active, white for inactive). The prompt placeholder text also changes based on selection.
+- **Prompt textarea** — Teacher types their request. Updates `prompt` state. Required before submitting.
+- **Generate button** — Submits the form. Disabled while loading. Text changes to "Generating…" during the request. Triggers `handleSubmit`, which sends a POST request to `/api/generate` with documentId, prompt, and type.
+- **Close button** (on activity) — After an activity is generated, a close button (✕) is shown by the activity component (QuizActivity or FlashcardActivity). Clicking it calls `onClose`, which hides the activity and returns to this form.
+- **Error display** — If the API request fails, a red error banner appears below the form with the error message from the server.
 
 ## What It Renders
 
-A two-column centered form layout (max width 2xl, centered horizontally) containing:
+When no activity is generated (status is "idle" or "loading"):
 
-1. **Header** — "Generate an Activity" (h2) with a description paragraph
-2. **Form with three sections:**
-   - **Document selector** — A labeled `<select>` dropdown showing all uploaded documents. Default shows "Select a document…". Teacher must select one.
-   - **Prompt textarea** — A labeled `<textarea>` with placeholder text "e.g. Give me 3 quiz questions about vocabulary from this text". 4 rows tall.
-   - **Generate button** — Blue submit button, disabled while loading, shows "Generating…" when in flight
-3. **Error message box** — A red alert box with rounded corners appears below the form if `status === 'error'`. Shows the error message.
-4. **Raw response display** — If `status === 'success'`, displays the raw Claude response in a dark preformatted code block (`<pre>` with monospace font, scrollable, max height 96). This is labeled "Raw response from Claude" so the user knows they're looking at unformatted API output.
+1. **Title and description** — "Generate an Activity" heading with instructions.
+2. **Document select** — Dropdown populated with the list of uploaded documents.
+3. **Activity type selector** — Two toggle buttons: "Quiz" and "Flashcards". Current selection is highlighted in blue.
+4. **Prompt textarea** — A 4-row text input. Placeholder text changes based on activity type selection.
+5. **Generate button** — Submit button. Disabled and shows "Generating…" while status is "loading".
+6. **Error message** (conditional) — Red error box appears below the form if status is "error".
 
-All form elements and text use Tailwind CSS utility classes for styling (spacing, colors, borders, focus states).
+When an activity is generated (status is "success"):
+- If `activity.type === "quiz"`, the entire page is replaced by the QuizActivity component.
+- If `activity.type === "flashcards"`, the entire page is replaced by the FlashcardActivity component.
+
+Both activity components receive `activity` data and an `onClose` callback. When closed, they call `onClose`, which resets the activity to null, sets status back to "idle", and returns the form to view.
 
 ## How It Fits Into the App
 
-**Route:** This component is rendered at the `/generate` path (loaded by React Router in the main app).
-
-**Workflow:** GeneratePage is the teacher's entry point for activity generation:
-1. Teacher uploads PDFs on the UploadPage (Phase 2)
-2. Teacher navigates to GeneratePage and selects a document
-3. Teacher types a prompt describing what activity they want
-4. Teacher clicks Generate
-5. The backend (ActivityController + ClaudeService) calls the Claude API
-6. The raw response is displayed on this page
-7. In Phase 4+, this response will be parsed and displayed as a formatted quiz/flashcard/unjumble activity
-
-This page currently shows the raw JSON/text response from Claude. This serves as a debugging tool and proof-of-concept. Future phases will parse this response and render it as interactive activities.
+GeneratePage is the main hub after a teacher has uploaded a course book. The teacher lands here to turn PDF content into classroom activities. They submit a prompt, the backend's `ActivityController` receives the request, calls either `ClaudeService.generateQuiz()` or `ClaudeService.generateFlashcards()` depending on the `type` parameter, and returns the structured activity JSON. GeneratePage then mounts either QuizActivity or FlashcardActivity to display the result. When the teacher closes the activity, they return to this page and can immediately generate another one using the same or different document.
