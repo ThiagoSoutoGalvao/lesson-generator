@@ -1,0 +1,3 @@
+- [Phase 2 Architecture](architecture_phase2.md) — Document upload flow, database schema, key patterns
+- [React Component Hierarchy](component_hierarchy.md) — Page structure and future component plan
+- [Phase 3 Claude Integration](phase3_claude_integration.md) — ClaudeService, ActivityController, GeneratePage flow

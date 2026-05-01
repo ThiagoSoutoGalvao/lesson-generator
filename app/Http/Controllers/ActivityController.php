@@ -16,8 +16,8 @@ class ActivityController extends Controller
         ]);
 
         $document = Document::findOrFail($request->document_id);
-        $text = $claude->generate($document->extracted_text, $request->prompt);
+        $quiz = $claude->generateQuiz($document->extracted_text, $request->prompt);
 
-        return response()->json(['response' => $text]);
+        return response()->json($quiz);
     }
 }

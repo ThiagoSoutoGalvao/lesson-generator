@@ -154,33 +154,47 @@ Tasks:
 
 ---
 
-### PHASE 3 — Claude API Integration (Basic)
+### PHASE 3 — Claude API Integration (Basic) ✅ COMPLETED
 **Goal:** Send a hardcoded prompt + PDF text to Claude and display the raw response.
 
 Tasks:
-- Store Claude API key in `.env`
-- Create a Laravel service class `ClaudeService`
-- Build a simple prompt input UI
-- Send selected document text + teacher prompt to Claude
-- Display raw JSON response on screen (no formatting yet)
+- ✅ Store Claude API key in `.env`
+- ✅ Create a Laravel service class `ClaudeService`
+- ✅ Build a simple prompt input UI
+- ✅ Send selected document text + teacher prompt to Claude
+- ✅ Display raw JSON response on screen (no formatting yet)
 
 **Test:** Type "Give me 3 quiz questions about vocabulary" — Claude responds with JSON.
 **Commit:** `Phase 3: Claude API integration — basic prompt and response`
 
+**Notes:**
+- Uses Laravel HTTP client (Guzzle) to call Anthropic API directly — no PHP SDK needed
+- Model: `claude-sonnet-4-6`
+- `ClaudeService` injected via Laravel's service container into `ActivityController`
+- API key stored in `.env` as `ANTHROPIC_API_KEY`, referenced via `config('services.anthropic.key')`
+
 ---
 
-### PHASE 4 — Quiz Activity
+### PHASE 4 — Quiz Activity ✅ COMPLETED
 **Goal:** Generate and display a fully working multiple choice quiz.
 
 Tasks:
-- Define the JSON schema Claude must return for a quiz
-- Update the prompt to enforce the schema
-- Parse Claude's response into a React quiz component
-- Build the quiz UI: large question text, 4 answer buttons, color feedback (green/red), timer, score, navigation
-- Add Unsplash background image based on topic keyword
+- ✅ Define the JSON schema Claude must return for a quiz
+- ✅ Update the prompt to enforce the schema
+- ✅ Parse Claude's response into a React quiz component
+- ✅ Build the quiz UI: large question text, 4 answer buttons, color feedback (green/red), timer, score, navigation
+- ✅ Add Unsplash background image based on topic keyword
 
 **Test:** Generate a 5-question travel vocabulary quiz. All interactions work. Background loads.
 **Commit:** `Phase 4: Quiz activity — generation, display, and Unsplash background`
+
+**Notes:**
+- `ClaudeService::generateQuiz()` uses a `system` prompt to enforce JSON-only output
+- Each question includes a `keyword` field — used to fetch a different Unsplash/Picsum background per question
+- `BackgroundController` proxies Unsplash API; falls back to Picsum (seed-based) when no key is set
+- `sanitizeUtf8()` strips invalid UTF-8 from PDF text before sending to Claude (prevents json_encode errors)
+- `UNSPLASH_ACCESS_KEY` stored in `.env`, referenced via `config('services.unsplash.key')`
+- Timer is 30s countdown per question; turns red at 10s, auto-reveals answer at 0
 
 ---
 
@@ -298,4 +312,4 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 2 — PDF Upload** is next.
+**Phase 5 — Flashcard Activity** is next.
