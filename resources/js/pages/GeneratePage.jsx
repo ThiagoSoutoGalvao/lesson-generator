@@ -15,13 +15,24 @@ export default function GeneratePage() {
     const [documentId, setDocumentId] = useState('');
     const [activityType, setActivityType] = useState('quiz');
     const [prompt, setPrompt] = useState('');
-    const [status, setStatus] = useState('idle'); // idle | loading | success | error
+    const [status, setStatus] = useState('idle');
     const [activity, setActivity] = useState(null);
     const [errorMsg, setErrorMsg] = useState('');
+    const [pageFrom, setPageFrom] = useState('');
+    const [pageTo, setPageTo] = useState('');
 
     useEffect(() => {
         axios.get('/api/documents').then(({ data }) => setDocuments(data));
     }, []);
+
+    const selectedDoc = documents.find(d => d.id === Number(documentId));
+    const pageCount = selectedDoc?.page_count ?? null;
+
+    function handleDocumentChange(e) {
+        setDocumentId(e.target.value);
+        setPageFrom('');
+        setPageTo('');
+    }
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -34,6 +45,8 @@ export default function GeneratePage() {
                 document_id: documentId,
                 prompt,
                 type: activityType,
+                page_from: pageFrom ? Number(pageFrom) : null,
+                page_to:   pageTo   ? Number(pageTo)   : null,
             });
             setActivity(data);
             setStatus('success');
@@ -51,11 +64,9 @@ export default function GeneratePage() {
     if (activity?.type === 'quiz') {
         return <QuizActivity quiz={activity} onClose={handleClose} />;
     }
-
     if (activity?.type === 'flashcards') {
         return <FlashcardActivity activity={activity} onClose={handleClose} />;
     }
-
     if (activity?.type === 'unjumble') {
         return <UnjumbleActivity activity={activity} onClose={handleClose} />;
     }
@@ -70,20 +81,54 @@ export default function GeneratePage() {
             </div>
 
             <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">Course book</label>
                     <select
                         value={documentId}
-                        onChange={(e) => setDocumentId(e.target.value)}
+                        onChange={handleDocumentChange}
                         required
                         className="border border-gray-300 rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
                     >
                         <option value="">Select a document…</option>
                         {documents.map((doc) => (
-                            <option key={doc.id} value={doc.id}>{doc.original_name}</option>
+                            <option key={doc.id} value={doc.id}>
+                                {doc.original_name}{doc.page_count ? ` (${doc.page_count} pages)` : ''}
+                            </option>
                         ))}
                     </select>
                 </div>
+
+                {pageCount && (
+                    <div className="flex flex-col gap-1">
+                        <label className="text-sm font-medium text-gray-700">
+                            Page range
+                            <span className="text-gray-400 font-normal ml-1">— leave blank to use the whole document</span>
+                        </label>
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="number"
+                                min="1"
+                                max={pageCount}
+                                value={pageFrom}
+                                onChange={e => setPageFrom(e.target.value)}
+                                placeholder="From"
+                                className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <span className="text-gray-400 text-sm">to</span>
+                            <input
+                                type="number"
+                                min="1"
+                                max={pageCount}
+                                value={pageTo}
+                                onChange={e => setPageTo(e.target.value)}
+                                placeholder="To"
+                                className="w-24 border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                            <span className="text-gray-400 text-sm">of {pageCount}</span>
+                        </div>
+                    </div>
+                )}
 
                 <div className="flex flex-col gap-1">
                     <label className="text-sm font-medium text-gray-700">Activity type</label>

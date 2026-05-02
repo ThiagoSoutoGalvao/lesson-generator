@@ -12,37 +12,46 @@ class DocumentController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'pdf' => ['required', 'file', 'mimes:pdf', 'max:204800'],
+            'pdf' => ['required', 'file', 'mimes:pdf', 'max:512000'],
         ]);
 
         $file = $request->file('pdf');
         $path = $file->store('documents', 'local');
 
         $fullPath = Storage::path($path);
-        $parser = new Parser();
-        $pdf = $parser->parseFile($fullPath);
-        $text = $pdf->getText();
+        $parser   = new Parser();
+        $pdf      = $parser->parseFile($fullPath);
+
+        $pagesText = [];
+        foreach ($pdf->getPages() as $page) {
+            $raw   = $page->getText();
+            $clean = iconv('UTF-8', 'UTF-8//IGNORE', $raw);
+            $pagesText[] = $clean !== false ? $clean : '';
+        }
+
+        $fullText = implode("\n\n", $pagesText);
 
         $document = Document::create([
-            'original_name' => $file->getClientOriginalName(),
-            'stored_path'   => $path,
-            'extracted_text' => $text,
+            'original_name'  => $file->getClientOriginalName(),
+            'stored_path'    => $path,
+            'extracted_text' => $fullText,
+            'pages_text'     => $pagesText,
+            'page_count'     => count($pagesText),
         ]);
 
         return response()->json([
             'id'            => $document->id,
             'original_name' => $document->original_name,
-            'preview'       => mb_substr($text, 0, 500),
-            'char_count'    => mb_strlen($text),
+            'page_count'    => $document->page_count,
+            'preview'       => mb_substr($fullText, 0, 500),
+            'char_count'    => mb_strlen($fullText),
         ], 201);
     }
 
     public function index()
     {
-        $documents = Document::select('id', 'original_name', 'created_at')
+        return Document::select('id', 'original_name', 'page_count', 'created_at')
             ->orderByDesc('created_at')
             ->get();
-
-        return response()->json($documents);
     }
 }

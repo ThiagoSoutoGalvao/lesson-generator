@@ -79,7 +79,7 @@ export default function UploadPage() {
                     <p className="text-sm text-gray-600 font-medium">
                         {status === 'uploading' ? 'Uploading…' : 'Drop your PDF here or click to browse'}
                     </p>
-                    <p className="text-xs text-gray-400">PDF only · max 50 MB</p>
+                    <p className="text-xs text-gray-400">PDF only · max 500 MB</p>
                     <input
                         ref={inputRef}
                         type="file"

@@ -6,5 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Document extends Model
 {
-    protected $fillable = ['original_name', 'stored_path', 'extracted_text'];
+    protected $fillable = ['original_name', 'stored_path', 'extracted_text', 'pages_text', 'page_count'];
+    protected $casts = ['pages_text' => 'array'];
 }

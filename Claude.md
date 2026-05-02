@@ -194,7 +194,7 @@ Tasks:
 - `BackgroundController` proxies Unsplash API; falls back to Picsum (seed-based) when no key is set
 - `sanitizeUtf8()` strips invalid UTF-8 from PDF text before sending to Claude (prevents json_encode errors)
 - `UNSPLASH_ACCESS_KEY` stored in `.env`, referenced via `config('services.unsplash.key')`
-- Timer is 30s countdown per question; turns red at 10s, auto-reveals answer at 0
+- Timer was removed in Phase 9 — teachers need time to explain answers without pressure
 
 ---
 
@@ -283,6 +283,9 @@ Tasks:
 **Goal:** App is stable and ready to share with 5 colleagues.
 
 Tasks:
+- ✅ Page range selector — teacher can target specific pages of a document when generating activities
+- ✅ Guard against image-based PDFs — returns a clear error if no text is extracted
+- ✅ Upload label corrected to "max 500 MB"
 - Error handling (API failures, bad PDFs, empty responses)
 - Loading states and spinners
 - Basic auth (simple password or Laravel Breeze) so only invited users can access
@@ -291,6 +294,16 @@ Tasks:
 
 **Test:** Ask a colleague to use it without your help. Note friction points.
 **Commit:** `Phase 9: Polish and beta prep`
+
+**Notes:**
+- `pages_text` (JSON) and `page_count` added to `documents` table via migration `2026_05_03_000001_add_pages_to_documents_table.php`
+- `DocumentController::store()` extracts text per-page using `smalot/pdfparser` `$pdf->getPages()` and sanitizes each page with `iconv('UTF-8', 'UTF-8//IGNORE', ...)`
+- `ActivityController::generate()` slices `pages_text` array with `array_slice()` when `page_from`/`page_to` are provided; returns 422 if resulting text is empty
+- `GeneratePage` shows page range inputs only after a document is selected; resets range on document change
+- Image-based (scanned) PDFs extract no text — character density check (`char_count / page_count < 100`) is a reliable heuristic to detect them
+- Herd nginx config (`herd.conf`): `client_max_body_size 600M`, `fastcgi_read_timeout 300`, `fastcgi_send_timeout 300`
+- Herd PHP config (`php84/php.ini`): `upload_max_filesize=500M`, `post_max_size=500M`, `memory_limit=512M`, `max_execution_time=300`
+- These Herd config changes must be re-applied after a Herd reinstall
 
 ---
 
@@ -337,4 +350,4 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 9 — Polish & Beta Prep** is next.
+**Phase 9 — Polish & Beta Prep** is in progress.
