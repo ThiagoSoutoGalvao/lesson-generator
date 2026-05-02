@@ -5,6 +5,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import UploadPage from '@/pages/UploadPage';
 import GeneratePage from '@/pages/GeneratePage';
+import LibraryPage from '@/pages/LibraryPage';
 
 function Home() {
     return (
@@ -23,6 +24,7 @@ function App() {
                     <Route path="/" element={<Home />} />
                     <Route path="/upload" element={<UploadPage />} />
                     <Route path="/generate" element={<GeneratePage />} />
+                    <Route path="/library" element={<LibraryPage />} />
                 </Routes>
             </Layout>
         </BrowserRouter>

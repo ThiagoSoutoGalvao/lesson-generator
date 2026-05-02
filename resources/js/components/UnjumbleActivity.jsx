@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
+import SavePanel from '@/components/SavePanel';
 
 function shuffle(arr) {
     const a = [...arr];
@@ -22,6 +23,7 @@ export default function UnjumbleActivity({ activity, onClose }) {
     const [score, setScore] = useState(0);
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
+    const [showSave, setShowSave] = useState(false);
 
     // Stores drag source without triggering re-renders
     const dragRef = useRef(null);
@@ -171,6 +173,8 @@ export default function UnjumbleActivity({ activity, onClose }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/60" />
 
+            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">
@@ -180,6 +184,7 @@ export default function UnjumbleActivity({ activity, onClose }) {
                     <span className="text-white/70 text-sm">
                         Score: <span className="text-yellow-400 font-semibold">{score}</span>
                     </span>
+                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer">✕</button>
                 </div>
             </div>

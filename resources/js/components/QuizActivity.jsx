@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import SavePanel from '@/components/SavePanel';
 
 const TIMER_SECONDS = 30;
 const LABELS = ['A', 'B', 'C', 'D'];
@@ -11,6 +12,7 @@ export default function QuizActivity({ quiz, onClose }) {
     const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
+    const [showSave, setShowSave] = useState(false);
 
     const question = quiz.questions[currentIndex];
     const total = quiz.questions.length;
@@ -107,6 +109,8 @@ export default function QuizActivity({ quiz, onClose }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
+            {showSave && <SavePanel activity={quiz} onDone={() => setShowSave(false)} />}
+
             {/* Header bar */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium tracking-wide">
@@ -125,6 +129,12 @@ export default function QuizActivity({ quiz, onClose }) {
                     >
                         {timeLeft}s
                     </span>
+                    <button
+                        onClick={() => setShowSave(true)}
+                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
+                    >
+                        Save
+                    </button>
                     <button
                         onClick={onClose}
                         className="text-white/40 hover:text-white text-sm transition-colors"

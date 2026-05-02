@@ -240,17 +240,24 @@ Tasks:
 
 ---
 
-### PHASE 7 — Save & Library
+### PHASE 7 — Save & Library ✅ COMPLETED
 **Goal:** Teacher can save activities and reload them later.
 
 Tasks:
-- Database table: `activities` (name, type, content JSON, tags, created_at)
-- Save button on activity display screen
-- Activity library page: list saved activities by type/tag
-- Load saved activity and display it exactly as generated
+- ✅ Database table: `activities` (name, type, content JSON, tags, created_at)
+- ✅ Save button on activity display screen
+- ✅ Activity library page: list saved activities by type/tag
+- ✅ Load saved activity and display it exactly as generated
 
 **Test:** Save a quiz, close the app, reopen library, relaunch the same quiz.
 **Commit:** `Phase 7: Save and activity library`
+
+**Notes:**
+- `SavedActivityController` handles GET/POST/DELETE for `/api/activities`
+- `SavePanel` component is shared across all three activity types — renders as a frosted overlay in the activity header
+- Library page uses a fixed "learning English" Unsplash background with `bg-white/5 backdrop-blur-none` glass cards
+- Vite file watcher on Windows has a case-sensitivity issue with `App.jsx` vs `app.jsx` — restart `npm run dev` if route changes don't apply after hard refresh
+- `Activity` model casts `content` to array; stores the full Claude-generated JSON so activities relaunch identically
 
 ---
 
@@ -326,4 +333,4 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 7 — Save & Library** is next.
+**Phase 8 — Fullscreen Presentation Mode** is next.

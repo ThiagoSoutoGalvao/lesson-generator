@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import SavePanel from '@/components/SavePanel';
 
 export default function FlashcardActivity({ activity, onClose }) {
     const [index, setIndex] = useState(0);
@@ -8,6 +9,7 @@ export default function FlashcardActivity({ activity, onClose }) {
     const [deck, setDeck] = useState(() => activity.cards.map((_, i) => i));
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
+    const [showSave, setShowSave] = useState(false);
 
     const cardIndex = deck[index];
     const card = activity.cards[cardIndex];
@@ -99,6 +101,8 @@ export default function FlashcardActivity({ activity, onClose }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/60" />
 
+            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">
@@ -110,6 +114,12 @@ export default function FlashcardActivity({ activity, onClose }) {
                         <span className="text-green-400 font-semibold">{knownIds.size}</span>
                         {' '}/ {total}
                     </span>
+                    <button
+                        onClick={() => setShowSave(true)}
+                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
+                    >
+                        Save
+                    </button>
                     <button
                         onClick={onClose}
                         className="text-white/40 hover:text-white text-sm transition-colors"
