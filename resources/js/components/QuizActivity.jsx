@@ -3,14 +3,12 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const TIMER_SECONDS = 30;
 const LABELS = ['A', 'B', 'C', 'D'];
 
 export default function QuizActivity({ quiz, onClose }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [selectedAnswer, setSelectedAnswer] = useState(null);
     const [score, setScore] = useState(0);
-    const [timeLeft, setTimeLeft] = useState(TIMER_SECONDS);
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave] = useState(false);
@@ -30,21 +28,8 @@ export default function QuizActivity({ quiz, onClose }) {
         ).then(urls => setBackgrounds(urls));
     }, []);
 
-    // Countdown timer — chains via dependency on timeLeft
-    useEffect(() => {
-        if (answered || finished) return;
-        if (timeLeft <= 0) {
-            setSelectedAnswer(-1); // -1 = time expired, no selection
-            return;
-        }
-        const id = setTimeout(() => setTimeLeft(t => t - 1), 1000);
-        return () => clearTimeout(id);
-    }, [timeLeft, answered, finished]);
-
-    // Reset state when moving to a new question
     useEffect(() => {
         setSelectedAnswer(null);
-        setTimeLeft(TIMER_SECONDS);
     }, [currentIndex]);
 
     useEffect(() => {
@@ -131,15 +116,6 @@ export default function QuizActivity({ quiz, onClose }) {
                     <span className="text-white font-semibold text-sm">
                         Score: <span className="text-yellow-400">{score}</span>
                     </span>
-                    <span
-                        className={`font-bold px-3 py-1 rounded-full text-sm tabular-nums ${
-                            timeLeft <= 10
-                                ? 'bg-red-500 text-white animate-pulse'
-                                : 'bg-white/20 text-white'
-                        }`}
-                    >
-                        {timeLeft}s
-                    </span>
                     <button
                         onClick={() => setShowSave(true)}
                         className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
@@ -167,10 +143,6 @@ export default function QuizActivity({ quiz, onClose }) {
                 <h2 className="text-3xl md:text-4xl font-bold text-white text-center max-w-3xl leading-snug drop-shadow-lg">
                     {question.question}
                 </h2>
-
-                {selectedAnswer === -1 && (
-                    <p className="text-red-400 font-semibold text-lg -mt-4">Time's up!</p>
-                )}
 
                 <div className="grid grid-cols-2 gap-4 w-full max-w-3xl">
                     {question.answers.map((answer, i) => {
