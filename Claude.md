@@ -219,17 +219,24 @@ Tasks:
 
 ---
 
-### PHASE 6 — Unjumble Activity
+### PHASE 6 — Unjumble Activity ✅ COMPLETED
 **Goal:** Generate and display a sentence unjumble exercise.
 
 Tasks:
-- Define JSON schema for unjumble (sentence split into shuffled word tiles)
-- Build unjumble component: word tiles that can be clicked/dragged into order
-- Add reveal answer button
-- Show correct/wrong feedback per sentence
+- ✅ Define JSON schema for unjumble (sentence split into shuffled word tiles)
+- ✅ Build unjumble component: word tiles that can be clicked/dragged into order
+- ✅ Add reveal answer button
+- ✅ Show correct/wrong feedback per sentence
 
 **Test:** Generate 6 unjumble sentences. Reordering and reveal work.
 **Commit:** `Phase 6: Unjumble activity`
+
+**Notes:**
+- Claude returns `words` in the correct order; the frontend shuffles them (Fisher-Yates)
+- Joining `words` with a single space must reproduce `sentence` exactly — punctuation stays attached to words (e.g. "morning." not "morning")
+- Drag-and-drop uses HTML5 Drag API; drag source stored in `useRef` to avoid re-renders mid-drag; click also works
+- `checkStatus`: idle → correct/wrong → (try again → idle) or (reveal → revealed) → next
+- Tiles sized at `px-5 py-3 text-base` for readability on shared screens; `cursor-grab` on draggable tiles
 
 ---
 
@@ -319,4 +326,4 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 6 — Unjumble Activity** is next.
+**Phase 7 — Save & Library** is next.

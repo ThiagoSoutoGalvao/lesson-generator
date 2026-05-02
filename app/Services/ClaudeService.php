@@ -127,6 +127,72 @@ Rules:
 EOT;
     }
 
+    public function generateUnjumble(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 2048,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildUnjumblePrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        if ($response->failed()) {
+            throw new RuntimeException('Claude API error: ' . $response->body());
+        }
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildUnjumblePrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "unjumble",
+  "topic": "<1-2 word topic keyword in English for an image search>",
+  "sentences": [
+    {
+      "sentence": "<the complete correct sentence as a string>",
+      "words": ["<word1>", "<word2>", "<word3>"],
+      "keyword": "<1-2 word visual image search term specific to this sentence>"
+    }
+  ]
+}
+
+Rules:
+- "sentence" is the full correct sentence
+- "words" is the sentence split into individual words IN THE CORRECT ORDER — the app will shuffle them
+- Each word in "words" must include any attached punctuation (e.g. "morning." not "morning")
+- Joining all "words" with a single space must reproduce "sentence" exactly
+- Sentences should be B1-B2 level English and 6-10 words long
+- Each sentence's keyword must be visually distinct from the others
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     private function sanitizeUtf8(string $text): string
     {
         $clean = iconv('UTF-8', 'UTF-8//IGNORE', $text);

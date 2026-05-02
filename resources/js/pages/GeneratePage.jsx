@@ -2,10 +2,12 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
+import UnjumbleActivity from '@/components/UnjumbleActivity';
 
 const ACTIVITY_TYPES = [
     { value: 'quiz',       label: 'Quiz' },
     { value: 'flashcards', label: 'Flashcards' },
+    { value: 'unjumble',   label: 'Unjumble' },
 ];
 
 export default function GeneratePage() {
@@ -52,6 +54,10 @@ export default function GeneratePage() {
 
     if (activity?.type === 'flashcards') {
         return <FlashcardActivity activity={activity} onClose={handleClose} />;
+    }
+
+    if (activity?.type === 'unjumble') {
+        return <UnjumbleActivity activity={activity} onClose={handleClose} />;
     }
 
     return (
@@ -107,9 +113,9 @@ export default function GeneratePage() {
                         required
                         rows={4}
                         placeholder={
-                            activityType === 'quiz'
-                                ? 'e.g. Give me 5 multiple choice questions about vocabulary from this text'
-                                : 'e.g. Create 8 flashcards for the key vocabulary words in this text'
+                            activityType === 'quiz'       ? 'e.g. Give me 5 multiple choice questions about vocabulary from this text' :
+                            activityType === 'flashcards' ? 'e.g. Create 8 flashcards for the key vocabulary words in this text' :
+                                                           'e.g. Make 6 unjumble sentences about daily routines from this text'
                         }
                         className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
                     />

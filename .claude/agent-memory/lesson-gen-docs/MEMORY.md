@@ -2,3 +2,4 @@
 - [React Component Hierarchy](component_hierarchy.md) — Page structure and future component plan
 - [Phase 3 Claude Integration](phase3_claude_integration.md) — ClaudeService, ActivityController, GeneratePage flow
 - [Phase 5 Architecture](phase5_architecture.md) — Activity type routing, JSON schema, flashcard patterns
+- [Phase 6 Documentation](phase6_documentation.md) — Unjumble activity component and backend integration documented

@@ -2,7 +2,7 @@
 
 ## Overview
 
-This is a Laravel service class that handles all communication with the Anthropic Claude API. It provides type-specific methods (`generateQuiz()` and `generateFlashcards()`) that send document text and a teacher's prompt to Claude, with detailed instructions that constrain Claude to return structured JSON in a specific format. Each method builds a custom prompt (with a JSON schema), calls Claude's API, validates the response is valid JSON, and returns a PHP array containing the activity data.
+This is a Laravel service class that handles all communication with the Anthropic Claude API. It provides type-specific methods (`generateQuiz()`, `generateFlashcards()`, and `generateUnjumble()`) that send document text and a teacher's prompt to Claude, with detailed instructions that constrain Claude to return structured JSON in a specific format. Each method builds a custom prompt (with a JSON schema), calls Claude's API, validates the response is valid JSON, and returns a PHP array containing the activity data.
 
 A "service class" in Laravel is a helper class that encapsulates business logic and can be injected into controllers or other classes. By putting the Claude API calls in their own service, we keep the code organised and make it easy to add new activity types or modify the API communication.
 
@@ -121,6 +121,45 @@ A "service class" in Laravel is a helper class that encapsulates business logic 
 
 ---
 
+### `generateUnjumble(string $documentText, string $prompt): array`
+
+**What it does:** Generates an unjumble activity by sending a structured prompt to Claude that requires a specific JSON format. Parses and validates the response, then returns the activity data as a PHP array.
+
+**Parameters:**
+- `$documentText` — The full text extracted from the uploaded PDF document
+- `$prompt` — The teacher's instruction, e.g. "Create 6 unjumble sentences about daily routines from this text"
+
+**Returns:** A PHP array with this structure:
+```php
+[
+  "type" => "unjumble",
+  "topic" => "daily routines",
+  "sentences" => [
+    [
+      "sentence" => "I wake up at seven o'clock every morning.",
+      "words" => ["I", "wake", "up", "at", "seven", "o'clock", "every", "morning."],
+      "keyword" => "alarm clock"
+    ],
+    ...
+  ]
+]
+```
+
+**Side effects:**
+- Sanitizes the document text
+- Makes an HTTPS POST request to the Claude API
+- Throws a `RuntimeException` if the API fails or Claude returns invalid JSON
+
+**How it works:** Same pattern as `generateQuiz()`:
+
+1. Sanitizes the document text
+2. Calls `buildUnjumblePrompt()` to construct the system prompt with JSON schema
+3. Makes the API request with the system and user messages
+4. Parses the JSON response and validates it
+5. Returns the array
+
+---
+
 ### Private Methods
 
 #### `buildQuizPrompt(string $documentText, string $prompt): string`
@@ -153,6 +192,26 @@ A "service class" in Laravel is a helper class that encapsulates business logic 
 
 ---
 
+#### `buildUnjumblePrompt(string $documentText, string $prompt): string`
+
+**What it does:** Constructs a detailed multi-line prompt that tells Claude exactly what JSON structure to return for an unjumble activity.
+
+**Parameters:**
+- `$documentText` — The extracted PDF text
+- `$prompt` — The teacher's instruction
+
+**Returns:** A string containing the formatted prompt. Includes the document text, the teacher's task, a JSON schema with field descriptions, and important rules about word order and punctuation.
+
+**Key rules enforced by the prompt:**
+- The "sentence" field is the complete, correct sentence as a string
+- The "words" field is an array of individual words in the CORRECT ORDER — the frontend will shuffle them
+- Each word must include attached punctuation (e.g. "morning." not "morning")
+- Joining the words with spaces must exactly reproduce the sentence
+- Sentences should be B1-B2 level, 6-10 words long
+- Each sentence's keyword is a visually distinct image search term
+
+---
+
 #### `sanitizeUtf8(string $text): string`
 
 **What it does:** Removes invalid UTF-8 characters from text, which can cause issues when sending to the Claude API.
@@ -168,14 +227,15 @@ A "service class" in Laravel is a helper class that encapsulates business logic 
 
 **ActivityController** calls these methods when the teacher submits a generation request:
 
-1. Teacher selects a document, chooses activity type, and types a prompt on GeneratePage
+1. Teacher selects a document, chooses activity type (quiz, flashcards, or unjumble), and types a prompt on GeneratePage
 2. Teacher clicks "Generate"
 3. GeneratePage calls `POST /api/generate` with document ID, prompt, and activity type
 4. ActivityController validates and routes to this service:
    - If `type === 'quiz'`, calls `$this->generateQuiz()`
    - If `type === 'flashcards'`, calls `$this->generateFlashcards()`
+   - If `type === 'unjumble'`, calls `$this->generateUnjumble()`
 5. ClaudeService builds the prompt, calls the Claude API, parses the JSON response, and returns the activity array
 6. ActivityController returns the array as JSON to the frontend
-7. GeneratePage receives the JSON and mounts QuizActivity or FlashcardActivity with the data
+7. GeneratePage receives the JSON and mounts QuizActivity, FlashcardActivity, or UnjumbleActivity with the data
 
-This service is the engine that powers activity generation. By separating type-specific prompts and parsing logic, it makes it easy to add new activity types (e.g. `generateUnjumble()`) in future phases.
+This service is the engine that powers activity generation. By separating type-specific prompts and parsing logic, it makes it easy to add new activity types in future phases.
