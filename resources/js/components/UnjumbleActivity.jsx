@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import { useFullscreen } from '@/hooks/useFullscreen';
 
 function shuffle(arr) {
     const a = [...arr];
@@ -24,6 +25,7 @@ export default function UnjumbleActivity({ activity, onClose }) {
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave] = useState(false);
+    const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     // Stores drag source without triggering re-renders
     const dragRef = useRef(null);
@@ -46,6 +48,16 @@ export default function UnjumbleActivity({ activity, onClose }) {
     const bgStyle = bgUrl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' };
+
+    useEffect(() => {
+        function onKey(e) {
+            if (e.code === 'Space') { e.preventDefault(); if (checkStatus === 'correct' || checkStatus === 'revealed') handleNext(); }
+            if (e.code === 'KeyR' && checkStatus === 'idle') handleReveal();
+            if (e.code === 'KeyF') toggleFullscreen();
+        }
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [checkStatus, currentIndex]);
 
     // --- Move logic ---
     function handlePlace(tile) {
@@ -185,6 +197,13 @@ export default function UnjumbleActivity({ activity, onClose }) {
                         Score: <span className="text-yellow-400 font-semibold">{score}</span>
                     </span>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    <button
+                        onClick={toggleFullscreen}
+                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
+                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
+                    >
+                        {isFullscreen ? '⊡' : '⛶'}
+                    </button>
                     <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer">✕</button>
                 </div>
             </div>

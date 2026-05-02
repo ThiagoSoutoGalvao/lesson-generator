@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import { useFullscreen } from '@/hooks/useFullscreen';
 
 export default function FlashcardActivity({ activity, onClose }) {
     const [index, setIndex] = useState(0);
@@ -10,6 +11,7 @@ export default function FlashcardActivity({ activity, onClose }) {
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave] = useState(false);
+    const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const cardIndex = deck[index];
     const card = activity.cards[cardIndex];
@@ -46,6 +48,15 @@ export default function FlashcardActivity({ activity, onClose }) {
             setFlipped(false);
         }
     }
+
+    useEffect(() => {
+        function onKey(e) {
+            if (e.code === 'Space') { e.preventDefault(); setFlipped(f => !f); }
+            if (e.code === 'KeyF') toggleFullscreen();
+        }
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, []);
 
     function handleGotIt() {
         const updated = new Set(knownIds);
@@ -119,6 +130,13 @@ export default function FlashcardActivity({ activity, onClose }) {
                         className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
                     >
                         Save
+                    </button>
+                    <button
+                        onClick={toggleFullscreen}
+                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
+                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
+                    >
+                        {isFullscreen ? '⊡' : '⛶'}
                     </button>
                     <button
                         onClick={onClose}

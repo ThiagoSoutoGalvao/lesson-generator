@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import { useFullscreen } from '@/hooks/useFullscreen';
 
 const TIMER_SECONDS = 30;
 const LABELS = ['A', 'B', 'C', 'D'];
@@ -13,6 +14,7 @@ export default function QuizActivity({ quiz, onClose }) {
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave] = useState(false);
+    const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const question = quiz.questions[currentIndex];
     const total = quiz.questions.length;
@@ -44,6 +46,15 @@ export default function QuizActivity({ quiz, onClose }) {
         setSelectedAnswer(null);
         setTimeLeft(TIMER_SECONDS);
     }, [currentIndex]);
+
+    useEffect(() => {
+        function onKey(e) {
+            if (e.code === 'Space') { e.preventDefault(); if (answered && !finished) handleNext(); }
+            if (e.code === 'KeyF') toggleFullscreen();
+        }
+        window.addEventListener('keydown', onKey);
+        return () => window.removeEventListener('keydown', onKey);
+    }, [answered, finished, currentIndex]);
 
     function handleAnswer(index) {
         if (answered) return;
@@ -134,6 +145,13 @@ export default function QuizActivity({ quiz, onClose }) {
                         className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
                     >
                         Save
+                    </button>
+                    <button
+                        onClick={toggleFullscreen}
+                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
+                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
+                    >
+                        {isFullscreen ? '⊡' : '⛶'}
                     </button>
                     <button
                         onClick={onClose}

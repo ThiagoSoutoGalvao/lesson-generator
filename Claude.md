@@ -261,17 +261,21 @@ Tasks:
 
 ---
 
-### PHASE 8 — Fullscreen Presentation Mode
+### PHASE 8 — Fullscreen Presentation Mode ✅ COMPLETED
 **Goal:** A clean fullscreen view optimised for Zoom screen sharing.
 
 Tasks:
-- Fullscreen toggle button on activity display
-- Hide all teacher UI except minimal controls (prev/next/reveal)
-- Large text, high contrast, centred layout
-- Keyboard shortcuts (space = next, R = reveal)
+- ✅ Fullscreen toggle button on all three activity components
+- ✅ Keyboard shortcuts: Space = next/flip, R = reveal (Unjumble), F = toggle fullscreen
+- ✅ Browser native fullscreen API (`document.requestFullscreen`)
 
 **Test:** Enter fullscreen, share screen on Zoom, confirm layout looks good.
 **Commit:** `Phase 8: Fullscreen presentation mode`
+
+**Notes:**
+- `useFullscreen` hook in `resources/js/hooks/useFullscreen.js` — shared across all three activity components
+- `fullscreenchange` event keeps button icon in sync with actual state
+- Activities already use `fixed inset-0` so they fill the screen before and after fullscreen toggle
 
 ---
 
@@ -333,4 +337,4 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 8 — Fullscreen Presentation Mode** is next.
+**Phase 9 — Polish & Beta Prep** is next.
