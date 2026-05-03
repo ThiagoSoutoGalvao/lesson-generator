@@ -3,6 +3,7 @@ import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
 import UnjumbleActivity from '@/components/UnjumbleActivity';
+import Spinner from '@/components/Spinner';
 
 const TYPE_LABELS = { quiz: 'Quiz', flashcards: 'Flashcards', unjumble: 'Unjumble' };
 const TYPE_COLORS = {
@@ -37,8 +38,12 @@ export default function LibraryPage() {
 
     async function handleDelete(id) {
         if (!confirm('Delete this activity?')) return;
-        await axios.delete(`/api/activities/${id}`);
-        setActivities(prev => prev.filter(a => a.id !== id));
+        try {
+            await axios.delete(`/api/activities/${id}`);
+            setActivities(prev => prev.filter(a => a.id !== id));
+        } catch {
+            alert('Could not delete the activity. Please try again.');
+        }
     }
 
     function handleClose() {
@@ -94,7 +99,9 @@ export default function LibraryPage() {
                 </div>
 
                 {loading && (
-                    <p className="text-white/50 text-sm">Loading activities…</p>
+                    <div className="flex justify-center py-12">
+                        <Spinner message="Loading activities…" color="text-white/70" textColor="text-white/50" />
+                    </div>
                 )}
 
                 {error && (

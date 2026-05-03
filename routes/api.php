@@ -6,11 +6,13 @@ use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\SavedActivityController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/documents', [DocumentController::class, 'index']);
-Route::post('/documents', [DocumentController::class, 'store']);
-Route::post('/generate', [ActivityController::class, 'generate']);
-Route::get('/background', [BackgroundController::class, 'fetch']);
+Route::middleware('auth:web')->group(function () {
+    Route::get('/documents', [DocumentController::class, 'index']);
+    Route::post('/documents', [DocumentController::class, 'store']);
+    Route::post('/generate', [ActivityController::class, 'generate']);
+    Route::get('/background', [BackgroundController::class, 'fetch']);
 
-Route::get('/activities', [SavedActivityController::class, 'index']);
-Route::post('/activities', [SavedActivityController::class, 'store']);
-Route::delete('/activities/{activity}', [SavedActivityController::class, 'destroy']);
+    Route::get('/activities', [SavedActivityController::class, 'index']);
+    Route::post('/activities', [SavedActivityController::class, 'store']);
+    Route::delete('/activities/{activity}', [SavedActivityController::class, 'destroy']);
+});

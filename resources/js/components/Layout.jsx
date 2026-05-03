@@ -8,10 +8,14 @@ export default function Layout({ children }) {
                     <Link to="/" className="text-xl font-semibold text-gray-900 hover:text-gray-700">
                         Lesson Generator
                     </Link>
-                    <nav className="flex gap-6 text-sm text-gray-500">
+                    <nav className="flex items-center gap-6 text-sm text-gray-500">
                         <Link to="/upload" className="hover:text-gray-900">Upload PDF</Link>
                         <Link to="/generate" className="hover:text-gray-900">Generate</Link>
                         <Link to="/library" className="hover:text-gray-900">Library</Link>
+                        <form method="POST" action="/logout">
+                            <input type="hidden" name="_token" value={document.querySelector('meta[name="csrf-token"]')?.content} />
+                            <button type="submit" className="hover:text-gray-900 cursor-pointer">Log out</button>
+                        </form>
                     </nav>
                 </div>
             </header>

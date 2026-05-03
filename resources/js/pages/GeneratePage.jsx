@@ -3,6 +3,7 @@ import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
 import UnjumbleActivity from '@/components/UnjumbleActivity';
+import Spinner from '@/components/Spinner';
 
 const ACTIVITY_TYPES = [
     { value: 'quiz',       label: 'Quiz' },
@@ -22,7 +23,9 @@ export default function GeneratePage() {
     const [pageTo, setPageTo] = useState('');
 
     useEffect(() => {
-        axios.get('/api/documents').then(({ data }) => setDocuments(data));
+        axios.get('/api/documents')
+            .then(({ data }) => setDocuments(data))
+            .catch(() => setErrorMsg('Could not load your documents. Please refresh the page.'));
     }, []);
 
     const selectedDoc = documents.find(d => d.id === Number(documentId));
@@ -171,9 +174,15 @@ export default function GeneratePage() {
                     disabled={status === 'loading'}
                     className="self-start bg-blue-600 hover:bg-blue-700 disabled:bg-blue-300 text-white text-sm font-medium px-5 py-2 rounded-lg transition-colors"
                 >
-                    {status === 'loading' ? 'Generating…' : 'Generate'}
+                    Generate
                 </button>
             </form>
+
+            {status === 'loading' && (
+                <div className="flex justify-center py-8">
+                    <Spinner message="Generating your activity… this can take up to 20 seconds" />
+                </div>
+            )}
 
             {status === 'error' && (
                 <div className="rounded-lg bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">

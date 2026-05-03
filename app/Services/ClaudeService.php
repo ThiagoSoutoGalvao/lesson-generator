@@ -231,6 +231,7 @@ Rules:
 - Exactly one answer per question must have "correct": true; the rest must have "correct": false
 - Randomise the position of the correct answer — do not always place it first
 - Each question's keyword must be a concrete visual noun or phrase that represents the specific question content, different from the other questions' keywords
+- When a question has multiple blanks and an answer fills more than one blank, separate the parts with " / " (e.g. "has / left", "will / be going")
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

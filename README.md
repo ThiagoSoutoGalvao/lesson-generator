@@ -1,58 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Lesson Generator
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+AI-powered activity generator for English teachers. Upload a course book PDF, describe what you want, and get interactive quiz, flashcard, or unjumble activities ready to use in a live online class.
 
-## About Laravel
+## What it does
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- Upload a PDF course book and extract its text
+- Generate multiple choice quizzes, flashcard sets, or unjumble exercises using Claude AI
+- Display activities fullscreen — designed for Zoom screen sharing
+- Save activities to a library and relaunch them any time
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## Requirements
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- PHP 8.4
+- Node.js 20+
+- [Laravel Herd](https://herd.laravel.com) (local dev environment)
+- Composer
+- An [Anthropic API key](https://console.anthropic.com)
+- An [Unsplash API key](https://unsplash.com/developers) (optional — falls back to placeholder images)
 
-## Learning Laravel
+## Local setup
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+**1. Clone and install dependencies**
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+git clone <repo-url>
+cd lesson-generator
+composer install
+npm install
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+**2. Configure environment**
 
-## Contributing
+```bash
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Open `.env` and fill in:
 
-## Code of Conduct
+```
+ANTHROPIC_API_KEY=your-key-here
+UNSPLASH_ACCESS_KEY=your-key-here   # optional
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+**3. Run migrations**
 
-## Security Vulnerabilities
+```bash
+php artisan migrate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+**4. Configure Herd**
 
-## License
+Add the site in Herd and point it at the `public/` folder. Then update your Herd PHP config to allow large PDF uploads:
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- `php.ini` → `upload_max_filesize=500M`, `post_max_size=500M`, `memory_limit=512M`, `max_execution_time=300`
+- `herd.conf` → `client_max_body_size 600M`, `fastcgi_read_timeout 300`, `fastcgi_send_timeout 300`
+
+**5. Start the dev server**
+
+```bash
+npm run dev
+```
+
+Visit your Herd URL (e.g. `http://lesson-generator.test`), register an account, and you're ready.
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Backend | Laravel 13 (PHP) |
+| Frontend | React 19 + Vite |
+| Styling | Tailwind CSS v4 + Shadcn/ui |
+| Database | SQLite (local) |
+| AI | Anthropic Claude API (`claude-sonnet-4-6`) |
+| Images | Unsplash API |
+| Auth | Laravel Breeze (session-based) |
+
+## Activity types
+
+| Type | Description |
+|---|---|
+| **Quiz** | Multiple choice — 4 options, colour feedback, score counter |
+| **Flashcards** | Word + definition/example, flip animation, known/learning tracking |
+| **Unjumble** | Drag-and-drop word tiles to reconstruct a sentence |
+
+All activities support fullscreen mode (`F` key) for Zoom screen sharing.

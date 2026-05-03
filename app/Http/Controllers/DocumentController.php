@@ -19,14 +19,22 @@ class DocumentController extends Controller
         $path = $file->store('documents', 'local');
 
         $fullPath = Storage::path($path);
-        $parser   = new Parser();
-        $pdf      = $parser->parseFile($fullPath);
 
-        $pagesText = [];
-        foreach ($pdf->getPages() as $page) {
-            $raw   = $page->getText();
-            $clean = iconv('UTF-8', 'UTF-8//IGNORE', $raw);
-            $pagesText[] = $clean !== false ? $clean : '';
+        try {
+            $parser = new Parser();
+            $pdf    = $parser->parseFile($fullPath);
+
+            $pagesText = [];
+            foreach ($pdf->getPages() as $page) {
+                $raw   = $page->getText();
+                $clean = iconv('UTF-8', 'UTF-8//IGNORE', $raw);
+                $pagesText[] = $clean !== false ? $clean : '';
+            }
+        } catch (\Exception $e) {
+            Storage::delete($path);
+            return response()->json([
+                'message' => 'Could not read this PDF. The file may be corrupted or password-protected.',
+            ], 422);
         }
 
         $fullText = implode("\n\n", $pagesText);

@@ -40,11 +40,15 @@ class ActivityController extends Controller
             ], 422);
         }
 
-        $activity = match ($request->type) {
-            'quiz'       => $claude->generateQuiz($text, $request->prompt),
-            'flashcards' => $claude->generateFlashcards($text, $request->prompt),
-            'unjumble'   => $claude->generateUnjumble($text, $request->prompt),
-        };
+        try {
+            $activity = match ($request->type) {
+                'quiz'       => $claude->generateQuiz($text, $request->prompt),
+                'flashcards' => $claude->generateFlashcards($text, $request->prompt),
+                'unjumble'   => $claude->generateUnjumble($text, $request->prompt),
+            };
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 502);
+        }
 
         return response()->json($activity);
     }
