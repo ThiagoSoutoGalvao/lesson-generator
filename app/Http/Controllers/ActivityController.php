@@ -13,7 +13,7 @@ class ActivityController extends Controller
         $request->validate([
             'document_id' => ['required', 'exists:documents,id'],
             'prompt'      => ['required', 'string', 'max:1000'],
-            'type'        => ['required', 'in:quiz,flashcards,unjumble'],
+            'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,image_vocab_match'],
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
         ]);
@@ -42,9 +42,13 @@ class ActivityController extends Controller
 
         try {
             $activity = match ($request->type) {
-                'quiz'       => $claude->generateQuiz($text, $request->prompt),
-                'flashcards' => $claude->generateFlashcards($text, $request->prompt),
-                'unjumble'   => $claude->generateUnjumble($text, $request->prompt),
+                'quiz'            => $claude->generateQuiz($text, $request->prompt),
+                'flashcards'      => $claude->generateFlashcards($text, $request->prompt),
+                'unjumble'        => $claude->generateUnjumble($text, $request->prompt),
+                'dialog_gap_fill'      => $claude->generateDialogGapFill($text, $request->prompt),
+                'word_categorisation'  => $claude->generateWordCategorisation($text, $request->prompt),
+                'true_false'           => $claude->generateTrueFalse($text, $request->prompt),
+                'image_vocab_match'    => $claude->generateImageVocabMatch($text, $request->prompt),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

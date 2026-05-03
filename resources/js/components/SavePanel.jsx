@@ -1,10 +1,21 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
+const fieldCls = 'bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full';
+
 export default function SavePanel({ activity, onDone }) {
-    const [name, setName] = useState('');
-    const [tags, setTags] = useState('');
-    const [status, setStatus] = useState('idle');
+    const [name, setName]       = useState('');
+    const [book, setBook]       = useState('');
+    const [lesson, setLesson]   = useState('');
+    const [folder, setFolder]   = useState('');
+    const [folders, setFolders] = useState([]);
+    const [status, setStatus]   = useState('idle');
+
+    useEffect(() => {
+        axios.get('/api/folders')
+            .then(({ data }) => setFolders(data))
+            .catch(() => null);
+    }, []);
 
     async function handleSave(e) {
         e.preventDefault();
@@ -12,9 +23,11 @@ export default function SavePanel({ activity, onDone }) {
         try {
             await axios.post('/api/activities', {
                 name,
-                type: activity.type,
+                type:    activity.type,
                 content: activity,
-                tags: tags.trim() || null,
+                book:    book.trim()   || null,
+                lesson:  lesson.trim() || null,
+                folder:  folder.trim() || null,
             });
             setStatus('saved');
             setTimeout(onDone, 1200);
@@ -40,23 +53,49 @@ export default function SavePanel({ activity, onDone }) {
                 className="bg-gray-900/95 backdrop-blur border border-white/20 rounded-2xl px-6 py-5 shadow-2xl flex flex-col gap-3 w-full max-w-md"
             >
                 <p className="text-white font-semibold text-sm">Save this activity</p>
+
                 <input
                     value={name}
                     onChange={e => setName(e.target.value)}
                     required
                     autoFocus
-                    placeholder="Name (e.g. Unit 3 – Travel vocabulary)"
-                    className="bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    placeholder="Activity name (e.g. Travel vocabulary quiz)"
+                    className={fieldCls}
                 />
-                <input
-                    value={tags}
-                    onChange={e => setTags(e.target.value)}
-                    placeholder="Tags (optional, e.g. Unit 3, Travel)"
-                    className="bg-white/10 border border-white/20 text-white placeholder:text-white/40 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+
+                <div className="grid grid-cols-2 gap-2">
+                    <input
+                        value={book}
+                        onChange={e => setBook(e.target.value)}
+                        placeholder="Book (e.g. Speak Out B2)"
+                        className={fieldCls}
+                    />
+                    <input
+                        value={lesson}
+                        onChange={e => setLesson(e.target.value)}
+                        placeholder="Lesson (e.g. Unit 3)"
+                        className={fieldCls}
+                    />
+                </div>
+
+                <div className="flex flex-col gap-1">
+                    <input
+                        value={folder}
+                        onChange={e => setFolder(e.target.value)}
+                        list="folder-list"
+                        placeholder="Folder (optional)"
+                        className={fieldCls}
+                    />
+                    <datalist id="folder-list">
+                        {folders.map(f => <option key={f} value={f} />)}
+                    </datalist>
+                    <p className="text-white/30 text-xs px-1">Type a new name to create a folder, or pick an existing one.</p>
+                </div>
+
                 {status === 'error' && (
                     <p className="text-red-400 text-xs">Failed to save. Please try again.</p>
                 )}
+
                 <div className="flex gap-2 justify-end">
                     <button
                         type="button"

@@ -15,4 +15,5 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/activities', [SavedActivityController::class, 'index']);
     Route::post('/activities', [SavedActivityController::class, 'store']);
     Route::delete('/activities/{activity}', [SavedActivityController::class, 'destroy']);
+    Route::get('/folders', [SavedActivityController::class, 'folders']);
 });

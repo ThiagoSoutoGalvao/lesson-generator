@@ -23,9 +23,7 @@ class ClaudeService
             ],
         ]);
 
-        if ($response->failed()) {
-            throw new RuntimeException('Claude API error: ' . $response->body());
-        }
+        $this->throwIfFailed($response);
 
         return $response->json('content.0.text');
     }
@@ -49,9 +47,7 @@ class ClaudeService
             ],
         ]);
 
-        if ($response->failed()) {
-            throw new RuntimeException('Claude API error: ' . $response->body());
-        }
+        $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
         $data = json_decode($text, true);
@@ -82,9 +78,7 @@ class ClaudeService
             ],
         ]);
 
-        if ($response->failed()) {
-            throw new RuntimeException('Claude API error: ' . $response->body());
-        }
+        $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
         $data = json_decode($text, true);
@@ -146,9 +140,7 @@ EOT;
             ],
         ]);
 
-        if ($response->failed()) {
-            throw new RuntimeException('Claude API error: ' . $response->body());
-        }
+        $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
         $data = json_decode($text, true);
@@ -191,6 +183,308 @@ Rules:
 - Each sentence's keyword must be visually distinct from the others
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
+    }
+
+    public function generateTrueFalse(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 1024,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildTrueFalsePrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildTrueFalsePrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "true_false",
+  "topic": "<short topic description>",
+  "keyword": "<1-2 word Unsplash image search term for the theme>",
+  "passage": "<the reading passage students will refer to — 80 to 150 words, copied or lightly adapted from the text>",
+  "statements": [
+    {
+      "text": "<a statement about the passage>",
+      "answer": "True",
+      "explanation": "<one sentence explaining why, quoting or referencing the passage>"
+    },
+    {
+      "text": "<a statement about the passage>",
+      "answer": "False",
+      "explanation": "<one sentence explaining why, quoting or referencing the passage>"
+    },
+    {
+      "text": "<a statement about the passage>",
+      "answer": "Not Given",
+      "explanation": "<one sentence explaining that this information does not appear in the passage>"
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 6 statements
+- Distribute answers roughly evenly: 2 True, 2 False, 2 Not Given — but vary the order
+- "True" means the passage clearly supports the statement
+- "False" means the passage clearly contradicts the statement
+- "Not Given" means the passage neither confirms nor contradicts it — the information is simply absent
+- Statements must be unambiguous — no borderline True/False cases
+- Not Given statements must be genuinely absent from the passage, not just implied
+- Statements should be full sentences, not questions
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateWordCategorisation(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 1024,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildWordCategorisationPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildWordCategorisationPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "word_categorisation",
+  "topic": "<short description of the categorisation task, e.g. 'Formal vs Informal'>",
+  "keyword": "<1-2 word Unsplash image search term for the theme>",
+  "categories": [
+    {
+      "name": "<category name>",
+      "words": ["<word>", "<word>", "<word>", "<word>"]
+    },
+    {
+      "name": "<category name>",
+      "words": ["<word>", "<word>", "<word>", "<word>"]
+    }
+  ]
+}
+
+Rules:
+- Use 2 or 3 categories (never more)
+- Each category must have between 4 and 6 words
+- All categories must have the same number of words
+- Words must be clearly and unambiguously correct for their category — no borderline cases
+- Words should be single words or short phrases (max 3 words)
+- Suitable categories: Formal/Informal, Countable/Uncountable, Past Simple/Present Perfect, Positive/Negative, Verb/Noun/Adjective, or topic-based groupings
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateImageVocabMatch(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 1024,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildImageVocabMatchPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildImageVocabMatchPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "image_vocab_match",
+  "topic": "<short topic description, e.g. 'hotel vocabulary'>",
+  "pairs": [
+    {
+      "word": "<vocabulary word or short phrase>",
+      "keyword": "<2-4 word Unsplash image search term that clearly and uniquely represents this word>"
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 6 pairs
+- Each word must be a concrete noun or short noun phrase that can be represented by a photograph
+- Each keyword must be a vivid, concrete search term that will return a clear, recognisable photo on Unsplash
+- Keywords must be visually distinct from each other — no two pairs should produce similar-looking images
+- Words should be B1-B2 level vocabulary relevant to the topic from the text
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateDialogGapFill(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 2048,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildDialogGapFillPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildDialogGapFillPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "dialog_gap_fill",
+  "topic": "<short scene description, e.g. 'hotel check-in' or 'doctor's appointment'>",
+  "keyword": "<1-2 word Unsplash image search term for the scene, e.g. 'hotel lobby'>",
+  "dialog": [
+    {
+      "speaker": "<speaker name, e.g. 'Agent' or 'Customer'>",
+      "line": "<the spoken line>",
+      "blank": false
+    },
+    {
+      "speaker": "<speaker name>",
+      "line": "<the correct spoken line>",
+      "blank": true,
+      "options": [
+        { "text": "<correct line>", "correct": true },
+        { "text": "<plausible wrong option>", "correct": false },
+        { "text": "<plausible wrong option>", "correct": false }
+      ]
+    }
+  ]
+}
+
+Rules:
+- The dialog must have between 8 and 14 lines total
+- Mark exactly 3 lines as blank: true — spread them throughout the dialog, not bunched at the end
+- Each blank must have exactly 3 options (one correct, two wrong)
+- Wrong options must be grammatically correct and plausible in the context, but clearly not the best fit
+- The "line" field on a blank item always contains the correct answer text
+- Non-blank lines have no "options" field
+- Use only two speakers throughout the dialog
+- Dialogue must be B1-B2 level English and feel natural, not textbook-stiff
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    private function throwIfFailed($response): void
+    {
+        if (! $response->failed()) return;
+
+        $type = $response->json('error.type') ?? '';
+
+        $message = match ($type) {
+            'rate_limit_error'       => 'Rate limit reached. Please wait a moment and try again.',
+            'authentication_error'   => 'Invalid Claude API key. Check your ANTHROPIC_API_KEY in .env.',
+            'overloaded_error'       => 'Claude is currently overloaded. Please try again in a few seconds.',
+            'invalid_request_error'  => 'The request was too large. Try selecting a smaller page range.',
+            default                  => 'Claude API error. Please try again.',
+        };
+
+        throw new RuntimeException($message);
     }
 
     private function sanitizeUtf8(string $text): string

@@ -3,157 +3,191 @@ import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
 import UnjumbleActivity from '@/components/UnjumbleActivity';
+import DialogGapFillActivity from '@/components/DialogGapFillActivity';
+import WordCategorisationActivity from '@/components/WordCategorisationActivity';
+import TrueFalseActivity from '@/components/TrueFalseActivity';
+import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
 import Spinner from '@/components/Spinner';
 
-const TYPE_LABELS = { quiz: 'Quiz', flashcards: 'Flashcards', unjumble: 'Unjumble' };
-const TYPE_COLORS = {
-    quiz:       'bg-blue-500/80 text-white',
-    flashcards: 'bg-purple-500/80 text-white',
-    unjumble:   'bg-orange-500/80 text-white',
+const TYPE_LABELS = {
+    quiz: 'Quiz', flashcards: 'Flashcards', unjumble: 'Unjumble',
+    dialog_gap_fill: 'Dialog', word_categorisation: 'Categorise',
+    true_false: 'True / False', image_vocab_match: 'Image Match',
 };
-const FILTERS = ['all', 'quiz', 'flashcards', 'unjumble'];
+const TYPE_COLORS = {
+    quiz:                'bg-blue-500/80 text-white',
+    flashcards:          'bg-purple-500/80 text-white',
+    unjumble:            'bg-orange-500/80 text-white',
+    dialog_gap_fill:     'bg-teal-500/80 text-white',
+    word_categorisation: 'bg-pink-500/80 text-white',
+    true_false:          'bg-indigo-500/80 text-white',
+    image_vocab_match:   'bg-cyan-500/80 text-white',
+};
+const TYPE_FILTERS = ['all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill', 'word_categorisation', 'true_false', 'image_vocab_match'];
+
+const filterBtnCls = (active) =>
+    `px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
+        active ? 'bg-white/25 text-white' : 'bg-white/8 text-white/55 hover:bg-white/15 hover:text-white border border-white/10'
+    }`;
 
 export default function LibraryPage() {
     const [activities, setActivities] = useState([]);
-    const [filter, setFilter] = useState('all');
-    const [launched, setLaunched] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [pageBg, setPageBg] = useState(null);
+    const [folders, setFolders]       = useState([]);
+    const [typeFilter, setTypeFilter] = useState('all');
+    const [folderFilter, setFolderFilter] = useState('all');
+    const [launched, setLaunched]     = useState(null);
+    const [loading, setLoading]       = useState(true);
+    const [error, setError]           = useState(null);
 
     useEffect(() => {
-        axios.get('/api/background', { params: { topic: 'learning English' } })
-            .then(({ data }) => setPageBg(data.url))
-            .catch(() => null);
-    }, []);
-
-    useEffect(() => {
-        axios.get('/api/activities')
-            .then(({ data }) => setActivities(data))
+        Promise.all([
+            axios.get('/api/activities'),
+            axios.get('/api/folders'),
+        ])
+            .then(([acts, fols]) => {
+                setActivities(acts.data);
+                setFolders(fols.data);
+            })
             .catch(err => {
                 setError(err.response?.data?.message ?? err.message ?? 'Failed to load activities');
             })
             .finally(() => setLoading(false));
     }, []);
 
-    async function handleDelete(id) {
+    function handleDelete(id) {
         if (!confirm('Delete this activity?')) return;
-        try {
-            await axios.delete(`/api/activities/${id}`);
-            setActivities(prev => prev.filter(a => a.id !== id));
-        } catch {
-            alert('Could not delete the activity. Please try again.');
-        }
-    }
-
-    function handleClose() {
-        setLaunched(null);
+        axios.delete(`/api/activities/${id}`)
+            .then(() => setActivities(prev => prev.filter(a => a.id !== id)))
+            .catch(() => alert('Could not delete the activity. Please try again.'));
     }
 
     if (launched) {
-        if (launched.type === 'quiz') {
-            return <QuizActivity quiz={launched} onClose={handleClose} />;
-        }
-        if (launched.type === 'flashcards') {
-            return <FlashcardActivity activity={launched} onClose={handleClose} />;
-        }
-        if (launched.type === 'unjumble') {
-            return <UnjumbleActivity activity={launched} onClose={handleClose} />;
-        }
+        const props = { activity: launched, onClose: () => setLaunched(null) };
+        if (launched.type === 'quiz')               return <QuizActivity quiz={launched} onClose={props.onClose} />;
+        if (launched.type === 'flashcards')         return <FlashcardActivity {...props} />;
+        if (launched.type === 'unjumble')           return <UnjumbleActivity {...props} />;
+        if (launched.type === 'dialog_gap_fill')    return <DialogGapFillActivity {...props} />;
+        if (launched.type === 'word_categorisation') return <WordCategorisationActivity {...props} />;
+        if (launched.type === 'true_false')         return <TrueFalseActivity {...props} />;
+        if (launched.type === 'image_vocab_match')  return <ImageVocabMatchActivity {...props} />;
     }
 
-    const filtered = filter === 'all'
-        ? activities
-        : activities.filter(a => a.type === filter);
-
-    const pageStyle = pageBg
-        ? { backgroundImage: `url(${pageBg})`, backgroundSize: 'cover', backgroundPosition: 'center' }
-        : { background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' };
+    const filtered = activities.filter(a => {
+        if (typeFilter !== 'all' && a.type !== typeFilter) return false;
+        if (folderFilter !== 'all') {
+            if (folderFilter === '__none__') return !a.folder;
+            if (a.folder !== folderFilter) return false;
+        }
+        return true;
+    });
 
     return (
-        <div className="relative -mx-6 -my-8" style={pageStyle}>
-            <div className="absolute inset-0 bg-black/60" />
+        <div className="flex flex-col gap-6">
+            <div>
+                <h2 className="text-3xl font-bold text-white">Activity Library</h2>
+                <p className="text-white/60 mt-1 text-sm">Your saved activities — relaunch them any time.</p>
+            </div>
 
-            <div className="relative z-10 px-6 py-8 flex flex-col gap-6 min-h-screen">
-                <div>
-                    <h2 className="text-3xl font-bold text-white">Activity Library</h2>
-                    <p className="text-white/60 mt-1 text-sm">
-                        Your saved activities — relaunch them any time.
-                    </p>
-                </div>
+            {/* Type filter */}
+            <div className="flex flex-wrap gap-2">
+                {TYPE_FILTERS.map(f => (
+                    <button key={f} onClick={() => setTypeFilter(f)} className={filterBtnCls(typeFilter === f)}>
+                        {f === 'all' ? 'All types' : TYPE_LABELS[f]}
+                    </button>
+                ))}
+            </div>
 
-                <div className="flex rounded-lg border border-white/20 overflow-hidden w-fit">
-                    {FILTERS.map(f => (
-                        <button
-                            key={f}
-                            onClick={() => setFilter(f)}
-                            className={`px-5 py-2 text-sm font-medium transition-colors capitalize cursor-pointer ${
-                                filter === f
-                                    ? 'bg-white text-gray-900'
-                                    : 'bg-white/10 text-white hover:bg-white/20'
-                            }`}
-                        >
-                            {f === 'all' ? 'All' : TYPE_LABELS[f]}
+            {/* Folder filter — only shown if there are any folders */}
+            {folders.length > 0 && (
+                <div className="flex flex-wrap gap-2 border-t border-white/10 pt-4">
+                    <span className="text-white/35 text-xs self-center mr-1">Folder:</span>
+                    <button onClick={() => setFolderFilter('all')} className={filterBtnCls(folderFilter === 'all')}>
+                        All
+                    </button>
+                    {folders.map(f => (
+                        <button key={f} onClick={() => setFolderFilter(f)} className={filterBtnCls(folderFilter === f)}>
+                            {f}
                         </button>
                     ))}
+                    <button onClick={() => setFolderFilter('__none__')} className={filterBtnCls(folderFilter === '__none__')}>
+                        No folder
+                    </button>
                 </div>
+            )}
 
-                {loading && (
-                    <div className="flex justify-center py-12">
-                        <Spinner message="Loading activities…" color="text-white/70" textColor="text-white/50" />
-                    </div>
-                )}
+            {loading && (
+                <div className="flex justify-center py-12">
+                    <Spinner message="Loading activities…" color="text-white/70" textColor="text-white/50" />
+                </div>
+            )}
 
-                {error && (
-                    <div className="rounded-lg bg-red-900/40 border border-red-400/30 px-4 py-3 text-sm text-red-300">
-                        {error}
-                    </div>
-                )}
+            {error && (
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                    {error}
+                </div>
+            )}
 
-                {!loading && !error && filtered.length === 0 && (
-                    <div className="text-center py-20 text-white/40">
-                        <p className="text-lg">No saved activities yet.</p>
-                        <p className="text-sm mt-1">Generate an activity and click Save to add it here.</p>
-                    </div>
-                )}
+            {!loading && !error && filtered.length === 0 && (
+                <div className="text-center py-20 text-white/40">
+                    <p className="text-lg">No saved activities yet.</p>
+                    <p className="text-sm mt-1">Generate an activity and click Save to add it here.</p>
+                </div>
+            )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {filtered.map(a => (
-                        <div
-                            key={a.id}
-                            className="bg-white/5 backdrop-blur-none border border-white/10 rounded-2xl p-5 flex flex-col gap-3"
-                        >
-                            <div className="flex items-start justify-between gap-2">
-                                <h3 className="font-semibold text-white leading-snug">{a.name}</h3>
-                                <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${TYPE_COLORS[a.type]}`}>
-                                    {TYPE_LABELS[a.type]}
-                                </span>
-                            </div>
-                            {a.tags && (
-                                <p className="text-xs text-white/60">{a.tags}</p>
-                            )}
-                            <p className="text-xs text-white/50 mt-auto">
-                                {new Date(a.created_at).toLocaleDateString('en-GB', {
-                                    day: 'numeric', month: 'short', year: 'numeric',
-                                })}
-                            </p>
-                            <div className="flex gap-2 pt-1">
-                                <button
-                                    onClick={() => setLaunched(a.content)}
-                                    className="flex-1 bg-white hover:bg-white/90 text-gray-900 text-sm font-semibold py-2 rounded-xl transition-colors cursor-pointer"
-                                >
-                                    Launch
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(a.id)}
-                                    className="bg-white/20 hover:bg-red-500/60 text-white text-sm px-3 py-2 rounded-xl transition-colors cursor-pointer"
-                                >
-                                    Delete
-                                </button>
-                            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+                {filtered.map(a => (
+                    <div
+                        key={a.id}
+                        className="bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl p-5 flex flex-col gap-3 hover:bg-white/12 transition-colors"
+                    >
+                        <div className="flex items-start justify-between gap-2">
+                            <h3 className="font-semibold text-white leading-snug">{a.name}</h3>
+                            <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${TYPE_COLORS[a.type]}`}>
+                                {TYPE_LABELS[a.type]}
+                            </span>
                         </div>
-                    ))}
-                </div>
+
+                        {(a.book || a.lesson) && (
+                            <div className="flex gap-2 flex-wrap">
+                                {a.book && (
+                                    <span className="text-xs bg-white/10 text-white/70 px-2.5 py-1 rounded-full border border-white/10">
+                                        {a.book}
+                                    </span>
+                                )}
+                                {a.lesson && (
+                                    <span className="text-xs bg-white/10 text-white/70 px-2.5 py-1 rounded-full border border-white/10">
+                                        {a.lesson}
+                                    </span>
+                                )}
+                            </div>
+                        )}
+
+                        {a.folder && (
+                            <p className="text-xs text-white/40">📁 {a.folder}</p>
+                        )}
+
+                        <p className="text-xs text-white/35 mt-auto">
+                            {new Date(a.created_at).toLocaleDateString('en-GB', {
+                                day: 'numeric', month: 'short', year: 'numeric',
+                            })}
+                        </p>
+
+                        <div className="flex gap-2 pt-1">
+                            <button
+                                onClick={() => setLaunched(a.content)}
+                                className="flex-1 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer border border-white/15"
+                            >
+                                Launch
+                            </button>
+                            <button
+                                onClick={() => handleDelete(a.id)}
+                                className="bg-white/8 hover:bg-red-500/50 text-white/60 hover:text-white text-sm px-3 py-2.5 rounded-xl transition-colors cursor-pointer border border-white/10"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
         </div>
     );
