@@ -26,13 +26,31 @@ export default function ImageVocabMatchActivity({ activity, onClose }) {
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     useEffect(() => {
-        Promise.all(
-            pairs.map(pair =>
-                axios.get('/api/background', { params: { topic: pair.keyword } })
-                    .then(({ data }) => data.url)
-                    .catch(() => null)
-            )
-        ).then(urls => setImageUrls(urls));
+        let cancelled = false;
+        const batchSize = 4;
+
+        async function loadImages() {
+            for (let i = 0; i < pairs.length; i += batchSize) {
+                if (cancelled) break;
+                const batch = pairs.slice(i, i + batchSize);
+                await Promise.all(
+                    batch.map((pair, j) =>
+                        axios.get('/api/background', { params: { topic: pair.keyword } })
+                            .then(({ data }) => {
+                                if (!cancelled) setImageUrls(prev => {
+                                    const next = [...prev];
+                                    next[i + j] = data.url;
+                                    return next;
+                                });
+                            })
+                            .catch(() => null)
+                    )
+                );
+            }
+        }
+
+        loadImages();
+        return () => { cancelled = true; };
     }, []);
 
     useEffect(() => {
@@ -144,7 +162,7 @@ export default function ImageVocabMatchActivity({ activity, onClose }) {
             </div>
 
             {/* Image grid */}
-            <div className={`relative z-10 flex-1 grid ${gridCols} gap-3 px-6 pb-4 overflow-hidden`}>
+            <div className={`relative z-10 flex-1 grid ${gridCols} auto-rows-fr gap-3 px-6 pb-4 overflow-hidden`}>
                 {pairs.map((pair, idx) => {
                     const isMatched = matched[idx] !== undefined;
                     const isWrong   = wrongImage === idx;
