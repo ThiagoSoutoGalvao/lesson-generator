@@ -279,31 +279,43 @@ Tasks:
 
 ---
 
-### PHASE 9 — Polish & Beta Prep
+### PHASE 9 — Polish & Beta Prep ✅ COMPLETED
 **Goal:** App is stable and ready to share with 5 colleagues.
 
 Tasks:
 - ✅ Page range selector — teacher can target specific pages of a document when generating activities
 - ✅ Guard against image-based PDFs — returns a clear error if no text is extracted
 - ✅ Upload label corrected to "max 500 MB"
-- Error handling (API failures, bad PDFs, empty responses)
-- Loading states and spinners
-- Basic auth (simple password or Laravel Breeze) so only invited users can access
-- Clean up UI inconsistencies
-- Write a short README with setup instructions
+- ✅ Error handling (API failures, bad PDFs, empty responses) — `throwIfFailed()` in ClaudeService returns human-readable messages
+- ✅ Loading states and spinners — shared `Spinner` component used across Generate, Upload, and Library pages
+- ✅ Basic auth — Laravel Breeze (session-based); all API routes protected with `auth:web`; `EncryptCookies` + `StartSession` added to API middleware group
+- ✅ UI cleanup and README written
+- ✅ Four new activity templates: Dialog Gap-Fill, Word Categorisation, True/False/Not Given, Image Vocabulary Match
+- ✅ Pre-filled default prompts on Generate page — one per activity type, fully editable
+- ✅ Global glass UI — full-page background image (Unsplash, "cozy library bookshelves") in Layout; glass navbar; glass form cards on all pages
+- ✅ Folder/book/lesson fields — SavePanel accepts book, lesson, and folder (datalist autocomplete); Library shows pill badges and folder filter row
+- ✅ Activity type buttons redesigned — individual pill buttons with flex-1 stretch instead of a segmented bar
 
-**Test:** Ask a colleague to use it without your help. Note friction points.
-**Commit:** `Phase 9: Polish and beta prep`
+**Test:** Use the app for a week before deploying. Note friction points.
+**Commit:** `Phase 9: Polish, new templates, glass UI, folder/book/lesson`
 
 **Notes:**
 - `pages_text` (JSON) and `page_count` added to `documents` table via migration `2026_05_03_000001_add_pages_to_documents_table.php`
 - `DocumentController::store()` extracts text per-page using `smalot/pdfparser` `$pdf->getPages()` and sanitizes each page with `iconv('UTF-8', 'UTF-8//IGNORE', ...)`
 - `ActivityController::generate()` slices `pages_text` array with `array_slice()` when `page_from`/`page_to` are provided; returns 422 if resulting text is empty
-- `GeneratePage` shows page range inputs only after a document is selected; resets range on document change
+- `GeneratePage` shows page range inputs only after a document is selected; resets range on document change; `min`/`max` removed from HTML inputs to avoid browser native validation popups mid-typing
 - Image-based (scanned) PDFs extract no text — character density check (`char_count / page_count < 100`) is a reliable heuristic to detect them
 - Herd nginx config (`herd.conf`): `client_max_body_size 600M`, `fastcgi_read_timeout 300`, `fastcgi_send_timeout 300`
 - Herd PHP config (`php84/php.ini`): `upload_max_filesize=500M`, `post_max_size=500M`, `memory_limit=512M`, `max_execution_time=300`
 - These Herd config changes must be re-applied after a Herd reinstall
+- Tailwind v4 (CSS-first via `@tailwindcss/vite`) — NOT PostCSS-based; `tailwind.config.js` is unused; config lives in `resources/css/app.css`
+- Laravel Breeze auth: `SESSION_DRIVER=file` in `.env` (not database — no sessions table); CSRF token injected via `<meta name="csrf-token">` in `welcome.blade.php`
+- `folder`, `book`, `lesson` columns added to `activities` table via migration `2026_05_04_000001_add_folder_book_lesson_to_activities_table.php`
+- `GET /api/folders` returns distinct non-null folder names; used by SavePanel datalist for autocomplete
+- Dialog Gap-Fill: 8–14 line dialogue, exactly 3 blanks with 3 options each; Space advances confirmed lines, F = fullscreen
+- Word Categorisation: 2–3 categories, 4–6 words each; drag-and-drop + click; Check Answers reveals color-coded feedback
+- True/False/Not Given: reading passage (80–150 words) + 6 statements (2T/2F/2NG); P toggles passage panel; Space advances after answering
+- Image Vocabulary Match: 6 word–image pairs; images fetched in parallel via `/api/background`; click word then click image; Escape deselects
 
 ---
 
@@ -350,4 +362,30 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-**Phase 9 — Polish & Beta Prep** is in progress.
+Phases A and B complete. Currently mid-session working on Image Vocab Match improvements. Paused waiting for Unsplash rate limit to reset before continuing testing.
+
+### Improvement Phases (post-Phase 9, pre-deployment)
+
+#### Phase A — UI Fixes ✅ COMPLETED (commit `911a7f4`)
+- Quiz: top-level `instruction` field in JSON schema; rendered above question so fill-gap tasks don't repeat the instruction on every card
+- True/False: A-/A+ font size toggle (3 steps: text-xl → text-2xl → text-3xl), passage widened to 50% of screen, both passage and statement scale together
+- Image Vocab Match: configurable 4/6/8 pair count selector on Generate page; word tiles moved to top of screen; grid adapts (2×2/2×3/2×4)
+- Image Vocab Match: Unsplash keywords upgraded — Claude now writes 3-5 word descriptive scene phrases instead of single words
+
+#### Phase B — Better Image Keyword Quality ✅ COMPLETED (commit `156c59c`)
+- All prompt builders upgraded: Claude now returns 3-5 word descriptive scene phrases (e.g. "chef cooking pasta kitchen") instead of 1-2 word nouns
+- Applied to: Quiz per-question keyword, Flashcards per-card keyword, Unjumble per-sentence keyword, True/False activity background, Word Categorisation background, Dialog Gap-Fill background
+
+#### Image Vocab Match — In-progress fixes (commits `4329394`, `16c9477`, `c35ba38`, `6a5500b`)
+- Added number badge (1, 2, 3…) to each image — students say the word and the picture number verbally
+- Click-to-match mechanic kept: click word → click correct image → turns green
+- Pair count options expanded to 4 / 6 / 8 / 12; grid adapts (2×2 / 2×3 / 2×4 / 4×3)
+- Batch image loading: fetches 4 at a time instead of all at once to avoid Unsplash burst rate limit
+- `auto-rows-fr` added to grid so rows always have height even before images load
+- `BackgroundController`: falls back to Picsum when Unsplash fails or rate-limits (instead of returning null)
+- Picsum fallback URL fixed: `rawurlencode()` so multi-word keyword phrases don't break the URL path
+- **Known issue / Unsplash rate limit**: free tier allows 50 req/hour; 12-image activities burn through quota quickly during testing. When the limit is hit, Generate may appear to stall. Wait for the hourly reset and test again. Long-term fix: cache image URLs in the database so each keyword only fetches once.
+
+#### Phase C — Section Detection & Targeting (planned)
+#### Phase D — Flashcard Question Mode (planned)
+#### Phase E — PDF Upload Size Help (planned)
