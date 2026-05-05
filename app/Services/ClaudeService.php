@@ -108,7 +108,7 @@ Return a JSON object with EXACTLY this structure:
       "word": "<vocabulary word or phrase>",
       "definition": "<clear, student-friendly definition>",
       "example": "<a natural example sentence using the word in context>",
-      "keyword": "<1-2 word visual image search term specific to this word>"
+      "keyword": "<3-5 word descriptive scene phrase that visually illustrates this word for an Unsplash search, e.g. 'chef cooking pasta kitchen' or 'person reading book library'>"
     }
   ]
 }
@@ -116,7 +116,7 @@ Return a JSON object with EXACTLY this structure:
 Rules:
 - Definitions must be simple and clear for B1-B2 English learners — avoid complex words in the definition itself
 - Example sentences should feel natural and contextual, not textbook-stiff
-- Each card's keyword must be visually distinct from the others (different image per card)
+- Each card's keyword must be a descriptive scene phrase (not just the word itself) and visually distinct from the others
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
@@ -169,7 +169,7 @@ Return a JSON object with EXACTLY this structure:
     {
       "sentence": "<the complete correct sentence as a string>",
       "words": ["<word1>", "<word2>", "<word3>"],
-      "keyword": "<1-2 word visual image search term specific to this sentence>"
+      "keyword": "<3-5 word descriptive scene phrase that visually represents this sentence for an Unsplash search, e.g. 'friends laughing coffee shop' or 'student studying desk lamp'>"
     }
   ]
 }
@@ -180,7 +180,7 @@ Rules:
 - Each word in "words" must include any attached punctuation (e.g. "morning." not "morning")
 - Joining all "words" with a single space must reproduce "sentence" exactly
 - Sentences should be B1-B2 level English and 6-10 words long
-- Each sentence's keyword must be visually distinct from the others
+- Each sentence's keyword must be a descriptive scene phrase and visually distinct from the others
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
@@ -229,7 +229,7 @@ Return a JSON object with EXACTLY this structure:
 {
   "type": "true_false",
   "topic": "<short topic description>",
-  "keyword": "<1-2 word Unsplash image search term for the theme>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the passage topic, e.g. 'students studying library books' or 'tourists exploring city map'>",
   "passage": "<the reading passage students will refer to — 80 to 150 words, copied or lightly adapted from the text>",
   "statements": [
     {
@@ -307,7 +307,7 @@ Return a JSON object with EXACTLY this structure:
 {
   "type": "word_categorisation",
   "topic": "<short description of the categorisation task, e.g. 'Formal vs Informal'>",
-  "keyword": "<1-2 word Unsplash image search term for the theme>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the vocabulary theme, e.g. 'office workers formal meeting' or 'street market colourful vegetables'>",
   "categories": [
     {
       "name": "<category name>",
@@ -437,7 +437,7 @@ Return a JSON object with EXACTLY this structure:
 {
   "type": "dialog_gap_fill",
   "topic": "<short scene description, e.g. 'hotel check-in' or 'doctor's appointment'>",
-  "keyword": "<1-2 word Unsplash image search term for the scene, e.g. 'hotel lobby'>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the dialog setting, e.g. 'hotel lobby reception desk' or 'doctor patient clinic consultation'>",
   "dialog": [
     {
       "speaker": "<speaker name, e.g. 'Agent' or 'Customer'>",
@@ -510,7 +510,7 @@ Return a JSON object with EXACTLY this structure:
   "questions": [
     {
       "question": "<question or sentence text only — never include the instruction here>",
-      "keyword": "<1-2 word visual image search term specific to this question, e.g. 'airport' or 'suitcase'>",
+      "keyword": "<3-5 word descriptive scene phrase for an Unsplash background specific to this question, e.g. 'traveller pulling suitcase airport' or 'chef plating dish restaurant'>",
       "answers": [
         { "text": "<answer text>", "correct": true },
         { "text": "<answer text>", "correct": false },
