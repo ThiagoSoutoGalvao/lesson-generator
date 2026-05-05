@@ -179,7 +179,7 @@ export default function GeneratePage() {
                         <div className="flex flex-col gap-1.5">
                             <label className="text-sm font-medium text-white/80">Number of pairs</label>
                             <div className="flex gap-2">
-                                {[4, 6, 8].map(n => (
+                                {[4, 6, 8, 12].map(n => (
                                     <button
                                         key={n}
                                         type="button"

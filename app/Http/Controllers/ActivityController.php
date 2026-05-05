@@ -16,7 +16,7 @@ class ActivityController extends Controller
             'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,image_vocab_match'],
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
-            'pair_count'  => ['nullable', 'integer', 'in:4,6,8'],
+            'pair_count'  => ['nullable', 'integer', 'in:4,6,8,12'],
         ]);
 
         $document = Document::findOrFail($request->document_id);

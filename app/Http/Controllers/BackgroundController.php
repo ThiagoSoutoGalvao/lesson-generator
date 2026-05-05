@@ -13,7 +13,7 @@ class BackgroundController extends Controller
         $key = config('services.unsplash.key');
 
         if (! $key) {
-            return response()->json(['url' => "https://picsum.photos/seed/{$topic}/1920/1080"]);
+            return response()->json(['url' => 'https://picsum.photos/seed/' . urlencode($topic) . '/1920/1080']);
         }
 
         $response = Http::get('https://api.unsplash.com/photos/random', [

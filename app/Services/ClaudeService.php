@@ -340,7 +340,7 @@ EOT;
             'anthropic-version' => '2023-06-01',
         ])->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 1024,
+            'max_tokens' => 2048,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
