@@ -22,10 +22,12 @@ class BackgroundController extends Controller
             'orientation' => 'landscape',
         ]);
 
-        if ($response->failed()) {
-            return response()->json(['url' => null]);
+        $url = $response->json('urls.regular');
+
+        if ($response->failed() || ! $url) {
+            return response()->json(['url' => 'https://picsum.photos/seed/' . rawurlencode($topic) . '/1920/1080']);
         }
 
-        return response()->json(['url' => $response->json('urls.regular')]);
+        return response()->json(['url' => $url]);
     }
 }
