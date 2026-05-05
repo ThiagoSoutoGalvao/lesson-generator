@@ -7,6 +7,63 @@ use RuntimeException;
 
 class ClaudeService
 {
+    public function detectSections(string $documentText): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 4096,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildDetectSectionsPrompt($documentText),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildDetectSectionsPrompt(string $documentText): string
+    {
+        return <<<EOT
+Here is the text from a course book page range:
+
+{$documentText}
+
+Identify the distinct content sections in this text. Course books typically contain sections such as: Vocabulary, Grammar, Reading, Listening, Speaking, Pronunciation, Dialogue/Conversation, Writing, or topic-based activities.
+
+Return a JSON array with EXACTLY this structure:
+[
+  {
+    "name": "<short section name, e.g. 'Vocabulary', 'Grammar', 'Dialogue'>",
+    "text": "<the complete verbatim text of this section, copied exactly from the source>"
+  }
+]
+
+Rules:
+- Only include sections that are genuinely identifiable — do not invent sections
+- Each section's "text" must be copied verbatim from the source text
+- If the text has no clear distinct sections, return a single entry: {"name": "Full page", "text": "<all the text>"}
+- Aim for 2–6 sections — do not over-fragment
+- Return ONLY the raw JSON array — no markdown backticks, no explanation
+EOT;
+    }
+
     public function generate(string $documentText, string $prompt): string
     {
         $response = Http::withHeaders([

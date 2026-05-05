@@ -11,28 +11,33 @@ class ActivityController extends Controller
     public function generate(Request $request, ClaudeService $claude)
     {
         $request->validate([
-            'document_id' => ['required', 'exists:documents,id'],
-            'prompt'      => ['required', 'string', 'max:1000'],
-            'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,image_vocab_match'],
-            'page_from'   => ['nullable', 'integer', 'min:1'],
-            'page_to'     => ['nullable', 'integer', 'min:1'],
-            'pair_count'  => ['nullable', 'integer', 'in:4,6,8,12'],
+            'document_id'  => ['required', 'exists:documents,id'],
+            'prompt'       => ['required', 'string', 'max:1000'],
+            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,image_vocab_match'],
+            'page_from'    => ['nullable', 'integer', 'min:1'],
+            'page_to'      => ['nullable', 'integer', 'min:1'],
+            'pair_count'   => ['nullable', 'integer', 'in:4,6,8,12'],
+            'section_text' => ['nullable', 'string'],
         ]);
 
         $document = Document::findOrFail($request->document_id);
 
-        $from = $request->input('page_from');
-        $to   = $request->input('page_to');
-
-        if ($from && $to && $document->pages_text) {
-            $pages = array_slice(
-                $document->pages_text,
-                $from - 1,
-                $to - $from + 1
-            );
-            $text = implode("\n\n", $pages);
+        if ($request->filled('section_text')) {
+            $text = $request->section_text;
         } else {
-            $text = $document->extracted_text;
+            $from = $request->input('page_from');
+            $to   = $request->input('page_to');
+
+            if ($from && $to && $document->pages_text) {
+                $pages = array_slice(
+                    $document->pages_text,
+                    $from - 1,
+                    $to - $from + 1
+                );
+                $text = implode("\n\n", $pages);
+            } else {
+                $text = $document->extracted_text;
+            }
         }
 
         if (empty(trim($text))) {

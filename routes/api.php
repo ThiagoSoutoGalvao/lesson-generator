@@ -4,12 +4,14 @@ use App\Http\Controllers\ActivityController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\SavedActivityController;
+use App\Http\Controllers\SectionController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:web')->group(function () {
     Route::get('/documents', [DocumentController::class, 'index']);
     Route::post('/documents', [DocumentController::class, 'store']);
     Route::post('/generate', [ActivityController::class, 'generate']);
+    Route::post('/detect-sections', [SectionController::class, 'detect']);
     Route::get('/background', [BackgroundController::class, 'fetch']);
 
     Route::get('/activities', [SavedActivityController::class, 'index']);
