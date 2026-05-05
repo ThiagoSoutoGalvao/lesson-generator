@@ -10,16 +10,19 @@ const OPTION_COLORS = {
     'Not Given': { base: 'bg-amber-500/20 border-amber-400/50 hover:bg-amber-500/40 text-amber-100', selected: 'bg-amber-500 border-amber-400 text-white', correct: 'bg-amber-500 border-amber-400 text-white' },
 };
 
+const FONT_SIZES = ['text-xl', 'text-2xl', 'text-3xl'];
+
 export default function TrueFalseActivity({ activity, onClose }) {
     const total   = activity.statements.length;
 
     const [currentIndex, setCurrentIndex] = useState(0);
-    const [chosen, setChosen]             = useState(null);   // the option the student picked
-    const [answers, setAnswers]           = useState([]);     // array of booleans (correct?)
+    const [chosen, setChosen]             = useState(null);
+    const [answers, setAnswers]           = useState([]);
     const [finished, setFinished]         = useState(false);
     const [showPassage, setShowPassage]   = useState(true);
     const [bgUrl, setBgUrl]               = useState(null);
     const [showSave, setShowSave]         = useState(false);
+    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const statement = activity.statements[currentIndex];
@@ -115,6 +118,20 @@ export default function TrueFalseActivity({ activity, onClose }) {
                     <span className="text-white font-semibold text-sm">
                         Score: <span className="text-yellow-400">{score}</span>
                     </span>
+                    <div className="flex items-center gap-1">
+                        <button
+                            onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))}
+                            disabled={fontSizeIdx === 0}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer"
+                            title="Smaller text"
+                        >A-</button>
+                        <button
+                            onClick={() => setFontSizeIdx(i => Math.min(FONT_SIZES.length - 1, i + 1))}
+                            disabled={fontSizeIdx === FONT_SIZES.length - 1}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer"
+                            title="Larger text"
+                        >A+</button>
+                    </div>
                     <button
                         onClick={() => setShowPassage(p => !p)}
                         className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
@@ -134,15 +151,15 @@ export default function TrueFalseActivity({ activity, onClose }) {
 
                 {/* Passage panel */}
                 {showPassage && (
-                    <div className="md:w-2/5 shrink-0 bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto">
+                    <div className="md:w-1/2 shrink-0 bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto">
                         <p className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-3">Reading Passage</p>
-                        <p className="text-white/85 text-sm leading-relaxed">{activity.passage}</p>
+                        <p className={`text-white/85 leading-relaxed ${FONT_SIZES[fontSizeIdx]}`}>{activity.passage}</p>
                     </div>
                 )}
 
                 {/* Statement + options */}
                 <div className="flex-1 flex flex-col justify-center gap-6">
-                    <h2 className="text-2xl md:text-3xl font-bold text-white leading-snug drop-shadow-lg">
+                    <h2 className={`font-bold text-white leading-snug drop-shadow-lg ${FONT_SIZES[fontSizeIdx]}`}>
                         {statement.text}
                     </h2>
 

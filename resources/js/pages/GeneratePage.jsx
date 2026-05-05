@@ -26,7 +26,7 @@ const DEFAULT_PROMPTS = {
     dialog_gap_fill:     'Write a natural 10–12 line dialogue between two people on the topic of this page. Create 3 gaps spread throughout the conversation for students to complete. Make the wrong options plausible but clearly not the best fit.',
     word_categorisation: 'Create a word categorisation activity with 2 clear categories using vocabulary from this page. Include 4–5 words in each category. Choose a categorisation that practises a useful distinction (e.g. Formal / Informal, Verb / Noun, or a topic-based grouping).',
     true_false:          'Generate a True / False / Not Given activity from this page. Write a reading passage of 80–120 words and 6 statements — 2 True, 2 False, and 2 Not Given. Vary the order and make sure Not Given statements are genuinely absent from the passage.',
-    image_vocab_match:   'Create an image vocabulary match activity using 6 concrete nouns or short noun phrases from this page. Choose words that can each be clearly represented by a photograph.',
+    image_vocab_match:   'Create an image vocabulary match activity using concrete nouns or short noun phrases from this page. Choose words that can each be clearly represented by a photograph.',
 };
 
 const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-colors';
@@ -41,6 +41,7 @@ export default function GeneratePage() {
     const [errorMsg, setErrorMsg]     = useState('');
     const [pageFrom, setPageFrom]     = useState('');
     const [pageTo, setPageTo]         = useState('');
+    const [pairCount, setPairCount]   = useState(6);
 
     useEffect(() => {
         axios.get('/api/documents')
@@ -68,8 +69,9 @@ export default function GeneratePage() {
                 document_id: documentId,
                 prompt,
                 type: activityType,
-                page_from: pageFrom ? Number(pageFrom) : null,
-                page_to:   pageTo   ? Number(pageTo)   : null,
+                page_from:  pageFrom ? Number(pageFrom) : null,
+                page_to:    pageTo   ? Number(pageTo)   : null,
+                pair_count: activityType === 'image_vocab_match' ? pairCount : undefined,
             });
             setActivity(data);
             setStatus('success');
@@ -171,6 +173,29 @@ export default function GeneratePage() {
                             ))}
                         </div>
                     </div>
+
+                    {/* Pair count — only for Image Match */}
+                    {activityType === 'image_vocab_match' && (
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-white/80">Number of pairs</label>
+                            <div className="flex gap-2">
+                                {[4, 6, 8].map(n => (
+                                    <button
+                                        key={n}
+                                        type="button"
+                                        onClick={() => setPairCount(n)}
+                                        className={`px-5 py-2 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer border ${
+                                            pairCount === n
+                                                ? 'bg-blue-500 border-blue-400 text-white'
+                                                : 'bg-white/8 border-white/15 text-white/65 hover:bg-white/15 hover:text-white hover:border-white/30'
+                                        }`}
+                                    >
+                                        {n}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* Prompt */}
                     <div className="flex flex-col gap-1.5">

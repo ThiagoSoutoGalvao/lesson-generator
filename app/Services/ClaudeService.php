@@ -331,7 +331,7 @@ Rules:
 EOT;
     }
 
-    public function generateImageVocabMatch(string $documentText, string $prompt): array
+    public function generateImageVocabMatch(string $documentText, string $prompt, int $pairCount = 6): array
     {
         $documentText = $this->sanitizeUtf8($documentText);
 
@@ -345,7 +345,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildImageVocabMatchPrompt($documentText, $prompt),
+                    'content' => $this->buildImageVocabMatchPrompt($documentText, $prompt, $pairCount),
                 ],
             ],
         ]);
@@ -362,7 +362,7 @@ EOT;
         return $data;
     }
 
-    private function buildImageVocabMatchPrompt(string $documentText, string $prompt): string
+    private function buildImageVocabMatchPrompt(string $documentText, string $prompt, int $pairCount = 6): string
     {
         return <<<EOT
 Here is the course book text:
@@ -378,15 +378,15 @@ Return a JSON object with EXACTLY this structure:
   "pairs": [
     {
       "word": "<vocabulary word or short phrase>",
-      "keyword": "<2-4 word Unsplash image search term that clearly and uniquely represents this word>"
+      "keyword": "<3-5 word descriptive Unsplash search phrase that visually illustrates this word, e.g. 'woman drinking coffee cafe' or 'person climbing mountain summit'>"
     }
   ]
 }
 
 Rules:
-- Generate exactly 6 pairs
+- Generate exactly {$pairCount} pairs
 - Each word must be a concrete noun or short noun phrase that can be represented by a photograph
-- Each keyword must be a vivid, concrete search term that will return a clear, recognisable photo on Unsplash
+- Each keyword must be a vivid, descriptive scene or image (3-5 words) — not just the word itself — so Unsplash returns a recognisable, relevant photo
 - Keywords must be visually distinct from each other — no two pairs should produce similar-looking images
 - Words should be B1-B2 level vocabulary relevant to the topic from the text
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
@@ -506,9 +506,10 @@ Return a JSON object with EXACTLY this structure:
 {
   "type": "quiz",
   "topic": "<1-2 word topic keyword in English for an image search, e.g. 'travel' or 'cooking'>",
+  "instruction": "<one short task instruction for students, e.g. 'Choose the correct answer.' or 'Choose the correct word to complete the sentence.' — written once here, NOT repeated inside any question>",
   "questions": [
     {
-      "question": "<question text>",
+      "question": "<question or sentence text only — never include the instruction here>",
       "keyword": "<1-2 word visual image search term specific to this question, e.g. 'airport' or 'suitcase'>",
       "answers": [
         { "text": "<answer text>", "correct": true },
@@ -525,6 +526,7 @@ Rules:
 - Exactly one answer per question must have "correct": true; the rest must have "correct": false
 - Randomise the position of the correct answer — do not always place it first
 - Each question's keyword must be a concrete visual noun or phrase that represents the specific question content, different from the other questions' keywords
+- The "instruction" field must contain the task instruction once — do NOT include it inside the "question" field of any question
 - When a question has multiple blanks and an answer fills more than one blank, separate the parts with " / " (e.g. "has / left", "will / be going")
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;

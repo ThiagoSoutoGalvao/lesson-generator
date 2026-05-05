@@ -16,6 +16,7 @@ class ActivityController extends Controller
             'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,image_vocab_match'],
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
+            'pair_count'  => ['nullable', 'integer', 'in:4,6,8'],
         ]);
 
         $document = Document::findOrFail($request->document_id);
@@ -48,7 +49,7 @@ class ActivityController extends Controller
                 'dialog_gap_fill'      => $claude->generateDialogGapFill($text, $request->prompt),
                 'word_categorisation'  => $claude->generateWordCategorisation($text, $request->prompt),
                 'true_false'           => $claude->generateTrueFalse($text, $request->prompt),
-                'image_vocab_match'    => $claude->generateImageVocabMatch($text, $request->prompt),
+                'image_vocab_match'    => $claude->generateImageVocabMatch($text, $request->prompt, (int) ($request->pair_count ?? 6)),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

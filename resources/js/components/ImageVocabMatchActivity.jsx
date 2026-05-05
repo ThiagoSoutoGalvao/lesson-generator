@@ -73,7 +73,7 @@ export default function ImageVocabMatchActivity({ activity, onClose }) {
         setFinished(false);
     }
 
-    const gridCols = total <= 4 ? 'grid-cols-2' : 'grid-cols-3';
+    const gridCols = total <= 4 ? 'grid-cols-2' : total <= 6 ? 'grid-cols-3' : 'grid-cols-4';
     const bgStyle  = { background: 'linear-gradient(135deg, #0f2027 0%, #203a43 50%, #2c5364 100%)' };
 
     if (finished) {
@@ -119,8 +119,32 @@ export default function ImageVocabMatchActivity({ activity, onClose }) {
                 </div>
             </div>
 
+            {/* Word tiles — at top so they're always visible */}
+            <div className="relative z-10 px-6 pt-2 pb-3 flex flex-col items-center gap-2 shrink-0">
+                <div className="flex flex-wrap gap-2 justify-center">
+                    {wordOrder.map((originalIdx, orderIdx) => (
+                        <button
+                            key={originalIdx}
+                            onClick={() => handleWordClick(orderIdx)}
+                            className={`px-5 py-2.5 rounded-xl font-semibold text-base border-2 transition-all duration-150 cursor-pointer
+                                ${selected === orderIdx
+                                    ? 'bg-blue-500 border-blue-400 text-white scale-105 shadow-lg shadow-blue-500/30'
+                                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40'}
+                            `}
+                        >
+                            {pairs[originalIdx].word}
+                        </button>
+                    ))}
+                </div>
+                {selected !== null && (
+                    <p className="text-white/50 text-xs">
+                        Click an image to match <span className="text-white font-semibold">"{pairs[wordOrder[selected]].word}"</span> — or click the word again to deselect
+                    </p>
+                )}
+            </div>
+
             {/* Image grid */}
-            <div className={`relative z-10 flex-1 grid ${gridCols} gap-3 px-6 pb-2 overflow-hidden`}>
+            <div className={`relative z-10 flex-1 grid ${gridCols} gap-3 px-6 pb-4 overflow-hidden`}>
                 {pairs.map((pair, idx) => {
                     const isMatched = matched[idx] !== undefined;
                     const isWrong   = wrongImage === idx;
@@ -155,30 +179,6 @@ export default function ImageVocabMatchActivity({ activity, onClose }) {
                         </button>
                     );
                 })}
-            </div>
-
-            {/* Word tiles */}
-            <div className="relative z-10 px-6 py-4 flex flex-col items-center gap-2 shrink-0">
-                {selected !== null && (
-                    <p className="text-white/50 text-xs">
-                        Click an image to match <span className="text-white font-semibold">"{pairs[wordOrder[selected]].word}"</span> — or click the word again to deselect
-                    </p>
-                )}
-                <div className="flex flex-wrap gap-2 justify-center">
-                    {wordOrder.map((originalIdx, orderIdx) => (
-                        <button
-                            key={originalIdx}
-                            onClick={() => handleWordClick(orderIdx)}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-sm border-2 transition-all duration-150 cursor-pointer
-                                ${selected === orderIdx
-                                    ? 'bg-blue-500 border-blue-400 text-white scale-105 shadow-lg shadow-blue-500/30'
-                                    : 'bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40'}
-                            `}
-                        >
-                            {pairs[originalIdx].word}
-                        </button>
-                    ))}
-                </div>
             </div>
         </div>
     );

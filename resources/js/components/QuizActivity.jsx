@@ -140,6 +140,11 @@ export default function QuizActivity({ quiz, onClose }) {
 
             {/* Question + answers */}
             <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-10">
+                {quiz.instruction && (
+                    <p className="text-white/55 text-base text-center tracking-wide -mb-4">
+                        {quiz.instruction}
+                    </p>
+                )}
                 <h2 className="text-3xl md:text-4xl font-bold text-white text-center max-w-3xl leading-snug drop-shadow-lg">
                     {question.question}
                 </h2>
