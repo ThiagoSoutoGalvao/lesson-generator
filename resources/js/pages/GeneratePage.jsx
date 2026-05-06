@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
@@ -32,6 +33,7 @@ const DEFAULT_PROMPTS = {
 const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-colors';
 
 export default function GeneratePage() {
+    const [searchParams] = useSearchParams();
     const [documents, setDocuments]   = useState([]);
     const [documentId, setDocumentId] = useState('');
     const [activityType, setActivityType] = useState('quiz');
@@ -46,7 +48,11 @@ export default function GeneratePage() {
 
     useEffect(() => {
         axios.get('/api/documents')
-            .then(({ data }) => setDocuments(data))
+            .then(({ data }) => {
+                setDocuments(data);
+                const preselect = searchParams.get('doc');
+                if (preselect) setDocumentId(preselect);
+            })
             .catch(() => setErrorMsg('Could not load your documents. Please refresh the page.'));
     }, []);
 

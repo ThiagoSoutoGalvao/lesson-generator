@@ -58,6 +58,18 @@ class DocumentController extends Controller
         ], 201);
     }
 
+    public function update(Request $request, int $id)
+    {
+        $request->validate([
+            'extracted_text' => ['required', 'string'],
+        ]);
+
+        $document = Document::findOrFail($id);
+        $document->update(['extracted_text' => $request->extracted_text]);
+
+        return response()->json(['ok' => true]);
+    }
+
     public function index()
     {
         return Document::select('id', 'original_name', 'source_type', 'page_count', 'created_at')

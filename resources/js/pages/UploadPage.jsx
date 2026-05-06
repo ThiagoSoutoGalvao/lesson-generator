@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '@/components/Spinner';
 
@@ -147,10 +148,14 @@ const AUDIO_MAX_MB = 25;
 const ACCEPTED_TYPES = ['audio/mpeg', 'audio/mp4', 'audio/x-m4a', 'audio/wav', 'audio/webm', 'audio/ogg'];
 
 function AudioUploader() {
+    const navigate = useNavigate();
     const [dragging, setDragging]     = useState(false);
     const [status, setStatus]         = useState('idle');  // idle | uploading | processing | ready | failed
     const [documentId, setDocumentId] = useState(null);
     const [transcription, setTranscription] = useState('');
+    const [editText, setEditText]     = useState('');
+    const [editing, setEditing]       = useState(false);
+    const [saving, setSaving]         = useState(false);
     const [fileName, setFileName]     = useState('');
     const [errorMsg, setErrorMsg]     = useState('');
     const pollRef = useRef(null);
@@ -186,6 +191,7 @@ function AudioUploader() {
             setDocumentId(data.document_id);
             setStatus('processing');
             startPolling(data.document_id);
+
         } catch (err) {
             setErrorMsg(err.response?.data?.message ?? 'Upload failed. Please try again.');
             setStatus('failed');
@@ -199,7 +205,9 @@ function AudioUploader() {
                 const { data } = await axios.get(`/api/audio/status/${id}`);
                 if (data.status === 'ready') {
                     clearInterval(pollRef.current);
-                    setTranscription(data.transcription_text ?? '');
+                    const text = data.transcription_text ?? '';
+                    setTranscription(text);
+                    setEditText(text);
                     setStatus('ready');
                 } else if (data.status === 'failed') {
                     clearInterval(pollRef.current);
@@ -225,11 +233,24 @@ function AudioUploader() {
         e.target.value = '';
     }
 
+    async function saveEdit() {
+        setSaving(true);
+        try {
+            await axios.patch(`/api/documents/${documentId}`, { extracted_text: editText });
+            setTranscription(editText);
+            setEditing(false);
+        } finally {
+            setSaving(false);
+        }
+    }
+
     function reset() {
         clearInterval(pollRef.current);
         setStatus('idle');
         setDocumentId(null);
         setTranscription('');
+        setEditText('');
+        setEditing(false);
         setFileName('');
         setErrorMsg('');
     }
@@ -247,13 +268,46 @@ function AudioUploader() {
                         Upload another
                     </button>
                 </div>
+
                 <div>
-                    <p className="text-xs font-medium text-green-400 mb-2">Transcription preview</p>
-                    <pre className="text-xs text-white/70 bg-black/20 border border-white/10 rounded-xl p-3 whitespace-pre-wrap max-h-48 overflow-y-auto font-sans">
-                        {transcription}
-                    </pre>
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-xs font-medium text-green-400">Transcription</p>
+                        <button
+                            onClick={() => { setEditing(e => !e); setEditText(transcription); }}
+                            className="text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer"
+                        >
+                            {editing ? 'Cancel' : 'Edit'}
+                        </button>
+                    </div>
+                    {editing ? (
+                        <div className="flex flex-col gap-2">
+                            <textarea
+                                value={editText}
+                                onChange={e => setEditText(e.target.value)}
+                                rows={8}
+                                className="w-full text-xs text-white/80 bg-black/30 border border-white/20 rounded-xl p-3 font-sans resize-y focus:outline-none focus:ring-2 focus:ring-green-400"
+                            />
+                            <button
+                                onClick={saveEdit}
+                                disabled={saving}
+                                className="self-end text-xs font-semibold text-white bg-green-600/60 hover:bg-green-600/80 border border-green-400/40 px-4 py-1.5 rounded-lg transition-colors cursor-pointer disabled:opacity-50"
+                            >
+                                {saving ? 'Saving…' : 'Save changes'}
+                            </button>
+                        </div>
+                    ) : (
+                        <pre className="text-xs text-white/70 bg-black/20 border border-white/10 rounded-xl p-3 whitespace-pre-wrap max-h-48 overflow-y-auto font-sans">
+                            {transcription}
+                        </pre>
+                    )}
                 </div>
-                <p className="text-xs text-white/40">This document is now available on the Generate page.</p>
+
+                <button
+                    onClick={() => navigate(`/generate?doc=${documentId}`)}
+                    className="w-full py-3 rounded-xl bg-purple-600/70 hover:bg-purple-600/90 border border-purple-400/40 text-white font-semibold text-sm transition-colors cursor-pointer"
+                >
+                    Generate Activity →
+                </button>
             </div>
         );
     }
