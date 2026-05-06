@@ -16,29 +16,30 @@ class ActivityController extends Controller
             'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,image_vocab_match'],
             'page_from'    => ['nullable', 'integer', 'min:1'],
             'page_to'      => ['nullable', 'integer', 'min:1'],
-            'pair_count'   => ['nullable', 'integer', 'in:4,6,8,12'],
-            'section_text' => ['nullable', 'string'],
+            'pair_count'    => ['nullable', 'integer', 'in:4,6,8,12'],
+            'section_focus' => ['nullable', 'string', 'in:Vocabulary,Grammar,Listening,Reading'],
         ]);
 
         $document = Document::findOrFail($request->document_id);
 
-        if ($request->filled('section_text')) {
-            $text = $request->section_text;
-        } else {
-            $from = $request->input('page_from');
-            $to   = $request->input('page_to');
+        $from = $request->input('page_from');
+        $to   = $request->input('page_to');
 
-            if ($from && $to && $document->pages_text) {
-                $pages = array_slice(
-                    $document->pages_text,
-                    $from - 1,
-                    $to - $from + 1
-                );
-                $text = implode("\n\n", $pages);
-            } else {
-                $text = $document->extracted_text;
-            }
+        if ($from && $to && $document->pages_text) {
+            $pages = array_slice(
+                $document->pages_text,
+                $from - 1,
+                $to - $from + 1
+            );
+            $text = implode("\n\n", $pages);
+        } else {
+            $text = $document->extracted_text;
         }
+
+        $sectionFocus = $request->input('section_focus');
+        $prompt = $sectionFocus
+            ? "Focus specifically on the {$sectionFocus} section of this text. " . $request->prompt
+            : $request->prompt;
 
         if (empty(trim($text))) {
             return response()->json([
@@ -48,13 +49,13 @@ class ActivityController extends Controller
 
         try {
             $activity = match ($request->type) {
-                'quiz'            => $claude->generateQuiz($text, $request->prompt),
-                'flashcards'      => $claude->generateFlashcards($text, $request->prompt),
-                'unjumble'        => $claude->generateUnjumble($text, $request->prompt),
-                'dialog_gap_fill'      => $claude->generateDialogGapFill($text, $request->prompt),
-                'word_categorisation'  => $claude->generateWordCategorisation($text, $request->prompt),
-                'true_false'           => $claude->generateTrueFalse($text, $request->prompt),
-                'image_vocab_match'    => $claude->generateImageVocabMatch($text, $request->prompt, (int) ($request->pair_count ?? 6)),
+                'quiz'                => $claude->generateQuiz($text, $prompt),
+                'flashcards'          => $claude->generateFlashcards($text, $prompt),
+                'unjumble'            => $claude->generateUnjumble($text, $prompt),
+                'dialog_gap_fill'     => $claude->generateDialogGapFill($text, $prompt),
+                'word_categorisation' => $claude->generateWordCategorisation($text, $prompt),
+                'true_false'          => $claude->generateTrueFalse($text, $prompt),
+                'image_vocab_match'   => $claude->generateImageVocabMatch($text, $prompt, (int) ($request->pair_count ?? 6)),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

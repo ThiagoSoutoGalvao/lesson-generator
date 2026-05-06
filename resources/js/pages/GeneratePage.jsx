@@ -39,12 +39,10 @@ export default function GeneratePage() {
     const [status, setStatus]         = useState('idle');
     const [activity, setActivity]     = useState(null);
     const [errorMsg, setErrorMsg]     = useState('');
-    const [pageFrom, setPageFrom]       = useState('');
-    const [pageTo, setPageTo]           = useState('');
-    const [pairCount, setPairCount]     = useState(6);
-    const [sections, setSections]       = useState([]);
-    const [selectedSection, setSelectedSection] = useState(null);
-    const [sectionStatus, setSectionStatus]     = useState('idle');
+    const [pageFrom, setPageFrom]     = useState('');
+    const [pageTo, setPageTo]         = useState('');
+    const [pairCount, setPairCount]   = useState(6);
+    const [sectionFocus, setSectionFocus] = useState(null);
 
     useEffect(() => {
         axios.get('/api/documents')
@@ -55,34 +53,11 @@ export default function GeneratePage() {
     const selectedDoc = documents.find(d => d.id === Number(documentId));
     const pageCount   = selectedDoc?.page_count ?? null;
 
-    function resetSections() {
-        setSections([]);
-        setSelectedSection(null);
-        setSectionStatus('idle');
-    }
-
     function handleDocumentChange(e) {
         setDocumentId(e.target.value);
         setPageFrom('');
         setPageTo('');
-        resetSections();
-    }
-
-    async function handleDetectSections() {
-        setSectionStatus('loading');
-        setSections([]);
-        setSelectedSection(null);
-        try {
-            const { data } = await axios.post('/api/detect-sections', {
-                document_id: documentId,
-                page_from:   Number(pageFrom),
-                page_to:     Number(pageTo),
-            });
-            setSections(data);
-            setSectionStatus('done');
-        } catch {
-            setSectionStatus('idle');
-        }
+        setSectionFocus(null);
     }
 
     async function handleSubmit(e) {
@@ -96,10 +71,10 @@ export default function GeneratePage() {
                 document_id: documentId,
                 prompt,
                 type: activityType,
-                page_from:    pageFrom ? Number(pageFrom) : null,
-                page_to:      pageTo   ? Number(pageTo)   : null,
-                pair_count:   activityType === 'image_vocab_match' ? pairCount : undefined,
-                section_text: selectedSection !== null ? sections[selectedSection].text : undefined,
+                page_from:     pageFrom ? Number(pageFrom) : null,
+                page_to:       pageTo   ? Number(pageTo)   : null,
+                pair_count:    activityType === 'image_vocab_match' ? pairCount : undefined,
+                section_focus: sectionFocus ?? undefined,
             });
             setActivity(data);
             setStatus('success');
@@ -165,14 +140,14 @@ export default function GeneratePage() {
                             <div className="flex items-center gap-3">
                                 <input
                                     type="number"
-                                    value={pageFrom} onChange={e => { setPageFrom(e.target.value); resetSections(); }}
+                                    value={pageFrom} onChange={e => setPageFrom(e.target.value)}
                                     placeholder="From"
                                     className="w-24 bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm"
                                 />
                                 <span className="text-white/40 text-sm">to</span>
                                 <input
                                     type="number"
-                                    value={pageTo} onChange={e => { setPageTo(e.target.value); resetSections(); }}
+                                    value={pageTo} onChange={e => setPageTo(e.target.value)}
                                     placeholder="To"
                                     className="w-24 bg-white/10 border border-white/20 rounded-xl px-3 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm"
                                 />
@@ -181,49 +156,29 @@ export default function GeneratePage() {
                         </div>
                     )}
 
-                    {/* Section detection — only when page range is set */}
-                    {pageFrom && pageTo && (
-                        <div className="flex flex-col gap-2">
-                            <div className="flex items-center gap-3">
-                                <label className="text-sm font-medium text-white/80">Section</label>
-                                <button
-                                    type="button"
-                                    onClick={handleDetectSections}
-                                    disabled={sectionStatus === 'loading'}
-                                    className="text-xs text-blue-400 hover:text-blue-300 disabled:opacity-50 transition-colors cursor-pointer"
-                                >
-                                    {sectionStatus === 'loading' ? 'Detecting…' : sectionStatus === 'done' ? 'Re-detect' : 'Detect sections'}
-                                </button>
-                            </div>
-                            {sectionStatus === 'done' && sections.length > 0 && (
-                                <div className="flex flex-wrap gap-2">
+                    {/* Section focus */}
+                    {documentId && (
+                        <div className="flex flex-col gap-1.5">
+                            <label className="text-sm font-medium text-white/80">
+                                Section focus
+                                <span className="text-white/35 font-normal ml-1">— optional</span>
+                            </label>
+                            <div className="flex flex-wrap gap-2">
+                                {['Vocabulary', 'Grammar', 'Listening', 'Reading'].map(s => (
                                     <button
+                                        key={s}
                                         type="button"
-                                        onClick={() => setSelectedSection(null)}
+                                        onClick={() => setSectionFocus(prev => prev === s ? null : s)}
                                         className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
-                                            selectedSection === null
+                                            sectionFocus === s
                                                 ? 'bg-purple-500 border-purple-400 text-white'
                                                 : 'bg-white/8 border-white/15 text-white/65 hover:bg-white/15 hover:text-white'
                                         }`}
                                     >
-                                        All text
+                                        {s}
                                     </button>
-                                    {sections.map((section, idx) => (
-                                        <button
-                                            key={idx}
-                                            type="button"
-                                            onClick={() => setSelectedSection(idx)}
-                                            className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
-                                                selectedSection === idx
-                                                    ? 'bg-purple-500 border-purple-400 text-white'
-                                                    : 'bg-white/8 border-white/15 text-white/65 hover:bg-white/15 hover:text-white'
-                                            }`}
-                                        >
-                                            {section.name}
-                                        </button>
-                                    ))}
-                                </div>
-                            )}
+                                ))}
+                            </div>
                         </div>
                     )}
 
