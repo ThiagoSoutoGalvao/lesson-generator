@@ -42,6 +42,8 @@ class DocumentController extends Controller
         $document = Document::create([
             'original_name'  => $file->getClientOriginalName(),
             'stored_path'    => $path,
+            'source_type'    => 'pdf',
+            'status'         => 'ready',
             'extracted_text' => $fullText,
             'pages_text'     => $pagesText,
             'page_count'     => count($pagesText),
@@ -58,7 +60,8 @@ class DocumentController extends Controller
 
     public function index()
     {
-        return Document::select('id', 'original_name', 'page_count', 'created_at')
+        return Document::select('id', 'original_name', 'source_type', 'page_count', 'created_at')
+            ->where('status', 'ready')
             ->orderByDesc('created_at')
             ->get();
     }

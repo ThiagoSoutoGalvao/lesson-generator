@@ -120,7 +120,7 @@ export default function GeneratePage() {
                                 <option value="" className="bg-gray-900 text-white">Select a document…</option>
                                 {documents.map((doc) => (
                                     <option key={doc.id} value={doc.id} className="bg-gray-900 text-white">
-                                        {doc.original_name}{doc.page_count ? ` (${doc.page_count} pages)` : ''}
+                                        {doc.source_type === 'audio' ? '🎧 ' : ''}{doc.original_name}{doc.page_count ? ` (${doc.page_count} pages)` : ''}
                                     </option>
                                 ))}
                             </select>
