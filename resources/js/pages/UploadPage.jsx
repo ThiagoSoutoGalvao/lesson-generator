@@ -7,14 +7,26 @@ export default function UploadPage() {
     const [status, setStatus]       = useState('idle');
     const [result, setResult]       = useState(null);
     const [errorMsg, setErrorMsg]   = useState('');
+    const [tooLarge, setTooLarge]   = useState(false);
     const inputRef = useRef(null);
+
+    const MAX_MB = 500;
 
     async function upload(file) {
         if (!file || file.type !== 'application/pdf') {
             setErrorMsg('Please select a PDF file.');
+            setTooLarge(false);
             setStatus('error');
             return;
         }
+
+        if (file.size > MAX_MB * 1024 * 1024) {
+            setTooLarge(true);
+            setStatus('error');
+            return;
+        }
+
+        setTooLarge(false);
 
         setStatus('uploading');
         setErrorMsg('');
@@ -50,6 +62,7 @@ export default function UploadPage() {
         setStatus('idle');
         setResult(null);
         setErrorMsg('');
+        setTooLarge(false);
     }
 
     return (
@@ -88,7 +101,24 @@ export default function UploadPage() {
                 </div>
             )}
 
-            {status === 'error' && (
+            {status === 'error' && tooLarge && (
+                <div className="rounded-xl bg-amber-500/15 border border-amber-400/30 backdrop-blur-md px-4 py-4 flex flex-col gap-2">
+                    <p className="text-sm font-semibold text-amber-300">File too large (max {MAX_MB} MB)</p>
+                    <p className="text-xs text-amber-200/80">Split your PDF into smaller parts first, then upload each part separately:</p>
+                    <div className="flex gap-3 mt-1">
+                        <a href="https://www.ilovepdf.com/split_pdf" target="_blank" rel="noreferrer"
+                            className="text-xs font-semibold text-white bg-amber-500/40 hover:bg-amber-500/60 border border-amber-400/40 px-3 py-1.5 rounded-lg transition-colors">
+                            ilovepdf.com →
+                        </a>
+                        <a href="https://smallpdf.com/split-pdf" target="_blank" rel="noreferrer"
+                            className="text-xs font-semibold text-white bg-amber-500/40 hover:bg-amber-500/60 border border-amber-400/40 px-3 py-1.5 rounded-lg transition-colors">
+                            smallpdf.com →
+                        </a>
+                    </div>
+                </div>
+            )}
+
+            {status === 'error' && !tooLarge && (
                 <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
                     {errorMsg}
                 </div>

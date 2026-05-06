@@ -10,8 +10,14 @@ export default function FlashcardActivity({ activity, onClose }) {
     const [deck, setDeck] = useState(() => activity.cards.map((_, i) => i));
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
-    const [showSave, setShowSave] = useState(false);
+    const [showSave, setShowSave]       = useState(false);
+    const [questionMode, setQuestionMode] = useState(false);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+
+    function toggleMode() {
+        setQuestionMode(m => !m);
+        setFlipped(false);
+    }
 
     const cardIndex = deck[index];
     const card = activity.cards[cardIndex];
@@ -126,6 +132,17 @@ export default function FlashcardActivity({ activity, onClose }) {
                         {' '}/ {total}
                     </span>
                     <button
+                        onClick={toggleMode}
+                        className={`text-xs font-semibold px-3 py-1 rounded-lg border transition-colors cursor-pointer ${
+                            questionMode
+                                ? 'bg-purple-500/30 border-purple-400/50 text-purple-200 hover:bg-purple-500/40'
+                                : 'bg-white/10 border-white/20 text-white/60 hover:text-white hover:bg-white/20'
+                        }`}
+                        title="Toggle question mode"
+                    >
+                        {questionMode ? 'Definition → Word' : 'Word → Definition'}
+                    </button>
+                    <button
                         onClick={() => setShowSave(true)}
                         className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
                     >
@@ -171,28 +188,38 @@ export default function FlashcardActivity({ activity, onClose }) {
                         position: 'relative',
                         height: '280px',
                     }}>
-                        {/* Front — word */}
+                        {/* Front */}
                         <div
                             style={{ backfaceVisibility: 'hidden', position: 'absolute', inset: 0 }}
                             className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-8 gap-3"
                         >
-                            <p className="text-white/40 text-xs uppercase tracking-widest">Tap to flip</p>
-                            <h2 className="text-5xl font-bold text-white text-center leading-tight">
-                                {card.word}
-                            </h2>
+                            {questionMode ? (
+                                <>
+                                    <p className="text-white/40 text-xs uppercase tracking-widest">What's the word?</p>
+                                    <p className="text-xl text-white font-medium text-center leading-snug">{card.definition}</p>
+                                    <p className="text-white/60 text-base italic text-center">"{card.example}"</p>
+                                </>
+                            ) : (
+                                <>
+                                    <p className="text-white/40 text-xs uppercase tracking-widest">Tap to flip</p>
+                                    <h2 className="text-5xl font-bold text-white text-center leading-tight">{card.word}</h2>
+                                </>
+                            )}
                         </div>
 
-                        {/* Back — definition + example */}
+                        {/* Back */}
                         <div
                             style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', position: 'absolute', inset: 0 }}
                             className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-10 gap-4"
                         >
-                            <p className="text-xl text-white font-medium text-center leading-snug">
-                                {card.definition}
-                            </p>
-                            <p className="text-white/60 text-base italic text-center">
-                                "{card.example}"
-                            </p>
+                            {questionMode ? (
+                                <h2 className="text-5xl font-bold text-white text-center leading-tight">{card.word}</h2>
+                            ) : (
+                                <>
+                                    <p className="text-xl text-white font-medium text-center leading-snug">{card.definition}</p>
+                                    <p className="text-white/60 text-base italic text-center">"{card.example}"</p>
+                                </>
+                            )}
                         </div>
                     </div>
                 </div>
