@@ -394,5 +394,12 @@ Phases A and B complete. Currently mid-session working on Image Vocab Match impr
 - SectionController + `/api/detect-sections` endpoint also exist for future dynamic detection use
 
 #### Phase D — Flashcard Question Mode (planned)
-#### Phase D — Flashcard Question Mode (planned)
-#### Phase E — PDF Upload Size Help (planned)
+#### Phase D — Flashcard Question Mode ✅ COMPLETED (commit `cb85e2a`)
+- Toggle button in flashcard header: **Word → Definition** (normal) / **Definition → Word** (question mode)
+- In question mode: front shows definition + example with "What's the word?" hint; back reveals the word
+- Toggling resets the current card to unflipped; purple styling when active
+
+#### Phase E — PDF Upload Size Help ✅ COMPLETED (commit `cb85e2a`)
+- Browser-side file size check runs before upload starts (no wasted server request)
+- Files over 500 MB show an amber banner immediately with direct links to ilovepdf.com and smallpdf.com
+- Normal error messages (wrong file type, server errors) still use the red banner as before
