@@ -386,6 +386,13 @@ Phases A and B complete. Currently mid-session working on Image Vocab Match impr
 - Picsum fallback URL fixed: `rawurlencode()` so multi-word keyword phrases don't break the URL path
 - **Known issue / Unsplash rate limit**: free tier allows 50 req/hour; 12-image activities burn through quota quickly during testing. When the limit is hit, Generate may appear to stall. Wait for the hourly reset and test again. Long-term fix: cache image URLs in the database so each keyword only fetches once.
 
-#### Phase C — Section Detection & Targeting (planned)
+#### Phase C — Section Focus ✅ COMPLETED (commits `d417a55`, `6e58d72`)
+- 4 fixed purple pills on Generate page: **Vocabulary | Grammar | Listening | Reading** (appears when a document is selected)
+- Clicking a pill toggles it on/off; clicking again deselects (back to full text)
+- When active, prepends "Focus specifically on the [X] section of this text." to the generation prompt
+- ActivityController validates `section_focus` and prepends the focus hint to the prompt
+- SectionController + `/api/detect-sections` endpoint also exist for future dynamic detection use
+
+#### Phase D — Flashcard Question Mode (planned)
 #### Phase D — Flashcard Question Mode (planned)
 #### Phase E — PDF Upload Size Help (planned)
