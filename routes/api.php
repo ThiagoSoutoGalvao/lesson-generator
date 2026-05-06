@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ActivityController;
+use App\Http\Controllers\AudioUploadController;
 use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\SavedActivityController;
@@ -29,4 +30,7 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/activities', [SavedActivityController::class, 'store']);
     Route::delete('/activities/{activity}', [SavedActivityController::class, 'destroy']);
     Route::get('/folders', [SavedActivityController::class, 'folders']);
+
+    Route::post('/audio/upload', [AudioUploadController::class, 'store']);
+    Route::get('/audio/status/{id}', [AudioUploadController::class, 'status']);
 });
