@@ -1,26 +1,23 @@
-import { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import axios from 'axios';
 
 const NAV_LINKS = [
-    { to: '/upload',   label: 'Upload PDF' },
+    { to: '/upload',   label: 'Upload' },
     { to: '/generate', label: 'Generate' },
     { to: '/library',  label: 'Library' },
 ];
 
+const PAGE_BACKGROUNDS = {
+    '/':         '/backgrounds/pic1.jpg',
+    '/upload':   '/backgrounds/pic2.jpg',
+    '/generate': '/backgrounds/pic3.jpg',
+    '/library':  '/backgrounds/pic4.jpg',
+};
+
 export default function Layout({ children }) {
-    const [bgUrl, setBgUrl] = useState(null);
     const location = useLocation();
 
-    useEffect(() => {
-        axios.get('/api/background', { params: { topic: 'cozy library bookshelves' } })
-            .then(({ data }) => setBgUrl(data.url))
-            .catch(() => null);
-    }, []);
-
-    const bgStyle = bgUrl
-        ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }
-        : { background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' };
+    const bgUrl = PAGE_BACKGROUNDS[location.pathname] ?? '/backgrounds/pic5.jpg';
+    const bgStyle = { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' };
 
     return (
         <div className="min-h-screen relative" style={bgStyle}>
