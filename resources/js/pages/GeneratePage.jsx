@@ -7,7 +7,8 @@ import UnjumbleActivity from '@/components/UnjumbleActivity';
 import DialogGapFillActivity from '@/components/DialogGapFillActivity';
 import WordCategorisationActivity from '@/components/WordCategorisationActivity';
 import TrueFalseActivity from '@/components/TrueFalseActivity';
-import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
+import OddOneOutActivity from '@/components/OddOneOutActivity';
+import ClozeActivity from '@/components/ClozeActivity';
 import Spinner from '@/components/Spinner';
 
 const ACTIVITY_TYPES = [
@@ -17,7 +18,8 @@ const ACTIVITY_TYPES = [
     { value: 'dialog_gap_fill',      label: 'Dialog' },
     { value: 'word_categorisation',  label: 'Categorise' },
     { value: 'true_false',           label: 'True / False' },
-    { value: 'image_vocab_match',    label: 'Image Match' },
+    { value: 'odd_one_out',          label: 'Odd One Out' },
+    { value: 'cloze',                label: 'Cloze' },
 ];
 
 const DEFAULT_PROMPTS = {
@@ -27,7 +29,8 @@ const DEFAULT_PROMPTS = {
     dialog_gap_fill:     'Write a natural 10–12 line dialogue between two people on the topic of this page. Create 3 gaps spread throughout the conversation for students to complete. Make the wrong options plausible but clearly not the best fit.',
     word_categorisation: 'Create a word categorisation activity with 2 clear categories using vocabulary from this page. Include 4–5 words in each category. Choose a categorisation that practises a useful distinction (e.g. Formal / Informal, Verb / Noun, or a topic-based grouping).',
     true_false:          'Generate a True / False / Not Given activity from this page. Write a reading passage of 80–120 words and 6 statements — 2 True, 2 False, and 2 Not Given. Vary the order and make sure Not Given statements are genuinely absent from the passage.',
-    image_vocab_match:   'Create an image vocabulary match activity using concrete nouns or short noun phrases from this page. Choose words that can each be clearly represented by a photograph.',
+    odd_one_out:         'Create an Odd One Out activity using vocabulary from this page. Make 6 groups of 4 words — in each group, 3 words share a clear connection and 1 does not belong. Include a clear explanation for each group.',
+    cloze:               'Create a fill-in-the-blanks activity using a short passage from this page. Remove 6–8 key vocabulary or grammar words and provide them as a word bank. Make sure the remaining context gives students enough clues to find each answer.',
 };
 
 const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-colors';
@@ -43,7 +46,6 @@ export default function GeneratePage() {
     const [errorMsg, setErrorMsg]     = useState('');
     const [pageFrom, setPageFrom]     = useState('');
     const [pageTo, setPageTo]         = useState('');
-    const [pairCount, setPairCount]   = useState(6);
     const [sectionFocus, setSectionFocus] = useState(null);
 
     useEffect(() => {
@@ -79,7 +81,6 @@ export default function GeneratePage() {
                 type: activityType,
                 page_from:     pageFrom ? Number(pageFrom) : null,
                 page_to:       pageTo   ? Number(pageTo)   : null,
-                pair_count:    activityType === 'image_vocab_match' ? pairCount : undefined,
                 section_focus: sectionFocus ?? undefined,
             });
             setActivity(data);
@@ -101,7 +102,8 @@ export default function GeneratePage() {
     if (activity?.type === 'dialog_gap_fill')    return <DialogGapFillActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'word_categorisation') return <WordCategorisationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'true_false')         return <TrueFalseActivity activity={activity} onClose={handleClose} />;
-    if (activity?.type === 'image_vocab_match')  return <ImageVocabMatchActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'odd_one_out')        return <OddOneOutActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'cloze')              return <ClozeActivity activity={activity} onClose={handleClose} />;
 
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
@@ -208,29 +210,6 @@ export default function GeneratePage() {
                             ))}
                         </div>
                     </div>
-
-                    {/* Pair count — only for Image Match */}
-                    {activityType === 'image_vocab_match' && (
-                        <div className="flex flex-col gap-1.5">
-                            <label className="text-sm font-medium text-white/80">Number of pairs</label>
-                            <div className="flex gap-2">
-                                {[4, 6, 8, 12].map(n => (
-                                    <button
-                                        key={n}
-                                        type="button"
-                                        onClick={() => setPairCount(n)}
-                                        className={`px-5 py-2 rounded-xl text-sm font-medium transition-all duration-150 cursor-pointer border ${
-                                            pairCount === n
-                                                ? 'bg-blue-500 border-blue-400 text-white'
-                                                : 'bg-white/8 border-white/15 text-white/65 hover:bg-white/15 hover:text-white hover:border-white/30'
-                                        }`}
-                                    >
-                                        {n}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
 
                     {/* Prompt */}
                     <div className="flex flex-col gap-1.5">

@@ -388,7 +388,7 @@ Rules:
 EOT;
     }
 
-    public function generateImageVocabMatch(string $documentText, string $prompt, int $pairCount = 6): array
+    public function generateOddOneOut(string $documentText, string $prompt): array
     {
         $documentText = $this->sanitizeUtf8($documentText);
 
@@ -402,7 +402,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildImageVocabMatchPrompt($documentText, $prompt, $pairCount),
+                    'content' => $this->buildOddOneOutPrompt($documentText, $prompt),
                 ],
             ],
         ]);
@@ -419,7 +419,7 @@ EOT;
         return $data;
     }
 
-    private function buildImageVocabMatchPrompt(string $documentText, string $prompt, int $pairCount = 6): string
+    private function buildOddOneOutPrompt(string $documentText, string $prompt): string
     {
         return <<<EOT
 Here is the course book text:
@@ -430,22 +430,92 @@ Task: {$prompt}
 
 Return a JSON object with EXACTLY this structure:
 {
-  "type": "image_vocab_match",
-  "topic": "<short topic description, e.g. 'hotel vocabulary'>",
-  "pairs": [
+  "type": "odd_one_out",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the vocabulary theme>",
+  "groups": [
     {
-      "word": "<vocabulary word or short phrase>",
-      "keyword": "<3-5 word descriptive Unsplash search phrase that visually illustrates this word, e.g. 'woman drinking coffee cafe' or 'person climbing mountain summit'>"
+      "words": ["<word1>", "<word2>", "<word3>", "<word4>"],
+      "odd_one": "<the word that does not belong>",
+      "reason": "<one clear sentence explaining why the odd word doesn't belong and what connects the other three>"
     }
   ]
 }
 
 Rules:
-- Generate exactly {$pairCount} pairs
-- Each word must be a concrete noun or short noun phrase that can be represented by a photograph
-- Each keyword must be a vivid, descriptive scene or image (3-5 words) — not just the word itself — so Unsplash returns a recognisable, relevant photo
-- Keywords must be visually distinct from each other — no two pairs should produce similar-looking images
-- Words should be B1-B2 level vocabulary relevant to the topic from the text
+- Generate exactly 6 groups
+- Each group must have exactly 4 words: 3 that share a clear connection and 1 odd one out
+- The odd word must be clearly and unambiguously different — no borderline cases
+- The reason must explain both why the odd word doesn't fit AND what connects the other three
+- Words should be B1-B2 level English vocabulary from the text
+- Vary the position of the odd word across groups — do not always put it last
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateCloze(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 2048,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildClozePrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildClozePrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "cloze",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "<one short task instruction, e.g. 'Fill in the blanks using the words in the box.'>",
+  "word_bank": ["<word>", "<word>", "<word>"],
+  "parts": [
+    { "text": "<text before first blank>" },
+    { "blank": "<missing word>" },
+    { "text": "<text between blanks>" },
+    { "blank": "<missing word>" },
+    { "text": "<remaining text>" }
+  ]
+}
+
+Rules:
+- The "parts" array alternates between text segments and blanks — every blank must be surrounded by text parts
+- The "word_bank" array must contain exactly the same words as all the "blank" entries, in a different (shuffled) order
+- Generate 6 to 8 blanks spread naturally across the passage
+- The full passage (all text and blank values joined) should be 60–120 words
+- Remove words that test key vocabulary or grammar — not trivial words like articles or prepositions
+- Each blank should be clearly answerable from the surrounding context
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
