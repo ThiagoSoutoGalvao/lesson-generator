@@ -10,6 +10,7 @@ import TrueFalseActivity from '@/components/TrueFalseActivity';
 import OddOneOutActivity from '@/components/OddOneOutActivity';
 import ClozeActivity from '@/components/ClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
+import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import Spinner from '@/components/Spinner';
 
 const ACTIVITY_TYPES = [
@@ -21,7 +22,8 @@ const ACTIVITY_TYPES = [
     { value: 'true_false',           label: 'True / False' },
     { value: 'odd_one_out',            label: 'Odd One Out' },
     { value: 'cloze',                  label: 'Cloze' },
-    { value: 'discussion_questions',   label: 'Discussion' },
+    { value: 'discussion_questions',    label: 'Discussion' },
+    { value: 'sentence_transformation', label: 'Transform' },
 ];
 
 const DEFAULT_PROMPTS = {
@@ -34,6 +36,7 @@ const DEFAULT_PROMPTS = {
     odd_one_out:           'Create an Odd One Out activity using vocabulary from this page. Make 6 groups of 4 words — in each group, 3 words share a clear connection and 1 does not belong. Include a clear explanation for each group.',
     cloze:                 'Create a fill-in-the-blanks activity using a short passage from this page. Remove 6–8 key vocabulary or grammar words and provide them as a word bank. Make sure the remaining context gives students enough clues to find each answer.',
     discussion_questions:  'Generate 6 open-ended discussion questions based on the topics and themes from this page. Include 2 follow-up prompts for each question to keep the conversation going. Vary the types: personal, opinion, and hypothetical questions.',
+    sentence_transformation: 'Create 6 sentence transformation items using grammar structures from this page. Each item gives the student an original sentence and a key word — they must rewrite the sentence keeping the same meaning. Cover different grammar points: tenses, passive voice, modal verbs, reported speech, or comparatives.',
 };
 
 const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-colors';
@@ -107,7 +110,8 @@ export default function GeneratePage() {
     if (activity?.type === 'true_false')         return <TrueFalseActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'odd_one_out')          return <OddOneOutActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'cloze')                return <ClozeActivity activity={activity} onClose={handleClose} />;
-    if (activity?.type === 'discussion_questions') return <DiscussionQuestionsActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'discussion_questions')   return <DiscussionQuestionsActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'sentence_transformation') return <SentenceTransformationActivity activity={activity} onClose={handleClose} />;
 
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">

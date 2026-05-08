@@ -661,6 +661,73 @@ Rules:
 EOT;
     }
 
+    public function generateSentenceTransformation(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 1024,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildSentenceTransformationPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildSentenceTransformationPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "sentence_transformation",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "Complete the second sentence so that it has a similar meaning to the first sentence, using the word given. Do not change the word given.",
+  "items": [
+    {
+      "original": "<the first sentence>",
+      "key_word": "<THE KEY WORD IN CAPITALS>",
+      "stem": "<the beginning of the second sentence, up to and including the gap — end with '...' to show where students complete it>",
+      "answer": "<the complete second sentence with the key word used correctly>"
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 6 items
+- Each item tests a distinct grammar structure from the text: tense changes, passive voice, reported speech, modal verbs, conditionals, comparatives, or phrasal verbs
+- The key word must appear in the answer and cannot be modified (no inflection changes)
+- The "stem" gives students the start of the second sentence to anchor their answer — it should end naturally at the gap point, followed by "..."
+- Both sentences must be natural English at B2 level
+- Each item must test a different grammar point — do not repeat structures
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     private function throwIfFailed($response): void
     {
         if (! $response->failed()) return;
