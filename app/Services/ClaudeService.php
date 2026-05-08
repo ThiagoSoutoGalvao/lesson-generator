@@ -728,6 +728,74 @@ Rules:
 EOT;
     }
 
+    public function generateErrorCorrection(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 1024,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildErrorCorrectionPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildErrorCorrectionPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "error_correction",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "Each sentence contains one mistake. Find and correct it.",
+  "items": [
+    {
+      "sentence": "<a sentence containing exactly one deliberate grammar or vocabulary error>",
+      "error": "<the incorrect word or phrase as it appears in the sentence>",
+      "correction": "<the correct word or phrase that replaces it>",
+      "explanation": "<one clear sentence explaining the grammar rule or reason for the correction>"
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 6 items
+- Each sentence must contain EXACTLY one error — no more, no less
+- Errors must be realistic mistakes that B1-B2 learners commonly make: wrong tense, subject-verb agreement, wrong preposition, incorrect article, wrong word form, or vocabulary confusion
+- The "error" field must match the incorrect text exactly as it appears in the sentence
+- The "correction" replaces only the erroneous part — the rest of the sentence stays the same
+- Each item must test a different type of error — do not repeat error categories
+- Sentences should feel natural and relate to topics from the text
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     private function throwIfFailed($response): void
     {
         if (! $response->failed()) return;
