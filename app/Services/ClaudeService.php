@@ -597,6 +597,70 @@ Rules:
 EOT;
     }
 
+    public function generateDiscussionQuestions(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 1024,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildDiscussionQuestionsPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildDiscussionQuestionsPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "discussion_questions",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic, e.g. 'two people talking cafe table' or 'students discussing classroom group'>",
+  "questions": [
+    {
+      "question": "<an open-ended discussion question>",
+      "follow_ups": ["<a short follow-up prompt>", "<another follow-up prompt>"]
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 6 questions
+- Questions must be genuinely open-ended — no yes/no questions
+- Each question should invite students to share opinions, experiences, or ideas related to the text
+- Each question must have exactly 2 follow-up prompts — short phrases to keep the conversation going (e.g. "Why do you think so?", "Can you give an example?", "Have you ever experienced this?")
+- Questions should be B1-B2 level and feel natural in conversation, not academic
+- Vary the type: some personal ("Have you ever…?"), some opinion ("Do you think…?"), some hypothetical ("What would you do if…?")
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     private function throwIfFailed($response): void
     {
         if (! $response->failed()) return;

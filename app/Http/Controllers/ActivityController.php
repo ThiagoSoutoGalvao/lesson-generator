@@ -13,7 +13,7 @@ class ActivityController extends Controller
         $request->validate([
             'document_id'  => ['required', 'exists:documents,id'],
             'prompt'       => ['required', 'string', 'max:1000'],
-            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,odd_one_out,cloze'],
+            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,odd_one_out,cloze,discussion_questions'],
             'page_from'    => ['nullable', 'integer', 'min:1'],
             'page_to'      => ['nullable', 'integer', 'min:1'],
             'section_focus' => ['nullable', 'string', 'in:Vocabulary,Grammar,Listening,Reading'],
@@ -54,8 +54,9 @@ class ActivityController extends Controller
                 'dialog_gap_fill'     => $claude->generateDialogGapFill($text, $prompt),
                 'word_categorisation' => $claude->generateWordCategorisation($text, $prompt),
                 'true_false'          => $claude->generateTrueFalse($text, $prompt),
-                'odd_one_out'         => $claude->generateOddOneOut($text, $prompt),
-                'cloze'               => $claude->generateCloze($text, $prompt),
+                'odd_one_out'             => $claude->generateOddOneOut($text, $prompt),
+                'cloze'                   => $claude->generateCloze($text, $prompt),
+                'discussion_questions'    => $claude->generateDiscussionQuestions($text, $prompt),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
