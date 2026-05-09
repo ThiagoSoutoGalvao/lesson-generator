@@ -44,10 +44,21 @@ Lesson Generator replaces that manual workflow with a simple prompt: the teacher
 - Claude returns structured JSON with the activity content
 - The app renders it instantly as an interactive activity
 
-### 4.3 Activity Types (V1)
-1. **Multiple Choice Quiz** — question displayed large, 4 answer buttons, click to reveal correct/wrong with color feedback, timer, score counter, navigation
-2. **Flashcards** — word on front, definition/example on back, tap to flip, mark as known/learning
-3. **Unjumble** — scrambled sentence displayed as word tiles, drag or click to reorder, reveal correct answer
+### 4.3 Activity Types (current — 14 templates)
+1. **Multiple Choice Quiz** — question + 4 answer buttons, color feedback (green/red), score counter, navigation
+2. **Flashcards** — word/definition flip cards, "Got it / Still learning" deck logic, question mode toggle
+3. **Unjumble** — scrambled sentence word tiles, drag or click to reorder, reveal answer
+4. **Dialog Gap-Fill** — scripted dialogue with blanks, 3 A/B/C card options per blank, scroll-to-bottom on advance
+5. **True/False/Not Given** — reading passage + 6 statements, P key toggles passage panel
+6. **Image Vocabulary Match** — word tiles + image grid, click-to-match, number badges, batch image loading
+7. **Word Categorisation** — drag-and-drop words into 2–3 categories, Check Answers color feedback
+8. **Word Formation** — root word displayed large, gapped sentence revealed on tap
+9. **Odd One Out** — set of word tiles, click the odd one out, explanation revealed
+10. **Cloze** — gapped passage with word bank, click blank to reveal answer
+11. **Discussion Questions** — large question + follow-up prompts, arrow key navigation
+12. **Sentence Transformation** — original sentence + key word + stem, reveal transformed answer
+13. **Error Correction** — sentence with underlined error, reveal correct form + explanation
+14. **Matching Pairs** — two-column term ↔ definition grid, click-to-match, wrong flash animation
 
 ### 4.4 Background Images (Unsplash Integration)
 - Each activity is displayed over a thematic background image pulled from Unsplash's free API
@@ -362,7 +373,7 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-Phases A and B complete. Currently mid-session working on Image Vocab Match improvements. Paused waiting for Unsplash rate limit to reset before continuing testing.
+All improvement phases (A–J) complete. Starting Phase 10 deployment (target: ~8 beta users, monetization planned post-feedback).
 
 ### Improvement Phases (post-Phase 9, pre-deployment)
 
@@ -393,7 +404,6 @@ Phases A and B complete. Currently mid-session working on Image Vocab Match impr
 - ActivityController validates `section_focus` and prepends the focus hint to the prompt
 - SectionController + `/api/detect-sections` endpoint also exist for future dynamic detection use
 
-#### Phase D — Flashcard Question Mode (planned)
 #### Phase D — Flashcard Question Mode ✅ COMPLETED (commit `cb85e2a`)
 - Toggle button in flashcard header: **Word → Definition** (normal) / **Definition → Word** (question mode)
 - In question mode: front shows definition + example with "What's the word?" hint; back reveals the word
@@ -403,3 +413,60 @@ Phases A and B complete. Currently mid-session working on Image Vocab Match impr
 - Browser-side file size check runs before upload starts (no wasted server request)
 - Files over 500 MB show an amber banner immediately with direct links to ilovepdf.com and smallpdf.com
 - Normal error messages (wrong file type, server errors) still use the red banner as before
+
+#### Phase F — New Activity Templates ✅ COMPLETED
+Added 7 new activity templates (total now 14):
+- **Odd One Out** — set of word tiles, click the odd one out, explanation revealed; `OddOneOutActivity.jsx`
+- **Cloze** — gapped passage with shuffled word bank, click blank to reveal (numbered), Reveal All button; `ClozeActivity.jsx`
+- **Discussion Questions** — large question cards + follow-up prompts, arrow key / Space navigation; `DiscussionQuestionsActivity.jsx`
+- **Sentence Transformation** — original + key word + stem → reveal full transformed answer; `SentenceTransformationActivity.jsx`
+- **Error Correction** — sentence with underlined error, reveal strikethrough + correction + explanation; `ErrorCorrectionActivity.jsx`
+- **Matching Pairs** — two-column term ↔ definition click-to-match, wrong pair flashes red 600ms, green when matched; `MatchingPairsActivity.jsx`
+- **Word Formation** — root word displayed large, sentence with blank, reveal transformed word; `WordFormationActivity.jsx`
+- All new templates share the same header pattern: progress counter, A-/A+, Save, fullscreen (F key), close (✕)
+- All new templates registered in `ActivityController::generate()` and `GeneratePage` activity type buttons
+
+#### Phase G — Audio Upload ✅ COMPLETED
+- Teacher can upload an MP3/WAV audio file (e.g. a listening exercise track) in addition to PDF
+- `AudioUploadController` stores the file; `TranscriptionService` calls Whisper API (OpenAI) to transcribe
+- `TranscribeAudioJob` runs transcription in the background (Laravel queue); document `status` column tracks `pending → transcribing → ready | failed`
+- `GET /api/documents/{id}/status` endpoint polled by frontend until status = `ready`
+- `GeneratePage` shows a spinner with "Transcribing audio…" while polling; once ready, the document appears in the selector like a normal PDF
+- `OPENAI_API_KEY` in `.env` used for Whisper; model: `whisper-1`
+- `documents` table: `type` column (`pdf` | `audio`), `status` column (`ready` | `pending` | `transcribing` | `failed`)
+
+#### Phase H — Local Background Images ✅ COMPLETED
+- Layout background replaced: instead of fetching from Unsplash each load, `/public/backgrounds/` folder holds static local photos
+- Files: `upload.jpg`, `generate.jpg`, `pic1.jpg`–`pic5.jpg`
+- Layout and page-specific components pick from these based on context (upload page uses `upload.jpg`, generate page uses `generate.jpg`, library cycles through `pic1`–`pic5`)
+- Removes Unsplash dependency from the main UI shell; activity-level backgrounds still use `/api/background` (Unsplash + Picsum fallback)
+
+#### Phase J — Per-Activity Font Color + Activity UI Polish ✅ COMPLETED
+- **Font-color selector** added to 5 activities: DialogGapFill, TrueFalse, DiscussionQuestions, ErrorCorrection, MatchingPairs
+  - 5 color swatches in the header (White / Cream / Yellow / Sky / Green); active swatch gets a white ring
+  - Applies to main content text; correct/wrong feedback colors are always preserved
+- **DialogGapFill**: option cards changed from stacked column to horizontal row (`flex gap-3`, each `flex-1 flex-col items-center`); letter badge on top, text centered below
+- **TrueFalse**: font-size selector now correctly applied to option buttons (was hardcoded `text-lg`); passage widened to `md:w-[62%]`; feedback box now uses `${FONT_SIZES[fontSizeIdx]} px-6 py-4` to match option size
+- **DiscussionQuestions**: follow-up pills bumped to `['text-lg','text-xl','text-2xl']` and `px-5 py-3`; pills are now clickable buttons — clicking one promotes it to the main question and removes it from the pills row; navigating to next/prev question resets back to original
+- **ErrorCorrection**: font sizes bumped to `['text-2xl','text-3xl','text-4xl']`; card now `flex-1 flex flex-col` so it fills the screen; Why panel has `flex-1 pt-8` (more top margin, takes ~40% of card); Why text bumped to `text-lg`
+- **MatchingPairs**: `TERM_SIZES`/`DEF_SIZES` merged into single `CARD_SIZES = ['text-sm','text-base','text-lg']`; both columns use `min-h-[72px] py-4 px-4`; grid container is `overflow-y-auto` with centering wrapper so cards scroll instead of clipping; `gap-x-10` → `gap-x-16`
+
+#### Phase I — Navbar Font Control + Per-Activity Font Selectors ✅ COMPLETED
+- **Floating `FontTestPanel` removed** — replaced by permanent accessibility control in the navbar
+- **Navbar font control** (in `Layout.jsx`):
+  - A- / A+ size buttons (4 steps: 1rem / 1.25rem / 1.5rem / 1.875rem); first A+ press jumps to L (1.5rem), first A- to M (1.25rem)
+  - 7 color swatches: White / Cream / Yellow / Orange / Green / Sky / Purple
+  - Reset ✕ button appears when either size or color is active
+  - Mechanism: sets `--tf-family`, `--tf-size`, `--tf-color` CSS custom properties on `document.documentElement` + `body.tf-active` class; CSS in `app.css` uses `!important` to override Tailwind in `.fixed.inset-0` and `main`
+  - Comment in `app.css` updated from "Font tester" → "Accessibility font control (Aa button in navbar)"
+- **Per-activity A-/A+ selector** added to all 14 activity components (TrueFalseActivity already had it from Phase A):
+  - Added to: QuizActivity, FlashcardActivity, UnjumbleActivity, DialogGapFillActivity, ClozeActivity, DiscussionQuestionsActivity, SentenceTransformationActivity, ErrorCorrectionActivity, MatchingPairsActivity, OddOneOutActivity, WordFormationActivity, WordCategorisationActivity, ImageVocabMatchActivity
+  - Each uses a local `fontSizeIdx` state (0–2, default=1) with a Tailwind class array; index 1 matches the component's previous hardcoded size so the default appearance is unchanged
+  - The two systems coexist: per-activity control changes Tailwind classes; global navbar control applies `!important` CSS vars that override when active
+- **UI polish also completed in this phase:**
+  - Dialog Gap-Fill: option buttons redesigned as cards with circular A/B/C letter badge; scroll fix — replaced `scrollIntoView` sentinel with direct `scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight })` on the container ref
+  - Unjumble: tile font size increased (default now `text-xl`)
+  - Cloze: word bank and passage widened from `max-w-2xl` to `max-w-4xl`
+  - Discussion Questions: default question size increased to `text-5xl` (from `text-4xl`)
+  - Matching Pairs: columns equal width, term text centered with `flex items-center justify-center`, wider gap between columns (`gap-x-10`)
+  - GeneratePage: activity type buttons container changed to `justify-center` so pills are always centered

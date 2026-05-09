@@ -10,7 +10,14 @@ const OPTION_COLORS = {
     'Not Given': { base: 'bg-amber-500/20 border-amber-400/50 hover:bg-amber-500/40 text-amber-100', selected: 'bg-amber-500 border-amber-400 text-white', correct: 'bg-amber-500 border-amber-400 text-white' },
 };
 
-const FONT_SIZES = ['text-xl', 'text-2xl', 'text-3xl'];
+const FONT_SIZES  = ['text-xl', 'text-2xl', 'text-3xl'];
+const TEXT_COLORS = [
+    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
+    { label: 'Cream',  cls: 'text-amber-50',   bg: '#fffbeb' },
+    { label: 'Yellow', cls: 'text-yellow-300',  bg: '#fde047' },
+    { label: 'Sky',    cls: 'text-sky-300',     bg: '#7dd3fc' },
+    { label: 'Green',  cls: 'text-green-300',   bg: '#86efac' },
+];
 
 export default function TrueFalseActivity({ activity, onClose }) {
     const total   = activity.statements.length;
@@ -23,6 +30,7 @@ export default function TrueFalseActivity({ activity, onClose }) {
     const [bgUrl, setBgUrl]               = useState(null);
     const [showSave, setShowSave]         = useState(false);
     const [fontSizeIdx, setFontSizeIdx]   = useState(1);
+    const [textColor, setTextColor]       = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const statement = activity.statements[currentIndex];
@@ -132,6 +140,13 @@ export default function TrueFalseActivity({ activity, onClose }) {
                             title="Larger text"
                         >A+</button>
                     </div>
+                    <div className="flex items-center gap-1.5">
+                        {TEXT_COLORS.map(({ label, cls, bg }) => (
+                            <button key={cls} onClick={() => setTextColor(cls)} title={label}
+                                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
+                                style={{ backgroundColor: bg }} />
+                        ))}
+                    </div>
                     <button
                         onClick={() => setShowPassage(p => !p)}
                         className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
@@ -151,27 +166,28 @@ export default function TrueFalseActivity({ activity, onClose }) {
 
                 {/* Passage panel */}
                 {showPassage && (
-                    <div className="md:w-1/2 shrink-0 bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto">
+                    <div className="md:w-[62%] shrink-0 bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto">
                         <p className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-3">Reading Passage</p>
-                        <p className={`text-white/85 leading-relaxed ${FONT_SIZES[fontSizeIdx]}`}>{activity.passage}</p>
+                        <p className={`leading-relaxed ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>{activity.passage}</p>
                     </div>
                 )}
 
                 {/* Statement + options */}
                 <div className="flex-1 flex flex-col justify-center gap-6">
-                    <h2 className={`font-bold text-white leading-snug drop-shadow-lg ${FONT_SIZES[fontSizeIdx]}`}>
+                    <h2 className={`font-bold leading-snug drop-shadow-lg ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>
                         {statement.text}
                     </h2>
 
                     <div className="flex flex-col gap-3">
                         {OPTIONS.map(opt => {
                             const colors = OPTION_COLORS[opt];
-                            let cls = `${colors.base} border rounded-xl px-6 py-4 text-lg font-semibold transition-all duration-150 cursor-pointer`;
+                            const fs = FONT_SIZES[fontSizeIdx];
+                            let cls = `${colors.base} border rounded-xl px-6 py-4 ${fs} font-semibold transition-all duration-150 cursor-pointer`;
 
                             if (answered) {
-                                if (opt === statement.answer) cls = `${colors.correct} border rounded-xl px-6 py-4 text-lg font-semibold cursor-default`;
-                                else if (opt === chosen)      cls = 'bg-white/10 border border-white/20 text-white/40 line-through rounded-xl px-6 py-4 text-lg font-semibold cursor-default';
-                                else                          cls = 'bg-white/5 border border-white/10 text-white/25 rounded-xl px-6 py-4 text-lg font-semibold cursor-default';
+                                if (opt === statement.answer) cls = `${colors.correct} border rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
+                                else if (opt === chosen)      cls = `bg-white/10 border border-white/20 text-white/40 line-through rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
+                                else                          cls = `bg-white/5 border border-white/10 text-white/25 rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
                             }
 
                             return (
@@ -188,7 +204,7 @@ export default function TrueFalseActivity({ activity, onClose }) {
                     </div>
 
                     {answered && (
-                        <div className={`rounded-xl px-5 py-3 text-sm leading-relaxed border ${isCorrect ? 'bg-green-500/15 border-green-400/30 text-green-200' : 'bg-red-500/15 border-red-400/30 text-red-200'}`}>
+                        <div className={`rounded-xl px-6 py-4 ${FONT_SIZES[fontSizeIdx]} leading-relaxed border ${isCorrect ? 'bg-green-500/15 border-green-400/30 text-green-200' : 'bg-red-500/15 border-red-400/30 text-red-200'}`}>
                             <span className="font-semibold">{isCorrect ? '✓ Correct. ' : `✗ The answer is ${statement.answer}. `}</span>
                             {statement.explanation}
                         </div>
