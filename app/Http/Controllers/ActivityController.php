@@ -13,7 +13,7 @@ class ActivityController extends Controller
         $request->validate([
             'document_id'  => ['required', 'exists:documents,id'],
             'prompt'       => ['required', 'string', 'max:1000'],
-            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,odd_one_out,cloze,discussion_questions,sentence_transformation,error_correction'],
+            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,odd_one_out,cloze,discussion_questions,sentence_transformation,error_correction,matching_pairs'],
             'page_from'    => ['nullable', 'integer', 'min:1'],
             'page_to'      => ['nullable', 'integer', 'min:1'],
             'section_focus' => ['nullable', 'string', 'in:Vocabulary,Grammar,Listening,Reading'],
@@ -59,6 +59,7 @@ class ActivityController extends Controller
                 'discussion_questions'     => $claude->generateDiscussionQuestions($text, $prompt),
                 'sentence_transformation' => $claude->generateSentenceTransformation($text, $prompt),
                 'error_correction'        => $claude->generateErrorCorrection($text, $prompt),
+                'matching_pairs'          => $claude->generateMatchingPairs($text, $prompt),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

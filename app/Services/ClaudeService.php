@@ -796,6 +796,72 @@ Rules:
 EOT;
     }
 
+    public function generateMatchingPairs(string $documentText, string $prompt): array
+    {
+        $documentText = $this->sanitizeUtf8($documentText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 1024,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildMatchingPairsPrompt($documentText, $prompt),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildMatchingPairsPrompt(string $documentText, string $prompt): string
+    {
+        return <<<EOT
+Here is the course book text:
+
+{$documentText}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "matching_pairs",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "Match each word with its correct definition.",
+  "pairs": [
+    {
+      "term": "<vocabulary word or short phrase>",
+      "definition": "<clear, student-friendly definition — one sentence>"
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 8 pairs
+- Each term must be a key vocabulary word or phrase from the text
+- Definitions must be clear and unambiguous — a student should be able to match confidently
+- Definitions must not contain the term itself or obvious cognates
+- All terms must be clearly distinct from each other
+- All definitions must be clearly distinct — no two definitions should be interchangeable
+- B1-B2 level vocabulary
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     private function throwIfFailed($response): void
     {
         if (! $response->failed()) return;
