@@ -320,7 +320,7 @@ Rules:
 EOT;
     }
 
-    public function generateWordCategorisation(string $documentText, string $prompt): array
+    public function generateWordFormation(string $documentText, string $prompt): array
     {
         $documentText = $this->sanitizeUtf8($documentText);
 
@@ -334,7 +334,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildWordCategorisationPrompt($documentText, $prompt),
+                    'content' => $this->buildWordFormationPrompt($documentText, $prompt),
                 ],
             ],
         ]);
@@ -351,7 +351,7 @@ EOT;
         return $data;
     }
 
-    private function buildWordCategorisationPrompt(string $documentText, string $prompt): string
+    private function buildWordFormationPrompt(string $documentText, string $prompt): string
     {
         return <<<EOT
 Here is the course book text:
@@ -362,28 +362,28 @@ Task: {$prompt}
 
 Return a JSON object with EXACTLY this structure:
 {
-  "type": "word_categorisation",
-  "topic": "<short description of the categorisation task, e.g. 'Formal vs Informal'>",
-  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the vocabulary theme, e.g. 'office workers formal meeting' or 'street market colourful vegetables'>",
-  "categories": [
+  "type": "word_formation",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "Use the word in capitals to form a word that fits in the gap.",
+  "items": [
     {
-      "name": "<category name>",
-      "words": ["<word>", "<word>", "<word>", "<word>"]
-    },
-    {
-      "name": "<category name>",
-      "words": ["<word>", "<word>", "<word>", "<word>"]
+      "root": "<THE ROOT WORD IN CAPITALS>",
+      "sentence": "<a sentence with ___ marking the gap where the formed word goes>",
+      "answer": "<the correctly formed word that fills the gap>",
+      "form": "<the word class of the answer, e.g. noun, verb, adjective, adverb>"
     }
   ]
 }
 
 Rules:
-- Use 2 or 3 categories (never more)
-- Each category must have between 4 and 6 words
-- All categories must have the same number of words
-- Words must be clearly and unambiguously correct for their category — no borderline cases
-- Words should be single words or short phrases (max 3 words)
-- Suitable categories: Formal/Informal, Countable/Uncountable, Past Simple/Present Perfect, Positive/Negative, Verb/Noun/Adjective, or topic-based groupings
+- Generate exactly 8 items
+- Each root word must come from key vocabulary in the text
+- The answer must be a real derivative of the root: use prefixes, suffixes, or both (e.g. SUCCESS → successful, successfully, unsuccessful)
+- The sentence must make the required word class clear from context — students should be able to work out the form from the grammar of the sentence
+- Cover a variety of word classes across the 8 items: nouns, verbs, adjectives, and adverbs
+- Each root word must be different — do not reuse the same root
+- The gap marked as ___ must have exactly one correct answer
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

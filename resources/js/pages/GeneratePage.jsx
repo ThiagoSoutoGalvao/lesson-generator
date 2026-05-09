@@ -5,7 +5,7 @@ import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
 import UnjumbleActivity from '@/components/UnjumbleActivity';
 import DialogGapFillActivity from '@/components/DialogGapFillActivity';
-import WordCategorisationActivity from '@/components/WordCategorisationActivity';
+import WordFormationActivity from '@/components/WordFormationActivity';
 import TrueFalseActivity from '@/components/TrueFalseActivity';
 import OddOneOutActivity from '@/components/OddOneOutActivity';
 import ClozeActivity from '@/components/ClozeActivity';
@@ -20,7 +20,7 @@ const ACTIVITY_TYPES = [
     { value: 'flashcards',           label: 'Flashcards' },
     { value: 'unjumble',             label: 'Unjumble' },
     { value: 'dialog_gap_fill',      label: 'Dialog' },
-    { value: 'word_categorisation',  label: 'Categorise' },
+    { value: 'word_formation',       label: 'Word Formation' },
     { value: 'true_false',           label: 'True / False' },
     { value: 'odd_one_out',            label: 'Odd One Out' },
     { value: 'cloze',                  label: 'Cloze' },
@@ -35,7 +35,7 @@ const DEFAULT_PROMPTS = {
     flashcards:          'Create 8 flashcards for the most important vocabulary words on this page. For each word include a clear student-friendly definition and a natural example sentence.',
     unjumble:            'Make 6 unjumble sentences using key language from this page. Focus on the main grammar structures being practised. Each sentence should be 6–10 words long.',
     dialog_gap_fill:     'Write a natural 10–12 line dialogue between two people on the topic of this page. Create 3 gaps spread throughout the conversation for students to complete. Make the wrong options plausible but clearly not the best fit.',
-    word_categorisation: 'Create a word categorisation activity with 2 clear categories using vocabulary from this page. Include 4–5 words in each category. Choose a categorisation that practises a useful distinction (e.g. Formal / Informal, Verb / Noun, or a topic-based grouping).',
+    word_formation:      'Create a word formation activity with 8 items using key vocabulary from this page. For each item, give a root word in capitals and a sentence with a gap. The student must form the correct derivative to complete the sentence. Cover a mix of word classes: nouns, verbs, adjectives, and adverbs.',
     true_false:          'Generate a True / False / Not Given activity from this page. Write a reading passage of 80–120 words and 6 statements — 2 True, 2 False, and 2 Not Given. Vary the order and make sure Not Given statements are genuinely absent from the passage.',
     odd_one_out:           'Create an Odd One Out activity using vocabulary from this page. Make 6 groups of 4 words — in each group, 3 words share a clear connection and 1 does not belong. Include a clear explanation for each group.',
     cloze:                 'Create a fill-in-the-blanks activity using a short passage from this page. Remove 6–8 key vocabulary or grammar words and provide them as a word bank. Make sure the remaining context gives students enough clues to find each answer.',
@@ -112,7 +112,7 @@ export default function GeneratePage() {
     if (activity?.type === 'flashcards')         return <FlashcardActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'unjumble')           return <UnjumbleActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'dialog_gap_fill')    return <DialogGapFillActivity activity={activity} onClose={handleClose} />;
-    if (activity?.type === 'word_categorisation') return <WordCategorisationActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'word_formation')       return <WordFormationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'true_false')         return <TrueFalseActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'odd_one_out')          return <OddOneOutActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'cloze')                return <ClozeActivity activity={activity} onClose={handleClose} />;

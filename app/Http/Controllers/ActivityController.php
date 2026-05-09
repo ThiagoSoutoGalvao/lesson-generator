@@ -13,7 +13,7 @@ class ActivityController extends Controller
         $request->validate([
             'document_id'  => ['required', 'exists:documents,id'],
             'prompt'       => ['required', 'string', 'max:1000'],
-            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,odd_one_out,cloze,discussion_questions,sentence_transformation,error_correction,matching_pairs'],
+            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,odd_one_out,cloze,discussion_questions,sentence_transformation,error_correction,matching_pairs'],
             'page_from'    => ['nullable', 'integer', 'min:1'],
             'page_to'      => ['nullable', 'integer', 'min:1'],
             'section_focus' => ['nullable', 'string', 'in:Vocabulary,Grammar,Listening,Reading'],
@@ -52,7 +52,7 @@ class ActivityController extends Controller
                 'flashcards'          => $claude->generateFlashcards($text, $prompt),
                 'unjumble'            => $claude->generateUnjumble($text, $prompt),
                 'dialog_gap_fill'     => $claude->generateDialogGapFill($text, $prompt),
-                'word_categorisation' => $claude->generateWordCategorisation($text, $prompt),
+                'word_formation'       => $claude->generateWordFormation($text, $prompt),
                 'true_false'          => $claude->generateTrueFalse($text, $prompt),
                 'odd_one_out'             => $claude->generateOddOneOut($text, $prompt),
                 'cloze'                   => $claude->generateCloze($text, $prompt),
