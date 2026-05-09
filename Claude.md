@@ -373,7 +373,7 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-All improvement phases (A–J) complete. Starting Phase 10 deployment (target: ~8 beta users, monetization planned post-feedback).
+Phase 10 deployment — in progress. App is live on Railway but blocked by a Vite manifest error on the login page. See Phase 10 notes below.
 
 ### Improvement Phases (post-Phase 9, pre-deployment)
 
@@ -470,3 +470,49 @@ Added 7 new activity templates (total now 14):
   - Discussion Questions: default question size increased to `text-5xl` (from `text-4xl`)
   - Matching Pairs: columns equal width, term text centered with `flex items-center justify-center`, wider gap between columns (`gap-x-10`)
   - GeneratePage: activity type buttons container changed to `justify-center` so pills are always centered
+
+---
+
+### PHASE 10 — Deployment (IN PROGRESS)
+
+**Platform:** Railway (Hobby plan, ~$5/month)
+**Stack:** FrankenPHP (via Railpack auto-detection) + Railway MySQL plugin
+
+**What works:**
+- Build succeeds: PHP 8.4, Node 22, composer install, npm run build, all artisan cache commands
+- FrankenPHP starts and serves on port 8080
+- MySQL connected, migrations run successfully
+- Custom start command: `php artisan migrate --force && /start-container.sh`
+
+**Current blocker:**
+- 500 error on login page: `Unable to locate file in Vite manifest: resources/js/app.js`
+- `resources/views/layouts/guest.blade.php` (Breeze auth layout) loads `@vite(['resources/css/app.css', 'resources/js/app.js'])`
+- `vite.config.js` previously only had `App.jsx` as entry point (capital A — case mismatch on Linux)
+- Fix applied: added `resources/js/app.js` and `resources/js/app.jsx` (lowercase) to `vite.config.js` input array
+- Error persists — likely because Railpack is still serving the cached npm build from before the fix
+
+**Environment variables set on Railway web service:**
+- `APP_NAME`, `APP_ENV=production`, `APP_KEY`, `APP_DEBUG=false`, `APP_URL`
+- `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT=3306`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` (from Railway MySQL plugin)
+- `SESSION_DRIVER=database`, `QUEUE_CONNECTION=database`, `CACHE_STORE=database`, `FILESYSTEM_DISK=local`
+- `LOG_LEVEL=error`, `PORT=8080`
+- `ANTHROPIC_API_KEY`, `UNSPLASH_ACCESS_KEY`, `OPENAI_API_KEY`
+
+**Railpack behaviour (important):**
+- Railway switched from Nixpacks to Railpack — `nixpacks.toml` is detected but Railpack overrides the start command
+- Railpack auto-detects PHP + Laravel + Node; uses `dunglas/frankenphp:php8.4` base image
+- Build steps are heavily cached by Docker layer; a code change that doesn't touch `package.json` or `package-lock.json` may not invalidate the `npm run build` cache
+- To force a full rebuild: change `package.json` (e.g. add a space in a comment field) to bust the npm cache layer
+- Config/route/view caching happens at BUILD time with no env vars; `start-container.sh` clears and re-caches at runtime — env vars are always fresh at startup
+
+**Next steps to unblock:**
+1. Force Railpack to re-run `npm run build` by busting the cache (touch package.json or add a dummy script)
+2. OR fix `guest.blade.php` to not require `app.js` at all — the login page only needs CSS for this app; Alpine.js is unused
+3. After login works: create first user via Railway shell → `php artisan tinker`
+4. Set up queue worker service for audio transcription (second Railway service, same repo, start command: `php artisan queue:work --tries=3 --timeout=120`)
+
+**Key file locations:**
+- `nixpacks.toml` — present but partially overridden by Railpack
+- `resources/views/layouts/guest.blade.php` — Breeze auth layout, loads app.js
+- `resources/views/welcome.blade.php` — main SPA shell, loads app.jsx
+- `vite.config.js` — entry points: `app.css`, `app.js`, `app.jsx`
