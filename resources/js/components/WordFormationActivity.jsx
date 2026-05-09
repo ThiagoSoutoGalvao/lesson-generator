@@ -3,11 +3,15 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
+const ROOT_SIZES     = ['text-4xl', 'text-5xl', 'text-6xl'];
+const SENTENCE_SIZES = ['text-xl',  'text-2xl',  'text-3xl'];
+
 export default function WordFormationActivity({ activity, onClose }) {
-    const [index, setIndex]       = useState(0);
-    const [revealed, setRevealed] = useState(false);
-    const [bgUrl, setBgUrl]       = useState(null);
-    const [showSave, setShowSave] = useState(false);
+    const [index, setIndex]         = useState(0);
+    const [revealed, setRevealed]   = useState(false);
+    const [bgUrl, setBgUrl]         = useState(null);
+    const [showSave, setShowSave]   = useState(false);
+    const [fontSizeIdx, setFontSizeIdx] = useState(1);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const items = activity.items;
@@ -30,20 +34,13 @@ export default function WordFormationActivity({ activity, onClose }) {
     }, [index, revealed]);
 
     function handleNext() {
-        if (index < total - 1) {
-            setIndex(i => i + 1);
-            setRevealed(false);
-        }
+        if (index < total - 1) { setIndex(i => i + 1); setRevealed(false); }
     }
 
     function handlePrev() {
-        if (index > 0) {
-            setIndex(i => i - 1);
-            setRevealed(false);
-        }
+        if (index > 0) { setIndex(i => i - 1); setRevealed(false); }
     }
 
-    // Replace ___ in the sentence with the answer or a styled blank
     function renderSentence(sentence, answer, isRevealed) {
         const parts = sentence.split('___');
         if (parts.length < 2) return <span>{sentence}</span>;
@@ -71,16 +68,16 @@ export default function WordFormationActivity({ activity, onClose }) {
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
-                <span className="text-white/70 text-sm font-medium">
-                    Item {index + 1} / {total}
-                </span>
+                <span className="text-white/70 text-sm font-medium">Item {index + 1} / {total}</span>
                 <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-1">
+                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
+                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
+                    </div>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
-                    <button
-                        onClick={toggleFullscreen}
-                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
-                    >
+                    <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
                     <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer">✕</button>
@@ -90,10 +87,7 @@ export default function WordFormationActivity({ activity, onClose }) {
             {/* Progress bar */}
             <div className="relative z-10 px-8">
                 <div className="h-1 bg-white/20 rounded-full overflow-hidden">
-                    <div
-                        className="h-1 bg-blue-400 rounded-full transition-all duration-500"
-                        style={{ width: `${((index + 1) / total) * 100}%` }}
-                    />
+                    <div className="h-1 bg-blue-400 rounded-full transition-all duration-500" style={{ width: `${((index + 1) / total) * 100}%` }} />
                 </div>
             </div>
 
@@ -107,18 +101,18 @@ export default function WordFormationActivity({ activity, onClose }) {
 
                         {/* Root word */}
                         <div className="px-8 py-6 flex items-center justify-center border-b border-white/10">
-                            <span className="text-5xl font-black tracking-widest text-white">{item.root}</span>
+                            <span className={`${ROOT_SIZES[fontSizeIdx]} font-black tracking-widest text-white`}>{item.root}</span>
                         </div>
 
                         {/* Sentence */}
                         <div className="px-8 py-6">
                             <p className="text-white/45 text-xs uppercase tracking-widest mb-3">Complete the sentence</p>
-                            <p className="text-white text-2xl leading-relaxed">
+                            <p className={`text-white ${SENTENCE_SIZES[fontSizeIdx]} leading-relaxed`}>
                                 {renderSentence(item.sentence, item.answer, revealed)}
                             </p>
                         </div>
 
-                        {/* Word form hint + answer — shown after reveal */}
+                        {/* Word class after reveal */}
                         {revealed && (
                             <div className="px-8 py-4 border-t border-white/10 bg-white/5 flex items-center gap-3">
                                 <span className="text-white/40 text-xs uppercase tracking-widest">Word class</span>
@@ -129,28 +123,14 @@ export default function WordFormationActivity({ activity, onClose }) {
 
                     {/* Buttons */}
                     <div className="flex justify-center gap-4">
-                        <button
-                            onClick={handlePrev}
-                            disabled={index === 0}
-                            className="bg-white/20 hover:bg-white/30 disabled:opacity-30 disabled:cursor-default text-white font-semibold px-6 py-3 rounded-xl text-base transition-colors cursor-pointer"
-                        >
-                            ← Prev
-                        </button>
+                        <button onClick={handlePrev} disabled={index === 0}
+                            className="bg-white/20 hover:bg-white/30 disabled:opacity-30 disabled:cursor-default text-white font-semibold px-6 py-3 rounded-xl text-base transition-colors cursor-pointer">← Prev</button>
                         {!revealed ? (
-                            <button
-                                onClick={() => setRevealed(true)}
-                                className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer"
-                            >
-                                Reveal
-                            </button>
+                            <button onClick={() => setRevealed(true)}
+                                className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer">Reveal</button>
                         ) : (
-                            <button
-                                onClick={handleNext}
-                                disabled={index === total - 1}
-                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:cursor-default text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer"
-                            >
-                                Next →
-                            </button>
+                            <button onClick={handleNext} disabled={index === total - 1}
+                                className="bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:cursor-default text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer">Next →</button>
                         )}
                     </div>
                 </div>

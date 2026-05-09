@@ -3,13 +3,16 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
+const FONT_SIZES = ['text-xl', 'text-2xl', 'text-3xl'];
+
 export default function OddOneOutActivity({ activity, onClose }) {
     const [groupIndex, setGroupIndex] = useState(0);
-    const [wrongIdx, setWrongIdx]     = useState(null);  // flashing wrong tile index
+    const [wrongIdx, setWrongIdx]     = useState(null);
     const [revealed, setRevealed]     = useState(false);
     const [finished, setFinished]     = useState(false);
     const [bgUrl, setBgUrl]           = useState(null);
     const [showSave, setShowSave]     = useState(false);
+    const [fontSizeIdx, setFontSizeIdx] = useState(1);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const wrongTimer = useRef(null);
 
@@ -24,9 +27,7 @@ export default function OddOneOutActivity({ activity, onClose }) {
     }, []);
 
     useEffect(() => {
-        function onKey(e) {
-            if (e.code === 'KeyF') toggleFullscreen();
-        }
+        function onKey(e) { if (e.code === 'KeyF') toggleFullscreen(); }
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, []);
@@ -44,9 +45,7 @@ export default function OddOneOutActivity({ activity, onClose }) {
         }
     }
 
-    function handleReveal() {
-        setRevealed(true);
-    }
+    function handleReveal() { setRevealed(true); }
 
     function handleNext() {
         if (groupIndex + 1 >= total) {
@@ -70,18 +69,9 @@ export default function OddOneOutActivity({ activity, onClose }) {
                     <h2 className="text-5xl font-bold">All done!</h2>
                     <p className="text-xl text-white/70">Completed all {total} groups</p>
                     <div className="flex gap-4 mt-2">
-                        <button
-                            onClick={() => { setGroupIndex(0); setRevealed(false); setFinished(false); }}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer"
-                        >
-                            Start Over
-                        </button>
-                        <button
-                            onClick={onClose}
-                            className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer"
-                        >
-                            Close
-                        </button>
+                        <button onClick={() => { setGroupIndex(0); setRevealed(false); setFinished(false); }}
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer">Start Over</button>
+                        <button onClick={onClose} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer">Close</button>
                     </div>
                 </div>
             </div>
@@ -96,16 +86,16 @@ export default function OddOneOutActivity({ activity, onClose }) {
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
-                <span className="text-white/70 text-sm font-medium">
-                    Group {groupIndex + 1} / {total}
-                </span>
+                <span className="text-white/70 text-sm font-medium">Group {groupIndex + 1} / {total}</span>
                 <div className="flex items-center gap-5">
+                    <div className="flex items-center gap-1">
+                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
+                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
+                    </div>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
-                    <button
-                        onClick={toggleFullscreen}
-                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
-                    >
+                    <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
                     <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer">✕</button>
@@ -115,10 +105,7 @@ export default function OddOneOutActivity({ activity, onClose }) {
             {/* Progress bar */}
             <div className="relative z-10 px-8">
                 <div className="h-1 bg-white/20 rounded-full overflow-hidden">
-                    <div
-                        className="h-1 bg-blue-400 rounded-full transition-all duration-500"
-                        style={{ width: `${((groupIndex) / total) * 100}%` }}
-                    />
+                    <div className="h-1 bg-blue-400 rounded-full transition-all duration-500" style={{ width: `${(groupIndex / total) * 100}%` }} />
                 </div>
             </div>
 
@@ -126,11 +113,10 @@ export default function OddOneOutActivity({ activity, onClose }) {
             <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-8">
                 <p className="text-white/50 text-sm uppercase tracking-widest">Which one doesn't belong?</p>
 
-                {/* Word tiles — 2×2 grid */}
                 <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
                     {group.words.map((word, idx) => {
-                        const isOdd     = word === group.odd_one;
-                        const isWrong   = wrongIdx === idx;
+                        const isOdd   = word === group.odd_one;
+                        const isWrong = wrongIdx === idx;
                         let tileClass = 'bg-white/15 backdrop-blur-sm border border-white/25 hover:bg-white/25 hover:border-white/50 text-white cursor-pointer';
 
                         if (revealed) {
@@ -142,19 +128,14 @@ export default function OddOneOutActivity({ activity, onClose }) {
                         }
 
                         return (
-                            <button
-                                key={idx}
-                                onClick={() => handleGuess(word, idx)}
-                                disabled={revealed}
-                                className={`rounded-2xl py-8 px-6 text-2xl font-bold text-center transition-all duration-200 border-2 ${tileClass}`}
-                            >
+                            <button key={idx} onClick={() => handleGuess(word, idx)} disabled={revealed}
+                                className={`rounded-2xl py-8 px-6 ${FONT_SIZES[fontSizeIdx]} font-bold text-center transition-all duration-200 border-2 ${tileClass}`}>
                                 {word}
                             </button>
                         );
                     })}
                 </div>
 
-                {/* Reason — shown after reveal */}
                 {revealed && (
                     <div className="max-w-lg w-full rounded-2xl bg-black/30 backdrop-blur-sm border border-white/15 px-6 py-4 text-center">
                         <p className="text-white/50 text-xs uppercase tracking-widest mb-1">Why?</p>
@@ -162,21 +143,12 @@ export default function OddOneOutActivity({ activity, onClose }) {
                     </div>
                 )}
 
-                {/* Buttons */}
                 <div className="flex gap-4">
                     {!revealed && (
-                        <button
-                            onClick={handleReveal}
-                            className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer"
-                        >
-                            Reveal
-                        </button>
+                        <button onClick={handleReveal} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer">Reveal</button>
                     )}
                     {revealed && (
-                        <button
-                            onClick={handleNext}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer"
-                        >
+                        <button onClick={handleNext} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors cursor-pointer">
                             {groupIndex + 1 < total ? 'Next →' : 'Finish'}
                         </button>
                     )}

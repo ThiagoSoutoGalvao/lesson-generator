@@ -3,6 +3,9 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
+const WORD_SIZES = ['text-4xl', 'text-5xl', 'text-6xl'];
+const DEF_SIZES  = ['text-lg',  'text-xl',  'text-2xl'];
+
 export default function FlashcardActivity({ activity, onClose }) {
     const [index, setIndex] = useState(0);
     const [flipped, setFlipped] = useState(false);
@@ -12,6 +15,7 @@ export default function FlashcardActivity({ activity, onClose }) {
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave]       = useState(false);
     const [questionMode, setQuestionMode] = useState(false);
+    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     function toggleMode() {
@@ -71,9 +75,7 @@ export default function FlashcardActivity({ activity, onClose }) {
         advance(updated);
     }
 
-    function handleStillLearning() {
-        advance(knownIds);
-    }
+    function handleStillLearning() { advance(knownIds); }
 
     function handleRestart() {
         setDeck(activity.cards.map((_, i) => i));
@@ -89,25 +91,10 @@ export default function FlashcardActivity({ activity, onClose }) {
                 style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' }}>
                 <div className="text-center text-white flex flex-col items-center gap-6 px-8">
                     <h2 className="text-5xl font-bold">All done!</h2>
-                    <p className="text-2xl">
-                        You learned{' '}
-                        <span className="text-yellow-400 font-bold">{total}</span>
-                        {' '}out of{' '}
-                        <span className="font-bold">{total}</span> cards
-                    </p>
+                    <p className="text-2xl">You learned <span className="text-yellow-400 font-bold">{total}</span> out of <span className="font-bold">{total}</span> cards</p>
                     <div className="flex gap-4 mt-2">
-                        <button
-                            onClick={handleRestart}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors"
-                        >
-                            Start Over
-                        </button>
-                        <button
-                            onClick={onClose}
-                            className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors"
-                        >
-                            Close
-                        </button>
+                        <button onClick={handleRestart} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors">Start Over</button>
+                        <button onClick={onClose} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors">Close</button>
                     </div>
                 </div>
             </div>
@@ -127,9 +114,7 @@ export default function FlashcardActivity({ activity, onClose }) {
                 </span>
                 <div className="flex items-center gap-5">
                     <span className="text-white/70 text-sm">
-                        Learned:{' '}
-                        <span className="text-green-400 font-semibold">{knownIds.size}</span>
-                        {' '}/ {total}
+                        Learned: <span className="text-green-400 font-semibold">{knownIds.size}</span> / {total}
                     </span>
                     <button
                         onClick={toggleMode}
@@ -142,45 +127,30 @@ export default function FlashcardActivity({ activity, onClose }) {
                     >
                         {questionMode ? 'Definition → Word' : 'Word → Definition'}
                     </button>
-                    <button
-                        onClick={() => setShowSave(true)}
-                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                    >
-                        Save
-                    </button>
-                    <button
-                        onClick={toggleFullscreen}
-                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
-                    >
+                    <div className="flex items-center gap-1">
+                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
+                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
+                    </div>
+                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
-                    <button
-                        onClick={onClose}
-                        className="text-white/40 hover:text-white text-sm transition-colors"
-                    >
-                        ✕
-                    </button>
+                    <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors">✕</button>
                 </div>
             </div>
 
             {/* Progress bar */}
             <div className="relative z-10 px-8">
                 <div className="h-1 bg-white/20 rounded-full overflow-hidden">
-                    <div
-                        className="h-1 bg-green-400 rounded-full transition-all duration-500"
-                        style={{ width: `${(knownIds.size / total) * 100}%` }}
-                    />
+                    <div className="h-1 bg-green-400 rounded-full transition-all duration-500" style={{ width: `${(knownIds.size / total) * 100}%` }} />
                 </div>
             </div>
 
             {/* Card */}
             <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-8">
-                <div
-                    onClick={() => setFlipped(f => !f)}
-                    className="cursor-pointer w-full max-w-2xl select-none"
-                    style={{ perspective: '1200px' }}
-                >
+                <div onClick={() => setFlipped(f => !f)} className="cursor-pointer w-full max-w-2xl select-none" style={{ perspective: '1200px' }}>
                     <div style={{
                         transformStyle: 'preserve-3d',
                         transition: 'transform 0.5s ease',
@@ -189,34 +159,30 @@ export default function FlashcardActivity({ activity, onClose }) {
                         height: '280px',
                     }}>
                         {/* Front */}
-                        <div
-                            style={{ backfaceVisibility: 'hidden', position: 'absolute', inset: 0 }}
-                            className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-8 gap-3"
-                        >
+                        <div style={{ backfaceVisibility: 'hidden', position: 'absolute', inset: 0 }}
+                            className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-8 gap-3">
                             {questionMode ? (
                                 <>
                                     <p className="text-white/40 text-xs uppercase tracking-widest">What's the word?</p>
-                                    <p className="text-xl text-white font-medium text-center leading-snug">{card.definition}</p>
+                                    <p className={`${DEF_SIZES[fontSizeIdx]} text-white font-medium text-center leading-snug`}>{card.definition}</p>
                                     <p className="text-white/60 text-base italic text-center">"{card.example}"</p>
                                 </>
                             ) : (
                                 <>
                                     <p className="text-white/40 text-xs uppercase tracking-widest">Tap to flip</p>
-                                    <h2 className="text-5xl font-bold text-white text-center leading-tight">{card.word}</h2>
+                                    <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold text-white text-center leading-tight`}>{card.word}</h2>
                                 </>
                             )}
                         </div>
 
                         {/* Back */}
-                        <div
-                            style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', position: 'absolute', inset: 0 }}
-                            className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-10 gap-4"
-                        >
+                        <div style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', position: 'absolute', inset: 0 }}
+                            className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-10 gap-4">
                             {questionMode ? (
-                                <h2 className="text-5xl font-bold text-white text-center leading-tight">{card.word}</h2>
+                                <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold text-white text-center leading-tight`}>{card.word}</h2>
                             ) : (
                                 <>
-                                    <p className="text-xl text-white font-medium text-center leading-snug">{card.definition}</p>
+                                    <p className={`${DEF_SIZES[fontSizeIdx]} text-white font-medium text-center leading-snug`}>{card.definition}</p>
                                     <p className="text-white/60 text-base italic text-center">"{card.example}"</p>
                                 </>
                             )}
@@ -226,18 +192,8 @@ export default function FlashcardActivity({ activity, onClose }) {
 
                 {/* Buttons — only visible after flipping */}
                 <div className={`flex gap-4 transition-opacity duration-300 ${flipped ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
-                    <button
-                        onClick={handleStillLearning}
-                        className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors"
-                    >
-                        ↺ Still Learning
-                    </button>
-                    <button
-                        onClick={handleGotIt}
-                        className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors"
-                    >
-                        ✓ Got It
-                    </button>
+                    <button onClick={handleStillLearning} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors">↺ Still Learning</button>
+                    <button onClick={handleGotIt} className="bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors">✓ Got It</button>
                 </div>
             </div>
         </div>

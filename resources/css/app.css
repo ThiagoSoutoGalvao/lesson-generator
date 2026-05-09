@@ -139,3 +139,51 @@
     @apply font-sans;
     }
 }
+
+/* ── Accessibility font control (Aa button in navbar) ── */
+body.tf-active {
+  font-family: var(--tf-family) !important;
+}
+
+/* Headings */
+body.tf-active main h1,
+body.tf-active main h2,
+body.tf-active .fixed.inset-0 h2 {
+  font-size: var(--tf-size) !important;
+  color: var(--tf-color) !important;
+}
+
+body.tf-active main h3,
+body.tf-active .fixed.inset-0 h3 {
+  font-size: calc(var(--tf-size) * 0.88) !important;
+  color: var(--tf-color) !important;
+}
+
+/* Body text & labels */
+body.tf-active main p,
+body.tf-active main label,
+body.tf-active .fixed.inset-0 p {
+  font-size: calc(var(--tf-size) * 0.78) !important;
+  color: var(--tf-color) !important;
+}
+
+/* Card text / text-base elements */
+body.tf-active main .text-base,
+body.tf-active .fixed.inset-0 .text-base {
+  font-size: calc(var(--tf-size) * 0.72) !important;
+  color: var(--tf-color) !important;
+}
+
+/* Secondary text / text-sm */
+body.tf-active main .text-sm,
+body.tf-active .fixed.inset-0 .text-sm {
+  font-size: calc(var(--tf-size) * 0.65) !important;
+  color: var(--tf-color) !important;
+}
+
+/* Badges, pills, captions / text-xs */
+body.tf-active main .text-xs,
+body.tf-active .fixed.inset-0 .text-xs {
+  font-size: calc(var(--tf-size) * 0.55) !important;
+  color: var(--tf-color) !important;
+}

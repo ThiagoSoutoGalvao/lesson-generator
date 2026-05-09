@@ -4,6 +4,7 @@ import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
 const LABELS = ['A', 'B', 'C', 'D'];
+const FONT_SIZES = ['text-2xl', 'text-3xl', 'text-4xl'];
 
 export default function QuizActivity({ quiz, onClose }) {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -12,6 +13,7 @@ export default function QuizActivity({ quiz, onClose }) {
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave] = useState(false);
+    const [fontSizeIdx, setFontSizeIdx] = useState(1);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const question = quiz.questions[currentIndex];
@@ -44,17 +46,12 @@ export default function QuizActivity({ quiz, onClose }) {
     function handleAnswer(index) {
         if (answered) return;
         setSelectedAnswer(index);
-        if (question.answers[index].correct) {
-            setScore(s => s + 1);
-        }
+        if (question.answers[index].correct) setScore(s => s + 1);
     }
 
     function handleNext() {
-        if (currentIndex + 1 >= total) {
-            setFinished(true);
-        } else {
-            setCurrentIndex(i => i + 1);
-        }
+        if (currentIndex + 1 >= total) setFinished(true);
+        else setCurrentIndex(i => i + 1);
     }
 
     function handleRestart() {
@@ -76,25 +73,12 @@ export default function QuizActivity({ quiz, onClose }) {
                 <div className="relative z-10 text-center text-white flex flex-col items-center gap-6 px-8">
                     <h2 className="text-5xl font-bold">Quiz Complete!</h2>
                     <p className="text-2xl">
-                        You scored{' '}
-                        <span className="text-yellow-400 font-bold">{score}</span>
-                        {' '}out of{' '}
-                        <span className="font-bold">{total}</span>
+                        You scored <span className="text-yellow-400 font-bold">{score}</span> out of <span className="font-bold">{total}</span>
                     </p>
                     <p className="text-xl text-gray-300">{pct}%</p>
                     <div className="flex gap-4 mt-2">
-                        <button
-                            onClick={handleRestart}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors"
-                        >
-                            Play Again
-                        </button>
-                        <button
-                            onClick={onClose}
-                            className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors"
-                        >
-                            Close
-                        </button>
+                        <button onClick={handleRestart} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors">Play Again</button>
+                        <button onClick={onClose} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors">Close</button>
                     </div>
                 </div>
             </div>
@@ -107,7 +91,7 @@ export default function QuizActivity({ quiz, onClose }) {
 
             {showSave && <SavePanel activity={quiz} onDone={() => setShowSave(false)} />}
 
-            {/* Header bar */}
+            {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium tracking-wide">
                     Question {currentIndex + 1} / {total}
@@ -116,36 +100,26 @@ export default function QuizActivity({ quiz, onClose }) {
                     <span className="text-white font-semibold text-sm">
                         Score: <span className="text-yellow-400">{score}</span>
                     </span>
-                    <button
-                        onClick={() => setShowSave(true)}
-                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                    >
-                        Save
-                    </button>
-                    <button
-                        onClick={toggleFullscreen}
-                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
-                    >
+                    <div className="flex items-center gap-1">
+                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
+                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
+                    </div>
+                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
-                    <button
-                        onClick={onClose}
-                        className="text-white/40 hover:text-white text-sm transition-colors"
-                    >
-                        ✕
-                    </button>
+                    <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors">✕</button>
                 </div>
             </div>
 
             {/* Question + answers */}
             <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-10">
                 {quiz.instruction && (
-                    <p className="text-white/55 text-base text-center tracking-wide -mb-4">
-                        {quiz.instruction}
-                    </p>
+                    <p className="text-white/55 text-base text-center tracking-wide -mb-4">{quiz.instruction}</p>
                 )}
-                <h2 className="text-3xl md:text-4xl font-bold text-white text-center max-w-3xl leading-snug drop-shadow-lg">
+                <h2 className={`${FONT_SIZES[fontSizeIdx]} font-bold text-white text-center max-w-3xl leading-snug drop-shadow-lg`}>
                     {question.question}
                 </h2>
 
@@ -153,21 +127,13 @@ export default function QuizActivity({ quiz, onClose }) {
                     {question.answers.map((answer, i) => {
                         let cls = 'bg-white/15 hover:bg-white/25 text-white border border-white/25 cursor-pointer';
                         if (answered) {
-                            if (answer.correct) {
-                                cls = 'bg-green-500 text-white border border-green-400 cursor-default';
-                            } else if (selectedAnswer === i) {
-                                cls = 'bg-red-500 text-white border border-red-400 cursor-default';
-                            } else {
-                                cls = 'bg-white/8 text-white/40 border border-white/15 cursor-default';
-                            }
+                            if (answer.correct)         cls = 'bg-green-500 text-white border border-green-400 cursor-default';
+                            else if (selectedAnswer === i) cls = 'bg-red-500 text-white border border-red-400 cursor-default';
+                            else                        cls = 'bg-white/8 text-white/40 border border-white/15 cursor-default';
                         }
                         return (
-                            <button
-                                key={i}
-                                onClick={() => handleAnswer(i)}
-                                disabled={answered}
-                                className={`${cls} font-medium text-lg px-6 py-5 rounded-2xl text-left transition-all duration-200 backdrop-blur-sm`}
-                            >
+                            <button key={i} onClick={() => handleAnswer(i)} disabled={answered}
+                                className={`${cls} font-medium text-lg px-6 py-5 rounded-2xl text-left transition-all duration-200 backdrop-blur-sm`}>
                                 <span className="text-sm opacity-50 mr-2 font-bold">{LABELS[i]}.</span>
                                 {answer.text}
                             </button>
@@ -176,10 +142,7 @@ export default function QuizActivity({ quiz, onClose }) {
                 </div>
 
                 {answered && (
-                    <button
-                        onClick={handleNext}
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-10 py-3 rounded-xl text-lg transition-colors shadow-lg"
-                    >
+                    <button onClick={handleNext} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-10 py-3 rounded-xl text-lg transition-colors shadow-lg">
                         {currentIndex + 1 >= total ? 'See Results' : 'Next →'}
                     </button>
                 )}

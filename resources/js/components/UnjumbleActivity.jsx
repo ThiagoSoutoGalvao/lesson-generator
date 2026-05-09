@@ -3,6 +3,8 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
+const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'];
+
 function shuffle(arr) {
     const a = [...arr];
     for (let i = a.length - 1; i > 0; i--) {
@@ -20,14 +22,14 @@ export default function UnjumbleActivity({ activity, onClose }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [available, setAvailable] = useState(() => shuffle(toTiles(activity.sentences[0].words)));
     const [placed, setPlaced] = useState([]);
-    const [checkStatus, setCheckStatus] = useState('idle'); // idle | correct | wrong | revealed
+    const [checkStatus, setCheckStatus] = useState('idle');
     const [score, setScore] = useState(0);
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave] = useState(false);
+    const [fontSizeIdx, setFontSizeIdx] = useState(1);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
-    // Stores drag source without triggering re-renders
     const dragRef = useRef(null);
 
     const sentence = activity.sentences[currentIndex];
@@ -59,7 +61,6 @@ export default function UnjumbleActivity({ activity, onClose }) {
         return () => window.removeEventListener('keydown', onKey);
     }, [checkStatus, currentIndex]);
 
-    // --- Move logic ---
     function handlePlace(tile) {
         if (checkStatus !== 'idle') return;
         setAvailable(prev => prev.filter(t => t.id !== tile.id));
@@ -72,7 +73,6 @@ export default function UnjumbleActivity({ activity, onClose }) {
         setAvailable(prev => [...prev, tile]);
     }
 
-    // --- Drag handlers ---
     function onDragStart(tile, from) {
         if (checkStatus !== 'idle') return;
         dragRef.current = { tile, from };
@@ -92,19 +92,12 @@ export default function UnjumbleActivity({ activity, onClose }) {
         dragRef.current = null;
     }
 
-    function onDragEnd() {
-        dragRef.current = null;
-    }
+    function onDragEnd() { dragRef.current = null; }
 
-    // --- Game logic ---
     function handleCheck() {
         const userSentence = placed.map(t => t.word).join(' ');
-        if (userSentence === sentence.sentence) {
-            setCheckStatus('correct');
-            setScore(s => s + 1);
-        } else {
-            setCheckStatus('wrong');
-        }
+        if (userSentence === sentence.sentence) { setCheckStatus('correct'); setScore(s => s + 1); }
+        else setCheckStatus('wrong');
     }
 
     function handleReveal() {
@@ -153,21 +146,10 @@ export default function UnjumbleActivity({ activity, onClose }) {
                 style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' }}>
                 <div className="text-center text-white flex flex-col items-center gap-6 px-8">
                     <h2 className="text-5xl font-bold">Well done!</h2>
-                    <p className="text-2xl">
-                        You got{' '}
-                        <span className="text-yellow-400 font-bold">{score}</span>
-                        {' '}out of{' '}
-                        <span className="font-bold">{total}</span> correct
-                    </p>
+                    <p className="text-2xl">You got <span className="text-yellow-400 font-bold">{score}</span> out of <span className="font-bold">{total}</span> correct</p>
                     <div className="flex gap-4 mt-2">
-                        <button onClick={handleRestart}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer">
-                            Play Again
-                        </button>
-                        <button onClick={onClose}
-                            className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer">
-                            Close
-                        </button>
+                        <button onClick={handleRestart} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer">Play Again</button>
+                        <button onClick={onClose} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer">Close</button>
                     </div>
                 </div>
             </div>
@@ -189,19 +171,17 @@ export default function UnjumbleActivity({ activity, onClose }) {
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
-                <span className="text-white/70 text-sm font-medium">
-                    Sentence {currentIndex + 1} / {total}
-                </span>
+                <span className="text-white/70 text-sm font-medium">Sentence {currentIndex + 1} / {total}</span>
                 <div className="flex items-center gap-5">
-                    <span className="text-white/70 text-sm">
-                        Score: <span className="text-yellow-400 font-semibold">{score}</span>
-                    </span>
+                    <span className="text-white/70 text-sm">Score: <span className="text-yellow-400 font-semibold">{score}</span></span>
+                    <div className="flex items-center gap-1">
+                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
+                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
+                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
+                    </div>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
-                    <button
-                        onClick={toggleFullscreen}
-                        className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                        title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}
-                    >
+                    <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
                     <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer">✕</button>
@@ -210,54 +190,38 @@ export default function UnjumbleActivity({ activity, onClose }) {
 
             {/* Main */}
             <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-6">
-
                 <p className={`text-sm uppercase tracking-widest font-medium ${
                     checkStatus === 'correct'  ? 'text-green-400' :
                     checkStatus === 'wrong'    ? 'text-red-400'   :
                     checkStatus === 'revealed' ? 'text-yellow-400' :
                     'text-white/50'
-                }`}>
-                    {statusLabel}
-                </p>
+                }`}>{statusLabel}</p>
 
-                {/* Answer area — drop zone */}
-                <div
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={onDropIntoPlaced}
-                    className="w-full max-w-3xl min-h-[88px] bg-white/10 border-2 border-dashed border-white/30 rounded-2xl px-5 py-4 flex flex-wrap gap-3 items-center"
-                >
-                    {placed.length === 0 && (
-                        <span className="text-white/30 text-base">Drag or click words here…</span>
-                    )}
+                {/* Answer area */}
+                <div onDragOver={(e) => e.preventDefault()} onDrop={onDropIntoPlaced}
+                    className="w-full max-w-3xl min-h-[88px] bg-white/10 border-2 border-dashed border-white/30 rounded-2xl px-5 py-4 flex flex-wrap gap-3 items-center">
+                    {placed.length === 0 && <span className="text-white/30 text-lg">Drag or click words here…</span>}
                     {placed.map(tile => (
-                        <button
-                            key={tile.id}
+                        <button key={tile.id}
                             draggable={checkStatus === 'idle' || checkStatus === 'wrong'}
                             onDragStart={() => onDragStart(tile, 'placed')}
                             onDragEnd={onDragEnd}
                             onClick={() => handleUnplace(tile)}
-                            className={`${placedTileClass()} text-white font-semibold px-5 py-3 rounded-xl border text-base transition-colors select-none`}
-                        >
+                            className={`${placedTileClass()} text-white font-semibold px-5 py-3 rounded-xl border ${FONT_SIZES[fontSizeIdx]} transition-colors select-none`}>
                             {tile.word}
                         </button>
                     ))}
                 </div>
 
-                {/* Word bank — drop zone */}
-                <div
-                    onDragOver={(e) => e.preventDefault()}
-                    onDrop={onDropIntoAvailable}
-                    className="w-full max-w-3xl flex flex-wrap gap-3 justify-center min-h-[56px]"
-                >
+                {/* Word bank */}
+                <div onDragOver={(e) => e.preventDefault()} onDrop={onDropIntoAvailable}
+                    className="w-full max-w-3xl flex flex-wrap gap-3 justify-center min-h-[56px]">
                     {available.map(tile => (
-                        <button
-                            key={tile.id}
-                            draggable
+                        <button key={tile.id} draggable
                             onDragStart={() => onDragStart(tile, 'available')}
                             onDragEnd={onDragEnd}
                             onClick={() => handlePlace(tile)}
-                            className="bg-white/15 hover:bg-white/25 border border-white/25 text-white font-semibold px-5 py-3 rounded-xl text-base transition-colors cursor-grab select-none"
-                        >
+                            className={`bg-white/15 hover:bg-white/25 border border-white/25 text-white font-semibold px-5 py-3 rounded-xl ${FONT_SIZES[fontSizeIdx]} transition-colors cursor-grab select-none`}>
                             {tile.word}
                         </button>
                     ))}
@@ -267,44 +231,18 @@ export default function UnjumbleActivity({ activity, onClose }) {
                 <div className="flex gap-3 mt-2">
                     {checkStatus === 'idle' && (
                         <>
-                            <button
-                                onClick={handleReveal}
-                                className="bg-white/20 hover:bg-white/30 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
-                            >
-                                Reveal Answer
-                            </button>
-                            <button
-                                onClick={handleCheck}
-                                disabled={!allPlaced}
-                                className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400/40 disabled:cursor-not-allowed text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
-                            >
-                                Check
-                            </button>
+                            <button onClick={handleReveal} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Reveal Answer</button>
+                            <button onClick={handleCheck} disabled={!allPlaced} className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400/40 disabled:cursor-not-allowed text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Check</button>
                         </>
                     )}
-
                     {checkStatus === 'wrong' && (
                         <>
-                            <button
-                                onClick={handleTryAgain}
-                                className="bg-white/20 hover:bg-white/30 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
-                            >
-                                Try Again
-                            </button>
-                            <button
-                                onClick={handleReveal}
-                                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
-                            >
-                                Reveal
-                            </button>
+                            <button onClick={handleTryAgain} className="bg-white/20 hover:bg-white/30 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Try Again</button>
+                            <button onClick={handleReveal} className="bg-orange-500 hover:bg-orange-600 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">Reveal</button>
                         </>
                     )}
-
                     {(checkStatus === 'correct' || checkStatus === 'revealed') && (
-                        <button
-                            onClick={handleNext}
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-xl text-sm transition-colors cursor-pointer"
-                        >
+                        <button onClick={handleNext} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">
                             {currentIndex + 1 >= total ? 'See Results' : 'Next →'}
                         </button>
                     )}

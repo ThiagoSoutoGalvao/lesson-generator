@@ -209,7 +209,7 @@ export default function GeneratePage() {
                     {/* Activity type */}
                     <div className="flex flex-col gap-1.5">
                         <label className="text-sm font-medium text-white/80">Activity type</label>
-                        <div className="flex flex-wrap gap-2">
+                        <div className="flex flex-wrap gap-2 justify-center">
                             {ACTIVITY_TYPES.map(({ value, label }) => (
                                 <button
                                     key={value}
