@@ -9,12 +9,15 @@ class SavedActivityController extends Controller
 {
     public function index()
     {
-        return Activity::orderByDesc('created_at')->get();
+        return Activity::where('user_id', auth()->id())
+            ->orderByDesc('created_at')
+            ->get();
     }
 
     public function folders()
     {
-        return Activity::whereNotNull('folder')
+        return Activity::where('user_id', auth()->id())
+            ->whereNotNull('folder')
             ->where('folder', '!=', '')
             ->distinct()
             ->orderBy('folder')
@@ -33,13 +36,17 @@ class SavedActivityController extends Controller
             'lesson'  => ['nullable', 'string', 'max:255'],
         ]);
 
-        $activity = Activity::create($request->only('name', 'type', 'content', 'tags', 'folder', 'book', 'lesson'));
+        $activity = Activity::create(array_merge(
+            $request->only('name', 'type', 'content', 'tags', 'folder', 'book', 'lesson'),
+            ['user_id' => auth()->id()]
+        ));
 
         return response()->json($activity, 201);
     }
 
     public function destroy(Activity $activity)
     {
+        abort_if($activity->user_id !== auth()->id(), 403);
         $activity->delete();
         return response()->json(['ok' => true]);
     }

@@ -40,6 +40,7 @@ class DocumentController extends Controller
         $fullText = implode("\n\n", $pagesText);
 
         $document = Document::create([
+            'user_id'        => auth()->id(),
             'original_name'  => $file->getClientOriginalName(),
             'stored_path'    => $path,
             'source_type'    => 'pdf',
@@ -73,6 +74,7 @@ class DocumentController extends Controller
     public function index()
     {
         return Document::select('id', 'original_name', 'source_type', 'page_count', 'created_at')
+            ->where('user_id', auth()->id())
             ->where('status', 'ready')
             ->orderByDesc('created_at')
             ->get();

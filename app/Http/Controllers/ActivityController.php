@@ -19,7 +19,9 @@ class ActivityController extends Controller
             'section_focus' => ['nullable', 'string', 'in:Vocabulary,Grammar,Listening,Reading'],
         ]);
 
-        $document = Document::findOrFail($request->document_id);
+        $document = Document::where('id', $request->document_id)
+            ->where('user_id', auth()->id())
+            ->firstOrFail();
 
         $from = $request->input('page_from');
         $to   = $request->input('page_to');

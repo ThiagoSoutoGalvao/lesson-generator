@@ -24,10 +24,11 @@ class AudioUploadController extends Controller
         $path = $file->store('audio', 'local');
 
         $document = Document::create([
-            'original_name' => $file->getClientOriginalName(),
-            'stored_path'   => $path,
-            'source_type'   => 'audio',
-            'status'        => 'processing',
+            'user_id'        => auth()->id(),
+            'original_name'  => $file->getClientOriginalName(),
+            'stored_path'    => $path,
+            'source_type'    => 'audio',
+            'status'         => 'processing',
             'extracted_text' => null,
         ]);
 
