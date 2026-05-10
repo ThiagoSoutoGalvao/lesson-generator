@@ -141,7 +141,7 @@ export default function LibraryPage() {
                         className="bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl p-5 flex flex-col gap-3 hover:bg-white/12 transition-colors"
                     >
                         <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-semibold text-white leading-snug">{a.name}</h3>
+                            <h3 className="text-xl font-bold text-white leading-snug">{a.name}</h3>
                             <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${TYPE_COLORS[a.type]}`}>
                                 {TYPE_LABELS[a.type]}
                             </span>
@@ -150,12 +150,12 @@ export default function LibraryPage() {
                         {(a.book || a.lesson) && (
                             <div className="flex gap-2 flex-wrap">
                                 {a.book && (
-                                    <span className="text-xs bg-white/10 text-white/70 px-2.5 py-1 rounded-full border border-white/10">
+                                    <span className="text-xs bg-white/10 text-white/90 px-2.5 py-1 rounded-full border border-white/10">
                                         {a.book}
                                     </span>
                                 )}
                                 {a.lesson && (
-                                    <span className="text-xs bg-white/10 text-white/70 px-2.5 py-1 rounded-full border border-white/10">
+                                    <span className="text-xs bg-white/10 text-white/90 px-2.5 py-1 rounded-full border border-white/10">
                                         {a.lesson}
                                     </span>
                                 )}
@@ -163,10 +163,10 @@ export default function LibraryPage() {
                         )}
 
                         {a.folder && (
-                            <p className="text-xs text-white/40">📁 {a.folder}</p>
+                            <p className="text-xs text-white/80">📁 {a.folder}</p>
                         )}
 
-                        <p className="text-xs text-white/35 mt-auto">
+                        <p className="text-xs text-white/70 mt-auto">
                             {new Date(a.created_at).toLocaleDateString('en-GB', {
                                 day: 'numeric', month: 'short', year: 'numeric',
                             })}
