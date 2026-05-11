@@ -524,3 +524,224 @@ Added 7 new activity templates (total now 14):
 - `resources/views/welcome.blade.php` — main SPA shell, loads `App.jsx`
 - `vite.config.js` — entry points: `app.css`, `app.js`, `App.jsx`
 - `bootstrap/app.php` — proxy trust + API session middleware configured here
+
+---
+
+### PHASE 11 — Monetization
+
+**Goal:** Get the first paying customer. Everything in this phase is ordered to reach that goal as fast as possible — build the payment system, validate it with beta users, then gradually expand to the wider market.
+
+---
+
+#### 11.1 — Pricing Model
+
+Three tiers:
+
+| Tier | Price | Limits |
+|------|-------|--------|
+| **Free** | $0 | 10 generations/month, no audio upload, no save |
+| **Pro** | $12/month | Unlimited generations, all 14 templates, audio upload, save & library |
+| **School** | $49/month | Everything in Pro, up to 5 teacher accounts under one subscription |
+
+**Why these numbers:**
+- $12 is below the psychological "expensive" threshold for a solo teacher. One saved hour of manual prep per month justifies it.
+- $49 for schools targets language schools and academies — a single institutional sale equals 4 individual subscriptions.
+- Free tier is generous enough to experience the value but limited enough to hit the wall quickly.
+
+---
+
+#### 11.2 — Technical Setup: Stripe + Laravel Cashier
+
+Stripe is the industry standard for SaaS subscriptions. Laravel Cashier is the official Laravel package that wraps Stripe — it handles subscriptions, billing cycles, invoices, and webhooks automatically.
+
+**Step 1 — Create a Stripe account**
+- Go to stripe.com and sign up (free)
+- In the Stripe dashboard → Products → create two products:
+  - "Pro" — $12/month recurring
+  - "School" — $49/month recurring
+- Copy the **Price ID** for each (looks like `price_1ABC...`) — you'll need these later
+
+**Step 2 — Install Laravel Cashier**
+```bash
+composer require laravel/cashier
+php artisan vendor:publish --tag="cashier-migrations"
+php artisan migrate
+```
+This adds `subscriptions` and `subscription_items` tables to the database.
+
+**Step 3 — Configure Cashier**
+Add to `.env`:
+```
+STRIPE_KEY=pk_live_...        # Publishable key (from Stripe dashboard → Developers → API keys)
+STRIPE_SECRET=sk_live_...     # Secret key
+STRIPE_WEBHOOK_SECRET=whsec_... # Generated when you set up a webhook (step 5)
+```
+
+Add to `config/services.php`:
+```php
+'stripe' => [
+    'model'   => App\Models\User::class,
+    'key'     => env('STRIPE_KEY'),
+    'secret'  => env('STRIPE_SECRET'),
+    'webhook' => ['secret' => env('STRIPE_WEBHOOK_SECRET'), 'tolerance' => 300],
+],
+```
+
+**Step 4 — Update the User model**
+Add the `Billable` trait:
+```php
+use Laravel\Cashier\Billable;
+
+class User extends Authenticatable {
+    use Billable;
+}
+```
+
+**Step 5 — Set up a Stripe Webhook**
+Webhooks tell your app when a payment succeeds or a subscription is cancelled.
+- In Stripe dashboard → Developers → Webhooks → Add endpoint
+- URL: `https://lesson-generator-production-9da7.up.railway.app/stripe/webhook`
+- Events to listen for: `customer.subscription.created`, `customer.subscription.updated`, `customer.subscription.deleted`, `invoice.payment_succeeded`, `invoice.payment_failed`
+- Copy the signing secret → paste as `STRIPE_WEBHOOK_SECRET` in Railway Variables
+
+**Step 6 — Add the webhook route**
+In `routes/web.php`:
+```php
+Route::post('/stripe/webhook', '\Laravel\Cashier\Http\Controllers\WebhookController@handleWebhook');
+```
+This route must be CSRF-exempt. In `bootstrap/app.php` add it to the CSRF exception list.
+
+**Step 7 — Add generation counting**
+Add a `generations_this_month` integer column and `generations_reset_at` date column to the `users` table via a migration. In `ActivityController::generate()`, before generating:
+```php
+$user = auth()->user();
+if (!$user->subscribed('default') && $user->generations_this_month >= 10) {
+    return response()->json(['message' => 'Free limit reached. Upgrade to Pro for unlimited generations.'], 403);
+}
+// after successful generation:
+$user->increment('generations_this_month');
+```
+Reset the counter monthly via a scheduled command (`php artisan schedule:run` added to start command).
+
+**Step 8 — Build the checkout flow**
+When a user clicks "Upgrade", redirect them to a Stripe Checkout page (hosted by Stripe — no card form to build yourself):
+```php
+return $user->newSubscription('default', 'price_1ABC...')
+    ->checkout([
+        'success_url' => route('billing.success'),
+        'cancel_url'  => route('billing.cancel'),
+    ]);
+```
+Stripe handles the entire payment UI. After payment, Stripe redirects back to your `success_url`.
+
+**Step 9 — Add a billing management page**
+Let users cancel or update their card via Stripe's hosted portal:
+```php
+return $user->redirectToBillingPortal(route('home'));
+```
+
+---
+
+#### 11.3 — What to Build in the App
+
+**Upgrade prompt (most important UI element)**
+When a free user hits 10 generations, show a modal:
+> *"You've used your 10 free generations this month. Upgrade to Pro for $12/month and generate unlimited activities."*
+With a single "Upgrade now" button that starts the Stripe checkout.
+
+**Pricing page (`/pricing`)**
+A simple page (can be a React route) showing the three tiers side by side. Each "Get started" button goes to Stripe Checkout. Link it from the navbar.
+
+**Account/billing page (`/account`)**
+Shows: current plan, generations used this month, next billing date, and a "Manage billing" button (opens Stripe portal).
+
+**Badge in navbar**
+Show "Free — X/10 generations used" for free users. Disappears on Pro. Constant gentle reminder of the limit.
+
+---
+
+#### 11.4 — Before You Build: Validate First
+
+Before writing any code, do this:
+
+1. Message your 4 beta users individually (not in the group): *"I'm thinking of charging $12/month for full access. Would you pay that?"*
+2. If 2 or more say yes → build the payment system immediately.
+3. If they all say no → ask why. Fix the product issue before building billing.
+
+This one conversation can save you weeks of development.
+
+---
+
+#### 11.5 — Marketing: Getting the First Strangers to Pay
+
+Do these in order. Each step validates the next.
+
+**Step 1 — Make a 60-second screen recording**
+Record yourself: open the app, upload a page, type a prompt, watch the activity generate. No voice needed — just screen + upbeat music. This is your core marketing asset. Use it everywhere.
+
+**Step 2 — Post in Facebook Groups (week 1)**
+Search Facebook for: "TEFL teachers", "English teachers abroad", "Online ESL teachers", "EFL teachers". These groups have 10k–100k members each. Post the screen recording with a caption like:
+> *"I built a tool that generates classroom activities from any course book in seconds. Free to try — would love feedback from teachers."*
+Do NOT post a sales pitch. Lead with the demo and ask for feedback. Include the link.
+
+**Step 3 — Post on Reddit (week 1)**
+- r/TEFL (~80k members)
+- r/languagelearning (~2M members)
+- r/Teachers
+Same approach: share the video, ask for feedback, no hard sell.
+
+**Step 4 — Instagram/TikTok Reels (ongoing)**
+Short videos (15–30 seconds) in the format: *"POV: you need to make 5 activities before your next class"* → generate them in 10 seconds. This format performs well in teaching niches. Post 3x/week for a month and measure which videos get shares.
+
+**Step 5 — Teachers Pay Teachers / Tes listing (week 2)**
+Create a free resource (e.g. "10 free ESL activities for Speak Out B1") and upload it to TPT and Tes. In the description mention Lesson Generator as the tool used to create them. High-intent buyers browse these platforms actively.
+
+**Step 6 — Cold email language schools (month 2)**
+Search for "online English school", "online TEFL academy". Find the director's email (usually on the website). Send a short email:
+> *"Hi [name], I run a tool that lets English teachers generate classroom activities from course books in seconds — cuts prep time from 30 minutes to 30 seconds. Would you be open to a free trial for your teachers?"*
+Target 20 schools per week. Even a 5% response rate gives you leads.
+
+**Step 7 — Find one TEFL YouTuber or blogger (month 2)**
+Search YouTube for "TEFL tips", "how to teach English online". Find a creator with 5k–50k subscribers (big enough to matter, small enough to reply to emails). Offer them 3 free months of Pro in exchange for an honest review video or blog post. One good recommendation from a trusted voice is worth 100 ads.
+
+**Step 8 — Product Hunt launch (month 3)**
+Product Hunt is a website where people discover new tools. A well-prepared launch can bring 500–2000 visitors in a single day. Prepare a good description, screenshots, and a demo video. Schedule the launch for a Tuesday or Wednesday (highest traffic days). Ask your network to upvote on launch day.
+
+---
+
+#### 11.6 — Revenue Targets (Realistic Timeline)
+
+| Month | Goal | What needs to happen |
+|-------|------|----------------------|
+| Month 1 | 1st paying user | Beta user converts, payment system live |
+| Month 2 | 10 paying users | Facebook/Reddit posts driving signups |
+| Month 3 | 25 paying users | First school account or influencer post |
+| Month 6 | 50 paying users | $600 MRR — covers Railway + API costs with profit |
+| Month 12 | 150 paying users | $1,800 MRR — meaningful side income |
+
+At 150 Pro users ($12) that is $1,800/month recurring. This is achievable within a year for a niche SaaS with a real use case.
+
+---
+
+#### 11.7 — On Copycats
+
+The concern is valid but premature. Copycats only show up when there is money to copy. By the time someone builds a competing product, you will have:
+- An established user base with saved activities (switching cost — they lose their library)
+- Prompt templates refined over hundreds of real classroom uses
+- A brand teachers already trust
+- A head start on features they have been requesting
+
+The real moat is iteration speed and user trust, not the code. Keep shipping improvements based on what your users ask for — that is the one thing a copycat starting from scratch cannot fake.
+
+---
+
+#### 11.8 — What to Do This Week (Action List)
+
+1. ✅ Send individual messages to 4 beta users asking if they would pay $12/month
+2. ✅ Create a Stripe account and set up the Pro and School products
+3. ✅ Install Laravel Cashier and run migrations locally, then push
+4. ✅ Record a 60-second screen demo of the app
+5. ✅ Post in 3 Facebook TEFL groups and 2 subreddits
+6. ✅ Add `STRIPE_KEY` and `STRIPE_SECRET` to Railway Variables
+
+**Commit target:** `Phase 11: Stripe + Cashier setup, pricing page, generation limits`
