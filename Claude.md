@@ -373,7 +373,7 @@ When starting each phase, begin your session with:
 Keep each Claude Code session scoped to one phase. Do not ask it to jump ahead. Finish, test, commit, then start a new session for the next phase.
 
 ### Current Phase
-Phase 10 deployment — in progress. App is live on Railway but blocked by a Vite manifest error on the login page. See Phase 10 notes below.
+Phase 10 deployment ✅ COMPLETED. App is live at `https://lesson-generator-production-9da7.up.railway.app`. Beta users registered. See Phase 10 notes below for full deployment details.
 
 ### Improvement Phases (post-Phase 9, pre-deployment)
 
@@ -473,46 +473,54 @@ Added 7 new activity templates (total now 14):
 
 ---
 
-### PHASE 10 — Deployment (IN PROGRESS)
+### PHASE 10 — Deployment ✅ COMPLETED
 
 **Platform:** Railway (Hobby plan, ~$5/month)
+**Live URL:** `https://lesson-generator-production-9da7.up.railway.app`
 **Stack:** FrankenPHP (via Railpack auto-detection) + Railway MySQL plugin
 
 **What works:**
-- Build succeeds: PHP 8.4, Node 22, composer install, npm run build, all artisan cache commands
-- FrankenPHP starts and serves on port 8080
-- MySQL connected, migrations run successfully
-- Custom start command: `php artisan migrate --force && /start-container.sh`
+- App is fully live: login, PDF upload, audio upload, activity generation, save/library
+- Audio transcription runs in the same container as the web server (queue worker in background)
+- All users scoped: documents and activities are private per user account
+- 4 beta users registered: Fernando, Sapulha, Daniel, Hianna
 
-**Current blocker:**
-- 500 error on login page: `Unable to locate file in Vite manifest: resources/js/app.js`
-- `resources/views/layouts/guest.blade.php` (Breeze auth layout) loads `@vite(['resources/css/app.css', 'resources/js/app.js'])`
-- `vite.config.js` previously only had `App.jsx` as entry point (capital A — case mismatch on Linux)
-- Fix applied: added `resources/js/app.js` and `resources/js/app.jsx` (lowercase) to `vite.config.js` input array
-- Error persists — likely because Railpack is still serving the cached npm build from before the fix
+**Deployment fixes applied (in order):**
+1. `guest.blade.php` — removed `app.js` from `@vite()` (Alpine.js unused on login page; fixes Vite manifest 500)
+2. `vite.config.js` — entry point corrected to `resources/js/App.jsx` (capital A — Linux is case-sensitive)
+3. `composer.json` — PHP version bumped to `^8.4` to match Railway's installed version
+4. `bootstrap/app.php` — `$middleware->trustProxies(at: '*')` added so Railway's reverse proxy passes HTTPS correctly
+5. `APP_URL` set to `https://...` in Railway Variables (was `http://`, caused mixed-content asset errors)
+6. Queue worker runs inside web container: start command is `php artisan migrate --force && php artisan queue:work --tries=3 --timeout=300 & /start-container.sh` — avoids separate-container filesystem isolation problem
 
-**Environment variables set on Railway web service:**
-- `APP_NAME`, `APP_ENV=production`, `APP_KEY`, `APP_DEBUG=false`, `APP_URL`
-- `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT=3306`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` (from Railway MySQL plugin)
+**User scoping (added post-launch):**
+- `user_id` added to `documents` and `activities` tables via migrations `2026_05_11_000001` and `2026_05_11_000002`
+- Migrations are idempotent (`Schema::hasColumn` guard) — safe to re-run
+- `DocumentController`, `AudioUploadController`, `SavedActivityController`, `ActivityController` all scoped to `auth()->id()`
+- Existing records with `null` user_id are invisible to all users (orphaned from before scoping was added)
+
+**Registration:**
+- Public registration is currently OPEN (routes/auth.php still has register routes)
+- Once all beta users have accounts, remove the two `register` routes from `routes/auth.php` and push
+
+**Environment variables on Railway web service:**
+- `APP_NAME`, `APP_ENV=production`, `APP_KEY`, `APP_DEBUG=false`
+- `APP_URL=https://lesson-generator-production-9da7.up.railway.app`
+- `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT=3306`, `DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD` (Railway MySQL plugin)
 - `SESSION_DRIVER=database`, `QUEUE_CONNECTION=database`, `CACHE_STORE=database`, `FILESYSTEM_DISK=local`
 - `LOG_LEVEL=error`, `PORT=8080`
 - `ANTHROPIC_API_KEY`, `UNSPLASH_ACCESS_KEY`, `OPENAI_API_KEY`
 
 **Railpack behaviour (important):**
-- Railway switched from Nixpacks to Railpack — `nixpacks.toml` is detected but Railpack overrides the start command
+- Railway uses Railpack (not Nixpacks) — `nixpacks.toml` is present but start command is overridden via Railway service settings
 - Railpack auto-detects PHP + Laravel + Node; uses `dunglas/frankenphp:php8.4` base image
-- Build steps are heavily cached by Docker layer; a code change that doesn't touch `package.json` or `package-lock.json` may not invalidate the `npm run build` cache
-- To force a full rebuild: change `package.json` (e.g. add a space in a comment field) to bust the npm cache layer
-- Config/route/view caching happens at BUILD time with no env vars; `start-container.sh` clears and re-caches at runtime — env vars are always fresh at startup
-
-**Next steps to unblock:**
-1. Force Railpack to re-run `npm run build` by busting the cache (touch package.json or add a dummy script)
-2. OR fix `guest.blade.php` to not require `app.js` at all — the login page only needs CSS for this app; Alpine.js is unused
-3. After login works: create first user via Railway shell → `php artisan tinker`
-4. Set up queue worker service for audio transcription (second Railway service, same repo, start command: `php artisan queue:work --tries=3 --timeout=120`)
+- Build steps cached by Docker layer; touching `package.json` busts the npm cache layer
+- Config/route/view caching happens at BUILD time; `start-container.sh` clears and re-caches at runtime
+- Local disk on Railway is ephemeral (lost on redeploy) — acceptable for beta since PDF text and audio transcripts are stored in MySQL
 
 **Key file locations:**
-- `nixpacks.toml` — present but partially overridden by Railpack
-- `resources/views/layouts/guest.blade.php` — Breeze auth layout, loads app.js
-- `resources/views/welcome.blade.php` — main SPA shell, loads app.jsx
-- `vite.config.js` — entry points: `app.css`, `app.js`, `app.jsx`
+- `nixpacks.toml` — present but start command overridden in Railway service settings
+- `resources/views/layouts/guest.blade.php` — Breeze auth layout, loads CSS only (no app.js)
+- `resources/views/welcome.blade.php` — main SPA shell, loads `App.jsx`
+- `vite.config.js` — entry points: `app.css`, `app.js`, `App.jsx`
+- `bootstrap/app.php` — proxy trust + API session middleware configured here
