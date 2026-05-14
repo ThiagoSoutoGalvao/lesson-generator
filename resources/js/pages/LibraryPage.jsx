@@ -7,23 +7,53 @@ import DialogGapFillActivity from '@/components/DialogGapFillActivity';
 import WordCategorisationActivity from '@/components/WordCategorisationActivity';
 import TrueFalseActivity from '@/components/TrueFalseActivity';
 import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
+import WordFormationActivity from '@/components/WordFormationActivity';
+import OddOneOutActivity from '@/components/OddOneOutActivity';
+import ClozeActivity from '@/components/ClozeActivity';
+import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
+import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
+import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
+import MatchingPairsActivity from '@/components/MatchingPairsActivity';
 import Spinner from '@/components/Spinner';
 
 const TYPE_LABELS = {
-    quiz: 'Quiz', flashcards: 'Flashcards', unjumble: 'Unjumble',
-    dialog_gap_fill: 'Dialog', word_categorisation: 'Categorise',
-    true_false: 'True / False', image_vocab_match: 'Image Match',
+    quiz:                     'Quiz',
+    flashcards:               'Flashcards',
+    unjumble:                 'Unjumble',
+    dialog_gap_fill:          'Dialog',
+    word_categorisation:      'Categorise',
+    true_false:               'True / False',
+    image_vocab_match:        'Image Match',
+    word_formation:           'Word Formation',
+    odd_one_out:              'Odd One Out',
+    cloze:                    'Cloze',
+    discussion_questions:     'Discussion',
+    sentence_transformation:  'Transform',
+    error_correction:         'Error Correction',
+    matching_pairs:           'Matching Pairs',
 };
 const TYPE_COLORS = {
-    quiz:                'bg-blue-500/80 text-white',
-    flashcards:          'bg-purple-500/80 text-white',
-    unjumble:            'bg-orange-500/80 text-white',
-    dialog_gap_fill:     'bg-teal-500/80 text-white',
-    word_categorisation: 'bg-pink-500/80 text-white',
-    true_false:          'bg-indigo-500/80 text-white',
-    image_vocab_match:   'bg-cyan-500/80 text-white',
+    quiz:                    'bg-blue-500/80 text-white',
+    flashcards:              'bg-purple-500/80 text-white',
+    unjumble:                'bg-orange-500/80 text-white',
+    dialog_gap_fill:         'bg-teal-500/80 text-white',
+    word_categorisation:     'bg-pink-500/80 text-white',
+    true_false:              'bg-indigo-500/80 text-white',
+    image_vocab_match:       'bg-cyan-500/80 text-white',
+    word_formation:          'bg-lime-500/80 text-white',
+    odd_one_out:             'bg-rose-500/80 text-white',
+    cloze:                   'bg-amber-500/80 text-white',
+    discussion_questions:    'bg-sky-500/80 text-white',
+    sentence_transformation: 'bg-violet-500/80 text-white',
+    error_correction:        'bg-red-500/80 text-white',
+    matching_pairs:          'bg-emerald-500/80 text-white',
 };
-const TYPE_FILTERS = ['all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill', 'word_categorisation', 'true_false', 'image_vocab_match'];
+const TYPE_FILTERS = [
+    'all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill',
+    'word_categorisation', 'true_false', 'image_vocab_match',
+    'word_formation', 'odd_one_out', 'cloze', 'discussion_questions',
+    'sentence_transformation', 'error_correction', 'matching_pairs',
+];
 
 const filterBtnCls = (active) =>
     `px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
@@ -63,13 +93,20 @@ export default function LibraryPage() {
 
     if (launched) {
         const props = { activity: launched, onClose: () => setLaunched(null) };
-        if (launched.type === 'quiz')               return <QuizActivity quiz={launched} onClose={props.onClose} />;
-        if (launched.type === 'flashcards')         return <FlashcardActivity {...props} />;
-        if (launched.type === 'unjumble')           return <UnjumbleActivity {...props} />;
-        if (launched.type === 'dialog_gap_fill')    return <DialogGapFillActivity {...props} />;
-        if (launched.type === 'word_categorisation') return <WordCategorisationActivity {...props} />;
-        if (launched.type === 'true_false')         return <TrueFalseActivity {...props} />;
-        if (launched.type === 'image_vocab_match')  return <ImageVocabMatchActivity {...props} />;
+        if (launched.type === 'quiz')                    return <QuizActivity quiz={launched} onClose={props.onClose} />;
+        if (launched.type === 'flashcards')              return <FlashcardActivity {...props} />;
+        if (launched.type === 'unjumble')                return <UnjumbleActivity {...props} />;
+        if (launched.type === 'dialog_gap_fill')         return <DialogGapFillActivity {...props} />;
+        if (launched.type === 'word_categorisation')     return <WordCategorisationActivity {...props} />;
+        if (launched.type === 'true_false')              return <TrueFalseActivity {...props} />;
+        if (launched.type === 'image_vocab_match')       return <ImageVocabMatchActivity {...props} />;
+        if (launched.type === 'word_formation')          return <WordFormationActivity {...props} />;
+        if (launched.type === 'odd_one_out')             return <OddOneOutActivity {...props} />;
+        if (launched.type === 'cloze')                   return <ClozeActivity {...props} />;
+        if (launched.type === 'discussion_questions')    return <DiscussionQuestionsActivity {...props} />;
+        if (launched.type === 'sentence_transformation') return <SentenceTransformationActivity {...props} />;
+        if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;
+        if (launched.type === 'matching_pairs')          return <MatchingPairsActivity {...props} />;
     }
 
     const filtered = activities.filter(a => {

@@ -3,6 +3,7 @@ import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from '@/components/Layout';
+import ErrorBoundary from '@/components/ErrorBoundary';
 import UploadPage from '@/pages/UploadPage';
 import GeneratePage from '@/pages/GeneratePage';
 import LibraryPage from '@/pages/LibraryPage';
@@ -19,14 +20,16 @@ function Home() {
 function App() {
     return (
         <BrowserRouter>
-            <Layout>
-                <Routes>
-                    <Route path="/" element={<Home />} />
-                    <Route path="/upload" element={<UploadPage />} />
-                    <Route path="/generate" element={<GeneratePage />} />
-                    <Route path="/library" element={<LibraryPage />} />
-                </Routes>
-            </Layout>
+            <ErrorBoundary>
+                <Layout>
+                    <Routes>
+                        <Route path="/" element={<Home />} />
+                        <Route path="/upload" element={<UploadPage />} />
+                        <Route path="/generate" element={<GeneratePage />} />
+                        <Route path="/library" element={<LibraryPage />} />
+                    </Routes>
+                </Layout>
+            </ErrorBoundary>
         </BrowserRouter>
     );
 }
