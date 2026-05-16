@@ -33,7 +33,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
     const [slideIdx, setSlideIdx]         = useState(0);
     const [bgUrl, setBgUrl]               = useState(null);
     const [showSave, setShowSave]         = useState(false);
-    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
+    const [fontSizeIdx, setFontSizeIdx]   = useState(0);
     const [textColor, setTextColor]       = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -42,10 +42,10 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
     const total  = slides.length;
     const accent = ACCENT[slide?.color] ?? ACCENT.blue;
 
-    const TITLE_SIZES   = ['text-2xl',  'text-3xl',  'text-4xl' ];
-    const RULE_SIZES    = ['text-base', 'text-lg',   'text-xl'  ];
-    const FORM_SIZES    = ['text-sm',   'text-base', 'text-lg'  ];
-    const EXAMPLE_SIZES = ['text-sm',   'text-base', 'text-lg'  ];
+    const TITLE_SIZES   = ['text-3xl',  'text-4xl',  'text-5xl' ];
+    const RULE_SIZES    = ['text-xl',   'text-2xl',  'text-3xl' ];
+    const FORM_SIZES    = ['text-lg',   'text-xl',   'text-2xl' ];
+    const EXAMPLE_SIZES = ['text-lg',   'text-xl',   'text-2xl' ];
 
     useEffect(() => {
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
