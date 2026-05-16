@@ -178,7 +178,7 @@ export default function LibraryPage() {
                         className="bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl p-5 flex flex-col gap-3 hover:bg-white/12 transition-colors"
                     >
                         <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-xl font-bold text-white leading-snug">{a.name}</h3>
+                            <h3 className="text-xl font-bold text-white leading-snug min-w-0 break-words">{a.name}</h3>
                             <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${TYPE_COLORS[a.type]}`}>
                                 {TYPE_LABELS[a.type]}
                             </span>
