@@ -127,8 +127,8 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
             </div>
 
             {/* Slide content */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 py-6 overflow-y-auto">
-                <div className="max-w-2xl w-full flex flex-col gap-4">
+            <div className="relative z-10 flex-1 overflow-y-auto px-8 py-6">
+                <div className="w-full flex flex-col gap-4">
 
                     {/* Topic + title */}
                     <div>
