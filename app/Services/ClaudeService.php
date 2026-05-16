@@ -737,7 +737,7 @@ EOT;
             'anthropic-version' => '2023-06-01',
         ])->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 1024,
+            'max_tokens' => 2048,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -785,7 +785,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly 6 items
+- Generate the number of items requested in the task — typically 6–12
 - Each sentence must contain EXACTLY one error — no more, no less
 - Errors must be realistic mistakes that B1-B2 learners commonly make: wrong tense, subject-verb agreement, wrong preposition, incorrect article, wrong word form, or vocabulary confusion
 - The "error" field must match the incorrect text exactly as it appears in the sentence
@@ -796,7 +796,7 @@ Rules:
 EOT;
     }
 
-    public function generateMatchingPairs(string $documentText, string $prompt): array
+    public function generateGrammarExplainer(string $documentText, string $prompt): array
     {
         $documentText = $this->sanitizeUtf8($documentText);
 
@@ -805,12 +805,12 @@ EOT;
             'anthropic-version' => '2023-06-01',
         ])->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 1024,
+            'max_tokens' => 2048,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildMatchingPairsPrompt($documentText, $prompt),
+                    'content' => $this->buildGrammarExplainerPrompt($documentText, $prompt),
                 ],
             ],
         ]);
@@ -827,7 +827,7 @@ EOT;
         return $data;
     }
 
-    private function buildMatchingPairsPrompt(string $documentText, string $prompt): string
+    private function buildGrammarExplainerPrompt(string $documentText, string $prompt): string
     {
         return <<<EOT
 Here is the course book text:
@@ -838,26 +838,30 @@ Task: {$prompt}
 
 Return a JSON object with EXACTLY this structure:
 {
-  "type": "matching_pairs",
-  "topic": "<short topic description>",
-  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
-  "instruction": "Match each word with its correct definition.",
-  "pairs": [
+  "type": "grammar_explainer",
+  "topic": "<the grammar topic, e.g. 'Present Perfect' or 'Modal Verbs'>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits a classroom or study context, e.g. 'student writing notes library'>",
+  "slides": [
     {
-      "term": "<vocabulary word or short phrase>",
-      "definition": "<clear, student-friendly definition — one sentence>"
+      "title": "<short slide title, e.g. 'Positive Form' or 'When to Use It'>",
+      "rule": "<clear explanation of the grammar rule — use **double asterisks** to bold key grammar terms or important words>",
+      "form": "<optional: the grammatical formula, e.g. 'Subject + **have/has** + **past participle**' — use **double asterisks** to bold the key parts; omit this field if not applicable>",
+      "examples": [
+        "<a natural example sentence — use **double asterisks** to bold the grammar structure being illustrated>",
+        "<another example sentence>"
+      ],
+      "color": "<one of: blue, purple, green, orange, teal, rose — assign a distinct color per slide>"
     }
   ]
 }
 
 Rules:
-- Generate exactly 8 pairs
-- Each term must be a key vocabulary word or phrase from the text
-- Definitions must be clear and unambiguous — a student should be able to match confidently
-- Definitions must not contain the term itself or obvious cognates
-- All terms must be clearly distinct from each other
-- All definitions must be clearly distinct — no two definitions should be interchangeable
-- B1-B2 level vocabulary
+- Generate 4 to 6 slides — each covering a distinct aspect: form, usage, examples, common mistakes, comparison with similar structures, etc.
+- Use **double asterisks** around key grammar terms in rules, forms, and examples — these render as colored bold text
+- The "form" field is optional — include it for slides that show a grammatical formula, omit it for usage/meaning slides
+- Each slide should have 2 to 3 example sentences
+- Assign a different color to each slide — cycle through blue, purple, green, orange, teal, rose
+- Keep explanations concise and student-friendly — B1-B2 level language
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

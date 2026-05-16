@@ -12,7 +12,7 @@ import ClozeActivity from '@/components/ClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
 import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
-import MatchingPairsActivity from '@/components/MatchingPairsActivity';
+import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import Spinner from '@/components/Spinner';
 
 const ACTIVITY_TYPES = [
@@ -27,7 +27,7 @@ const ACTIVITY_TYPES = [
     { value: 'discussion_questions',    label: 'Discussion' },
     { value: 'sentence_transformation', label: 'Transform' },
     { value: 'error_correction',        label: 'Error Correction' },
-    { value: 'matching_pairs',          label: 'Matching Pairs' },
+    { value: 'grammar_explainer',        label: 'Grammar' },
 ];
 
 const DEFAULT_PROMPTS = {
@@ -41,8 +41,8 @@ const DEFAULT_PROMPTS = {
     cloze:                 'Create a fill-in-the-blanks activity using a short passage from this page. Remove 6–8 key vocabulary or grammar words and provide them as a word bank. Make sure the remaining context gives students enough clues to find each answer.',
     discussion_questions:  'Generate 6 open-ended discussion questions based on the topics and themes from this page. Include 2 follow-up prompts for each question to keep the conversation going. Vary the types: personal, opinion, and hypothetical questions.',
     sentence_transformation: 'Create 6 sentence transformation items using grammar structures from this page. Each item gives the student an original sentence and a key word — they must rewrite the sentence keeping the same meaning. Cover different grammar points: tenses, passive voice, modal verbs, reported speech, or comparatives.',
-    error_correction:        'Create 6 error correction sentences based on the grammar and vocabulary from this page. Each sentence must contain exactly one realistic mistake that a B1-B2 learner might make. Cover different error types: wrong tense, subject-verb agreement, prepositions, articles, word form, or vocabulary confusion.',
-    matching_pairs:          'Create a matching pairs activity with 8 key vocabulary words from this page. For each word write a clear, student-friendly definition. Definitions must be unambiguous — each one should clearly point to only one of the terms.',
+    error_correction:        'Create 8 error correction sentences based on the grammar and vocabulary from this page. Each sentence must contain exactly one realistic mistake that a B1-B2 learner might make. Cover different error types: wrong tense, subject-verb agreement, prepositions, articles, word form, or vocabulary confusion.',
+    grammar_explainer:       'Create a Grammar Explainer presentation for the main grammar structure on this page. Include 4–6 slides covering: the form (positive, negative, question), when and how to use it, common mistakes, and 2–3 natural example sentences per slide. Use simple B1-B2 language.',
 };
 
 const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent backdrop-blur-sm transition-colors';
@@ -119,7 +119,7 @@ export default function GeneratePage() {
     if (activity?.type === 'discussion_questions')   return <DiscussionQuestionsActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'sentence_transformation') return <SentenceTransformationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'error_correction')        return <ErrorCorrectionActivity activity={activity} onClose={handleClose} />;
-    if (activity?.type === 'matching_pairs')          return <MatchingPairsActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'grammar_explainer')       return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
 
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">

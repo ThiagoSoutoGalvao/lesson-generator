@@ -13,7 +13,7 @@ import ClozeActivity from '@/components/ClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
 import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
-import MatchingPairsActivity from '@/components/MatchingPairsActivity';
+import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import Spinner from '@/components/Spinner';
 
 const TYPE_LABELS = {
@@ -30,7 +30,7 @@ const TYPE_LABELS = {
     discussion_questions:     'Discussion',
     sentence_transformation:  'Transform',
     error_correction:         'Error Correction',
-    matching_pairs:           'Matching Pairs',
+    grammar_explainer:        'Grammar',
 };
 const TYPE_COLORS = {
     quiz:                    'bg-blue-500/80 text-white',
@@ -46,13 +46,13 @@ const TYPE_COLORS = {
     discussion_questions:    'bg-sky-500/80 text-white',
     sentence_transformation: 'bg-violet-500/80 text-white',
     error_correction:        'bg-red-500/80 text-white',
-    matching_pairs:          'bg-emerald-500/80 text-white',
+    grammar_explainer:       'bg-emerald-500/80 text-white',
 };
 const TYPE_FILTERS = [
     'all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill',
     'word_categorisation', 'true_false', 'image_vocab_match',
     'word_formation', 'odd_one_out', 'cloze', 'discussion_questions',
-    'sentence_transformation', 'error_correction', 'matching_pairs',
+    'sentence_transformation', 'error_correction', 'grammar_explainer',
 ];
 
 const filterBtnCls = (active) =>
@@ -106,7 +106,7 @@ export default function LibraryPage() {
         if (launched.type === 'discussion_questions')    return <DiscussionQuestionsActivity {...props} />;
         if (launched.type === 'sentence_transformation') return <SentenceTransformationActivity {...props} />;
         if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;
-        if (launched.type === 'matching_pairs')          return <MatchingPairsActivity {...props} />;
+        if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
     }
 
     const filtered = activities.filter(a => {
