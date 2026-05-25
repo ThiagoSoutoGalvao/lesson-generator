@@ -140,6 +140,35 @@
     }
 }
 
+/* ── Presentation animations ── */
+@keyframes pres-enter-right {
+    from { opacity: 0; transform: translateX(56px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pres-enter-left {
+    from { opacity: 0; transform: translateX(-56px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+@keyframes pres-fade-up {
+    from { opacity: 0; transform: translateY(18px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes pres-term-pulse {
+    0%, 100% { filter: brightness(1); }
+    45%      { filter: brightness(1.8); text-shadow: 0 0 18px currentColor; }
+}
+
+.pres-enter-right {
+    animation: pres-enter-right 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.pres-enter-left {
+    animation: pres-enter-left 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
+}
+.slide-content strong {
+    display: inline;
+    animation: pres-term-pulse 0.9s ease-out 0.75s both;
+}
+
 /* ── Accessibility font control (Aa button in navbar) ── */
 body.tf-active {
   font-family: var(--tf-family) !important;
