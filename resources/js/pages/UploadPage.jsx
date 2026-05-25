@@ -3,6 +3,86 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '@/components/Spinner';
 
+// ─── Presentation Tab ─────────────────────────────────────────────────────────
+
+function PresentationGenerator() {
+    const navigate = useNavigate();
+    const [topic, setTopic]   = useState('');
+    const [extra, setExtra]   = useState('');
+    const [status, setStatus] = useState('idle');
+    const [errorMsg, setErrorMsg] = useState('');
+
+    async function generate() {
+        if (!topic.trim()) return;
+        setStatus('loading');
+        setErrorMsg('');
+        try {
+            const { data } = await axios.post('/api/presentation/generate', {
+                topic: topic.trim(),
+                extra: extra.trim() || undefined,
+            });
+            navigate('/generate', { state: { activity: data } });
+        } catch (err) {
+            setErrorMsg(err.response?.data?.message ?? 'Something went wrong. Please try again.');
+            setStatus('error');
+        }
+    }
+
+    const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent backdrop-blur-sm transition-colors';
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">Topic</label>
+                <input
+                    type="text"
+                    value={topic}
+                    onChange={e => setTopic(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && generate()}
+                    placeholder="e.g. Present Perfect, Travel vocabulary, IELTS writing tips…"
+                    className={inputCls}
+                    disabled={status === 'loading'}
+                />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">
+                    Extra instructions
+                    <span className="text-white/35 font-normal ml-1">— optional</span>
+                </label>
+                <textarea
+                    value={extra}
+                    onChange={e => setExtra(e.target.value)}
+                    placeholder="e.g. Focus on common mistakes, include exam tips, suitable for business English…"
+                    rows={3}
+                    className={`${inputCls} resize-none`}
+                    disabled={status === 'loading'}
+                />
+            </div>
+
+            <button
+                onClick={generate}
+                disabled={!topic.trim() || status === 'loading'}
+                className="self-start bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-500/40 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+            >
+                Generate Presentation
+            </button>
+
+            {status === 'loading' && (
+                <div className="flex justify-center py-6">
+                    <Spinner message="Building your presentation… this takes about 20 seconds" color="text-indigo-400" textColor="text-white/60" />
+                </div>
+            )}
+
+            {status === 'error' && (
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                    {errorMsg}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ─── PDF Tab ────────────────────────────────────────────────────────────────
 
 function PdfUploader() {
@@ -368,38 +448,39 @@ function AudioUploader() {
 export default function UploadPage() {
     const [tab, setTab] = useState('pdf');
 
+    const tabs = [
+        { id: 'pdf',          label: '📄 PDF',          active: 'bg-blue-500/30 border-blue-400/50 text-blue-200' },
+        { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/30 border-purple-400/50 text-purple-200' },
+        { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/30 border-indigo-400/50 text-indigo-200' },
+    ];
+
     return (
         <div className="max-w-xl mx-auto mt-4 flex flex-col gap-6">
             <div>
                 <h2 className="text-3xl font-bold text-white">Upload Content</h2>
-                <p className="text-white/60 mt-1 text-sm">Upload a PDF or audio file to generate activities from it.</p>
+                <p className="text-white/60 mt-1 text-sm">Upload a PDF or audio file, or create a presentation from any topic.</p>
             </div>
 
             {/* Tab switcher */}
             <div className="flex gap-2">
-                <button
-                    onClick={() => setTab('pdf')}
-                    className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
-                        tab === 'pdf'
-                            ? 'bg-blue-500/30 border-blue-400/50 text-blue-200'
-                            : 'bg-white/5 border-white/15 text-white/50 hover:bg-white/10 hover:text-white/70'
-                    }`}
-                >
-                    📄 PDF
-                </button>
-                <button
-                    onClick={() => setTab('audio')}
-                    className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
-                        tab === 'audio'
-                            ? 'bg-purple-500/30 border-purple-400/50 text-purple-200'
-                            : 'bg-white/5 border-white/15 text-white/50 hover:bg-white/10 hover:text-white/70'
-                    }`}
-                >
-                    🎧 Audio
-                </button>
+                {tabs.map(t => (
+                    <button
+                        key={t.id}
+                        onClick={() => setTab(t.id)}
+                        className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
+                            tab === t.id
+                                ? t.active
+                                : 'bg-white/5 border-white/15 text-white/50 hover:bg-white/10 hover:text-white/70'
+                        }`}
+                    >
+                        {t.label}
+                    </button>
+                ))}
             </div>
 
-            {tab === 'pdf' ? <PdfUploader /> : <AudioUploader />}
+            {tab === 'pdf'          && <PdfUploader />}
+            {tab === 'audio'        && <AudioUploader />}
+            {tab === 'presentation' && <PresentationGenerator />}
         </div>
     );
 }

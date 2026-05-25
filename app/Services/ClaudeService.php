@@ -867,6 +867,73 @@ Rules:
 EOT;
     }
 
+    public function generatePresentation(string $topic, string $extra = ''): array
+    {
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 4096,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildPresentationPrompt($topic, $extra),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    private function buildPresentationPrompt(string $topic, string $extra): string
+    {
+        $extraSection = $extra ? "\nExtra instructions: {$extra}" : '';
+
+        return <<<EOT
+Create a classroom presentation about the following topic for B1-B2 English learners: {$topic}{$extraSection}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "presentation",
+  "topic": "<short topic name, 2-4 words>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits a classroom or study context, e.g. 'student writing notes library'>",
+  "slides": [
+    {
+      "title": "<short slide title>",
+      "rule": "<main content for this slide — use **double asterisks** to bold key terms or important words>",
+      "form": "<optional: a formula, structure, or pattern — use **double asterisks** to bold key parts; omit this field entirely if not applicable>",
+      "examples": [
+        "<an example sentence or point — use **double asterisks** to bold key terms>",
+        "<another example>"
+      ],
+      "color": "<one of: blue, purple, green, orange, teal, rose>"
+    }
+  ]
+}
+
+Rules:
+- Generate 4 to 6 slides — structure them logically (e.g. introduction → key points → examples → common mistakes → summary)
+- Adapt naturally to any topic: grammar structures, vocabulary sets, exam strategies, reading skills, cultural topics, pronunciation, etc.
+- Use **double asterisks** around key terms in rules, forms, and examples — these render as colored bold text
+- The "form" field is optional — include it only when showing a formula, pattern, or structure
+- Each slide should have 2 to 3 examples
+- Assign a different color to each slide — cycle through blue, purple, green, orange, teal, rose
+- Keep content concise and student-friendly — suitable for classroom display
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     private function throwIfFailed($response): void
     {
         if (! $response->failed()) return;

@@ -12,6 +12,7 @@ Route::middleware('auth:web')->group(function () {
     Route::get('/documents', [DocumentController::class, 'index']);
     Route::post('/documents', [DocumentController::class, 'store']);
     Route::post('/generate', [ActivityController::class, 'generate']);
+    Route::post('/presentation/generate', [ActivityController::class, 'generatePresentation']);
     Route::post('/detect-sections', [SectionController::class, 'detect']);
     Route::get('/background', [BackgroundController::class, 'fetch']);
 

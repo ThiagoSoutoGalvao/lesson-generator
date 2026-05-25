@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useSearchParams, useLocation } from 'react-router-dom';
 import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
@@ -49,12 +49,13 @@ const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2
 
 export default function GeneratePage() {
     const [searchParams] = useSearchParams();
+    const location = useLocation();
     const [documents, setDocuments]   = useState([]);
     const [documentId, setDocumentId] = useState('');
     const [activityType, setActivityType] = useState('quiz');
     const [prompt, setPrompt]         = useState(DEFAULT_PROMPTS.quiz);
-    const [status, setStatus]         = useState('idle');
-    const [activity, setActivity]     = useState(null);
+    const [status, setStatus]         = useState(location.state?.activity ? 'success' : 'idle');
+    const [activity, setActivity]     = useState(location.state?.activity ?? null);
     const [errorMsg, setErrorMsg]     = useState('');
     const [pageFrom, setPageFrom]     = useState('');
     const [pageTo, setPageTo]         = useState('');
@@ -120,6 +121,7 @@ export default function GeneratePage() {
     if (activity?.type === 'sentence_transformation') return <SentenceTransformationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'error_correction')        return <ErrorCorrectionActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'grammar_explainer')       return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'presentation')            return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
 
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">

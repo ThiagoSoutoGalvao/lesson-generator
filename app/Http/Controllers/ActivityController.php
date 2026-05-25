@@ -69,4 +69,23 @@ class ActivityController extends Controller
 
         return response()->json($activity);
     }
+
+    public function generatePresentation(Request $request, ClaudeService $claude)
+    {
+        $request->validate([
+            'topic' => ['required', 'string', 'max:200'],
+            'extra' => ['nullable', 'string', 'max:500'],
+        ]);
+
+        try {
+            $activity = $claude->generatePresentation(
+                $request->topic,
+                $request->input('extra', '')
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 502);
+        }
+
+        return response()->json($activity);
+    }
 }
