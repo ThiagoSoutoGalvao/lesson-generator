@@ -3,13 +3,14 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const FONT_SIZES  = ['text-2xl', 'text-3xl', 'text-4xl'];
+const FONT_SIZES         = ['text-2xl', 'text-3xl', 'text-4xl'];
+const EXPLANATION_SIZES  = ['text-xl',  'text-2xl', 'text-3xl'];
 const TEXT_COLORS = [
     { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
-    { label: 'Cream',  cls: 'text-amber-50',   bg: '#fffbeb' },
-    { label: 'Yellow', cls: 'text-yellow-300',  bg: '#fde047' },
-    { label: 'Sky',    cls: 'text-sky-300',     bg: '#7dd3fc' },
-    { label: 'Green',  cls: 'text-green-300',   bg: '#86efac' },
+    { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
+    { label: 'Orange', cls: 'text-orange-400', bg: '#fb923c' },
+    { label: 'Red',    cls: 'text-red-400',    bg: '#f87171' },
+    { label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' },
 ];
 
 export default function ErrorCorrectionActivity({ activity, onClose }) {
@@ -126,7 +127,7 @@ export default function ErrorCorrectionActivity({ activity, onClose }) {
                         {revealed && (
                             <div className="flex-1 px-8 pt-8 pb-8 border-t border-white/10 bg-white/5">
                                 <p className="text-white/45 text-xs uppercase tracking-widest mb-4">Why?</p>
-                                <p className="text-white/80 text-lg leading-relaxed">{item.explanation}</p>
+                                <p className={`${EXPLANATION_SIZES[fontSizeIdx]} ${textColor} opacity-80 leading-relaxed`}>{item.explanation}</p>
                             </div>
                         )}
                     </div>

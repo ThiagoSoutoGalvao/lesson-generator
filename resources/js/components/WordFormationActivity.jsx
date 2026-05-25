@@ -5,6 +5,14 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 
 const ROOT_SIZES     = ['text-4xl', 'text-5xl', 'text-6xl'];
 const SENTENCE_SIZES = ['text-xl',  'text-2xl',  'text-3xl'];
+const FORM_SIZES     = ['text-base','text-lg',   'text-xl'];
+const TEXT_COLORS    = [
+    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
+    { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
+    { label: 'Orange', cls: 'text-orange-400', bg: '#fb923c' },
+    { label: 'Red',    cls: 'text-red-400',    bg: '#f87171' },
+    { label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' },
+];
 
 export default function WordFormationActivity({ activity, onClose }) {
     const [index, setIndex]         = useState(0);
@@ -12,6 +20,7 @@ export default function WordFormationActivity({ activity, onClose }) {
     const [bgUrl, setBgUrl]         = useState(null);
     const [showSave, setShowSave]   = useState(false);
     const [fontSizeIdx, setFontSizeIdx] = useState(1);
+    const [textColor, setTextColor]     = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const items = activity.items;
@@ -73,8 +82,15 @@ export default function WordFormationActivity({ activity, onClose }) {
                     <div className="flex items-center gap-1">
                         <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
                             className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
+                        <button onClick={() => setFontSizeIdx(i => Math.min(ROOT_SIZES.length - 1, i + 1))} disabled={fontSizeIdx === ROOT_SIZES.length - 1}
                             className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        {TEXT_COLORS.map(({ label, cls, bg }) => (
+                            <button key={cls} onClick={() => setTextColor(cls)} title={label}
+                                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
+                                style={{ backgroundColor: bg }} />
+                        ))}
                     </div>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
@@ -101,13 +117,13 @@ export default function WordFormationActivity({ activity, onClose }) {
 
                         {/* Root word */}
                         <div className="px-8 py-6 flex items-center justify-center border-b border-white/10">
-                            <span className={`${ROOT_SIZES[fontSizeIdx]} font-black tracking-widest text-white`}>{item.root}</span>
+                            <span className={`${ROOT_SIZES[fontSizeIdx]} font-black tracking-widest ${textColor}`}>{item.root}</span>
                         </div>
 
                         {/* Sentence */}
                         <div className="px-8 py-6">
                             <p className="text-white/45 text-xs uppercase tracking-widest mb-3">Complete the sentence</p>
-                            <p className={`text-white ${SENTENCE_SIZES[fontSizeIdx]} leading-relaxed`}>
+                            <p className={`${textColor} ${SENTENCE_SIZES[fontSizeIdx]} leading-relaxed`}>
                                 {renderSentence(item.sentence, item.answer, revealed)}
                             </p>
                         </div>
@@ -116,7 +132,7 @@ export default function WordFormationActivity({ activity, onClose }) {
                         {revealed && (
                             <div className="px-8 py-4 border-t border-white/10 bg-white/5 flex items-center gap-3">
                                 <span className="text-white/40 text-xs uppercase tracking-widest">Word class</span>
-                                <span className="text-white/70 text-sm font-medium">{item.form}</span>
+                                <span className={`${FORM_SIZES[fontSizeIdx]} ${textColor} font-semibold`}>{item.form}</span>
                             </div>
                         )}
                     </div>

@@ -3,8 +3,16 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const WORD_SIZES = ['text-4xl', 'text-5xl', 'text-6xl'];
-const DEF_SIZES  = ['text-lg',  'text-xl',  'text-2xl'];
+const WORD_SIZES    = ['text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl'];
+const DEF_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
+const EXAMPLE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl',  'text-2xl'];
+const TEXT_COLORS   = [
+    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
+    { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
+    { label: 'Orange', cls: 'text-orange-400', bg: '#fb923c' },
+    { label: 'Red',    cls: 'text-red-400',    bg: '#f87171' },
+    { label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' },
+];
 
 export default function FlashcardActivity({ activity, onClose }) {
     const [index, setIndex] = useState(0);
@@ -16,6 +24,7 @@ export default function FlashcardActivity({ activity, onClose }) {
     const [showSave, setShowSave]       = useState(false);
     const [questionMode, setQuestionMode] = useState(false);
     const [fontSizeIdx, setFontSizeIdx]   = useState(1);
+    const [textColor, setTextColor]       = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     function toggleMode() {
@@ -130,8 +139,15 @@ export default function FlashcardActivity({ activity, onClose }) {
                     <div className="flex items-center gap-1">
                         <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
                             className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
+                        <button onClick={() => setFontSizeIdx(i => Math.min(DEF_SIZES.length - 1, i + 1))} disabled={fontSizeIdx === DEF_SIZES.length - 1}
                             className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                        {TEXT_COLORS.map(({ label, cls, bg }) => (
+                            <button key={cls} onClick={() => setTextColor(cls)} title={label}
+                                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
+                                style={{ backgroundColor: bg }} />
+                        ))}
                     </div>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
@@ -156,7 +172,7 @@ export default function FlashcardActivity({ activity, onClose }) {
                         transition: 'transform 0.5s ease',
                         transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)',
                         position: 'relative',
-                        height: '280px',
+                        height: '420px',
                     }}>
                         {/* Front */}
                         <div style={{ backfaceVisibility: 'hidden', position: 'absolute', inset: 0 }}
@@ -164,13 +180,14 @@ export default function FlashcardActivity({ activity, onClose }) {
                             {questionMode ? (
                                 <>
                                     <p className="text-white/40 text-xs uppercase tracking-widest">What's the word?</p>
-                                    <p className={`${DEF_SIZES[fontSizeIdx]} text-white font-medium text-center leading-snug`}>{card.definition}</p>
-                                    <p className="text-white/60 text-base italic text-center">"{card.example}"</p>
+                                    <p className={`${DEF_SIZES[fontSizeIdx]} ${textColor} font-medium text-center leading-snug`}>{card.definition}</p>
+                                    <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example}"</p>
+                                    {card.example2 && <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example2}"</p>}
                                 </>
                             ) : (
                                 <>
                                     <p className="text-white/40 text-xs uppercase tracking-widest">Tap to flip</p>
-                                    <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold text-white text-center leading-tight`}>{card.word}</h2>
+                                    <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold ${textColor} text-center leading-tight`}>{card.word}</h2>
                                 </>
                             )}
                         </div>
@@ -179,11 +196,12 @@ export default function FlashcardActivity({ activity, onClose }) {
                         <div style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', position: 'absolute', inset: 0 }}
                             className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-10 gap-4">
                             {questionMode ? (
-                                <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold text-white text-center leading-tight`}>{card.word}</h2>
+                                <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold ${textColor} text-center leading-tight`}>{card.word}</h2>
                             ) : (
                                 <>
-                                    <p className={`${DEF_SIZES[fontSizeIdx]} text-white font-medium text-center leading-snug`}>{card.definition}</p>
-                                    <p className="text-white/60 text-base italic text-center">"{card.example}"</p>
+                                    <p className={`${DEF_SIZES[fontSizeIdx]} ${textColor} font-medium text-center leading-snug`}>{card.definition}</p>
+                                    <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example}"</p>
+                                    {card.example2 && <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example2}"</p>}
                                 </>
                             )}
                         </div>

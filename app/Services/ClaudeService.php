@@ -14,7 +14,7 @@ class ClaudeService
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
@@ -69,9 +69,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'messages'   => [
                 [
                     'role'    => 'user',
@@ -92,9 +92,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -123,9 +123,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -165,6 +165,7 @@ Return a JSON object with EXACTLY this structure:
       "word": "<vocabulary word or phrase>",
       "definition": "<clear, student-friendly definition>",
       "example": "<a natural example sentence using the word in context>",
+      "example2": "<a second natural example sentence using the word in a different context>",
       "keyword": "<3-5 word descriptive scene phrase that visually illustrates this word for an Unsplash search, e.g. 'chef cooking pasta kitchen' or 'person reading book library'>"
     }
   ]
@@ -172,7 +173,7 @@ Return a JSON object with EXACTLY this structure:
 
 Rules:
 - Definitions must be simple and clear for B1-B2 English learners — avoid complex words in the definition itself
-- Example sentences should feel natural and contextual, not textbook-stiff
+- Both example sentences should feel natural and contextual, not textbook-stiff; each should show the word used differently
 - Each card's keyword must be a descriptive scene phrase (not just the word itself) and visually distinct from the others
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
@@ -185,9 +186,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -249,9 +250,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 1024,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -327,9 +328,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 1024,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -377,11 +378,11 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly 8 items
+- Generate the number of items specified in the task above
 - Each root word must come from key vocabulary in the text
 - The answer must be a real derivative of the root: use prefixes, suffixes, or both (e.g. SUCCESS → successful, successfully, unsuccessful)
 - The sentence must make the required word class clear from context — students should be able to work out the form from the grammar of the sentence
-- Cover a variety of word classes across the 8 items: nouns, verbs, adjectives, and adverbs
+- Cover a variety of word classes across the items: nouns, verbs, adjectives, and adverbs
 - Each root word must be different — do not reuse the same root
 - The gap marked as ___ must have exactly one correct answer
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
@@ -395,9 +396,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -460,9 +461,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -527,9 +528,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -604,9 +605,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 1024,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -668,9 +669,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 1024,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -735,9 +736,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -803,9 +804,9 @@ EOT;
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
-        ])->post('https://api.anthropic.com/v1/messages', [
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 2048,
+            'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
