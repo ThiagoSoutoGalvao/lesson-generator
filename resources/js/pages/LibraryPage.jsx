@@ -31,6 +31,7 @@ const TYPE_LABELS = {
     sentence_transformation:  'Transform',
     error_correction:         'Error Correction',
     grammar_explainer:        'Grammar',
+    presentation:             'Presentation',
 };
 const TYPE_COLORS = {
     quiz:                    'bg-blue-500/80 text-white',
@@ -47,12 +48,13 @@ const TYPE_COLORS = {
     sentence_transformation: 'bg-violet-500/80 text-white',
     error_correction:        'bg-red-500/80 text-white',
     grammar_explainer:       'bg-emerald-500/80 text-white',
+    presentation:            'bg-indigo-500/80 text-white',
 };
 const TYPE_FILTERS = [
     'all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill',
     'word_categorisation', 'true_false', 'image_vocab_match',
     'word_formation', 'odd_one_out', 'cloze', 'discussion_questions',
-    'sentence_transformation', 'error_correction', 'grammar_explainer',
+    'sentence_transformation', 'error_correction', 'grammar_explainer', 'presentation',
 ];
 
 const filterBtnCls = (active) =>
@@ -107,6 +109,7 @@ export default function LibraryPage() {
         if (launched.type === 'sentence_transformation') return <SentenceTransformationActivity {...props} />;
         if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;
         if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
+        if (launched.type === 'presentation')            return <GrammarExplainerActivity {...props} />;
     }
 
     const filtered = activities.filter(a => {
