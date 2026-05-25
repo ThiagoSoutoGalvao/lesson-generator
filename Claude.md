@@ -195,3 +195,67 @@ return $user->newSubscription('default', 'price_1ABC...')
 **Commit target:** `Phase 11: Stripe + Cashier setup, pricing page, generation limits`
 
 > See `docs/phase11-marketing.md` for marketing strategy and revenue targets.
+
+---
+
+## 10. Phase K — Activity UI Polish ✅ COMPLETED
+
+Improvements across four activity templates:
+
+**Quiz:**
+- Font size extended to 5 steps (`text-2xl` → `text-6xl`); option cards scale proportionally via `OPTION_SIZES`
+- Previous button added; answers stored per question index so navigating back restores answered state; score recalculates dynamically
+- Font color bar added (White / Yellow / Orange / Red / Cyan) — same palette now standard across all templates
+
+**Flashcard:**
+- Font color bar added (same 5-color palette)
+- `example2` field added to Claude prompt and rendered on card (back and question-mode front)
+- `EXAMPLE_SIZES` array scales examples proportionally with A-/A+
+- Font sizes extended to 5 steps for word (`text-4xl`→`text-8xl`), definition (`text-lg`→`text-4xl`), examples (`text-sm`→`text-2xl`)
+- Card height increased to 420px to accommodate larger sizes
+
+**Word Formation:**
+- Font color bar added (same 5-color palette)
+- `FORM_SIZES` array added — word class label (`noun`, `verb`, etc.) now scales with font size, one tier below the sentence
+
+**Error Correction:**
+- `EXPLANATION_SIZES` array added — explanation scales with A-/A+, always one Tailwind step below the sentence
+- Color palette updated to match standard (White / Yellow / Orange / Red / Cyan)
+
+**Standard color palette** (all templates going forward):
+```js
+{ label: 'White',  cls: 'text-white',      bg: '#ffffff' }
+{ label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' }
+{ label: 'Orange', cls: 'text-orange-400', bg: '#fb923c' }
+{ label: 'Red',    cls: 'text-red-400',    bg: '#f87171' }
+{ label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' }
+```
+
+---
+
+## 11. Phase L — Presentation Tool ✅ COMPLETED
+
+**Goal:** Evolve the Grammar Explainer into a standalone animated Presentation tool. Teachers can type any topic and get a fullscreen slide deck — no PDF required.
+
+### Phase L1 — Animation & Layout ✅
+
+- **Direction-aware slide push** — `direction` state set on Next/Prev/keyboard/dot-click; slide container uses `key={slideIdx-direction}` to remount on navigation, triggering `.pres-enter-right` / `.pres-enter-left` CSS animations (350ms ease-out translateX)
+- **Staggered content build** — `.stagger-block` CSS class with `nth-child` delays (60ms, 180ms, 300ms, 420ms, 540ms) on `.slide-content` children; avoids React re-triggering the animation on unrelated state changes (e.g. font size)
+- **Grammar term pulse** — `.slide-content strong { animation: pres-term-pulse 0.9s … 0.75s }` — bold `**terms**` glow briefly on slide enter
+- **Layout** — `overflow-y-auto` removed; content is `flex-1 flex items-center justify-center` — true fullscreen, no scrolling
+- **Font size** — 5 steps at module scope (`TITLE_SIZES`, `RULE_SIZES`, `FORM_SIZES`, `EXAMPLE_SIZES`); standard palette; `textColor` applies to title as well
+
+### Phase L2 — Standalone Presentation Tool ✅
+
+- **UploadPage** — third tab `🎞 Presentation` (indigo theme); `PresentationGenerator` component with topic input + optional extra instructions field
+- **API** — `POST /api/presentation/generate` → `ActivityController::generatePresentation()` → `ClaudeService::generatePresentation()` — no document required; generalised prompt works for any topic (grammar, vocabulary, culture, exam tips, etc.)
+- **Routing** — on success, navigates to `/generate` with `{ state: { activity } }`; `GeneratePage` initialises from `location.state` so presentation opens immediately
+- **Type: `presentation`** — uses same JSON schema and `GrammarExplainerActivity` component as `grammar_explainer`
+- **Save/Library** — `presentation` added to `SavedActivityController` validator, `LibraryPage` labels/colors/filters/launcher
+
+**Key files:**
+- `resources/js/components/GrammarExplainerActivity.jsx` — shared renderer for both types
+- `resources/css/app.css` — `pres-enter-*`, `pres-fade-up`, `pres-term-pulse`, `.stagger-block` nth-child rules
+- `app/Services/ClaudeService.php` — `generatePresentation()` + `buildPresentationPrompt()`
+- `app/Http/Controllers/ActivityController.php` — `generatePresentation()` method
+- `resources/js/pages/UploadPage.jsx` — `PresentationGenerator` + three-tab layout
