@@ -169,6 +169,17 @@
     animation: pres-term-pulse 0.9s ease-out 0.75s both;
 }
 
+/* Staggered block build — nth-child avoids React re-triggering on state changes */
+.slide-content .stagger-block {
+    animation: pres-fade-up 0.4s ease-out both;
+}
+.slide-content .stagger-block:nth-child(1) { animation-delay: 60ms; }
+.slide-content .stagger-block:nth-child(2) { animation-delay: 180ms; }
+.slide-content .stagger-block:nth-child(3) { animation-delay: 300ms; }
+.slide-content .stagger-block:nth-child(4) { animation-delay: 420ms; }
+.slide-content .stagger-block:nth-child(5) { animation-delay: 540ms; }
+.slide-content .stagger-block:nth-child(6) { animation-delay: 660ms; }
+
 /* ── Accessibility font control (Aa button in navbar) ── */
 body.tf-active {
   font-family: var(--tf-family) !important;

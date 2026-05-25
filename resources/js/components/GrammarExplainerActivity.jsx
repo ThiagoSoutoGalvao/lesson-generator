@@ -3,7 +3,12 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'];
+const TITLE_SIZES   = ['text-3xl',  'text-4xl',  'text-5xl',  'text-6xl',  'text-7xl'];
+const RULE_SIZES    = ['text-base', 'text-lg',   'text-xl',   'text-2xl',  'text-3xl'];
+const FORM_SIZES    = ['text-sm',   'text-base', 'text-lg',   'text-xl',   'text-2xl'];
+const EXAMPLE_SIZES = ['text-sm',   'text-base', 'text-lg',   'text-xl',   'text-2xl'];
+const FONT_SIZE_MAX = TITLE_SIZES.length - 1;
+
 const TEXT_COLORS = [
     { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
     { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
@@ -29,20 +34,12 @@ function parseText(text, accentClass) {
     );
 }
 
-// Returns inline style for staggered fade-up animation
-function stagger(n) {
-    return {
-        animation: 'pres-fade-up 0.4s ease-out both',
-        animationDelay: `${80 + n * 110}ms`,
-    };
-}
-
 export default function GrammarExplainerActivity({ activity, onClose }) {
     const [slideIdx, setSlideIdx]         = useState(0);
     const [direction, setDirection]       = useState('next');
     const [bgUrl, setBgUrl]               = useState(null);
     const [showSave, setShowSave]         = useState(false);
-    const [fontSizeIdx, setFontSizeIdx]   = useState(0);
+    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
     const [textColor, setTextColor]       = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -50,11 +47,6 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
     const slide  = slides[slideIdx];
     const total  = slides.length;
     const accent = ACCENT[slide?.color] ?? ACCENT.blue;
-
-    const TITLE_SIZES   = ['text-3xl',  'text-4xl',  'text-5xl'];
-    const RULE_SIZES    = ['text-xl',   'text-2xl',  'text-3xl'];
-    const FORM_SIZES    = ['text-lg',   'text-xl',   'text-2xl'];
-    const EXAMPLE_SIZES = ['text-lg',   'text-xl',   'text-2xl'];
 
     useEffect(() => {
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
@@ -118,7 +110,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                     <div className="flex items-center gap-1">
                         <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
                             className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(FONT_SIZES.length - 1, i + 1))} disabled={fontSizeIdx === FONT_SIZES.length - 1}
+                        <button onClick={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))} disabled={fontSizeIdx === FONT_SIZE_MAX}
                             className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer">A+</button>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -144,22 +136,22 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                 </div>
             </div>
 
-            {/* Slide — fullscreen centered, direction-aware push + staggered build */}
-            <div className="relative z-10 flex-1 flex items-center justify-center px-8 py-4 overflow-hidden">
+            {/* Slide content — full width, CSS-driven stagger */}
+            <div className="relative z-10 flex-1 flex items-center justify-center px-12 py-6 overflow-hidden">
                 <div
                     key={`${slideIdx}-${direction}`}
-                    className={`slide-content w-full max-w-2xl flex flex-col gap-4 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}
+                    className={`slide-content w-full flex flex-col gap-5 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}
                 >
-                    {/* Topic + title */}
-                    <div style={stagger(0)}>
+                    {/* Title */}
+                    <div className="stagger-block">
                         <p className="text-white/40 text-xs uppercase tracking-widest mb-1">{activity.topic}</p>
-                        <h2 className={`${TITLE_SIZES[fontSizeIdx]} font-bold ${accent.text} leading-tight`}>
+                        <h2 className={`${TITLE_SIZES[fontSizeIdx]} font-bold ${textColor} leading-tight`}>
                             {slide.title}
                         </h2>
                     </div>
 
                     {/* Rule */}
-                    <div style={stagger(1)} className={`rounded-xl ${accent.bg} ${accent.border} border px-5 py-4`}>
+                    <div className={`stagger-block rounded-xl ${accent.bg} ${accent.border} border px-6 py-5`}>
                         <p className={`${RULE_SIZES[fontSizeIdx]} ${textColor} leading-relaxed`}>
                             {parseText(slide.rule, accent.text)}
                         </p>
@@ -167,8 +159,8 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
 
                     {/* Form */}
                     {slide.form && (
-                        <div style={stagger(2)} className="rounded-xl bg-black/35 border border-white/12 px-5 py-3">
-                            <p className="text-white/35 text-xs uppercase tracking-widest mb-1.5">Form</p>
+                        <div className="stagger-block rounded-xl bg-black/35 border border-white/12 px-6 py-4">
+                            <p className="text-white/35 text-xs uppercase tracking-widest mb-2">Form</p>
                             <p className={`${FORM_SIZES[fontSizeIdx]} font-mono ${textColor} leading-relaxed`}>
                                 {parseText(slide.form, accent.text)}
                             </p>
@@ -176,10 +168,9 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                     )}
 
                     {/* Examples */}
-                    <div className="flex flex-col gap-2">
+                    <div className="stagger-block flex flex-col gap-3">
                         {slide.examples.map((ex, i) => (
-                            <div key={i} style={stagger(slide.form ? 3 + i : 2 + i)}
-                                className="rounded-xl bg-black/25 border border-white/10 px-5 py-3 flex items-baseline gap-3">
+                            <div key={i} className="rounded-xl bg-black/25 border border-white/10 px-6 py-4 flex items-baseline gap-3">
                                 <span className={`${accent.text} font-bold text-sm shrink-0`}>{i + 1}.</span>
                                 <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} leading-relaxed`}>
                                     {parseText(ex, accent.text)}
@@ -189,8 +180,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                     </div>
 
                     {/* Navigation */}
-                    <div style={stagger(slide.form ? 3 + slide.examples.length : 2 + slide.examples.length)}
-                        className="flex justify-center gap-3 pt-1">
+                    <div className="stagger-block flex justify-center gap-3 pt-1">
                         <button onClick={handlePrev} disabled={slideIdx === 0}
                             className="bg-white/15 hover:bg-white/25 disabled:opacity-25 disabled:cursor-default text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">
                             ← Prev
