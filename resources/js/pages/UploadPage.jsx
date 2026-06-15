@@ -5,11 +5,14 @@ import Spinner from '@/components/Spinner';
 
 // ─── Presentation Tab ─────────────────────────────────────────────────────────
 
+const SLIDE_OPTIONS = [4, 5, 6, 7, 8, 10];
+
 function PresentationGenerator() {
     const navigate = useNavigate();
-    const [topic, setTopic]   = useState('');
-    const [extra, setExtra]   = useState('');
-    const [status, setStatus] = useState('idle');
+    const [topic, setTopic]       = useState('');
+    const [extra, setExtra]       = useState('');
+    const [slides, setSlides]     = useState(6);
+    const [status, setStatus]     = useState('idle');
     const [errorMsg, setErrorMsg] = useState('');
 
     async function generate() {
@@ -18,8 +21,9 @@ function PresentationGenerator() {
         setErrorMsg('');
         try {
             const { data } = await axios.post('/api/presentation/generate', {
-                topic: topic.trim(),
-                extra: extra.trim() || undefined,
+                topic:  topic.trim(),
+                extra:  extra.trim() || undefined,
+                slides,
             });
             navigate('/generate', { state: { activity: data } });
         } catch (err) {
@@ -54,10 +58,30 @@ function PresentationGenerator() {
                     value={extra}
                     onChange={e => setExtra(e.target.value)}
                     placeholder="e.g. Focus on common mistakes, include exam tips, suitable for business English…"
-                    rows={3}
-                    className={`${inputCls} resize-none`}
+                    rows={5}
+                    className={`${inputCls} resize-y`}
                     disabled={status === 'loading'}
                 />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">Number of slides</label>
+                <div className="flex gap-2 flex-wrap">
+                    {SLIDE_OPTIONS.map(n => (
+                        <button
+                            key={n}
+                            onClick={() => setSlides(n)}
+                            disabled={status === 'loading'}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
+                                slides === n
+                                    ? 'bg-indigo-500 border-indigo-400 text-white'
+                                    : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/20 hover:text-white'
+                            }`}
+                        >
+                            {n}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             <button

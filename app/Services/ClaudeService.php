@@ -867,19 +867,19 @@ Rules:
 EOT;
     }
 
-    public function generatePresentation(string $topic, string $extra = ''): array
+    public function generatePresentation(string $topic, string $extra = '', int $slides = 6): array
     {
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => 'claude-sonnet-4-6',
-            'max_tokens' => 4096,
+            'max_tokens' => 6000,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildPresentationPrompt($topic, $extra),
+                    'content' => $this->buildPresentationPrompt($topic, $extra, $slides),
                 ],
             ],
         ]);
@@ -896,9 +896,9 @@ EOT;
         return $data;
     }
 
-    private function buildPresentationPrompt(string $topic, string $extra): string
+    private function buildPresentationPrompt(string $topic, string $extra, int $slides): string
     {
-        $extraSection = $extra ? "\nExtra instructions: {$extra}" : '';
+        $extraSection = $extra ? "\nExtra instructions / examples from the book: {$extra}" : '';
 
         return <<<EOT
 Create a classroom presentation about the following topic for B1-B2 English learners: {$topic}{$extraSection}
@@ -923,11 +923,11 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate 4 to 6 slides — structure them logically (e.g. introduction → key points → examples → common mistakes → summary)
+- Generate EXACTLY {$slides} slides — structure them logically (e.g. introduction → key points → examples → common mistakes → summary); do not generate fewer
 - Adapt naturally to any topic: grammar structures, vocabulary sets, exam strategies, reading skills, cultural topics, pronunciation, etc.
 - Use **double asterisks** around key terms in rules, forms, and examples — these render as colored bold text
 - The "form" field is optional — include it only when showing a formula, pattern, or structure
-- Each slide should have 2 to 3 examples
+- Each slide should have 4 to 6 examples
 - Assign a different color to each slide — cycle through blue, purple, green, orange, teal, rose
 - Keep content concise and student-friendly — suitable for classroom display
 - Return ONLY the raw JSON object — no markdown backticks, no explanation

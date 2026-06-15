@@ -73,14 +73,16 @@ class ActivityController extends Controller
     public function generatePresentation(Request $request, ClaudeService $claude)
     {
         $request->validate([
-            'topic' => ['required', 'string', 'max:200'],
-            'extra' => ['nullable', 'string', 'max:500'],
+            'topic'  => ['required', 'string', 'max:200'],
+            'extra'  => ['nullable', 'string', 'max:3000'],
+            'slides' => ['nullable', 'integer', 'min:4', 'max:10'],
         ]);
 
         try {
             $activity = $claude->generatePresentation(
                 $request->topic,
-                $request->input('extra', '')
+                $request->input('extra', ''),
+                (int) $request->input('slides', 6)
             );
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
