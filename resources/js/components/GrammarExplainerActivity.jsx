@@ -86,7 +86,8 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
         : { background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' };
 
     return (
-        <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
+      <>
+        <div className="fixed inset-0 flex flex-col z-50 print:hidden" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
             {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
@@ -121,6 +122,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                         ))}
                     </div>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    <button onClick={() => window.print()} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Download as PDF">⬇ PDF</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -193,5 +195,39 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                 </div>
             </div>
         </div>
+
+        {/* Print-only view — all slides rendered, one per page */}
+        <div className="pres-print-root" style={{ display: 'none' }}>
+            {slides.map((s, i) => {
+                const a = ACCENT[s.color] ?? ACCENT.blue;
+                return (
+                    <div key={i} className="pres-print-slide">
+                        <p className="pres-print-meta">{activity.topic} · slide {i + 1} of {total}</p>
+                        <h2 className={`pres-print-title ${a.text}`}>{s.title}</h2>
+
+                        <div className="pres-print-rule">
+                            {parseText(s.rule, a.text)}
+                        </div>
+
+                        {s.form && (
+                            <div className="pres-print-form">
+                                <p className="pres-print-form-label">Form</p>
+                                <p className="pres-print-form-text">{parseText(s.form, a.text)}</p>
+                            </div>
+                        )}
+
+                        <div className="pres-print-examples">
+                            {s.examples.map((ex, j) => (
+                                <div key={j} className="pres-print-example">
+                                    <span className={`pres-print-example-num ${a.text}`}>{j + 1}.</span>
+                                    <span className="pres-print-example-text">{parseText(ex, a.text)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+      </>
     );
 }

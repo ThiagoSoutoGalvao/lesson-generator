@@ -180,6 +180,121 @@
 .slide-content .stagger-block:nth-child(5) { animation-delay: 540ms; }
 .slide-content .stagger-block:nth-child(6) { animation-delay: 660ms; }
 
+/* ── Presentation print / PDF export ── */
+@media print {
+    @page { margin: 1.2cm 1.5cm; size: A4; }
+
+    /* Hide everything, then selectively show the print-only slide stack */
+    body * { visibility: hidden; }
+
+    .pres-print-root {
+        display: block !important; /* overrides inline style="display:none" */
+        visibility: visible;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+    }
+
+    .pres-print-root * { visibility: visible; }
+
+    .pres-print-slide {
+        print-color-adjust: exact;
+        -webkit-print-color-adjust: exact;
+        background: #1a1a2e !important;
+        min-height: 100vh;
+        padding: 2cm 2.2cm;
+        display: flex;
+        flex-direction: column;
+        gap: 1.4rem;
+        page-break-after: always;
+        break-after: page;
+        box-sizing: border-box;
+    }
+
+    .pres-print-slide:last-child {
+        page-break-after: avoid;
+        break-after: avoid;
+    }
+
+    .pres-print-meta {
+        color: rgba(255,255,255,0.38);
+        font-size: 0.68rem;
+        text-transform: uppercase;
+        letter-spacing: 0.12em;
+        margin-bottom: 0.2rem;
+    }
+
+    .pres-print-title {
+        font-size: 1.9rem;
+        font-weight: 700;
+        color: #fff;
+        line-height: 1.2;
+    }
+
+    .pres-print-rule {
+        background: rgba(255,255,255,0.06) !important;
+        border-left: 3px solid rgba(255,255,255,0.3);
+        border-radius: 0.5rem;
+        padding: 0.9rem 1.1rem;
+        font-size: 1rem;
+        color: #fff;
+        line-height: 1.6;
+    }
+
+    .pres-print-form {
+        background: rgba(0,0,0,0.25) !important;
+        border-left: 3px solid rgba(255,255,255,0.18);
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.1rem;
+    }
+
+    .pres-print-form-label {
+        font-size: 0.65rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: rgba(255,255,255,0.35);
+        margin-bottom: 0.3rem;
+    }
+
+    .pres-print-form-text {
+        font-family: monospace;
+        font-size: 0.95rem;
+        color: #fff;
+        line-height: 1.5;
+    }
+
+    .pres-print-examples {
+        display: flex;
+        flex-direction: column;
+        gap: 0.55rem;
+    }
+
+    .pres-print-example {
+        display: flex;
+        gap: 0.6rem;
+        align-items: baseline;
+        background: rgba(0,0,0,0.18) !important;
+        border-radius: 0.4rem;
+        padding: 0.55rem 0.9rem;
+    }
+
+    .pres-print-example-num {
+        font-weight: 700;
+        font-size: 0.8rem;
+        flex-shrink: 0;
+    }
+
+    .pres-print-example-text {
+        font-size: 0.9rem;
+        color: #fff;
+        line-height: 1.5;
+    }
+
+    /* Preserve accent colors on bold terms */
+    .pres-print-slide strong { font-weight: 700; }
+}
+
 /* ── Accessibility font control (Aa button in navbar) ── */
 body.tf-active {
   font-family: var(--tf-family) !important;
