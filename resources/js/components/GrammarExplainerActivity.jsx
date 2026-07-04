@@ -138,59 +138,60 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                 </div>
             </div>
 
-            {/* Slide content — full width, CSS-driven stagger */}
-            <div className="relative z-10 flex-1 flex items-center justify-center px-12 py-6 overflow-hidden">
+            {/* Slide content — split-screen, CSS-driven stagger */}
+            <div className="relative z-10 flex-1 flex px-12 py-6 overflow-hidden">
                 <div
                     key={`${slideIdx}-${direction}`}
-                    className={`slide-content w-full flex flex-col gap-5 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}
+                    className={`slide-content w-full h-full flex flex-col md:flex-row gap-8 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}
                 >
-                    {/* Title */}
-                    <div className="stagger-block">
-                        <p className="text-white/40 text-xs uppercase tracking-widest mb-1">{activity.topic}</p>
-                        <h2 className={`${TITLE_SIZES[fontSizeIdx]} font-bold ${textColor} leading-tight`}>
-                            {slide.title}
-                        </h2>
-                    </div>
+                    {/* Left panel — title, rule, form */}
+                    <div className="md:w-[56%] shrink-0 flex flex-col justify-center gap-5 min-h-0">
+                        <div className="stagger-block">
+                            <p className="text-white/40 text-xs uppercase tracking-widest mb-1">{activity.topic}</p>
+                            <h2 className={`${TITLE_SIZES[fontSizeIdx]} font-bold ${textColor} leading-tight`}>
+                                {slide.title}
+                            </h2>
+                        </div>
 
-                    {/* Rule */}
-                    <div className={`stagger-block rounded-xl ${accent.bg} ${accent.border} border px-6 py-5`}>
-                        <p className={`${RULE_SIZES[fontSizeIdx]} ${textColor} leading-relaxed`}>
-                            {parseText(slide.rule, accent.text)}
-                        </p>
-                    </div>
-
-                    {/* Form */}
-                    {slide.form && (
-                        <div className="stagger-block rounded-xl bg-black/35 border border-white/12 px-6 py-4">
-                            <p className="text-white/35 text-xs uppercase tracking-widest mb-2">Form</p>
-                            <p className={`${FORM_SIZES[fontSizeIdx]} font-mono ${textColor} leading-relaxed`}>
-                                {parseText(slide.form, accent.text)}
+                        <div className={`stagger-block rounded-xl ${accent.bg} ${accent.border} border px-6 py-5`}>
+                            <p className={`${RULE_SIZES[fontSizeIdx]} ${textColor} leading-relaxed`}>
+                                {parseText(slide.rule, accent.text)}
                             </p>
                         </div>
-                    )}
 
-                    {/* Examples */}
-                    <div className="stagger-block flex flex-col gap-3">
-                        {slide.examples.map((ex, i) => (
-                            <div key={i} className="rounded-xl bg-black/25 border border-white/10 px-6 py-4 flex items-baseline gap-3">
-                                <span className={`${accent.text} font-bold text-sm shrink-0`}>{i + 1}.</span>
-                                <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} leading-relaxed`}>
-                                    {parseText(ex, accent.text)}
+                        {slide.form && (
+                            <div className="stagger-block rounded-xl bg-black/35 border border-white/12 px-6 py-4">
+                                <p className="text-white/35 text-xs uppercase tracking-widest mb-2">Form</p>
+                                <p className={`${FORM_SIZES[fontSizeIdx]} font-mono ${textColor} leading-relaxed`}>
+                                    {parseText(slide.form, accent.text)}
                                 </p>
                             </div>
-                        ))}
+                        )}
                     </div>
 
-                    {/* Navigation */}
-                    <div className="stagger-block flex justify-center gap-3 pt-1">
-                        <button onClick={handlePrev} disabled={slideIdx === 0}
-                            className="bg-white/15 hover:bg-white/25 disabled:opacity-25 disabled:cursor-default text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">
-                            ← Prev
-                        </button>
-                        <button onClick={handleNext} disabled={slideIdx === total - 1}
-                            className={`${accent.btn} disabled:opacity-25 disabled:cursor-default text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors cursor-pointer`}>
-                            Next →
-                        </button>
+                    {/* Right panel — examples (scrollable) + navigation pinned at bottom */}
+                    <div className="flex-1 flex flex-col min-h-0">
+                        <div className="stagger-block flex-1 min-h-0 overflow-y-auto flex flex-col gap-3 pr-2">
+                            {slide.examples.map((ex, i) => (
+                                <div key={i} className="rounded-xl bg-black/25 border border-white/10 px-6 py-4 flex items-baseline gap-3 shrink-0">
+                                    <span className={`${accent.text} font-bold text-sm shrink-0`}>{i + 1}.</span>
+                                    <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} leading-relaxed`}>
+                                        {parseText(ex, accent.text)}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="stagger-block flex justify-center gap-3 pt-4 shrink-0">
+                            <button onClick={handlePrev} disabled={slideIdx === 0}
+                                className="bg-white/15 hover:bg-white/25 disabled:opacity-25 disabled:cursor-default text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors cursor-pointer">
+                                ← Prev
+                            </button>
+                            <button onClick={handleNext} disabled={slideIdx === total - 1}
+                                className={`${accent.btn} disabled:opacity-25 disabled:cursor-default text-white font-semibold px-5 py-2.5 rounded-xl text-sm transition-colors cursor-pointer`}>
+                                Next →
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>

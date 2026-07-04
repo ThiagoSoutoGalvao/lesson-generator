@@ -259,3 +259,24 @@ Improvements across four activity templates:
 - `app/Services/ClaudeService.php` — `generatePresentation()` + `buildPresentationPrompt()`
 - `app/Http/Controllers/ActivityController.php` — `generatePresentation()` method
 - `resources/js/pages/UploadPage.jsx` — `PresentationGenerator` + three-tab layout
+
+### Phase L3 — Presentation UX Improvements ✅
+
+- **Slide count selector** — `SLIDE_OPTIONS = [4, 5, 6, 7, 8, 10]` pill buttons in `PresentationGenerator`; defaults to 6; sent as `slides` in POST body; validated `min:4 max:10` in controller; passed through to `buildPresentationPrompt()`
+- **Prompt enforces exact count** — prompt now says "Generate EXACTLY {n} slides — do not generate fewer"; previously Claude treated `4 to 6` as a ceiling and defaulted low
+- **Examples per slide increased** — prompt changed from "2 to 3 examples" to "4 to 6 examples per slide"
+- **`max_tokens` bumped** — 4096 → 6000 to accommodate larger payloads (10 slides × 6 examples)
+- **Extra instructions field** — limit raised from 500 → 3000 characters (backend validator); textarea is now 5 rows tall and vertically resizable (`resize-y`) so pasted book text is readable
+- **Prompt label updated** — "Extra instructions / examples from the book" to clarify the paste-from-book use case
+- **PDF / print export** — "⬇ PDF" button in header calls `window.print()`; a hidden `.pres-print-root` div renders all slides stacked (one per page) and becomes visible only during print via `@media print { body * { visibility: hidden } .pres-print-root { display: block !important; visibility: visible } }`; solid `#1a1a2e` navy background (no image), accent colours preserved via `print-color-adjust: exact`; interactive view hidden with `print:hidden`; layout: meta line → title → rule box → optional form box → numbered examples
+
+### Phase L4 — Split-Screen Slide Layout ✅
+
+- **Problem:** with 4–6 examples per slide, the single-column layout (title → rule → form → examples → nav) overflowed the viewport and pushed the Prev/Next buttons off-screen.
+- **Fix:** `GrammarExplainerActivity.jsx` slide content restructured into a split-screen layout, mirroring `TrueFalseActivity`'s passage/statement pattern:
+  - Left panel (`md:w-[56%]`) — topic label, title, rule box, optional form box; vertically centered
+  - Right panel (`flex-1`) — examples list in a `flex-1 min-h-0 overflow-y-auto` scroll region; Prev/Next buttons pinned below via `shrink-0`, always visible regardless of example count or font size
+  - `.stagger-block` CSS animation delays (`nth-child`-scoped per parent) are unaffected by the two-column split since each panel is its own flex container
+- Verified via Playwright against a live-generated 8-slide deck at 1280×720 with font size maxed — examples scroll internally, nav buttons stay fully visible on every slide.
+
+**Dev gotcha:** if `npm run dev` (Vite) is force-killed rather than stopped gracefully, it can leave `public/hot` behind. Laravel's `@vite` directive then keeps trying to load assets from the (no longer running) dev server at `localhost:5173`, causing a blank page with `ERR_CONNECTION_REFUSED` even after `npm run build`. Fix: delete `public/hot` so Laravel falls back to the built assets in `public/build`.
