@@ -1,0 +1,56 @@
+[
+  {
+    "ending": "t",
+    "rule": "After voiceless consonant sounds (p, k, f, s, ʃ, tʃ) — no extra vowel, just a sharp /t/.",
+    "words": [
+      { "word": "walked",  "audio": "/audio/pronunciation/words/walked.mp3",  "ending": "t" },
+      { "word": "laughed", "audio": "/audio/pronunciation/words/laughed.mp3", "ending": "t" },
+      { "word": "kissed",  "audio": "/audio/pronunciation/words/kissed.mp3",  "ending": "t" },
+      { "word": "watched", "audio": "/audio/pronunciation/words/watched.mp3", "ending": "t" },
+      { "word": "hoped",   "audio": "/audio/pronunciation/words/hoped.mp3",   "ending": "t" },
+      { "word": "talked",  "audio": "/audio/pronunciation/words/talked.mp3",  "ending": "t" },
+      { "word": "jumped",  "audio": "/audio/pronunciation/words/jumped.mp3",  "ending": "t" },
+      { "word": "washed",  "audio": "/audio/pronunciation/words/washed.mp3",  "ending": "t" },
+      { "word": "helped",  "audio": "/audio/pronunciation/words/helped.mp3",  "ending": "t" },
+      { "word": "missed",  "audio": "/audio/pronunciation/words/missed.mp3",  "ending": "t" },
+      { "word": "cooked",  "audio": "/audio/pronunciation/words/cooked.mp3",  "ending": "t" },
+      { "word": "passed",  "audio": "/audio/pronunciation/words/passed.mp3",  "ending": "t" }
+    ]
+  },
+  {
+    "ending": "d",
+    "rule": "After voiced consonant sounds and vowels — no extra vowel, just a soft /d/.",
+    "words": [
+      { "word": "lived",    "audio": "/audio/pronunciation/words/lived.mp3",    "ending": "d" },
+      { "word": "called",   "audio": "/audio/pronunciation/words/called.mp3",   "ending": "d" },
+      { "word": "played",   "audio": "/audio/pronunciation/words/played.mp3",   "ending": "d" },
+      { "word": "opened",   "audio": "/audio/pronunciation/words/opened.mp3",   "ending": "d" },
+      { "word": "cleaned",  "audio": "/audio/pronunciation/words/cleaned.mp3",  "ending": "d" },
+      { "word": "loved",    "audio": "/audio/pronunciation/words/loved.mp3",    "ending": "d" },
+      { "word": "arrived",  "audio": "/audio/pronunciation/words/arrived.mp3",  "ending": "d" },
+      { "word": "listened", "audio": "/audio/pronunciation/words/listened.mp3", "ending": "d" },
+      { "word": "closed",   "audio": "/audio/pronunciation/words/closed.mp3",   "ending": "d" },
+      { "word": "showed",   "audio": "/audio/pronunciation/words/showed.mp3",   "ending": "d" },
+      { "word": "changed",  "audio": "/audio/pronunciation/words/changed.mp3",  "ending": "d" },
+      { "word": "studied",  "audio": "/audio/pronunciation/words/studied.mp3",  "ending": "d" }
+    ]
+  },
+  {
+    "ending": "ɪd",
+    "rule": "After /t/ or /d/ sounds — adds an extra syllable /ɪd/.",
+    "words": [
+      { "word": "wanted",  "audio": "/audio/pronunciation/words/wanted.mp3",  "ending": "ɪd" },
+      { "word": "needed",  "audio": "/audio/pronunciation/words/needed.mp3",  "ending": "ɪd" },
+      { "word": "started", "audio": "/audio/pronunciation/words/started.mp3", "ending": "ɪd" },
+      { "word": "waited",  "audio": "/audio/pronunciation/words/waited.mp3",  "ending": "ɪd" },
+      { "word": "decided", "audio": "/audio/pronunciation/words/decided.mp3", "ending": "ɪd" },
+      { "word": "ended",   "audio": "/audio/pronunciation/words/ended.mp3",   "ending": "ɪd" },
+      { "word": "visited", "audio": "/audio/pronunciation/words/visited.mp3", "ending": "ɪd" },
+      { "word": "painted", "audio": "/audio/pronunciation/words/painted.mp3", "ending": "ɪd" },
+      { "word": "landed",  "audio": "/audio/pronunciation/words/landed.mp3",  "ending": "ɪd" },
+      { "word": "added",   "audio": "/audio/pronunciation/words/added.mp3",   "ending": "ɪd" },
+      { "word": "invited", "audio": "/audio/pronunciation/words/invited.mp3", "ending": "ɪd" },
+      { "word": "rented",  "audio": "/audio/pronunciation/words/rented.mp3",  "ending": "ɪd" }
+    ]
+  }
+]
