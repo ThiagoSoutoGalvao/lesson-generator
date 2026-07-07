@@ -303,4 +303,10 @@ Improvements across four activity templates:
 - **Silent-output failure mode**: TTS occasionally returns a valid-looking but silent clip — every observed instance was exactly 5,760 bytes (`think.mp3` first, then 4 more words in the full batch). Worth grepping for that exact byte count if regenerating or adding words later.
 - Scripts (one-off, not part of the app runtime): `scripts/generate-pronunciation-audio.mjs` (OpenAI TTS; modes `spotcheck`/`phonemes`/`diphthongs`/`words`/`all`, `--force` to regenerate) and `scripts/fetch-wikimedia-phonemes.mjs` (Wikimedia fetch + ffmpeg transcode for the 36 consonant/monophthong files)
 
-Remaining: Phase M3 (routes + page shells), M4 (phonemic chart page), M5 (sound introduction card), M6 (phoneme drill), M7 (-ed endings drill), M8 (polish).
+### Phase M3 — Routes + page shells ✅ COMPLETED
+- React Router routes in `App.jsx` (not `routes/web.php` — see architecture note above): `/pronunciation` → `PronunciationChartPage.jsx`, `/pronunciation/drill/:type` → `PronunciationDrillPage.jsx` (`type` one of `phoneme`, `ed-endings`, `sound-introduction`)
+- 4th "🔊 Pronunciation" tab added to `UploadPage.jsx` (`PronunciationLauncher`) alongside PDF/Audio/Presentation — Phonemic Chart button + 3 drill buttons
+- Shells import their real JSON data source and render a data-driven summary line (e.g. "44 phonemes...") to prove the wiring end-to-end before building real UI in M4+; each page has a "← Back to Upload" link
+- No `chromium-cli` available in this environment for the `run` skill's browser-driven pattern — verified instead with a throwaway Playwright script using `playwright` (`chromium.launch()`), driven through a temporary QA user created/deleted via `php artisan tinker` (never touches real beta user data). Confirms login → all 4 destinations → zero console errors.
+
+Remaining: M4 (phonemic chart page), M5 (sound introduction card), M6 (phoneme drill), M7 (-ed endings drill), M8 (polish).
