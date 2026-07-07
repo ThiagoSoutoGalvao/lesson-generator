@@ -280,3 +280,27 @@ Improvements across four activity templates:
 - Verified via Playwright against a live-generated 8-slide deck at 1280×720 with font size maxed — examples scroll internally, nav buttons stay fully visible on every slide.
 
 **Dev gotcha:** if `npm run dev` (Vite) is force-killed rather than stopped gracefully, it can leave `public/hot` behind. Laravel's `@vite` directive then keeps trying to load assets from the (no longer running) dev server at `localhost:5173`, causing a blank page with `ERR_CONNECTION_REFUSED` even after `npm run build`. Fix: delete `public/hot` so Laravel falls back to the built assets in `public/build`.
+
+---
+
+## 12. Phase M — Pronunciation Feature (IN PROGRESS)
+
+**Goal:** standalone phonemic chart + drill templates for teaching English pronunciation (Adrian Underhill RP chart, minimal-pairs drills, -ed endings drill, sound introduction cards) driven entirely by local JSON + self-hosted audio — no Claude API, no database. Full spec in `PronunciationFeature.md`; phases proceed one at a time with a manual checkpoint before continuing.
+
+**Architecture note:** `PronunciationFeature.md` was written assuming an Inertia.js setup (`routes/web.php` page routes, `resources/js/Pages/...`). This app is actually a React Router SPA behind one Laravel catch-all route (`resources/js/App.jsx`, pages in `resources/js/pages/`, lowercase). Phase 3+ routes go in `App.jsx`, not `routes/web.php`; the upload page is tab-based (`UploadPage.jsx`), not the button row the doc describes.
+
+### Phase M1 — Data files ✅ COMPLETED
+- `resources/js/data/pronunciation/{phonemes,soundCards,minimalPairs,edEndings}.json`
+- 44 phonemes (12 monophthongs / 8 diphthongs / 24 consonants) with Underhill-style chart grid positions (`row`/`col`)
+- 6 minimal-pair groups prioritising Brazilian Portuguese confusions (/ɪ/ vs /iː/, /æ/ vs /ʌ/, /θ/ vs /ð/, /v/ vs /b/, /ʃ/ vs /tʃ/, /ɒ/ vs /ʌ/) — flat word list per group tagged with `correctSound` (not paired word-to-word — simpler to shuffle for the drill loop)
+- 3 `-ed` ending groups (/t/, /d/, /ɪd/), 12 words each, with rule text included
+- `public/audio/pronunciation/{phonemes,words}/` folder scaffold
+
+### Phase M2 — Audio ✅ COMPLETED
+- 44 phoneme files: 36 (all 24 consonants + 12 monophthongs) sourced from Wikimedia Commons IPA reference recordings — the same audio used on Wikipedia's own IPA chart pages (`IPA_consonant_chart_with_audio`, `IPA_vowel_chart_with_audio`), fetched via `Special:FilePath/{filename}.ogg` and transcoded `.ogg` → `.mp3` with `ffmpeg-static` (Safari/iOS has no native Ogg Vorbis support); 8 diphthongs via OpenAI TTS since Wikimedia has no diphthong recordings (English glides aren't part of the universal cardinal-vowel chart)
+- 263 word files via OpenAI TTS (`gpt-4o-mini-tts`, voice `fable`, instructed for neutral British RP)
+- **TTS is unreliable for isolating a single phoneme sound** — asking it to isolate e.g. `/ð/` mid-word produced 40+ seconds of rambling instead of a clean ~1s sound. It's fine for whole words and for diphthongs said as natural short words/interjections (`day`, `eye`, `hair`...). This is why the 36 consonant/monophthong files use Wikimedia instead of TTS.
+- **Silent-output failure mode**: TTS occasionally returns a valid-looking but silent clip — every observed instance was exactly 5,760 bytes (`think.mp3` first, then 4 more words in the full batch). Worth grepping for that exact byte count if regenerating or adding words later.
+- Scripts (one-off, not part of the app runtime): `scripts/generate-pronunciation-audio.mjs` (OpenAI TTS; modes `spotcheck`/`phonemes`/`diphthongs`/`words`/`all`, `--force` to regenerate) and `scripts/fetch-wikimedia-phonemes.mjs` (Wikimedia fetch + ffmpeg transcode for the 36 consonant/monophthong files)
+
+Remaining: Phase M3 (routes + page shells), M4 (phonemic chart page), M5 (sound introduction card), M6 (phoneme drill), M7 (-ed endings drill), M8 (polish).
