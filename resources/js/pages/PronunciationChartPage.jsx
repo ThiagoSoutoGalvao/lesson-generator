@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import phonemes from '@/data/pronunciation/phonemes.json';
 
 export default function PronunciationChartPage() {
@@ -20,6 +21,8 @@ export default function PronunciationChartPage() {
                 <span className="text-white font-semibold"> {phonemes.length} phonemes </span>
                 ({counts.monophthong} monophthongs, {counts.diphthong} diphthongs, {counts.consonant} consonants).
             </div>
+
+            <Link to="/upload" className="text-indigo-300 hover:text-indigo-200 text-sm underline w-fit">← Back to Upload</Link>
         </div>
     );
 }

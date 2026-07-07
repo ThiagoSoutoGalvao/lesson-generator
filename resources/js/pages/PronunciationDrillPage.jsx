@@ -45,6 +45,8 @@ export default function PronunciationDrillPage() {
             <div className="rounded-2xl border border-white/15 bg-white/8 backdrop-blur-md p-6 text-white/70 text-sm">
                 {info.summary(info.data)}
             </div>
+
+            <Link to="/upload" className="text-indigo-300 hover:text-indigo-200 text-sm underline w-fit">← Back to Upload</Link>
         </div>
     );
 }
