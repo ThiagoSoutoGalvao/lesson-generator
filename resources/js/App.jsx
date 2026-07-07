@@ -7,6 +7,8 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import UploadPage from '@/pages/UploadPage';
 import GeneratePage from '@/pages/GeneratePage';
 import LibraryPage from '@/pages/LibraryPage';
+import PronunciationChartPage from '@/pages/PronunciationChartPage';
+import PronunciationDrillPage from '@/pages/PronunciationDrillPage';
 
 function Home() {
     return (
@@ -27,6 +29,8 @@ function App() {
                         <Route path="/upload" element={<UploadPage />} />
                         <Route path="/generate" element={<GeneratePage />} />
                         <Route path="/library" element={<LibraryPage />} />
+                        <Route path="/pronunciation" element={<PronunciationChartPage />} />
+                        <Route path="/pronunciation/drill/:type" element={<PronunciationDrillPage />} />
                     </Routes>
                 </Layout>
             </ErrorBoundary>

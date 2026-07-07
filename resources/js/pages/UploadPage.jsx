@@ -467,6 +467,37 @@ function AudioUploader() {
     );
 }
 
+// ─── Pronunciation Tab ────────────────────────────────────────────────────────
+
+function PronunciationLauncher() {
+    const navigate = useNavigate();
+
+    const drillButtonCls = 'flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold transition-colors cursor-pointer';
+
+    return (
+        <div className="flex flex-col gap-4">
+            <button
+                onClick={() => navigate('/pronunciation')}
+                className="w-full py-3 rounded-xl bg-teal-600/70 hover:bg-teal-600/90 border border-teal-400/40 text-white font-semibold text-sm transition-colors cursor-pointer"
+            >
+                🔤 Phonemic Chart
+            </button>
+
+            <div className="flex gap-2">
+                <button onClick={() => navigate('/pronunciation/drill/phoneme')} className={drillButtonCls}>
+                    Phoneme Drill
+                </button>
+                <button onClick={() => navigate('/pronunciation/drill/ed-endings')} className={drillButtonCls}>
+                    -ed Endings
+                </button>
+                <button onClick={() => navigate('/pronunciation/drill/sound-introduction')} className={drillButtonCls}>
+                    Sound Introduction
+                </button>
+            </div>
+        </div>
+    );
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function UploadPage() {
@@ -476,6 +507,7 @@ export default function UploadPage() {
         { id: 'pdf',          label: '📄 PDF',          active: 'bg-blue-500/30 border-blue-400/50 text-blue-200' },
         { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/30 border-purple-400/50 text-purple-200' },
         { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/30 border-indigo-400/50 text-indigo-200' },
+        { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/30 border-teal-400/50 text-teal-200' },
     ];
 
     return (
@@ -505,6 +537,7 @@ export default function UploadPage() {
             {tab === 'pdf'          && <PdfUploader />}
             {tab === 'audio'        && <AudioUploader />}
             {tab === 'presentation' && <PresentationGenerator />}
+            {tab === 'pronunciation' && <PronunciationLauncher />}
         </div>
     );
 }
