@@ -309,4 +309,11 @@ Improvements across four activity templates:
 - Shells import their real JSON data source and render a data-driven summary line (e.g. "44 phonemes...") to prove the wiring end-to-end before building real UI in M4+; each page has a "← Back to Upload" link
 - No `chromium-cli` available in this environment for the `run` skill's browser-driven pattern — verified instead with a throwaway Playwright script using `playwright` (`chromium.launch()`), driven through a temporary QA user created/deleted via `php artisan tinker` (never touches real beta user data). Confirms login → all 4 destinations → zero console errors.
 
-Remaining: M4 (phonemic chart page), M5 (sound introduction card), M6 (phoneme drill), M7 (-ed endings drill), M8 (polish).
+### Phase M4 — Interactive phonemic chart ✅ COMPLETED
+- `PronunciationChartPage.jsx` rebuilt as a full `fixed inset-0 z-50` fullscreen overlay (same pattern as the activity components, e.g. `QuizActivity.jsx`) instead of a plain routed page — covers the nav header the same way activities do
+- Underhill-style grid built straight from `phonemes.json`'s `row`/`col` fields via inline `style={{ gridColumn, gridRow }}` per cell (not Tailwind grid utilities, since positions are per-item and dynamic): monophthongs (4 cols) top-left, diphthongs (5 cols) top-right, consonants (6 cols) below
+- Tap a cell → `new Audio(phoneme.audio).play()`, cell highlights (teal + scale) until `onended` fires
+- Reuses `useFullscreen` hook (F key / button, same as other activities); Escape or ✕ navigates back to `/upload`
+- State lives in the page component and is passed down as plain props (`playingSymbol`, `onPlay`) through `PhonemeSection` → `PhonemeCell` — first draft used a module-level pub/sub to "avoid prop drilling" for a 2-level-deep tree, which was overengineered and had a real bug (mutable module state breaks under fast refresh); caught and simplified before committing
+
+Remaining: M5 (sound introduction card), M6 (phoneme drill), M7 (-ed endings drill), M8 (polish).
