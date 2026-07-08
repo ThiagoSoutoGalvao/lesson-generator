@@ -316,4 +316,14 @@ Improvements across four activity templates:
 - Reuses `useFullscreen` hook (F key / button, same as other activities); Escape or ✕ navigates back to `/upload`
 - State lives in the page component and is passed down as plain props (`playingSymbol`, `onPlay`) through `PhonemeSection` → `PhonemeCell` — first draft used a module-level pub/sub to "avoid prop drilling" for a 2-level-deep tree, which was overengineered and had a real bug (mutable module state breaks under fast refresh); caught and simplified before committing
 
-Remaining: M5 (sound introduction card), M6 (phoneme drill), M7 (-ed endings drill), M8 (polish).
+### Phase M — Launcher polish + back-navigation fix ✅ COMPLETED
+- `PronunciationLauncher` (in `UploadPage.jsx`) buttons enlarged (`py-8`/`py-6`, bigger text, hover-scale) so they stand out on the upload page — tweak this function if sizing needs to change again
+- `UploadPage` now accepts an initial tab via router state (`location.state?.tab`), so pronunciation pages can navigate back to the Pronunciation tab specifically instead of always landing on the default PDF tab: `navigate('/upload', { state: { tab: 'pronunciation' } })`
+- Drill pages' back control changed from a styled `<Link>` to a real `<button>`, matching the chart page's ✕ button
+
+### Phase M5 — Sound Introduction card ✅ COMPLETED
+- `components/SoundIntroductionCard.jsx`, rendered by `PronunciationDrillPage` when `type === 'sound-introduction'` (the other two drill types still show the M3 placeholder shell)
+- Same fullscreen-overlay pattern as the chart page; cycles through all 44 `soundCards.json` entries — large IPA symbol, category label, mouth-position note, 3 example words each with their own play button (highlights while playing)
+- Prev/Next buttons + Left/Right arrow keys, clamped (not wrapping) at both ends
+
+Remaining: M6 (phoneme drill), M7 (-ed endings drill), M8 (polish).
