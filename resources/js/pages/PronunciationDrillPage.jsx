@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import minimalPairs from '@/data/pronunciation/minimalPairs.json';
 import edEndings from '@/data/pronunciation/edEndings.json';
 import soundCards from '@/data/pronunciation/soundCards.json';
@@ -21,16 +21,32 @@ const DRILL_INFO = {
     },
 };
 
+function BackButton({ onClick }) {
+    return (
+        <button
+            onClick={onClick}
+            className="w-fit px-4 py-2 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold transition-colors cursor-pointer"
+        >
+            ← Back
+        </button>
+    );
+}
+
 export default function PronunciationDrillPage() {
     const { type } = useParams();
+    const navigate = useNavigate();
     const info = DRILL_INFO[type];
+
+    function backToPronunciation() {
+        navigate('/upload', { state: { tab: 'pronunciation' } });
+    }
 
     if (!info) {
         return (
             <div className="max-w-xl mx-auto mt-4 flex flex-col gap-4">
                 <h2 className="text-3xl font-bold text-white">Unknown drill type</h2>
                 <p className="text-white/60 text-sm">"{type}" isn't a recognised drill. Expected one of: phoneme, ed-endings, sound-introduction.</p>
-                <Link to="/upload" className="text-indigo-300 hover:text-indigo-200 text-sm underline w-fit">← Back to Upload</Link>
+                <BackButton onClick={backToPronunciation} />
             </div>
         );
     }
@@ -46,7 +62,7 @@ export default function PronunciationDrillPage() {
                 {info.summary(info.data)}
             </div>
 
-            <Link to="/upload" className="text-indigo-300 hover:text-indigo-200 text-sm underline w-fit">← Back to Upload</Link>
+            <BackButton onClick={backToPronunciation} />
         </div>
     );
 }

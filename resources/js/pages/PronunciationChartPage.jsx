@@ -65,10 +65,14 @@ export default function PronunciationChartPage() {
         audio.onended = () => setPlayingSymbol(null);
     }
 
+    function backToPronunciation() {
+        navigate('/upload', { state: { tab: 'pronunciation' } });
+    }
+
     useEffect(() => {
         function onKey(e) {
             if (e.code === 'KeyF') toggleFullscreen();
-            if (e.code === 'Escape' && !document.fullscreenElement) navigate('/upload');
+            if (e.code === 'Escape' && !document.fullscreenElement) backToPronunciation();
         }
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
@@ -85,7 +89,7 @@ export default function PronunciationChartPage() {
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
-                    <button onClick={() => navigate('/upload')} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer" title="Back to Upload (Esc)">✕</button>
+                    <button onClick={backToPronunciation} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer" title="Back to Upload (Esc)">✕</button>
                 </div>
             </div>
 

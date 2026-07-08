@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '@/components/Spinner';
 
@@ -472,18 +472,18 @@ function AudioUploader() {
 function PronunciationLauncher() {
     const navigate = useNavigate();
 
-    const drillButtonCls = 'flex-1 py-3 rounded-xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-sm font-semibold transition-colors cursor-pointer';
+    const drillButtonCls = 'py-6 px-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
 
     return (
         <div className="flex flex-col gap-4">
             <button
                 onClick={() => navigate('/pronunciation')}
-                className="w-full py-3 rounded-xl bg-teal-600/70 hover:bg-teal-600/90 border border-teal-400/40 text-white font-semibold text-sm transition-colors cursor-pointer"
+                className="w-full py-8 rounded-2xl bg-teal-600/70 hover:bg-teal-600/90 border border-teal-400/40 text-white font-bold text-xl transition-all cursor-pointer hover:scale-[1.01]"
             >
                 🔤 Phonemic Chart
             </button>
 
-            <div className="flex gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button onClick={() => navigate('/pronunciation/drill/phoneme')} className={drillButtonCls}>
                     Phoneme Drill
                 </button>
@@ -501,7 +501,8 @@ function PronunciationLauncher() {
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function UploadPage() {
-    const [tab, setTab] = useState('pdf');
+    const location = useLocation();
+    const [tab, setTab] = useState(location.state?.tab ?? 'pdf');
 
     const tabs = [
         { id: 'pdf',          label: '📄 PDF',          active: 'bg-blue-500/30 border-blue-400/50 text-blue-200' },
