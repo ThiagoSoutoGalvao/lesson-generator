@@ -1,7 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import minimalPairs from '@/data/pronunciation/minimalPairs.json';
 import edEndings from '@/data/pronunciation/edEndings.json';
-import soundCards from '@/data/pronunciation/soundCards.json';
+import SoundIntroductionCard from '@/components/SoundIntroductionCard';
 
 const DRILL_INFO = {
     'phoneme': {
@@ -13,11 +13,6 @@ const DRILL_INFO = {
         title: '-ed Endings Drill',
         summary: (data) => `${data.length} ending groups loaded (/${data.map(g => g.ending).join('/, /')}/).`,
         data: edEndings,
-    },
-    'sound-introduction': {
-        title: 'Sound Introduction',
-        summary: (data) => `${data.length} sound cards loaded.`,
-        data: soundCards,
     },
 };
 
@@ -35,11 +30,16 @@ function BackButton({ onClick }) {
 export default function PronunciationDrillPage() {
     const { type } = useParams();
     const navigate = useNavigate();
-    const info = DRILL_INFO[type];
 
     function backToPronunciation() {
         navigate('/upload', { state: { tab: 'pronunciation' } });
     }
+
+    if (type === 'sound-introduction') {
+        return <SoundIntroductionCard />;
+    }
+
+    const info = DRILL_INFO[type];
 
     if (!info) {
         return (
