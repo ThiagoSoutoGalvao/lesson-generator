@@ -10,6 +10,10 @@ export default function SoundIntroductionCard() {
     const [playingWord, setPlayingWord] = useState(null);
     const audioRef = useRef(null);
 
+    useEffect(() => {
+        return () => { audioRef.current?.pause(); };
+    }, []);
+
     const card = soundCards[index];
     const atStart = index === 0;
     const atEnd = index === soundCards.length - 1;

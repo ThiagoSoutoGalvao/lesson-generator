@@ -63,11 +63,11 @@ export default function Layout({ children }) {
             <div className="fixed inset-0 bg-black/40 pointer-events-none z-0" />
 
             <header className="relative z-10 bg-black/15 backdrop-blur-xl border-b border-white/8 px-6 py-4 sticky top-0">
-                <div className="max-w-5xl mx-auto flex items-center justify-between">
+                <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
                     <Link to="/" className="text-xl font-semibold text-white hover:text-white/80 transition-colors">
                         Lesson Generator
                     </Link>
-                    <nav className="flex items-center gap-1 text-sm">
+                    <nav className="flex flex-wrap items-center justify-end gap-1 text-sm">
                         {NAV_LINKS.map(({ to, label }) => {
                             const active = location.pathname === to;
                             return (

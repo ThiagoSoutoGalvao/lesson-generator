@@ -56,6 +56,10 @@ export default function PronunciationChartPage() {
     const [playingSymbol, setPlayingSymbol] = useState(null);
     const audioRef = useRef(null);
 
+    useEffect(() => {
+        return () => { audioRef.current?.pause(); };
+    }, []);
+
     function playPhoneme(phoneme) {
         audioRef.current?.pause();
         const audio = new Audio(phoneme.audio);
