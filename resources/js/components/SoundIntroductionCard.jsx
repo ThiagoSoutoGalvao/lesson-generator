@@ -49,6 +49,12 @@ export default function SoundIntroductionCard() {
                     <p className="text-white/40 text-xs">{index + 1} / {soundCards.length}</p>
                 </div>
                 <div className="flex items-center gap-5">
+                    <button
+                        onClick={backToPronunciation}
+                        className="px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold transition-colors cursor-pointer"
+                    >
+                        ← Back
+                    </button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
