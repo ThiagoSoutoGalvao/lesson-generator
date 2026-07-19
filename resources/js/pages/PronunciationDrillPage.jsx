@@ -1,15 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import edEndings from '@/data/pronunciation/edEndings.json';
 import SoundIntroductionCard from '@/components/SoundIntroductionCard';
 import MinimalPairsDrill from '@/components/MinimalPairsDrill';
-
-const DRILL_INFO = {
-    'ed-endings': {
-        title: '-ed Endings Drill',
-        summary: (data) => `${data.length} ending groups loaded (/${data.map(g => g.ending).join('/, /')}/).`,
-        data: edEndings,
-    },
-};
+import EdEndingsDrill from '@/components/EdEndingsDrill';
 
 function BackButton({ onClick }) {
     return (
@@ -38,29 +30,14 @@ export default function PronunciationDrillPage() {
         return <MinimalPairsDrill />;
     }
 
-    const info = DRILL_INFO[type];
-
-    if (!info) {
-        return (
-            <div className="max-w-xl mx-auto mt-4 flex flex-col gap-4">
-                <h2 className="text-3xl font-bold text-white">Unknown drill type</h2>
-                <p className="text-white/60 text-sm">"{type}" isn't a recognised drill. Expected one of: phoneme, ed-endings, sound-introduction.</p>
-                <BackButton onClick={backToPronunciation} />
-            </div>
-        );
+    if (type === 'ed-endings') {
+        return <EdEndingsDrill />;
     }
 
     return (
         <div className="max-w-xl mx-auto mt-4 flex flex-col gap-4">
-            <div>
-                <h2 className="text-3xl font-bold text-white">{info.title}</h2>
-                <p className="text-white/60 mt-1 text-sm">Drill setup screen coming in Phase M7.</p>
-            </div>
-
-            <div className="rounded-2xl border border-white/15 bg-white/8 backdrop-blur-md p-6 text-white/70 text-sm">
-                {info.summary(info.data)}
-            </div>
-
+            <h2 className="text-3xl font-bold text-white">Unknown drill type</h2>
+            <p className="text-white/60 text-sm">"{type}" isn't a recognised drill. Expected one of: phoneme, ed-endings, sound-introduction.</p>
             <BackButton onClick={backToPronunciation} />
         </div>
     );
