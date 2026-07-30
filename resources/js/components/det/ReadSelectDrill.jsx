@@ -10,6 +10,9 @@ const SPEED_OPTIONS = [
     { label: 'Untimed', seconds: null },
 ];
 
+const WORD_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
+const FONT_SIZE_MAX = WORD_SIZES.length - 1;
+
 const primaryBtnCls = 'px-6 py-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 text-white font-semibold transition-colors cursor-pointer';
 const secondaryBtnCls = 'px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-semibold transition-colors cursor-pointer';
 
@@ -23,6 +26,8 @@ export default function ReadSelectDrill() {
     const [paused, setPaused] = useState(false);
     const [timeLeft, setTimeLeft] = useState(null);
     const [sessionKey, setSessionKey] = useState(0);
+    const [fontSizeIdx, setFontSizeIdx] = useState(2);
+    const [textColor, setTextColor] = useState('text-white');
 
     function backToDetTab() {
         navigate('/upload', { state: { tab: 'det' } });
@@ -72,6 +77,12 @@ export default function ReadSelectDrill() {
             onTogglePause={phase === 'drilling' && !checked ? () => setPaused(p => !p) : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToDetTab : () => setPhase('select')}
+            fontSizeIdx={fontSizeIdx}
+            fontSizeMax={FONT_SIZE_MAX}
+            onFontDecrease={() => setFontSizeIdx(i => Math.max(0, i - 1))}
+            onFontIncrease={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))}
+            textColor={textColor}
+            onTextColorChange={setTextColor}
         >
             {phase === 'select' && (
                 <div className="flex-1 flex items-center justify-center px-8">
@@ -117,7 +128,7 @@ export default function ReadSelectDrill() {
                     <div className="grid grid-cols-3 sm:grid-cols-4 gap-4 max-w-3xl">
                         {set.items.map(item => {
                             const isSelected = selected.has(item.word);
-                            let cls = 'px-6 py-5 rounded-2xl border text-xl font-bold transition-all cursor-pointer ';
+                            let cls = `px-6 py-5 rounded-2xl border ${WORD_SIZES[fontSizeIdx]} font-bold transition-all cursor-pointer `;
                             if (checked) {
                                 const correct = isSelected === item.isReal;
                                 cls += correct
@@ -126,7 +137,7 @@ export default function ReadSelectDrill() {
                             } else {
                                 cls += isSelected
                                     ? 'bg-amber-500/30 border-amber-400/60 text-amber-100 scale-[1.03]'
-                                    : 'bg-white/8 border-white/20 text-white hover:bg-white/15';
+                                    : `bg-white/8 border-white/20 ${textColor} hover:bg-white/15`;
                             }
                             return (
                                 <button key={item.word} onClick={() => toggleWord(item.word)} className={cls}>

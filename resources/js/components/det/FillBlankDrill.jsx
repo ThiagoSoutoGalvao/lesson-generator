@@ -3,6 +3,10 @@ import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from './PracticeSessionShell';
 import fillBlankItems from '@/data/det/fillBlank.json';
 
+const SENTENCE_SIZES = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
+const HINT_SIZES     = ['text-sm', 'text-base', 'text-lg',  'text-xl',  'text-2xl'];
+const FONT_SIZE_MAX = SENTENCE_SIZES.length - 1;
+
 const primaryBtnCls = 'px-6 py-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold transition-colors cursor-pointer';
 const secondaryBtnCls = 'px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-semibold transition-colors cursor-pointer';
 const toggleActiveCls = 'flex-1 py-2 rounded-lg text-sm font-semibold border transition-colors cursor-pointer bg-amber-500/30 border-amber-400/50 text-amber-200';
@@ -21,6 +25,8 @@ export default function FillBlankDrill() {
     const [revealed, setRevealed] = useState(false);
     const [answers, setAnswers] = useState([]);
     const [sessionKey, setSessionKey] = useState(0);
+    const [fontSizeIdx, setFontSizeIdx] = useState(2);
+    const [textColor, setTextColor] = useState('text-white');
 
     function backToDetTab() {
         navigate('/upload', { state: { tab: 'det' } });
@@ -76,6 +82,12 @@ export default function FillBlankDrill() {
             subtitle={phase === 'drilling' ? `Sentence ${index + 1} of ${fillBlankItems.length}` : undefined}
             onRedo={phase !== 'intro' ? redo : undefined}
             onBack={phase === 'intro' ? backToDetTab : () => setPhase('intro')}
+            fontSizeIdx={fontSizeIdx}
+            fontSizeMax={FONT_SIZE_MAX}
+            onFontDecrease={() => setFontSizeIdx(i => Math.max(0, i - 1))}
+            onFontIncrease={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))}
+            textColor={textColor}
+            onTextColorChange={setTextColor}
         >
             {phase === 'intro' && (
                 <div className="flex-1 flex items-center justify-center px-8">
@@ -99,8 +111,8 @@ export default function FillBlankDrill() {
 
             {phase === 'drilling' && current && (
                 <div key={`${sessionKey}-${index}`} className="flex-1 flex flex-col items-center justify-center gap-8 px-8">
-                    <p className="text-white text-3xl font-semibold text-center max-w-2xl">{current.sentence}</p>
-                    <p className="text-white/40 text-lg tracking-widest font-mono">{current.hint}</p>
+                    <p className={`${SENTENCE_SIZES[fontSizeIdx]} font-semibold text-center max-w-2xl ${textColor}`}>{current.sentence}</p>
+                    <p className={`${HINT_SIZES[fontSizeIdx]} text-white/40 tracking-widest font-mono`}>{current.hint}</p>
 
                     <input
                         type="text"
@@ -109,7 +121,7 @@ export default function FillBlankDrill() {
                         onKeyDown={e => e.key === 'Enter' && !revealed && inputValue.trim() && check()}
                         disabled={revealed}
                         autoFocus
-                        className="w-64 text-center text-xl bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-70"
+                        className={`w-64 text-center ${HINT_SIZES[fontSizeIdx]} bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:ring-2 focus:ring-amber-400 disabled:opacity-70`}
                     />
 
                     {revealed && (
