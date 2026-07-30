@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
-import readSelect from '@/data/det/readSelect.json';
-import fillBlank from '@/data/det/fillBlank.json';
+import ReadSelectDrill from '@/components/det/ReadSelectDrill';
+import FillBlankDrill from '@/components/det/FillBlankDrill';
 import readComplete from '@/data/det/readComplete.json';
 import interactiveReading from '@/data/det/interactiveReading.json';
 
@@ -15,21 +15,8 @@ function BackButton({ onClick }) {
     );
 }
 
-// Data-driven summary per type — proves the JSON wired correctly before real UI exists.
-const TYPE_INFO = {
-    'read-select': {
-        label: 'Read and Select',
-        summary: data => {
-            const wordCount = data.reduce((sum, set) => sum + set.items.length, 0);
-            return `${data.length} sets loaded · ${wordCount} words total`;
-        },
-        data: readSelect,
-    },
-    'fill-blank': {
-        label: 'Fill in the Blanks',
-        summary: data => `${data.length} sentences loaded across ${new Set(data.map(d => d.difficulty)).size} difficulty levels`,
-        data: fillBlank,
-    },
+// Data-driven summary for types that don't have a real drill yet (Phase 3).
+const PLACEHOLDER_TYPE_INFO = {
     'read-complete': {
         label: 'Read and Complete',
         summary: data => {
@@ -53,7 +40,15 @@ export default function DetPracticePage() {
         navigate('/upload', { state: { tab: 'det' } });
     }
 
-    const info = TYPE_INFO[type];
+    if (type === 'read-select') {
+        return <ReadSelectDrill />;
+    }
+
+    if (type === 'fill-blank') {
+        return <FillBlankDrill />;
+    }
+
+    const info = PLACEHOLDER_TYPE_INFO[type];
 
     if (!info) {
         return (
@@ -78,7 +73,7 @@ export default function DetPracticePage() {
                 <p className="text-amber-300 font-semibold">{info.summary(info.data)}</p>
                 <p className="text-white/40 text-xs mt-2">
                     Content is loading correctly from resources/js/data/det/. The real interactive drill for
-                    "{info.label}" comes in the next phase.
+                    "{info.label}" comes in a later phase.
                 </p>
             </div>
 
