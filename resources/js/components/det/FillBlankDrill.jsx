@@ -16,6 +16,14 @@ function normalize(s) {
     return s.trim().toLowerCase();
 }
 
+function buildMask(target, revealCount) {
+    return target.split('').map((ch, i) => (i < revealCount ? ch : '_')).join('');
+}
+
+function baseRevealCount(hint) {
+    return hint.split('').filter(ch => ch !== '_').length;
+}
+
 export default function FillBlankDrill() {
     const navigate = useNavigate();
     const [phase, setPhase] = useState('intro'); // intro | drilling | results
@@ -27,6 +35,7 @@ export default function FillBlankDrill() {
     const [sessionKey, setSessionKey] = useState(0);
     const [fontSizeIdx, setFontSizeIdx] = useState(2);
     const [textColor, setTextColor] = useState('text-white');
+    const [hintLevel, setHintLevel] = useState(0);
 
     function backToDetTab() {
         navigate('/upload', { state: { tab: 'det' } });
@@ -37,12 +46,16 @@ export default function FillBlankDrill() {
         setInputValue('');
         setRevealed(false);
         setAnswers([]);
+        setHintLevel(0);
         setSessionKey(k => k + 1);
         setPhase('drilling');
     }
 
     const current = fillBlankItems[index];
     const isLast = index + 1 >= fillBlankItems.length;
+    const revealCount = current ? Math.min(current.target.length, baseRevealCount(current.hint) + hintLevel) : 0;
+    const displayedHint = current ? buildMask(current.target, revealCount) : '';
+    const hintExhausted = current && revealCount >= current.target.length;
 
     function isCorrect(value) {
         return normalize(value) === normalize(current.target);
@@ -62,6 +75,7 @@ export default function FillBlankDrill() {
             setIndex(i => i + 1);
             setInputValue('');
             setRevealed(false);
+            setHintLevel(0);
         } else {
             setPhase('results');
         }
@@ -112,7 +126,18 @@ export default function FillBlankDrill() {
             {phase === 'drilling' && current && (
                 <div key={`${sessionKey}-${index}`} className="flex-1 flex flex-col items-center justify-center gap-8 px-8">
                     <p className={`${SENTENCE_SIZES[fontSizeIdx]} font-semibold text-center max-w-2xl ${textColor}`}>{current.sentence}</p>
-                    <p className={`${HINT_SIZES[fontSizeIdx]} text-white/40 tracking-widest font-mono`}>{current.hint}</p>
+
+                    <div className="flex items-center gap-3">
+                        <p className={`${HINT_SIZES[fontSizeIdx]} text-white/40 tracking-widest font-mono`}>{displayedHint}</p>
+                        {!revealed && !hintExhausted && (
+                            <button
+                                onClick={() => setHintLevel(h => h + 1)}
+                                className="text-xs font-semibold text-amber-300/80 hover:text-amber-200 bg-amber-500/10 hover:bg-amber-500/20 border border-amber-400/30 rounded-full px-3 py-1 transition-colors cursor-pointer"
+                            >
+                                💡 Hint
+                            </button>
+                        )}
+                    </div>
 
                     <input
                         type="text"

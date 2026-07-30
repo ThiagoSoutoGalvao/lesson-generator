@@ -40,5 +40,47 @@
     "target": "skeptical",
     "hint": "s________",
     "difficulty": "hard"
+  },
+  {
+    "id": "fb-7",
+    "sentence": "I bought some bread ______ a carton of milk at the store.",
+    "target": "and",
+    "hint": "a__",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-8",
+    "sentence": "She wanted to go for a run, ______ it started raining heavily.",
+    "target": "but",
+    "hint": "b__",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-9",
+    "sentence": "You should call a doctor ______ the pain doesn't go away.",
+    "target": "if",
+    "hint": "i_",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-10",
+    "sentence": "The lecture ran late, ______ we missed the last bus home.",
+    "target": "so",
+    "hint": "s_",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-11",
+    "sentence": "He stayed home from work ______ he was feeling unwell.",
+    "target": "because",
+    "hint": "b______",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-12",
+    "sentence": "______ it was raining, they decided to go for a walk anyway.",
+    "target": "although",
+    "hint": "a_______",
+    "difficulty": "medium"
   }
 ]
