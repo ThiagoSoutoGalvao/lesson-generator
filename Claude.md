@@ -348,3 +348,41 @@ Improvements across four activity templates:
 - Full regression pass after both fixes (temporary QA user + Playwright): chart tap-to-play, phoneme drill session, ed-endings drill session, sound-card arrow navigation, and mid-audio navigation on both the chart and sound-card pages — zero console/page errors.
 
 **Pronunciation feature (Phases M1–M8) is now complete.**
+
+---
+
+## 13. Phase N — DET Practice Mode (IN PROGRESS)
+
+**Goal:** DET-format (Duolingo English Test) reading/vocabulary and speaking practice for one student, teacher-run live in Zoom — no scoring engine, no recording, no DET branding/verbatim content. Full spec in `# DET Practice Mode — Feature Roadmap.md`. Part A (Read and Select, Fill in the Blanks, Read and Complete, Interactive Reading) is priority since the student struggled most with vocabulary/reading; Part B (speaking, Phases 5–7 in that doc) is untouched so far. Same architecture as Pronunciation: local JSON content only, no database, no Claude API calls at runtime.
+
+### Phase 1 — Data model + tab wiring ✅ COMPLETED
+- `resources/js/data/det/{readSelect,fillBlank,readComplete,interactiveReading}.json`
+- `DetPracticePage.jsx` — reads `:type` route param, renders a real drill (once built) or a data-driven placeholder summary otherwise, mirroring how `PronunciationDrillPage` staged drills in one page per phase
+- 5th "🎯 DET Practice" tab added to `UploadPage.jsx` (`DetPracticeLauncher`, amber theme) alongside PDF/Audio/Presentation/Pronunciation
+- Route `/det/practice/:type` in `App.jsx`
+- `interactiveReading.json`'s passage is stored as a sentence array (not one text blob) specifically to keep both candidate UIs for the "highlight the answer" sub-task open (text-selection vs. click-a-sentence) without committing at the data layer — still an open question from the roadmap doc
+
+### Phase 2 — Read and Select + Fill in the Blanks drills ✅ COMPLETED
+- `components/det/PracticeSessionShell.jsx` — shared fullscreen chrome (progress label, pause, redo, fullscreen, back) used by both drills, same visual pattern as the pronunciation drill pages
+- `components/det/ReadSelectDrill.jsx` — word grid, click-to-toggle, adjustable soft per-word timer (3s/5s/8s or untimed), Check Answers with green/red feedback
+- `components/det/FillBlankDrill.jsx` — sentence-by-sentence typed answer with a letter-count hint, Immediate vs. End-of-Set feedback toggle
+
+### Accessibility + branding pass ✅ COMPLETED
+- Font size (A-/A+) and the standard 5-color text palette added as optional props on `PracticeSessionShell` (`fontSizeIdx`/`onFontIncrease`/`onFontDecrease`, `textColor`/`onTextColorChange`) — each drill owns its own state and SIZES arrays, shell just renders the shared control UI when the props are passed. Read and Complete / Interactive Reading will inherit this for free once built on the shell.
+- Owl mascot watermark (amber, not Duolingo green) behind every DET screen, inline SVG, static/no API cost. Went through two redesigns: v1 used shapes filled with the exact shell background color to fake "eye cutouts", which broke visibly wherever real content with its own translucent background (e.g. the Fill in the Blanks input box) happened to render on top of it; v2 removed the cutouts but made the face barely visible (eyes were only a slightly lighter amber than the body); v3 (current) adds a genuinely lighter face disc, white eyes with dark pupils + eye-shine, opacity bumped 0.14 → 0.20 — reads clearly as an owl while staying subtle enough not to affect text legibility at any of the 5 text colors.
+
+### Read and Select fixes ✅ COMPLETED
+- Font/color controls originally only wired to the drilling grid, not the difficulty/timer/set-select screen — fixed so both screens respect them
+- Added Easy/Medium/Hard difficulty tabs above the set list (filters `readSelectSets` by the `difficulty` field)
+
+### Content ✅ ongoing (see content strategy below)
+- Read and Select: 12 sets total, 4 per difficulty tier (was 1 per tier) — set-select buttons read "Set 1/2/3/4" rather than repeating the difficulty label, since with 4 sets per tier the old `{difficulty} · {n} words` label was identical on every button in a tab
+- Fill in the Blanks: 20 items (was 6) — added connector/function-word items (and, but, if, so, because, although) alongside the original content-word items, then dedicated easy (when, or, with, after) and hard (meticulous, ambiguous, resilient, unprecedented) batches since it previously had no real easy/hard spread. Added an All/Easy/Medium/Hard tab row on the intro screen; a session snapshots its filtered item list into state at `start()` so results/progress stay correct regardless of which tab was picked, rather than re-deriving from the difficulty each render.
+- Fill in the Blanks "💡 Hint" button — click to progressively reveal one more letter of the target word at a time; reveal count is computed from `target.length`, not a fixed string, so it works for any word and caps out (button disappears) once fully revealed. Resets each time the drill advances to a new sentence.
+
+**Content strategy:** all content is static hand-authored JSON, no database, no API calls at runtime. Decided with the user on 2026-07-31 to keep manually batch-adding content on request rather than building the content-authoring helper the original roadmap doc flagged for Phase 1, or wiring up live Claude-API generation like the other 14 activity templates — revisit once all 4 Part A templates are built and real usage volume with the student is known.
+
+### Not yet built
+- **Read and Complete** — multi-blank dropdown paragraph, submit-all-then-reveal. Still the Phase 1 placeholder shell in `DetPracticePage.jsx`.
+- **Interactive Reading** — passage + 5 linked sub-tasks (complete the sentence, complete the passage, highlight the answer, identify the idea, title the passage). Still the Phase 1 placeholder shell.
+- **Part B — speaking practice** (Speak About the Photo, Read Then Speak, Interactive Speaking) — not started; per the roadmap doc these need only a shared read-time/speak-time timer component and no recording/storage at all.
