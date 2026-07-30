@@ -13,23 +13,37 @@ export const TEXT_COLORS = [
 
 const SHELL_BG = '#1a1a2e';
 
-// Duolingo-style owl mascot, amber instead of green. Pure silhouette — no shapes
-// filled with the shell background color to fake "cutouts" — since any content that
-// happens to render on top with its own translucent background (e.g. an input field)
-// would reveal that trick as a visible patch instead of a seamless blend.
+// Duolingo-style owl mascot, amber instead of green. Every shape uses its own genuinely
+// distinct fill color (never one that matches SHELL_BG to fake a "cutout") — a face disc,
+// pupils, and eye-shine give it real contrast so the face reads clearly even at low opacity,
+// and because nothing depends on matching the backdrop, it can never show a seam or patch
+// where other content (e.g. a translucent input box) happens to render on top of it.
 function OwlWatermark() {
     return (
         <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none">
-            <svg viewBox="0 0 400 460" className="opacity-[0.14] w-auto h-[85%] max-w-[90%]" aria-hidden="true">
-                <path d="M120 60 Q140 15 168 72 Q142 92 120 60 Z" fill="#f59e0b" />
-                <path d="M280 60 Q260 15 232 72 Q258 92 280 60 Z" fill="#f59e0b" />
-                <ellipse cx="70"  cy="280" rx="45"  ry="110" fill="#f59e0b" />
-                <ellipse cx="330" cy="280" rx="45"  ry="110" fill="#f59e0b" />
-                <ellipse cx="200" cy="260" rx="150" ry="180" fill="#f59e0b" />
-                <circle cx="145" cy="220" r="24" fill="#fbbf24" />
-                <circle cx="255" cy="220" r="24" fill="#fbbf24" />
-                <ellipse cx="160" cy="440" rx="18" ry="10" fill="#f59e0b" />
-                <ellipse cx="240" cy="440" rx="18" ry="10" fill="#f59e0b" />
+            <svg viewBox="0 0 400 460" className="opacity-[0.20] w-auto h-[85%] max-w-[90%]" aria-hidden="true">
+                {/* wings */}
+                <ellipse cx="68"  cy="290" rx="48" ry="115" fill="#b45309" />
+                <ellipse cx="332" cy="290" rx="48" ry="115" fill="#b45309" />
+                {/* ear tufts */}
+                <path d="M118 55 Q136 8 166 66 Q138 88 118 55 Z" fill="#b45309" />
+                <path d="M282 55 Q264 8 234 66 Q262 88 282 55 Z" fill="#b45309" />
+                {/* body */}
+                <ellipse cx="200" cy="265" rx="148" ry="175" fill="#f59e0b" />
+                {/* face disc */}
+                <ellipse cx="200" cy="222" rx="108" ry="100" fill="#fde68a" />
+                {/* eyes */}
+                <circle cx="158" cy="215" r="42" fill="#ffffff" />
+                <circle cx="242" cy="215" r="42" fill="#ffffff" />
+                <circle cx="158" cy="222" r="17" fill="#3b2712" />
+                <circle cx="242" cy="222" r="17" fill="#3b2712" />
+                <circle cx="150" cy="214" r="5" fill="#ffffff" />
+                <circle cx="234" cy="214" r="5" fill="#ffffff" />
+                {/* beak */}
+                <path d="M190 258 L210 258 L200 280 Z" fill="#92400e" />
+                {/* feet */}
+                <ellipse cx="158" cy="436" rx="20" ry="11" fill="#b45309" />
+                <ellipse cx="242" cy="436" rx="20" ry="11" fill="#b45309" />
             </svg>
         </div>
     );

@@ -12,9 +12,12 @@ const SPEED_OPTIONS = [
 
 const WORD_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const FONT_SIZE_MAX = WORD_SIZES.length - 1;
+const DIFFICULTY_ORDER = ['easy', 'medium', 'hard'];
 
 const primaryBtnCls = 'px-6 py-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 text-white font-semibold transition-colors cursor-pointer';
 const secondaryBtnCls = 'px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-semibold transition-colors cursor-pointer';
+
+const AVAILABLE_DIFFICULTIES = DIFFICULTY_ORDER.filter(d => readSelectSets.some(s => s.difficulty === d));
 
 export default function ReadSelectDrill() {
     const navigate = useNavigate();
@@ -28,6 +31,7 @@ export default function ReadSelectDrill() {
     const [sessionKey, setSessionKey] = useState(0);
     const [fontSizeIdx, setFontSizeIdx] = useState(2);
     const [textColor, setTextColor] = useState('text-white');
+    const [difficulty, setDifficulty] = useState(AVAILABLE_DIFFICULTIES[0]);
 
     function backToDetTab() {
         navigate('/upload', { state: { tab: 'det' } });
@@ -88,6 +92,25 @@ export default function ReadSelectDrill() {
                 <div className="flex-1 flex items-center justify-center px-8">
                     <div className="flex flex-col gap-6 max-w-md w-full">
                         <div className="flex flex-col gap-1.5">
+                            <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Difficulty</p>
+                            <div className="flex gap-2">
+                                {AVAILABLE_DIFFICULTIES.map(d => (
+                                    <button
+                                        key={d}
+                                        onClick={() => setDifficulty(d)}
+                                        className={`flex-1 py-2 rounded-lg text-sm font-semibold border transition-colors cursor-pointer capitalize ${
+                                            difficulty === d
+                                                ? 'bg-amber-500/30 border-amber-400/50 text-amber-200'
+                                                : 'bg-white/5 border-white/15 text-white/50 hover:bg-white/10 hover:text-white/70'
+                                        }`}
+                                    >
+                                        {d}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
                             <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Timer</p>
                             <div className="flex gap-2 flex-wrap">
                                 {SPEED_OPTIONS.map(opt => (
@@ -107,11 +130,11 @@ export default function ReadSelectDrill() {
                         </div>
 
                         <div className="flex flex-col gap-3">
-                            {readSelectSets.map(s => (
+                            {readSelectSets.filter(s => s.difficulty === difficulty).map(s => (
                                 <button
                                     key={s.id}
                                     onClick={() => startSet(s)}
-                                    className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white text-lg font-bold transition-all cursor-pointer capitalize"
+                                    className={`px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 ${WORD_SIZES[fontSizeIdx]} font-bold transition-all cursor-pointer capitalize ${textColor}`}
                                 >
                                     {s.difficulty} · {s.items.length} words
                                 </button>

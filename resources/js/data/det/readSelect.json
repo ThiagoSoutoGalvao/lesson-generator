@@ -34,5 +34,23 @@
       { "word": "extract",     "isReal": true },
       { "word": "extrigate",   "isReal": false }
     ]
+  },
+  {
+    "id": "rs-3",
+    "difficulty": "hard",
+    "items": [
+      { "word": "ubiquitous",   "isReal": true },
+      { "word": "ubiquotous",   "isReal": false },
+      { "word": "cacophony",    "isReal": true },
+      { "word": "cacophany",    "isReal": false },
+      { "word": "ephemeral",    "isReal": true },
+      { "word": "ephemural",    "isReal": false },
+      { "word": "perfunctory",  "isReal": true },
+      { "word": "perfunctary",  "isReal": false },
+      { "word": "idiosyncrasy", "isReal": true },
+      { "word": "idiosyncracy", "isReal": false },
+      { "word": "obfuscate",    "isReal": true },
+      { "word": "obfuscute",    "isReal": false }
+    ]
   }
 ]
