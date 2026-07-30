@@ -130,13 +130,13 @@ export default function ReadSelectDrill() {
                         </div>
 
                         <div className="flex flex-col gap-3">
-                            {readSelectSets.filter(s => s.difficulty === difficulty).map(s => (
+                            {readSelectSets.filter(s => s.difficulty === difficulty).map((s, i) => (
                                 <button
                                     key={s.id}
                                     onClick={() => startSet(s)}
-                                    className={`px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 ${WORD_SIZES[fontSizeIdx]} font-bold transition-all cursor-pointer capitalize ${textColor}`}
+                                    className={`px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 ${WORD_SIZES[fontSizeIdx]} font-bold transition-all cursor-pointer ${textColor}`}
                                 >
-                                    {s.difficulty} · {s.items.length} words
+                                    Set {i + 1} · {s.items.length} words
                                 </button>
                             ))}
                         </div>

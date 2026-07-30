@@ -11,6 +11,10 @@ const primaryBtnCls = 'px-6 py-3 rounded-xl bg-amber-500/30 border border-amber-
 const secondaryBtnCls = 'px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 text-white font-semibold transition-colors cursor-pointer';
 const toggleActiveCls = 'flex-1 py-2 rounded-lg text-sm font-semibold border transition-colors cursor-pointer bg-amber-500/30 border-amber-400/50 text-amber-200';
 const toggleInactiveCls = 'flex-1 py-2 rounded-lg text-sm font-semibold border transition-colors cursor-pointer bg-white/5 border-white/15 text-white/50 hover:bg-white/10 hover:text-white/70';
+const tabActiveCls = 'flex-1 py-2 rounded-lg text-sm font-semibold border transition-colors cursor-pointer capitalize bg-amber-500/30 border-amber-400/50 text-amber-200';
+const tabInactiveCls = 'flex-1 py-2 rounded-lg text-sm font-semibold border transition-colors cursor-pointer capitalize bg-white/5 border-white/15 text-white/50 hover:bg-white/10 hover:text-white/70';
+
+const DIFFICULTY_OPTIONS = ['all', 'easy', 'medium', 'hard'];
 
 function normalize(s) {
     return s.trim().toLowerCase();
@@ -36,12 +40,16 @@ export default function FillBlankDrill() {
     const [fontSizeIdx, setFontSizeIdx] = useState(2);
     const [textColor, setTextColor] = useState('text-white');
     const [hintLevel, setHintLevel] = useState(0);
+    const [difficulty, setDifficulty] = useState('all');
+    const [sessionItems, setSessionItems] = useState(fillBlankItems);
 
     function backToDetTab() {
         navigate('/upload', { state: { tab: 'det' } });
     }
 
     function start() {
+        const items = difficulty === 'all' ? fillBlankItems : fillBlankItems.filter(i => i.difficulty === difficulty);
+        setSessionItems(items);
         setIndex(0);
         setInputValue('');
         setRevealed(false);
@@ -51,8 +59,8 @@ export default function FillBlankDrill() {
         setPhase('drilling');
     }
 
-    const current = fillBlankItems[index];
-    const isLast = index + 1 >= fillBlankItems.length;
+    const current = sessionItems[index];
+    const isLast = index + 1 >= sessionItems.length;
     const revealCount = current ? Math.min(current.target.length, baseRevealCount(current.hint) + hintLevel) : 0;
     const displayedHint = current ? buildMask(current.target, revealCount) : '';
     const hintExhausted = current && revealCount >= current.target.length;
@@ -93,7 +101,7 @@ export default function FillBlankDrill() {
     return (
         <PracticeSessionShell
             title="Fill in the Blanks"
-            subtitle={phase === 'drilling' ? `Sentence ${index + 1} of ${fillBlankItems.length}` : undefined}
+            subtitle={phase === 'drilling' ? `Sentence ${index + 1} of ${sessionItems.length}` : undefined}
             onRedo={phase !== 'intro' ? redo : undefined}
             onBack={phase === 'intro' ? backToDetTab : () => setPhase('intro')}
             fontSizeIdx={fontSizeIdx}
@@ -107,6 +115,16 @@ export default function FillBlankDrill() {
                 <div className="flex-1 flex items-center justify-center px-8">
                     <div className="flex flex-col gap-6 max-w-md w-full items-stretch">
                         <p className="text-white/60 text-sm text-center">Type the missing word using the letter hint as a guide.</p>
+                        <div className="flex flex-col gap-1.5">
+                            <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Difficulty</p>
+                            <div className="flex gap-2">
+                                {DIFFICULTY_OPTIONS.map(d => (
+                                    <button key={d} onClick={() => setDifficulty(d)} className={difficulty === d ? tabActiveCls : tabInactiveCls}>
+                                        {d}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                         <div className="flex flex-col gap-1.5">
                             <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Feedback</p>
                             <div className="flex gap-2">
@@ -171,7 +189,7 @@ export default function FillBlankDrill() {
                 <div className="flex-1 flex flex-col items-center justify-center gap-6 px-8 py-8 overflow-y-auto">
                     <p className="text-white text-6xl font-bold">{score.correct} / {score.total}</p>
                     <div className="flex flex-col gap-2 max-w-lg w-full">
-                        {fillBlankItems.map((item, i) => (
+                        {sessionItems.map((item, i) => (
                             <div
                                 key={item.id}
                                 className={`px-4 py-2 rounded-lg text-sm flex justify-between gap-4 ${

@@ -82,5 +82,61 @@
     "target": "although",
     "hint": "a_______",
     "difficulty": "medium"
+  },
+  {
+    "id": "fb-13",
+    "sentence": "Call me ______ you get home so I know you're safe.",
+    "target": "when",
+    "hint": "w___",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-14",
+    "sentence": "Would you like tea ______ coffee with your breakfast?",
+    "target": "or",
+    "hint": "o_",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-15",
+    "sentence": "She always travels ______ her passport and a spare phone charger.",
+    "target": "with",
+    "hint": "w___",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-16",
+    "sentence": "We went for ice cream ______ the movie finished.",
+    "target": "after",
+    "hint": "a____",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-17",
+    "sentence": "The report was written in a ______ and highly detailed manner.",
+    "target": "meticulous",
+    "hint": "m_________",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-18",
+    "sentence": "His answer was so ______ that no one knew what he actually meant.",
+    "target": "ambiguous",
+    "hint": "a________",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-19",
+    "sentence": "Despite the setbacks, the team remained ______ and kept working toward the goal.",
+    "target": "resilient",
+    "hint": "r________",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-20",
+    "sentence": "The company faced ______ challenges during the economic downturn.",
+    "target": "unprecedented",
+    "hint": "u____________",
+    "difficulty": "hard"
   }
 ]

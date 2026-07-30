@@ -52,5 +52,167 @@
       { "word": "obfuscate",    "isReal": true },
       { "word": "obfuscute",    "isReal": false }
     ]
+  },
+  {
+    "id": "rs-4",
+    "difficulty": "easy",
+    "items": [
+      { "word": "river",   "isReal": true },
+      { "word": "rivor",   "isReal": false },
+      { "word": "bottle",  "isReal": true },
+      { "word": "bottal",  "isReal": false },
+      { "word": "yellow",  "isReal": true },
+      { "word": "yellom",  "isReal": false },
+      { "word": "paper",   "isReal": true },
+      { "word": "papor",   "isReal": false },
+      { "word": "doctor",  "isReal": true },
+      { "word": "doctal",  "isReal": false },
+      { "word": "kitchen", "isReal": true },
+      { "word": "kitchum", "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-5",
+    "difficulty": "easy",
+    "items": [
+      { "word": "summer",  "isReal": true },
+      { "word": "summar",  "isReal": false },
+      { "word": "winter",  "isReal": true },
+      { "word": "wintor",  "isReal": false },
+      { "word": "orange",  "isReal": true },
+      { "word": "orenge",  "isReal": false },
+      { "word": "purple",  "isReal": true },
+      { "word": "purpel",  "isReal": false },
+      { "word": "silver",  "isReal": true },
+      { "word": "silvor",  "isReal": false },
+      { "word": "wooden",  "isReal": true },
+      { "word": "woodan",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-6",
+    "difficulty": "easy",
+    "items": [
+      { "word": "hunger",  "isReal": true },
+      { "word": "hungor",  "isReal": false },
+      { "word": "bridge",  "isReal": true },
+      { "word": "bridje",  "isReal": false },
+      { "word": "castle",  "isReal": true },
+      { "word": "castel",  "isReal": false },
+      { "word": "animal",  "isReal": true },
+      { "word": "animol",  "isReal": false },
+      { "word": "planet",  "isReal": true },
+      { "word": "planit",  "isReal": false },
+      { "word": "rocket",  "isReal": true },
+      { "word": "rockot",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-7",
+    "difficulty": "medium",
+    "items": [
+      { "word": "diligent",   "isReal": true },
+      { "word": "diligeant",  "isReal": false },
+      { "word": "hesitant",   "isReal": true },
+      { "word": "hesitent",   "isReal": false },
+      { "word": "articulate", "isReal": true },
+      { "word": "articulete", "isReal": false },
+      { "word": "meander",    "isReal": true },
+      { "word": "meandor",    "isReal": false },
+      { "word": "buoyant",    "isReal": true },
+      { "word": "buoyent",    "isReal": false },
+      { "word": "coherent",   "isReal": true },
+      { "word": "coherant",   "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-8",
+    "difficulty": "medium",
+    "items": [
+      { "word": "candid",     "isReal": true },
+      { "word": "candide",    "isReal": false },
+      { "word": "vigilant",   "isReal": true },
+      { "word": "vigilent",   "isReal": false },
+      { "word": "tedious",    "isReal": true },
+      { "word": "tediuous",   "isReal": false },
+      { "word": "elaborate",  "isReal": true },
+      { "word": "elaborete",  "isReal": false },
+      { "word": "feasible",   "isReal": true },
+      { "word": "feasable",   "isReal": false },
+      { "word": "relentless", "isReal": true },
+      { "word": "relentlass", "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-9",
+    "difficulty": "medium",
+    "items": [
+      { "word": "notable",  "isReal": true },
+      { "word": "notible",  "isReal": false },
+      { "word": "genuine",  "isReal": true },
+      { "word": "genuene",  "isReal": false },
+      { "word": "adequate", "isReal": true },
+      { "word": "adiquate", "isReal": false },
+      { "word": "composed", "isReal": true },
+      { "word": "composid", "isReal": false },
+      { "word": "distinct", "isReal": true },
+      { "word": "distinet", "isReal": false },
+      { "word": "gradual",  "isReal": true },
+      { "word": "graduel",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-10",
+    "difficulty": "hard",
+    "items": [
+      { "word": "surreptitious", "isReal": true },
+      { "word": "surreptitous",  "isReal": false },
+      { "word": "magnanimous",   "isReal": true },
+      { "word": "magnanimious",  "isReal": false },
+      { "word": "quintessential","isReal": true },
+      { "word": "quintessentual","isReal": false },
+      { "word": "vociferous",    "isReal": true },
+      { "word": "vociferious",   "isReal": false },
+      { "word": "ostentatious",  "isReal": true },
+      { "word": "ostentateous",  "isReal": false },
+      { "word": "capricious",    "isReal": true },
+      { "word": "capricous",     "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-11",
+    "difficulty": "hard",
+    "items": [
+      { "word": "incorrigible", "isReal": true },
+      { "word": "incorrigable", "isReal": false },
+      { "word": "disingenuous", "isReal": true },
+      { "word": "disingenious", "isReal": false },
+      { "word": "prosaic",      "isReal": true },
+      { "word": "prosaick",     "isReal": false },
+      { "word": "sycophant",    "isReal": true },
+      { "word": "sycophent",    "isReal": false },
+      { "word": "equivocate",   "isReal": true },
+      { "word": "equivacate",   "isReal": false },
+      { "word": "garrulous",    "isReal": true },
+      { "word": "garrulos",     "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-12",
+    "difficulty": "hard",
+    "items": [
+      { "word": "obsequious",     "isReal": true },
+      { "word": "obsequous",      "isReal": false },
+      { "word": "pusillanimous",  "isReal": true },
+      { "word": "pusillanamous",  "isReal": false },
+      { "word": "perspicacious",  "isReal": true },
+      { "word": "perspicaceous",  "isReal": false },
+      { "word": "recalcitrant",   "isReal": true },
+      { "word": "recalcitrent",   "isReal": false },
+      { "word": "mellifluous",    "isReal": true },
+      { "word": "mellifluent",    "isReal": false },
+      { "word": "sanguine",       "isReal": true },
+      { "word": "sanguin",        "isReal": false }
+    ]
   }
 ]
