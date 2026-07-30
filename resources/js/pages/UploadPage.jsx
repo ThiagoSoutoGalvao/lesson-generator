@@ -498,6 +498,36 @@ function PronunciationLauncher() {
     );
 }
 
+// ─── DET Practice Tab ──────────────────────────────────────────────────────────
+
+function DetPracticeLauncher() {
+    const navigate = useNavigate();
+
+    const drillButtonCls = 'py-6 px-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
+
+    return (
+        <div className="flex flex-col gap-4">
+            <p className="text-white/50 text-xs">
+                DET-format reading and vocabulary practice — no scoring, teacher-controlled pace.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <button onClick={() => navigate('/det/practice/read-select')} className={drillButtonCls}>
+                    Read and Select
+                </button>
+                <button onClick={() => navigate('/det/practice/fill-blank')} className={drillButtonCls}>
+                    Fill in the Blanks
+                </button>
+                <button onClick={() => navigate('/det/practice/read-complete')} className={drillButtonCls}>
+                    Read and Complete
+                </button>
+                <button onClick={() => navigate('/det/practice/interactive-reading')} className={drillButtonCls}>
+                    Interactive Reading
+                </button>
+            </div>
+        </div>
+    );
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function UploadPage() {
@@ -509,13 +539,14 @@ export default function UploadPage() {
         { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/30 border-purple-400/50 text-purple-200' },
         { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/30 border-indigo-400/50 text-indigo-200' },
         { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/30 border-teal-400/50 text-teal-200' },
+        { id: 'det',           label: '🎯 DET Practice',  active: 'bg-amber-500/30 border-amber-400/50 text-amber-200' },
     ];
 
     return (
         <div className="max-w-xl mx-auto mt-4 flex flex-col gap-6">
             <div>
                 <h2 className="text-3xl font-bold text-white">Upload Content</h2>
-                <p className="text-white/60 mt-1 text-sm">Upload a PDF or audio file, or create a presentation from any topic.</p>
+                <p className="text-white/60 mt-1 text-sm">Upload a PDF or audio file, create a presentation from any topic, or practice pronunciation and DET question types.</p>
             </div>
 
             {/* Tab switcher */}
@@ -539,6 +570,7 @@ export default function UploadPage() {
             {tab === 'audio'        && <AudioUploader />}
             {tab === 'presentation' && <PresentationGenerator />}
             {tab === 'pronunciation' && <PronunciationLauncher />}
+            {tab === 'det'           && <DetPracticeLauncher />}
         </div>
     );
 }

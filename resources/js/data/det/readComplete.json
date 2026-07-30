@@ -1,0 +1,24 @@
+[
+  {
+    "id": "rc-1",
+    "title": "A Morning Routine",
+    "paragraph": "Every morning, Maria wakes up at six {{1}} and goes for a short run in the park near her apartment. After that, she takes a {{2}} shower and eats a light breakfast before heading to {{3}}. On the way, she often stops to buy a cup of coffee, which helps her feel {{4}} for the rest of the day.",
+    "blanks": [
+      { "id": 1, "options": ["o'clock", "o'clocks", "clock", "clocking"], "answer": "o'clock" },
+      { "id": 2, "options": ["quick", "quickly", "quicker", "quickest"], "answer": "quick" },
+      { "id": 3, "options": ["work", "working", "worked", "works"], "answer": "work" },
+      { "id": 4, "options": ["ready", "readily", "readiness", "readied"], "answer": "ready" }
+    ]
+  },
+  {
+    "id": "rc-2",
+    "title": "Working From Home",
+    "paragraph": "Since switching to remote work, David has had to {{1}} a new daily schedule. He starts by checking his emails, then spends the {{2}} of the morning in video meetings with his team. Around noon, he takes a short break to {{3}} lunch before returning to his desk. By the end of the day, he feels {{4}} that he managed to stay focused despite the distractions at home.",
+    "blanks": [
+      { "id": 1, "options": ["develop", "developed", "developing", "develops"], "answer": "develop" },
+      { "id": 2, "options": ["majority", "major", "majorly", "majoring"], "answer": "majority" },
+      { "id": 3, "options": ["prepare", "preparing", "prepared", "preparation"], "answer": "prepare" },
+      { "id": 4, "options": ["satisfied", "satisfying", "satisfy", "satisfaction"], "answer": "satisfied" }
+    ]
+  }
+]

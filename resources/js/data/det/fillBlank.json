@@ -1,0 +1,44 @@
+[
+  {
+    "id": "fb-1",
+    "sentence": "She works as a doctor in a busy city ______.",
+    "target": "hospital",
+    "hint": "h_______",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-2",
+    "sentence": "He forgot his umbrella, so he got completely ______ in the rain.",
+    "target": "soaked",
+    "hint": "s_____",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-3",
+    "sentence": "The company decided to ______ the project after months of delay.",
+    "target": "abandon",
+    "hint": "a______",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-4",
+    "sentence": "Her explanation was so ______ that nobody had any further questions.",
+    "target": "thorough",
+    "hint": "t_______",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-5",
+    "sentence": "The negotiations were ______ and lasted well into the night.",
+    "target": "lengthy",
+    "hint": "l______",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-6",
+    "sentence": "Scientists remain ______ about the long-term effects of the new treatment.",
+    "target": "skeptical",
+    "hint": "s________",
+    "difficulty": "hard"
+  }
+]

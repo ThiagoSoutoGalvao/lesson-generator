@@ -9,6 +9,7 @@ import GeneratePage from '@/pages/GeneratePage';
 import LibraryPage from '@/pages/LibraryPage';
 import PronunciationChartPage from '@/pages/PronunciationChartPage';
 import PronunciationDrillPage from '@/pages/PronunciationDrillPage';
+import DetPracticePage from '@/pages/DetPracticePage';
 
 function Home() {
     return (
@@ -31,6 +32,7 @@ function App() {
                         <Route path="/library" element={<LibraryPage />} />
                         <Route path="/pronunciation" element={<PronunciationChartPage />} />
                         <Route path="/pronunciation/drill/:type" element={<PronunciationDrillPage />} />
+                        <Route path="/det/practice/:type" element={<DetPracticePage />} />
                     </Routes>
                 </Layout>
             </ErrorBoundary>

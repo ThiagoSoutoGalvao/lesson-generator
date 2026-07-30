@@ -1,0 +1,38 @@
+[
+  {
+    "id": "rs-1",
+    "difficulty": "easy",
+    "items": [
+      { "word": "garden",  "isReal": true },
+      { "word": "flonder", "isReal": false },
+      { "word": "window",  "isReal": true },
+      { "word": "grenish", "isReal": false },
+      { "word": "pencil",  "isReal": true },
+      { "word": "tantule", "isReal": false },
+      { "word": "forest",  "isReal": true },
+      { "word": "wispren", "isReal": false },
+      { "word": "coffee",  "isReal": true },
+      { "word": "brindal", "isReal": false },
+      { "word": "market",  "isReal": true },
+      { "word": "coffle",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-2",
+    "difficulty": "medium",
+    "items": [
+      { "word": "reluctant",   "isReal": true },
+      { "word": "reluctil",    "isReal": false },
+      { "word": "itinerary",   "isReal": true },
+      { "word": "itinolary",   "isReal": false },
+      { "word": "plausible",   "isReal": true },
+      { "word": "plaunsible",  "isReal": false },
+      { "word": "magnitude",   "isReal": true },
+      { "word": "magnifude",   "isReal": false },
+      { "word": "camouflage",  "isReal": true },
+      { "word": "camoufalge",  "isReal": false },
+      { "word": "extract",     "isReal": true },
+      { "word": "extrigate",   "isReal": false }
+    ]
+  }
+]

@@ -1,0 +1,58 @@
+[
+  {
+    "id": "ir-1",
+    "title": "The Rise of Urban Beekeeping",
+    "passage": [
+      "Over the past decade, beekeeping has become an increasingly popular hobby in cities around the world.",
+      "Rooftops, balconies, and community gardens now host thousands of hives in places once thought unsuitable for bees.",
+      "Urban beekeepers argue that cities can actually offer bees a wider variety of flowering plants than rural monoculture farms.",
+      "However, keeping bees in dense neighborhoods also raises concerns about safety and the availability of adequate food sources.",
+      "Despite these challenges, many city governments now offer training programs and permits to support responsible urban beekeeping.",
+      "Supporters believe that if managed carefully, urban beekeeping can help reverse the decline of pollinator populations."
+    ],
+    "tasks": [
+      {
+        "type": "complete_sentence",
+        "prompt": "Complete the sentence with the best option.",
+        "sentence": "Urban beekeepers argue that cities can offer bees a ___ variety of flowering plants than rural farms.",
+        "options": ["wider", "narrower", "similar", "limited"],
+        "answer": "wider"
+      },
+      {
+        "type": "complete_passage",
+        "prompt": "Choose the word that best completes the passage.",
+        "sentenceIndex": 3,
+        "maskedWord": "concerns",
+        "options": ["concerns", "concern", "concerning", "concerned"],
+        "answer": "concerns"
+      },
+      {
+        "type": "highlight_answer",
+        "prompt": "Which sentence explains a concern about urban beekeeping?",
+        "answerSentenceIndex": 3
+      },
+      {
+        "type": "identify_idea",
+        "prompt": "What is the main idea of the passage?",
+        "options": [
+          "Urban beekeeping is growing in popularity and may help support declining bee populations, despite some safety concerns.",
+          "Rural farms are better suited for beekeeping than cities.",
+          "City governments are banning beekeeping due to safety issues.",
+          "Beekeeping has declined sharply in cities over the past decade."
+        ],
+        "answer": "Urban beekeeping is growing in popularity and may help support declining bee populations, despite some safety concerns."
+      },
+      {
+        "type": "title_passage",
+        "prompt": "Choose the best title for this passage.",
+        "options": [
+          "Bees in the City: A Growing Urban Trend",
+          "The History of Rural Farming",
+          "Why Cities Should Ban Beekeeping",
+          "The Decline of Pollinators Worldwide"
+        ],
+        "answer": "Bees in the City: A Growing Urban Trend"
+      }
+    ]
+  }
+]
