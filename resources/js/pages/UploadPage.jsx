@@ -538,6 +538,9 @@ function DetPracticeLauncher() {
                     <button onClick={() => navigate('/det/practice/speak-about-photo')} className={drillButtonCls}>
                         Speak About the Photo
                     </button>
+                    <button onClick={() => navigate('/det/practice/interactive-speaking')} className={drillButtonCls}>
+                        Interactive Speaking
+                    </button>
                 </div>
             </div>
         </div>

@@ -1,0 +1,30 @@
+[
+  {
+    "id": "is-1",
+    "prompt": "Your neighbor Sarah asks you to look after her cat, Whiskers, while she's away for a week. She explains that Whiskers needs feeding twice a day and a bit of playtime each afternoon. How would you respond to Sarah, agreeing to help?"
+  },
+  {
+    "id": "is-2",
+    "prompt": "Sarah asks if you have any experience taking care of pets before. What would you tell her?"
+  },
+  {
+    "id": "is-3",
+    "prompt": "Sarah mentions that Whiskers sometimes hides under the bed when he's nervous. What questions would you ask her before she leaves?"
+  },
+  {
+    "id": "is-4",
+    "prompt": "On the third day, you notice Whiskers hasn't eaten his food. What would you do, and would you contact Sarah about it?"
+  },
+  {
+    "id": "is-5",
+    "prompt": "Sarah comes back from her trip and thanks you for taking such good care of Whiskers. She offers to pay you for your time, but you're not sure whether you should accept. What would you say to her?"
+  },
+  {
+    "id": "is-6",
+    "prompt": "A few weeks later, a different neighbor hears about how well you looked after Whiskers and asks if you'd be willing to pet-sit for them too. How would you respond, based on your experience with Sarah's cat?"
+  },
+  {
+    "id": "is-7",
+    "prompt": "Looking back on the whole experience, what was the most challenging part of taking care of Whiskers, and what would you do differently next time?"
+  }
+]

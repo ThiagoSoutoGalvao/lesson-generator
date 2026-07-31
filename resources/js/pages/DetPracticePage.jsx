@@ -5,6 +5,7 @@ import ReadCompleteDrill from '@/components/det/ReadCompleteDrill';
 import InteractiveReadingDrill from '@/components/det/InteractiveReadingDrill';
 import ReadThenSpeakDrill from '@/components/det/ReadThenSpeakDrill';
 import SpeakAboutPhotoDrill from '@/components/det/SpeakAboutPhotoDrill';
+import InteractiveSpeakingDrill from '@/components/det/InteractiveSpeakingDrill';
 
 function BackButton({ onClick }) {
     return (
@@ -24,6 +25,7 @@ const DRILLS = {
     'interactive-reading': InteractiveReadingDrill,
     'read-then-speak': ReadThenSpeakDrill,
     'speak-about-photo': SpeakAboutPhotoDrill,
+    'interactive-speaking': InteractiveSpeakingDrill,
 };
 
 export default function DetPracticePage() {
@@ -41,7 +43,7 @@ export default function DetPracticePage() {
             <div className="max-w-xl mx-auto mt-4 flex flex-col gap-4">
                 <h2 className="text-3xl font-bold text-white">Unknown practice type</h2>
                 <p className="text-white/60 text-sm">
-                    "{type}" isn't a recognised DET practice type. Expected one of: read-select, fill-blank, read-complete, interactive-reading, read-then-speak, speak-about-photo.
+                    "{type}" isn't a recognised DET practice type. Expected one of: read-select, fill-blank, read-complete, interactive-reading, read-then-speak, speak-about-photo, interactive-speaking.
                 </p>
                 <BackButton onClick={backToDetTab} />
             </div>
