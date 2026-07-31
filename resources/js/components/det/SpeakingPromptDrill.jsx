@@ -23,6 +23,7 @@ export default function SpeakingPromptDrill({
     prepLabel = 'Read',
     revealLabel = 'Ready to Speak →',
     promptLabel = 'Now speak',
+    backToPrepLabel = '← Re-read',
 }) {
     const navigate = useNavigate();
     const [index, setIndex] = useState(0);
@@ -103,7 +104,7 @@ export default function SpeakingPromptDrill({
                     </p>
 
                     <div className="flex items-center gap-4">
-                        {item.prep && <button onClick={() => setPhase('prep')} className={ghostBtnCls}>{prepLabel === 'Read' ? '← Re-read' : `← Back to ${prepLabel.toLowerCase()}`}</button>}
+                        {item.prep && <button onClick={() => setPhase('prep')} className={ghostBtnCls}>{backToPrepLabel}</button>}
                         <button onClick={goNext} className={primaryBtnCls}>
                             {index + 1 < items.length ? 'Next Prompt →' : 'Finish'}
                         </button>
