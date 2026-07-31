@@ -24,6 +24,8 @@ export default function SpeakingPromptDrill({
     revealLabel = 'Ready to Speak →',
     promptLabel = 'Now speak',
     backToPrepLabel = '← Re-read',
+    onBack,
+    doneSecondaryLabel = 'Back to DET Practice',
 }) {
     const navigate = useNavigate();
     const [index, setIndex] = useState(0);
@@ -64,7 +66,7 @@ export default function SpeakingPromptDrill({
             title={title}
             subtitle={phase === 'done' ? subtitle : `Prompt ${index + 1} of ${items.length}`}
             onRedo={phase !== 'done' ? restart : undefined}
-            onBack={backToDetTab}
+            onBack={onBack || backToDetTab}
             fontSizeIdx={fontSizeIdx}
             fontSizeMax={FONT_SIZE_MAX}
             onFontDecrease={() => setFontSizeIdx(i => Math.max(0, i - 1))}
@@ -118,7 +120,7 @@ export default function SpeakingPromptDrill({
                     <p className="text-white/50 text-sm">No score to review here — just talk through how it went with the student.</p>
                     <div className="flex gap-4">
                         <button onClick={restart} className={primaryBtnCls}>Start Again</button>
-                        <button onClick={backToDetTab} className={secondaryBtnCls}>Back to DET Practice</button>
+                        <button onClick={onBack || backToDetTab} className={secondaryBtnCls}>{doneSecondaryLabel}</button>
                     </div>
                 </div>
             )}

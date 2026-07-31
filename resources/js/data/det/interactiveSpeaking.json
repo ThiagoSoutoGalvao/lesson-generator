@@ -1,30 +1,28 @@
 [
   {
-    "id": "is-1",
-    "prompt": "Your neighbor Sarah asks you to look after her cat, Whiskers, while she's away for a week. She explains that Whiskers needs feeding twice a day and a bit of playtime each afternoon. How would you respond to Sarah, agreeing to help?"
+    "id": "is-scenario-1",
+    "title": "Looking After a Neighbor's Cat",
+    "items": [
+      { "id": "is-1-1", "prompt": "Your neighbor Sarah asks you to look after her cat, Whiskers, while she's away for a week. She explains that Whiskers needs feeding twice a day and a bit of playtime each afternoon. How would you respond to Sarah, agreeing to help?" },
+      { "id": "is-1-2", "prompt": "Sarah asks if you have any experience taking care of pets before. What would you tell her?" },
+      { "id": "is-1-3", "prompt": "Sarah mentions that Whiskers sometimes hides under the bed when he's nervous. What questions would you ask her before she leaves?" },
+      { "id": "is-1-4", "prompt": "On the third day, you notice Whiskers hasn't eaten his food. What would you do, and would you contact Sarah about it?" },
+      { "id": "is-1-5", "prompt": "Sarah comes back from her trip and thanks you for taking such good care of Whiskers. She offers to pay you for your time, but you're not sure whether you should accept. What would you say to her?" },
+      { "id": "is-1-6", "prompt": "A few weeks later, a different neighbor hears about how well you looked after Whiskers and asks if you'd be willing to pet-sit for them too. How would you respond, based on your experience with Sarah's cat?" },
+      { "id": "is-1-7", "prompt": "Looking back on the whole experience, what was the most challenging part of taking care of Whiskers, and what would you do differently next time?" }
+    ]
   },
   {
-    "id": "is-2",
-    "prompt": "Sarah asks if you have any experience taking care of pets before. What would you tell her?"
-  },
-  {
-    "id": "is-3",
-    "prompt": "Sarah mentions that Whiskers sometimes hides under the bed when he's nervous. What questions would you ask her before she leaves?"
-  },
-  {
-    "id": "is-4",
-    "prompt": "On the third day, you notice Whiskers hasn't eaten his food. What would you do, and would you contact Sarah about it?"
-  },
-  {
-    "id": "is-5",
-    "prompt": "Sarah comes back from her trip and thanks you for taking such good care of Whiskers. She offers to pay you for your time, but you're not sure whether you should accept. What would you say to her?"
-  },
-  {
-    "id": "is-6",
-    "prompt": "A few weeks later, a different neighbor hears about how well you looked after Whiskers and asks if you'd be willing to pet-sit for them too. How would you respond, based on your experience with Sarah's cat?"
-  },
-  {
-    "id": "is-7",
-    "prompt": "Looking back on the whole experience, what was the most challenging part of taking care of Whiskers, and what would you do differently next time?"
+    "id": "is-scenario-2",
+    "title": "Covering for a Colleague",
+    "items": [
+      { "id": "is-2-1", "prompt": "Your team lead tells you that your colleague Mark is taking unexpected medical leave, and asks if you can take over his ongoing project for the next two weeks. How would you respond?" },
+      { "id": "is-2-2", "prompt": "Your team lead asks whether you're already familiar with the tools and systems Mark was using. What would you tell them?" },
+      { "id": "is-2-3", "prompt": "Before your team lead leaves the room, what questions would you ask to make sure you can pick up Mark's work smoothly?" },
+      { "id": "is-2-4", "prompt": "Halfway through the first week, you discover Mark left one part of the project unfinished with no notes explaining his approach. What would you do?" },
+      { "id": "is-2-5", "prompt": "A client emails asking why the project timeline has changed. How would you respond to them?" },
+      { "id": "is-2-6", "prompt": "Mark returns from leave and thanks you for covering for him. He asks how it went. What would you tell him?" },
+      { "id": "is-2-7", "prompt": "Looking back, what was the hardest part of taking over someone else's project, and what would you do differently if it happened again?" }
+    ]
   }
 ]

@@ -38,5 +38,45 @@
       "content": "Many schools are reducing the amount of homework given to students, arguing that free time is just as important for learning as classwork."
     },
     "prompt": "Do you think less homework benefits students? Explain your opinion with specific reasons."
+  },
+  {
+    "id": "rts-6",
+    "prep": {
+      "type": "text",
+      "content": "Some companies now require employees to come into the office five days a week, reversing the remote and hybrid policies many adopted in recent years."
+    },
+    "prompt": "Do you agree with requiring employees to work from the office full-time? Give reasons and examples to support your answer."
+  },
+  {
+    "id": "rts-7",
+    "prep": {
+      "type": "text",
+      "content": "Hey, I'm really sorry but something came up and I can't make it to dinner tonight. Can we reschedule for another day this week? I feel bad cancelling so last minute."
+    },
+    "prompt": "Reply to this message. Let your friend know how you feel about the change and suggest a new plan."
+  },
+  {
+    "id": "rts-8",
+    "prep": {
+      "type": "text",
+      "content": "A new study found that people who take a short walk after eating a meal have significantly better blood sugar control than those who remain seated."
+    },
+    "prompt": "What is your reaction to this finding? Discuss whether you think this would be easy or difficult to build into a daily routine."
+  },
+  {
+    "id": "rts-9",
+    "prep": {
+      "type": "text",
+      "content": "Notice to gym members: due to renovations, the second-floor weights area will be closed starting Monday. Members are welcome to use the ground-floor equipment during this time."
+    },
+    "prompt": "Imagine a friend at the gym asks you about this notice. Explain what is happening and what they should do instead."
+  },
+  {
+    "id": "rts-10",
+    "prep": {
+      "type": "text",
+      "content": "Many parents are concerned about how much time teenagers spend on social media, while others argue it helps young people stay connected with friends and current events."
+    },
+    "prompt": "What is your opinion on social media use among teenagers? Explain your view with specific reasons and examples."
   }
 ]
