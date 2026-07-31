@@ -506,23 +506,36 @@ function DetPracticeLauncher() {
     const drillButtonCls = 'py-6 px-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
 
     return (
-        <div className="flex flex-col gap-4">
-            <p className="text-white/50 text-xs">
-                DET-format reading and vocabulary practice — no scoring, teacher-controlled pace.
-            </p>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button onClick={() => navigate('/det/practice/read-select')} className={drillButtonCls}>
-                    Read and Select
-                </button>
-                <button onClick={() => navigate('/det/practice/fill-blank')} className={drillButtonCls}>
-                    Fill in the Blanks
-                </button>
-                <button onClick={() => navigate('/det/practice/read-complete')} className={drillButtonCls}>
-                    Read and Complete
-                </button>
-                <button onClick={() => navigate('/det/practice/interactive-reading')} className={drillButtonCls}>
-                    Interactive Reading
-                </button>
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
+                <p className="text-white/50 text-xs">
+                    DET-format reading and vocabulary practice — no scoring, teacher-controlled pace.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onClick={() => navigate('/det/practice/read-select')} className={drillButtonCls}>
+                        Read and Select
+                    </button>
+                    <button onClick={() => navigate('/det/practice/fill-blank')} className={drillButtonCls}>
+                        Fill in the Blanks
+                    </button>
+                    <button onClick={() => navigate('/det/practice/read-complete')} className={drillButtonCls}>
+                        Read and Complete
+                    </button>
+                    <button onClick={() => navigate('/det/practice/interactive-reading')} className={drillButtonCls}>
+                        Interactive Reading
+                    </button>
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-4">
+                <p className="text-white/50 text-xs">
+                    Speaking practice — no timer, no recording. The app just shows the prompt; you run the clock and the conversation live.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onClick={() => navigate('/det/practice/read-then-speak')} className={drillButtonCls}>
+                        Read, Then Speak
+                    </button>
+                </div>
             </div>
         </div>
     );

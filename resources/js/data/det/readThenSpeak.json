@@ -1,0 +1,42 @@
+[
+  {
+    "id": "rts-1",
+    "prep": {
+      "type": "text",
+      "content": "Some people believe that students should be allowed to choose their own school subjects from an early age, rather than following a fixed curriculum."
+    },
+    "prompt": "Do you agree or disagree with this opinion? Give reasons and examples to support your answer."
+  },
+  {
+    "id": "rts-2",
+    "prep": {
+      "type": "text",
+      "content": "Hi! I just found out our team meeting got moved to 8 AM tomorrow instead of 2 PM. I know that's really early for you — are you still able to make it, or should we look at rescheduling?"
+    },
+    "prompt": "Reply to this message. Explain whether the new time works for you and suggest an alternative if it doesn't."
+  },
+  {
+    "id": "rts-3",
+    "prep": {
+      "type": "text",
+      "content": "A recent study found that employees who work from home report higher job satisfaction, but many managers worry that remote work reduces collaboration and creativity."
+    },
+    "prompt": "What is your opinion on remote work? Discuss the advantages and disadvantages based on the passage and your own experience."
+  },
+  {
+    "id": "rts-4",
+    "prep": {
+      "type": "text",
+      "content": "Attention residents: the building's water will be shut off tomorrow from 9 AM to 1 PM for scheduled maintenance. Please store water in advance if needed."
+    },
+    "prompt": "Imagine a neighbor asks you about this notice. Explain what is happening and what they should do to prepare."
+  },
+  {
+    "id": "rts-5",
+    "prep": {
+      "type": "text",
+      "content": "Many schools are reducing the amount of homework given to students, arguing that free time is just as important for learning as classwork."
+    },
+    "prompt": "Do you think less homework benefits students? Explain your opinion with specific reasons."
+  }
+]
