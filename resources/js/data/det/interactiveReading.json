@@ -54,5 +54,61 @@
         "answer": "Bees in the City: A Growing Urban Trend"
       }
     ]
+  },
+  {
+    "id": "ir-2",
+    "title": "The Benefits of Learning a Second Language",
+    "passage": [
+      "Learning a second language has become increasingly common among adults in recent years.",
+      "Research suggests that bilingual speakers often perform better on tasks that require focus and mental flexibility.",
+      "Beyond cognitive benefits, speaking another language can open up new career opportunities in a globalized economy.",
+      "However, many adult learners struggle to find consistent time to practice outside a classroom setting.",
+      "Language apps and online tutors have made it easier to fit practice into a busy daily schedule.",
+      "Experts agree that regular, short practice sessions are more effective than occasional long study sessions."
+    ],
+    "tasks": [
+      {
+        "type": "complete_sentence",
+        "prompt": "Complete the sentence with the best option.",
+        "sentence": "Speaking another language can open up new career opportunities in a ___ economy.",
+        "options": ["globalized", "isolated", "declining", "local"],
+        "answer": "globalized"
+      },
+      {
+        "type": "complete_passage",
+        "prompt": "Choose the word that best completes the passage.",
+        "sentenceIndex": 3,
+        "maskedWord": "consistent",
+        "options": ["consistent", "consistently", "consistency", "consist"],
+        "answer": "consistent"
+      },
+      {
+        "type": "highlight_answer",
+        "prompt": "Which sentence explains why adult learners find it hard to practice?",
+        "answerSentenceIndex": 3
+      },
+      {
+        "type": "identify_idea",
+        "prompt": "What is the main idea of the passage?",
+        "options": [
+          "Learning a second language offers cognitive and career benefits, though adults often struggle to find time to practice consistently.",
+          "Only children can effectively learn a second language.",
+          "Language apps have replaced the need for classroom learning entirely.",
+          "Bilingual speakers perform worse on tasks requiring focus."
+        ],
+        "answer": "Learning a second language offers cognitive and career benefits, though adults often struggle to find time to practice consistently."
+      },
+      {
+        "type": "title_passage",
+        "prompt": "Choose the best title for this passage.",
+        "options": [
+          "Why Adults Are Learning New Languages",
+          "The Decline of Classroom Education",
+          "Children Learn Languages Faster Than Adults",
+          "The History of Bilingualism"
+        ],
+        "answer": "Why Adults Are Learning New Languages"
+      }
+    ]
   }
 ]

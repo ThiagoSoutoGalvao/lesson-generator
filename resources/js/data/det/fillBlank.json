@@ -138,5 +138,75 @@
     "target": "unprecedented",
     "hint": "u____________",
     "difficulty": "hard"
+  },
+  {
+    "id": "fb-21",
+    "sentence": "The traffic was terrible; ______, we still arrived on time.",
+    "target": "however",
+    "hint": "h______",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-22",
+    "sentence": "Tom prefers tea, ______ his sister always chooses coffee.",
+    "target": "whereas",
+    "hint": "w______",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-23",
+    "sentence": "You won't pass the exam ______ you start studying soon.",
+    "target": "unless",
+    "hint": "u_____",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-24",
+    "sentence": "______ the heavy rain, the match continued as planned.",
+    "target": "despite",
+    "hint": "d______",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-25",
+    "sentence": "She kept working ______ she was exhausted.",
+    "target": "though",
+    "hint": "t_____",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-26",
+    "sentence": "He didn't call, ______ he'd promised to.",
+    "target": "since",
+    "hint": "s____",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-27",
+    "sentence": "The manager's decision only served to ______ tensions within the team.",
+    "target": "exacerbate",
+    "hint": "e_________",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-28",
+    "sentence": "After years of conflict, the two nations finally managed to ______ their differences.",
+    "target": "reconcile",
+    "hint": "r________",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-29",
+    "sentence": "The comment was ______ and caused no offence at all.",
+    "target": "innocuous",
+    "hint": "i________",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-30",
+    "sentence": "It took an ______ amount of courage to speak up in front of the board.",
+    "target": "audacious",
+    "hint": "a________",
+    "difficulty": "hard"
   }
 ]

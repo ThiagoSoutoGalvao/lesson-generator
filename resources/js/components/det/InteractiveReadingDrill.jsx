@@ -197,8 +197,8 @@ export default function InteractiveReadingDrill() {
             onTextColorChange={setTextColor}
         >
             {phase === 'select' && (
-                <div className="flex-1 flex items-center justify-center px-8">
-                    <div className="flex flex-col gap-3 max-w-md w-full">
+                <div className="flex-1 overflow-y-auto px-8 py-8">
+                    <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
                         <p className="text-white/60 text-sm text-center mb-2">Choose a passage. Work through all 5 tasks in order.</p>
                         {interactiveReadingSets.map(s => (
                             <button

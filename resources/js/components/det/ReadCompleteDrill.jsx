@@ -94,8 +94,8 @@ export default function ReadCompleteDrill() {
             onTextColorChange={setTextColor}
         >
             {phase === 'select' && (
-                <div className="flex-1 flex items-center justify-center px-8">
-                    <div className="flex flex-col gap-3 max-w-md w-full">
+                <div className="flex-1 overflow-y-auto px-8 py-8">
+                    <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
                         <p className="text-white/60 text-sm text-center mb-2">Choose a paragraph. Fill every blank, then submit to reveal your score.</p>
                         {readCompleteSets.map(s => (
                             <button

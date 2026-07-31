@@ -89,8 +89,8 @@ export default function ReadSelectDrill() {
             onTextColorChange={setTextColor}
         >
             {phase === 'select' && (
-                <div className="flex-1 flex items-center justify-center px-8">
-                    <div className="flex flex-col gap-6 max-w-md w-full">
+                <div className="flex-1 overflow-y-auto px-8 py-8">
+                    <div className="flex flex-col gap-6 max-w-md w-full mx-auto">
                         <div className="flex flex-col gap-1.5">
                             <p className="text-white/50 text-xs font-semibold uppercase tracking-wide">Difficulty</p>
                             <div className="flex gap-2">

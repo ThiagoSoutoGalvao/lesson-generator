@@ -20,5 +20,27 @@
       { "id": 3, "options": ["prepare", "preparing", "prepared", "preparation"], "answer": "prepare" },
       { "id": 4, "options": ["satisfied", "satisfying", "satisfy", "satisfaction"], "answer": "satisfied" }
     ]
+  },
+  {
+    "id": "rc-3",
+    "title": "Planning a Trip",
+    "paragraph": "Before going on holiday, it's important to {{1}} your accommodation and transport in advance. Many travelers also make a list of the {{2}} items they need to pack, such as passports and chargers. On the day of departure, arriving at the airport {{3}} avoids unnecessary stress. Once the flight lands, most people feel {{4}} to finally begin their vacation.",
+    "blanks": [
+      { "id": 1, "options": ["book", "booking", "booked", "books"], "answer": "book" },
+      { "id": 2, "options": ["essential", "essentially", "essentials", "essentialize"], "answer": "essential" },
+      { "id": 3, "options": ["early", "earlier", "earliest", "earliness"], "answer": "early" },
+      { "id": 4, "options": ["relieved", "relief", "relieving", "relieves"], "answer": "relieved" }
+    ]
+  },
+  {
+    "id": "rc-4",
+    "title": "Starting a New Job",
+    "paragraph": "On her first day at the new company, Sarah felt both excited and {{1}}. Her manager gave her a brief {{2}} of the team's main responsibilities before introducing her to her colleagues. By the end of the week, she had {{3}} several of her tasks and felt more confident. Her colleagues said she had settled in {{4}} quickly.",
+    "blanks": [
+      { "id": 1, "options": ["nervous", "nervously", "nervousness", "nerve"], "answer": "nervous" },
+      { "id": 2, "options": ["overview", "overviewed", "overviewing", "overviews"], "answer": "overview" },
+      { "id": 3, "options": ["completed", "completing", "complete", "completes"], "answer": "completed" },
+      { "id": 4, "options": ["remarkably", "remarkable", "remark", "remarked"], "answer": "remarkably" }
+    ]
   }
 ]
