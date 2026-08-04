@@ -10,7 +10,7 @@ const OPTION_COLORS = {
     'Not Given': { base: 'bg-amber-500/20 border-amber-400/50 hover:bg-amber-500/40 text-amber-100', selected: 'bg-amber-500 border-amber-400 text-white', correct: 'bg-amber-500 border-amber-400 text-white' },
 };
 
-const FONT_SIZES  = ['text-xl', 'text-2xl', 'text-3xl'];
+const FONT_SIZES  = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const TEXT_COLORS = [
     { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
     { label: 'Cream',  cls: 'text-amber-50',   bg: '#fffbeb' },
@@ -26,10 +26,10 @@ export default function TrueFalseActivity({ activity, onClose }) {
     const [chosen, setChosen]             = useState(null);
     const [answers, setAnswers]           = useState([]);
     const [finished, setFinished]         = useState(false);
-    const [showPassage, setShowPassage]   = useState(true);
+    const [showOptions, setShowOptions]   = useState(true);
     const [bgUrl, setBgUrl]               = useState(null);
     const [showSave, setShowSave]         = useState(false);
-    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
+    const [fontSizeIdx, setFontSizeIdx]   = useState(2);
     const [textColor, setTextColor]       = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -51,7 +51,7 @@ export default function TrueFalseActivity({ activity, onClose }) {
     useEffect(() => {
         function onKey(e) {
             if (e.code === 'Space') { e.preventDefault(); if (answered) handleNext(); }
-            if (e.code === 'KeyP')  setShowPassage(p => !p);
+            if (e.code === 'KeyP')  setShowOptions(o => !o);
             if (e.code === 'KeyF')  toggleFullscreen();
         }
         window.addEventListener('keydown', onKey);
@@ -148,11 +148,11 @@ export default function TrueFalseActivity({ activity, onClose }) {
                         ))}
                     </div>
                     <button
-                        onClick={() => setShowPassage(p => !p)}
+                        onClick={() => setShowOptions(o => !o)}
                         className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer"
-                        title="Toggle passage (P)"
+                        title="Toggle options (P)"
                     >
-                        {showPassage ? 'Hide passage' : 'Show passage'}
+                        {showOptions ? 'Hide options' : 'Show options'}
                     </button>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
@@ -165,60 +165,60 @@ export default function TrueFalseActivity({ activity, onClose }) {
             <div className="relative z-10 flex-1 flex flex-col md:flex-row gap-4 px-6 md:px-12 py-2 overflow-hidden">
 
                 {/* Passage panel */}
-                {showPassage && (
-                    <div className="md:w-[62%] shrink-0 bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto">
-                        <p className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-3">Reading Passage</p>
-                        <p className={`leading-relaxed ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>{activity.passage}</p>
-                    </div>
-                )}
+                <div className={`${showOptions ? 'md:w-[62%] shrink-0' : 'flex-1'} bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto transition-all duration-300`}>
+                    <p className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-3">Reading Passage</p>
+                    <p className={`leading-relaxed ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>{activity.passage}</p>
+                </div>
 
                 {/* Statement + options */}
-                <div className="flex-1 flex flex-col justify-center gap-6">
-                    <h2 className={`font-bold leading-snug drop-shadow-lg ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>
-                        {statement.text}
-                    </h2>
+                {showOptions && (
+                    <div className="flex-1 flex flex-col justify-center gap-6">
+                        <h2 className={`font-bold leading-snug drop-shadow-lg ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>
+                            {statement.text}
+                        </h2>
 
-                    <div className="flex flex-col gap-3">
-                        {OPTIONS.map(opt => {
-                            const colors = OPTION_COLORS[opt];
-                            const fs = FONT_SIZES[fontSizeIdx];
-                            let cls = `${colors.base} border rounded-xl px-6 py-4 ${fs} font-semibold transition-all duration-150 cursor-pointer`;
+                        <div className="flex flex-col gap-3">
+                            {OPTIONS.map(opt => {
+                                const colors = OPTION_COLORS[opt];
+                                const fs = FONT_SIZES[fontSizeIdx];
+                                let cls = `${colors.base} border rounded-xl px-6 py-4 ${fs} font-semibold transition-all duration-150 cursor-pointer`;
 
-                            if (answered) {
-                                if (opt === statement.answer) cls = `${colors.correct} border rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
-                                else if (opt === chosen)      cls = `bg-white/10 border border-white/20 text-white/40 line-through rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
-                                else                          cls = `bg-white/5 border border-white/10 text-white/25 rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
-                            }
+                                if (answered) {
+                                    if (opt === statement.answer) cls = `${colors.correct} border rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
+                                    else if (opt === chosen)      cls = `bg-white/10 border border-white/20 text-white/40 line-through rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
+                                    else                          cls = `bg-white/5 border border-white/10 text-white/25 rounded-xl px-6 py-4 ${fs} font-semibold cursor-default`;
+                                }
 
-                            return (
-                                <button
-                                    key={opt}
-                                    onClick={() => handleChoose(opt)}
-                                    disabled={answered}
-                                    className={cls}
-                                >
-                                    {opt}
-                                </button>
-                            );
-                        })}
-                    </div>
-
-                    {answered && (
-                        <div className={`rounded-xl px-6 py-4 ${FONT_SIZES[fontSizeIdx]} leading-relaxed border ${isCorrect ? 'bg-green-500/15 border-green-400/30 text-green-200' : 'bg-red-500/15 border-red-400/30 text-red-200'}`}>
-                            <span className="font-semibold">{isCorrect ? '✓ Correct. ' : `✗ The answer is ${statement.answer}. `}</span>
-                            {statement.explanation}
+                                return (
+                                    <button
+                                        key={opt}
+                                        onClick={() => handleChoose(opt)}
+                                        disabled={answered}
+                                        className={cls}
+                                    >
+                                        {opt}
+                                    </button>
+                                );
+                            })}
                         </div>
-                    )}
 
-                    {answered && (
-                        <button
-                            onClick={handleNext}
-                            className="self-start bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors"
-                        >
-                            {currentIndex + 1 >= total ? 'See Results' : 'Next →'}
-                        </button>
-                    )}
-                </div>
+                        {answered && (
+                            <div className={`rounded-xl px-6 py-4 ${FONT_SIZES[fontSizeIdx]} leading-relaxed border ${isCorrect ? 'bg-green-500/15 border-green-400/30 text-green-200' : 'bg-red-500/15 border-red-400/30 text-red-200'}`}>
+                                <span className="font-semibold">{isCorrect ? '✓ Correct. ' : `✗ The answer is ${statement.answer}. `}</span>
+                                {statement.explanation}
+                            </div>
+                        )}
+
+                        {answered && (
+                            <button
+                                onClick={handleNext}
+                                className="self-start bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors"
+                            >
+                                {currentIndex + 1 >= total ? 'See Results' : 'Next →'}
+                            </button>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

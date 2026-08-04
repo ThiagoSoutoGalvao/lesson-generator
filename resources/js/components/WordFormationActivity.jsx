@@ -3,9 +3,10 @@ import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const ROOT_SIZES     = ['text-4xl', 'text-5xl', 'text-6xl'];
-const SENTENCE_SIZES = ['text-xl',  'text-2xl',  'text-3xl'];
-const FORM_SIZES     = ['text-base','text-lg',   'text-xl'];
+const ROOT_SIZES     = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
+const SENTENCE_SIZES = ['text-lg',  'text-xl',   'text-2xl', 'text-3xl', 'text-4xl'];
+const FORM_SIZES     = ['text-sm',  'text-base', 'text-lg',  'text-xl',  'text-2xl'];
+const LABEL_SIZES    = ['text-[10px]', 'text-xs', 'text-sm', 'text-base', 'text-lg'];
 const TEXT_COLORS    = [
     { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
     { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
@@ -19,7 +20,7 @@ export default function WordFormationActivity({ activity, onClose }) {
     const [revealed, setRevealed]   = useState(false);
     const [bgUrl, setBgUrl]         = useState(null);
     const [showSave, setShowSave]   = useState(false);
-    const [fontSizeIdx, setFontSizeIdx] = useState(1);
+    const [fontSizeIdx, setFontSizeIdx] = useState(2);
     const [textColor, setTextColor]     = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -111,7 +112,7 @@ export default function WordFormationActivity({ activity, onClose }) {
             <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-6">
                 <div className="max-w-2xl w-full flex flex-col gap-5">
 
-                    <p className="text-white/45 text-xs uppercase tracking-widest text-center">{activity.instruction}</p>
+                    <p className={`text-white/45 ${LABEL_SIZES[fontSizeIdx]} uppercase tracking-widest text-center`}>{activity.instruction}</p>
 
                     <div className="rounded-2xl bg-black/30 backdrop-blur-sm border border-white/15 overflow-hidden">
 
@@ -122,7 +123,7 @@ export default function WordFormationActivity({ activity, onClose }) {
 
                         {/* Sentence */}
                         <div className="px-8 py-6">
-                            <p className="text-white/45 text-xs uppercase tracking-widest mb-3">Complete the sentence</p>
+                            <p className={`text-white/45 ${LABEL_SIZES[fontSizeIdx]} uppercase tracking-widest mb-3`}>Complete the sentence</p>
                             <p className={`${textColor} ${SENTENCE_SIZES[fontSizeIdx]} leading-relaxed`}>
                                 {renderSentence(item.sentence, item.answer, revealed)}
                             </p>
@@ -131,7 +132,7 @@ export default function WordFormationActivity({ activity, onClose }) {
                         {/* Word class after reveal */}
                         {revealed && (
                             <div className="px-8 py-4 border-t border-white/10 bg-white/5 flex items-center gap-3">
-                                <span className="text-white/40 text-xs uppercase tracking-widest">Word class</span>
+                                <span className={`text-white/40 ${LABEL_SIZES[fontSizeIdx]} uppercase tracking-widest`}>Word class</span>
                                 <span className={`${FORM_SIZES[fontSizeIdx]} ${textColor} font-semibold`}>{item.form}</span>
                             </div>
                         )}

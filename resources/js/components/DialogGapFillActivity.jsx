@@ -163,39 +163,42 @@ export default function DialogGapFillActivity({ activity, onClose }) {
                 </div>
             </div>
 
-            {/* Dialog scroll area */}
-            <div ref={scrollRef} className="relative z-10 flex-1 overflow-y-auto px-6 md:px-16 py-4 flex flex-col gap-3">
-                {activity.dialog.map((line, i) => lineDisplay(line, i))}
-            </div>
+            <div className="relative z-10 flex-1 flex flex-col md:flex-row gap-4 px-6 md:px-12 py-2 overflow-hidden">
 
-            {/* Options + Next */}
-            <div className="relative z-10 shrink-0 px-6 md:px-16 py-4 flex flex-col gap-3">
-                <p className="text-white/50 text-xs font-medium uppercase tracking-wide">
-                    What does {activeLine?.speaker} say?
-                </p>
-                <div className="flex gap-3">
-                    {activeLine?.options.map((opt, i) => {
-                        const letter = String.fromCharCode(65 + i);
-                        let cls = 'bg-white/10 hover:bg-white/18 text-white border border-white/20 cursor-pointer';
-                        if (answered) {
-                            if (opt.correct)          cls = 'bg-green-500 text-white border-green-400 cursor-default';
-                            else if (selected === i)  cls = 'bg-red-500 text-white border-red-400 cursor-default';
-                            else                      cls = 'bg-white/5 text-white/30 border-white/10 cursor-default';
-                        }
-                        return (
-                            <button key={i} onClick={() => handleChoose(i)} disabled={answered}
-                                className={`${cls} flex-1 flex flex-col items-center gap-2 px-4 py-4 rounded-2xl border transition-all duration-150`}>
-                                <span className="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center text-sm font-bold opacity-80 shrink-0">{letter}</span>
-                                <span className={`text-center ${OPTION_SIZES[fontSizeIdx]} font-medium leading-snug${!answered ? ` ${textColor}` : ''}`}>{opt.text}</span>
-                            </button>
-                        );
-                    })}
+                {/* Dialog panel */}
+                <div ref={scrollRef} className="md:w-[52%] shrink-0 bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto flex flex-col gap-3">
+                    {activity.dialog.map((line, i) => lineDisplay(line, i))}
                 </div>
-                {answered && (
-                    <button onClick={handleNext} className="self-end bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors">
-                        {currentBlank + 1 >= blanks.length ? 'See Results' : 'Next →'}
-                    </button>
-                )}
+
+                {/* Options + Next */}
+                <div className="flex-1 flex flex-col justify-center gap-4 min-h-0">
+                    <p className="text-white/50 text-xs font-medium uppercase tracking-wide">
+                        What does {activeLine?.speaker} say?
+                    </p>
+                    <div className="flex flex-col gap-3">
+                        {activeLine?.options.map((opt, i) => {
+                            const letter = String.fromCharCode(65 + i);
+                            let cls = 'bg-white/10 hover:bg-white/18 text-white border border-white/20 cursor-pointer';
+                            if (answered) {
+                                if (opt.correct)          cls = 'bg-green-500 text-white border-green-400 cursor-default';
+                                else if (selected === i)  cls = 'bg-red-500 text-white border-red-400 cursor-default';
+                                else                      cls = 'bg-white/5 text-white/30 border-white/10 cursor-default';
+                            }
+                            return (
+                                <button key={i} onClick={() => handleChoose(i)} disabled={answered}
+                                    className={`${cls} w-full flex items-center gap-4 px-5 py-4 rounded-2xl border transition-all duration-150`}>
+                                    <span className="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center text-sm font-bold opacity-80 shrink-0">{letter}</span>
+                                    <span className={`text-left flex-1 ${OPTION_SIZES[fontSizeIdx]} font-medium leading-snug${!answered ? ` ${textColor}` : ''}`}>{opt.text}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+                    {answered && (
+                        <button onClick={handleNext} className="self-start bg-blue-600 hover:bg-blue-700 text-white font-semibold px-8 py-3 rounded-xl text-base transition-colors">
+                            {currentBlank + 1 >= blanks.length ? 'See Results' : 'Next →'}
+                        </button>
+                    )}
+                </div>
             </div>
         </div>
     );

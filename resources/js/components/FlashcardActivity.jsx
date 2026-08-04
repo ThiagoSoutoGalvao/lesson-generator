@@ -4,6 +4,7 @@ import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
 const WORD_SIZES    = ['text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl'];
+const PRON_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const DEF_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const EXAMPLE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl',  'text-2xl'];
 const TEXT_COLORS   = [
@@ -23,7 +24,7 @@ export default function FlashcardActivity({ activity, onClose }) {
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave]       = useState(false);
     const [questionMode, setQuestionMode] = useState(false);
-    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
+    const [fontSizeIdx, setFontSizeIdx]   = useState(2);
     const [textColor, setTextColor]       = useState('text-white');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -182,12 +183,15 @@ export default function FlashcardActivity({ activity, onClose }) {
                                     <p className="text-white/40 text-xs uppercase tracking-widest">What's the word?</p>
                                     <p className={`${DEF_SIZES[fontSizeIdx]} ${textColor} font-medium text-center leading-snug`}>{card.definition}</p>
                                     <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example}"</p>
-                                    {card.example2 && <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example2}"</p>}
                                 </>
                             ) : (
                                 <>
                                     <p className="text-white/40 text-xs uppercase tracking-widest">Tap to flip</p>
                                     <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold ${textColor} text-center leading-tight`}>{card.word}</h2>
+                                    {card.pronunciation && (
+                                        <p className={`${PRON_SIZES[fontSizeIdx]} ${textColor} opacity-60 text-center`}>{card.pronunciation}</p>
+                                    )}
+                                    <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example}"</p>
                                 </>
                             )}
                         </div>
@@ -196,12 +200,21 @@ export default function FlashcardActivity({ activity, onClose }) {
                         <div style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)', position: 'absolute', inset: 0 }}
                             className="bg-white/15 backdrop-blur-sm border border-white/25 rounded-3xl flex flex-col items-center justify-center px-10 gap-4">
                             {questionMode ? (
-                                <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold ${textColor} text-center leading-tight`}>{card.word}</h2>
+                                <>
+                                    <h2 className={`${WORD_SIZES[fontSizeIdx]} font-bold ${textColor} text-center leading-tight`}>{card.word}</h2>
+                                    {card.pronunciation && (
+                                        <p className={`${PRON_SIZES[fontSizeIdx]} ${textColor} opacity-60 text-center`}>{card.pronunciation}</p>
+                                    )}
+                                    {(card.example2 || card.example) && (
+                                        <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example2 || card.example}"</p>
+                                    )}
+                                </>
                             ) : (
                                 <>
                                     <p className={`${DEF_SIZES[fontSizeIdx]} ${textColor} font-medium text-center leading-snug`}>{card.definition}</p>
-                                    <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example}"</p>
-                                    {card.example2 && <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example2}"</p>}
+                                    {(card.example2 || card.example) && (
+                                        <p className={`${EXAMPLE_SIZES[fontSizeIdx]} ${textColor} opacity-70 italic text-center`}>"{card.example2 || card.example}"</p>
+                                    )}
                                 </>
                             )}
                         </div>
