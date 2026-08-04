@@ -163,6 +163,7 @@ Return a JSON object with EXACTLY this structure:
   "cards": [
     {
       "word": "<vocabulary word or phrase>",
+      "pronunciation": "<IPA transcription of the word, e.g. '/kəmˈpjuːtər/'>",
       "definition": "<clear, student-friendly definition>",
       "example": "<a natural example sentence using the word in context>",
       "example2": "<a second natural example sentence using the word in a different context>",
@@ -174,6 +175,7 @@ Return a JSON object with EXACTLY this structure:
 Rules:
 - Definitions must be simple and clear for B1-B2 English learners — avoid complex words in the definition itself
 - Both example sentences should feel natural and contextual, not textbook-stiff; each should show the word used differently
+- Pronunciation must be standard IPA notation wrapped in forward slashes (broad/phonemic transcription, not narrow), using RP or General American consistently
 - Each card's keyword must be a descriptive scene phrase (not just the word itself) and visually distinct from the others
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
@@ -797,10 +799,8 @@ Rules:
 EOT;
     }
 
-    public function generateGrammarExplainer(string $documentText, string $prompt): array
+    public function generateReadingText(string $topic, string $vocabulary = '', int $paragraphs = 3, string $extra = ''): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
-
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
@@ -811,7 +811,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildGrammarExplainerPrompt($documentText, $prompt),
+                    'content' => $this->buildReadingTextPrompt($topic, $vocabulary, $paragraphs, $extra),
                 ],
             ],
         ]);
@@ -828,41 +828,36 @@ EOT;
         return $data;
     }
 
-    private function buildGrammarExplainerPrompt(string $documentText, string $prompt): string
+    private function buildReadingTextPrompt(string $topic, string $vocabulary, int $paragraphs, string $extra): string
     {
+        $vocabSection = $vocabulary
+            ? "\nTarget vocabulary to naturally include in the text: {$vocabulary}. Use every one of these words or phrases at least once, in natural context."
+            : "\nSelect 6 to 10 useful vocabulary words or phrases from the text you write, to be listed as a glossary.";
+        $extraSection = $extra ? "\nExtra instructions: {$extra}" : '';
+
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
-
-Task: {$prompt}
+Write a reading text for B1-B2 English learners about the following topic: {$topic}{$vocabSection}{$extraSection}
 
 Return a JSON object with EXACTLY this structure:
 {
-  "type": "grammar_explainer",
-  "topic": "<the grammar topic, e.g. 'Present Perfect' or 'Modal Verbs'>",
-  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits a classroom or study context, e.g. 'student writing notes library'>",
-  "slides": [
-    {
-      "title": "<short slide title, e.g. 'Positive Form' or 'When to Use It'>",
-      "rule": "<clear explanation of the grammar rule — use **double asterisks** to bold key grammar terms or important words>",
-      "form": "<optional: the grammatical formula, e.g. 'Subject + **have/has** + **past participle**' — use **double asterisks** to bold the key parts; omit this field if not applicable>",
-      "examples": [
-        "<a natural example sentence — use **double asterisks** to bold the grammar structure being illustrated>",
-        "<another example sentence>"
-      ],
-      "color": "<one of: blue, purple, green, orange, teal, rose — assign a distinct color per slide>"
-    }
+  "type": "reading_text",
+  "topic": "<short topic name, 2-5 words>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "paragraphs": [
+    "<paragraph 1 text>",
+    "<paragraph 2 text>"
+  ],
+  "vocabulary": [
+    { "word": "<a target vocabulary word or phrase, exactly as it appears in the paragraphs above>", "definition": "<a clear, simple B1-B2 definition>" }
   ]
 }
 
 Rules:
-- Generate 4 to 6 slides — each covering a distinct aspect: form, usage, examples, common mistakes, comparison with similar structures, etc.
-- Use **double asterisks** around key grammar terms in rules, forms, and examples — these render as colored bold text
-- The "form" field is optional — include it for slides that show a grammatical formula, omit it for usage/meaning slides
-- Each slide should have 2 to 3 example sentences
-- Assign a different color to each slide — cycle through blue, purple, green, orange, teal, rose
-- Keep explanations concise and student-friendly — B1-B2 level language
+- Generate EXACTLY {$paragraphs} paragraph(s) — do not generate more or fewer
+- Each paragraph should be 3 to 6 sentences long and flow naturally as a coherent text, not a disconnected list of sentences
+- The "word" field in each vocabulary entry MUST appear verbatim (same spelling, any capitalization) somewhere in the paragraphs text, so it can be highlighted
+- Provide between 5 and 10 vocabulary entries total
+- Definitions must be simple and clear for B1-B2 learners, avoiding complex words in the definition itself
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

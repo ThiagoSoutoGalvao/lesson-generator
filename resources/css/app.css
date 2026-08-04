@@ -295,50 +295,105 @@
     .pres-print-slide strong { font-weight: 700; }
 }
 
+/* ── Reading Text print / PDF export — light theme, natural page flow (a worksheet, not slides) ── */
+@media print {
+    @page { margin: 1.5cm 2cm; size: A4; }
+
+    .read-print-root {
+        display: block !important;
+        visibility: visible;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: #fff !important;
+        color: #111;
+    }
+
+    .read-print-root * { visibility: visible; }
+
+    .read-print-meta {
+        color: #777;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 1.3rem;
+    }
+
+    .read-print-paragraph {
+        color: #111;
+        font-size: 1.05rem;
+        line-height: 1.75;
+        margin-bottom: 1rem;
+    }
+
+    .read-print-vocab {
+        margin-top: 1.6rem;
+        padding-top: 1.1rem;
+        border-top: 1px solid #ccc;
+    }
+
+    .read-print-vocab-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #777;
+        margin-bottom: 0.7rem;
+    }
+
+    .read-print-vocab-item {
+        font-size: 0.92rem;
+        color: #333;
+        line-height: 1.6;
+        margin-bottom: 0.4rem;
+    }
+
+    .read-print-vocab-word {
+        font-weight: 700;
+        color: #111;
+    }
+}
+
 /* ── Accessibility font control (Aa button in navbar) ── */
 body.tf-active {
   font-family: var(--tf-family) !important;
 }
 
-/* Headings */
+/* Headings — scoped to `main` only: fullscreen activity overlays (.fixed.inset-0)
+   each own their own per-activity font/color controls, and this global !important
+   rule was silently overriding all of them whenever the navbar toggle was on. */
 body.tf-active main h1,
-body.tf-active main h2,
-body.tf-active .fixed.inset-0 h2 {
+body.tf-active main h2 {
   font-size: var(--tf-size) !important;
   color: var(--tf-color) !important;
 }
 
-body.tf-active main h3,
-body.tf-active .fixed.inset-0 h3 {
+body.tf-active main h3 {
   font-size: calc(var(--tf-size) * 0.88) !important;
   color: var(--tf-color) !important;
 }
 
 /* Body text & labels */
 body.tf-active main p,
-body.tf-active main label,
-body.tf-active .fixed.inset-0 p {
+body.tf-active main label {
   font-size: calc(var(--tf-size) * 0.78) !important;
   color: var(--tf-color) !important;
 }
 
 /* Card text / text-base elements */
-body.tf-active main .text-base,
-body.tf-active .fixed.inset-0 .text-base {
+body.tf-active main .text-base {
   font-size: calc(var(--tf-size) * 0.72) !important;
   color: var(--tf-color) !important;
 }
 
 /* Secondary text / text-sm */
-body.tf-active main .text-sm,
-body.tf-active .fixed.inset-0 .text-sm {
+body.tf-active main .text-sm {
   font-size: calc(var(--tf-size) * 0.65) !important;
   color: var(--tf-color) !important;
 }
 
 /* Badges, pills, captions / text-xs */
-body.tf-active main .text-xs,
-body.tf-active .fixed.inset-0 .text-xs {
+body.tf-active main .text-xs {
   font-size: calc(var(--tf-size) * 0.55) !important;
   color: var(--tf-color) !important;
 }

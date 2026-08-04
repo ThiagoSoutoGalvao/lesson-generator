@@ -107,6 +107,128 @@ function PresentationGenerator() {
     );
 }
 
+// ─── Reading Text Tab ─────────────────────────────────────────────────────────
+
+const PARAGRAPH_OPTIONS = [1, 2, 3, 4, 5, 6];
+
+function ReadingTextGenerator() {
+    const navigate = useNavigate();
+    const [topic, setTopic]           = useState('');
+    const [vocabulary, setVocabulary] = useState('');
+    const [extra, setExtra]           = useState('');
+    const [paragraphs, setParagraphs] = useState(3);
+    const [status, setStatus]         = useState('idle');
+    const [errorMsg, setErrorMsg]     = useState('');
+
+    async function generate() {
+        if (!topic.trim()) return;
+        setStatus('loading');
+        setErrorMsg('');
+        try {
+            const { data } = await axios.post('/api/reading/generate', {
+                topic:      topic.trim(),
+                vocabulary: vocabulary.trim() || undefined,
+                extra:      extra.trim() || undefined,
+                paragraphs,
+            });
+            navigate('/generate', { state: { activity: data } });
+        } catch (err) {
+            setErrorMsg(err.response?.data?.message ?? 'Something went wrong. Please try again.');
+            setStatus('error');
+        }
+    }
+
+    const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent backdrop-blur-sm transition-colors';
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">Topic</label>
+                <input
+                    type="text"
+                    value={topic}
+                    onChange={e => setTopic(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && generate()}
+                    placeholder="e.g. City life vs country life, A trip to Japan, Climate change…"
+                    className={inputCls}
+                    disabled={status === 'loading'}
+                />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">
+                    Target vocabulary
+                    <span className="text-white/35 font-normal ml-1">— optional, comma-separated</span>
+                </label>
+                <input
+                    type="text"
+                    value={vocabulary}
+                    onChange={e => setVocabulary(e.target.value)}
+                    placeholder="e.g. sustainable, commute, pollution, renewable energy"
+                    className={inputCls}
+                    disabled={status === 'loading'}
+                />
+                <p className="text-white/35 text-xs">Leave blank and Claude will pick useful vocabulary from the text itself.</p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">Number of paragraphs</label>
+                <div className="flex gap-2 flex-wrap">
+                    {PARAGRAPH_OPTIONS.map(n => (
+                        <button
+                            key={n}
+                            onClick={() => setParagraphs(n)}
+                            disabled={status === 'loading'}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
+                                paragraphs === n
+                                    ? 'bg-emerald-500 border-emerald-400 text-white'
+                                    : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/20 hover:text-white'
+                            }`}
+                        >
+                            {n}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">
+                    Extra instructions
+                    <span className="text-white/35 font-normal ml-1">— optional</span>
+                </label>
+                <textarea
+                    value={extra}
+                    onChange={e => setExtra(e.target.value)}
+                    placeholder="e.g. Write in the first person, suitable for a business English student…"
+                    rows={3}
+                    className={`${inputCls} resize-y`}
+                    disabled={status === 'loading'}
+                />
+            </div>
+
+            <button
+                onClick={generate}
+                disabled={!topic.trim() || status === 'loading'}
+                className="self-start bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/40 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+            >
+                Generate Reading Text
+            </button>
+
+            {status === 'loading' && (
+                <div className="flex justify-center py-6">
+                    <Spinner message="Writing your reading text… this takes about 20 seconds" color="text-emerald-400" textColor="text-white/60" />
+                </div>
+            )}
+
+            {status === 'error' && (
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                    {errorMsg}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ─── PDF Tab ────────────────────────────────────────────────────────────────
 
 function PdfUploader() {
@@ -557,6 +679,7 @@ export default function UploadPage() {
         { id: 'pdf',          label: '📄 PDF',          active: 'bg-blue-500/30 border-blue-400/50 text-blue-200' },
         { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/30 border-purple-400/50 text-purple-200' },
         { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/30 border-indigo-400/50 text-indigo-200' },
+        { id: 'reading',       label: '📖 Reading Text',  active: 'bg-emerald-500/30 border-emerald-400/50 text-emerald-200' },
         { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/30 border-teal-400/50 text-teal-200' },
         { id: 'det',           label: '🎯 DET Practice',  active: 'bg-amber-500/30 border-amber-400/50 text-amber-200' },
     ];
@@ -565,7 +688,7 @@ export default function UploadPage() {
         <div className="max-w-xl mx-auto mt-4 flex flex-col gap-6">
             <div>
                 <h2 className="text-3xl font-bold text-white">Upload Content</h2>
-                <p className="text-white/60 mt-1 text-sm">Upload a PDF or audio file, create a presentation from any topic, or practice pronunciation and DET question types.</p>
+                <p className="text-white/60 mt-1 text-sm">Upload a PDF or audio file, create a presentation or reading text from any topic, or practice pronunciation and DET question types.</p>
             </div>
 
             {/* Tab switcher */}
@@ -588,6 +711,7 @@ export default function UploadPage() {
             {tab === 'pdf'          && <PdfUploader />}
             {tab === 'audio'        && <AudioUploader />}
             {tab === 'presentation' && <PresentationGenerator />}
+            {tab === 'reading'       && <ReadingTextGenerator />}
             {tab === 'pronunciation' && <PronunciationLauncher />}
             {tab === 'det'           && <DetPracticeLauncher />}
         </div>
