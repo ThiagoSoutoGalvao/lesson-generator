@@ -651,6 +651,15 @@ function DetPracticeLauncher() {
 
             <div className="flex flex-col gap-4">
                 <p className="text-white/50 text-xs">
+                    Vocabulary reinforcement — the harder words from Read and Select and Fill in the Blanks, as multiple choice.
+                </p>
+                <button onClick={() => navigate('/det/practice/vocab-practice')} className={`w-full ${drillButtonCls}`}>
+                    Vocabulary Practice
+                </button>
+            </div>
+
+            <div className="flex flex-col gap-4">
+                <p className="text-white/50 text-xs">
                     Speaking practice — no timer, no recording. The app just shows the prompt; you run the clock and the conversation live.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">

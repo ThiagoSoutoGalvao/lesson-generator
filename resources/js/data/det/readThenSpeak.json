@@ -78,5 +78,45 @@
       "content": "Many parents are concerned about how much time teenagers spend on social media, while others argue it helps young people stay connected with friends and current events."
     },
     "prompt": "What is your opinion on social media use among teenagers? Explain your view with specific reasons and examples."
+  },
+  {
+    "id": "rts-11",
+    "prep": {
+      "type": "text",
+      "content": "Some people believe that grocery stores should stop offering plastic bags entirely and require customers to bring their own reusable ones."
+    },
+    "prompt": "Do you agree or disagree with this opinion? Give reasons and examples to support your answer."
+  },
+  {
+    "id": "rts-12",
+    "prep": {
+      "type": "text",
+      "content": "Hey, would you mind covering my shift on Saturday? A relative is visiting from out of town and I completely forgot I already agreed to work. I'll owe you one!"
+    },
+    "prompt": "Reply to this message. Explain whether you can help and suggest what should happen if you can't."
+  },
+  {
+    "id": "rts-13",
+    "prep": {
+      "type": "text",
+      "content": "A recent study found that people who listen to instrumental background music while studying retain more information than those who study in silence or with lyrical music."
+    },
+    "prompt": "What is your reaction to this finding? Discuss whether it matches your own experience with studying or working."
+  },
+  {
+    "id": "rts-14",
+    "prep": {
+      "type": "text",
+      "content": "Notice to office staff: the main parking garage will be closed for structural repairs starting next Monday. Employees are asked to use the overflow lot two blocks away during this time."
+    },
+    "prompt": "Imagine a coworker asks you about this notice. Explain what is happening and what they should do instead."
+  },
+  {
+    "id": "rts-15",
+    "prep": {
+      "type": "text",
+      "content": "Some educators argue that public speaking should be a required class in every school, since many students graduate without ever learning how to speak confidently in front of others."
+    },
+    "prompt": "Do you think public speaking classes should be mandatory? Explain your opinion with specific reasons and examples."
   }
 ]

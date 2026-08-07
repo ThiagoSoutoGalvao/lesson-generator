@@ -208,5 +208,75 @@
     "target": "audacious",
     "hint": "a________",
     "difficulty": "hard"
+  },
+  {
+    "id": "fb-31",
+    "sentence": "I need to return these books to the ______ before it closes.",
+    "target": "library",
+    "hint": "l______",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-32",
+    "sentence": "Please finish your homework ______ you watch any television.",
+    "target": "before",
+    "hint": "b_____",
+    "difficulty": "easy"
+  },
+  {
+    "id": "fb-33",
+    "sentence": "He was ______ to admit that he had made a mistake.",
+    "target": "reluctant",
+    "hint": "r________",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-34",
+    "sentence": "The company reported a ______ increase in profits this year.",
+    "target": "substantial",
+    "hint": "s__________",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-35",
+    "sentence": "Rather than debating theory, she took a ______ approach to solving the problem.",
+    "target": "pragmatic",
+    "hint": "p________",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-36",
+    "sentence": "The chef prepared the main course; ______, the waiter set the tables.",
+    "target": "meanwhile",
+    "hint": "m________",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-37",
+    "sentence": "The traffic was heavy; ______, she arrived at the meeting on time.",
+    "target": "nevertheless",
+    "hint": "n___________",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-38",
+    "sentence": "Smartphones have become so ______ that it's rare to see anyone without one.",
+    "target": "ubiquitous",
+    "hint": "u_________",
+    "difficulty": "hard"
+  },
+  {
+    "id": "fb-39",
+    "sentence": "You can borrow the car, ______ that you bring it back by six o'clock.",
+    "target": "provided",
+    "hint": "p_______",
+    "difficulty": "medium"
+  },
+  {
+    "id": "fb-40",
+    "sentence": "She hasn't decided ______ whether to accept the job offer.",
+    "target": "yet",
+    "hint": "y__",
+    "difficulty": "easy"
   }
 ]

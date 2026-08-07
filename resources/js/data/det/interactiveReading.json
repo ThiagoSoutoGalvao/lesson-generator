@@ -110,5 +110,61 @@
         "answer": "Why Adults Are Learning New Languages"
       }
     ]
+  },
+  {
+    "id": "ir-3",
+    "title": "Rethinking the Workweek: The Four-Day Experiment",
+    "passage": [
+      "In recent years, a growing number of companies have experimented with a four-day workweek instead of the traditional five-day schedule.",
+      "Under this model, employees typically work the same total hours across fewer days, or reduce their hours while keeping full pay.",
+      "Advocates claim that a shorter workweek can boost productivity by giving employees more time to rest and recover from fatigue.",
+      "Critics, however, worry that compressing tasks into fewer days may increase stress and make it harder to schedule meetings across teams.",
+      "Several trial programs have reported higher employee satisfaction and lower turnover, encouraging more companies to consider the change.",
+      "Economists caution that the four-day model may not suit every industry, particularly those requiring constant customer service coverage."
+    ],
+    "tasks": [
+      {
+        "type": "complete_sentence",
+        "prompt": "Complete the sentence with the best option.",
+        "sentence": "Advocates claim that a shorter workweek can boost ___ by giving employees more time to rest and recover.",
+        "options": ["productivity", "turnover", "overtime", "expenses"],
+        "answer": "productivity"
+      },
+      {
+        "type": "complete_passage",
+        "prompt": "Choose the word that best completes the passage.",
+        "sentenceIndex": 3,
+        "maskedWord": "compressing",
+        "options": ["compressing", "compressed", "compression", "compress"],
+        "answer": "compressing"
+      },
+      {
+        "type": "highlight_answer",
+        "prompt": "Which sentence explains a possible downside of the four-day workweek?",
+        "answerSentenceIndex": 3
+      },
+      {
+        "type": "identify_idea",
+        "prompt": "What is the main idea of the passage?",
+        "options": [
+          "Many companies are testing a four-day workweek, which may boost productivity and satisfaction but raises concerns about stress and industry fit.",
+          "The four-day workweek has been rejected by all major companies.",
+          "Employees who work four days earn significantly less pay overall.",
+          "The four-day workweek guarantees higher profits for every industry."
+        ],
+        "answer": "Many companies are testing a four-day workweek, which may boost productivity and satisfaction but raises concerns about stress and industry fit."
+      },
+      {
+        "type": "title_passage",
+        "prompt": "Choose the best title for this passage.",
+        "options": [
+          "Rethinking the Workweek: The Four-Day Experiment",
+          "The History of the Five-Day Schedule",
+          "Why Companies Are Cutting Employee Pay",
+          "The Decline of Office Culture"
+        ],
+        "answer": "Rethinking the Workweek: The Four-Day Experiment"
+      }
+    ]
   }
 ]

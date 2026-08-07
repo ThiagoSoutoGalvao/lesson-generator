@@ -42,5 +42,27 @@
       { "id": 3, "options": ["completed", "completing", "complete", "completes"], "answer": "completed" },
       { "id": 4, "options": ["remarkably", "remarkable", "remark", "remarked"], "answer": "remarkably" }
     ]
+  },
+  {
+    "id": "rc-5",
+    "title": "Cooking a Meal",
+    "paragraph": "Before {{1}} dinner, Tom likes to read through the recipe carefully so he doesn't miss any steps. He starts by {{2}} the vegetables into small, even pieces so they cook evenly. While the sauce simmers on the stove, he stirs it {{3}} to prevent it from burning. Once everything is ready, he serves the meal with a {{4}} smile, proud of what he has made.",
+    "blanks": [
+      { "id": 1, "options": ["cooking", "cook", "cooked", "cooks"], "answer": "cooking" },
+      { "id": 2, "options": ["chopping", "chop", "chopped", "chops"], "answer": "chopping" },
+      { "id": 3, "options": ["regular", "regularly", "regularity", "regulate"], "answer": "regularly" },
+      { "id": 4, "options": ["proud", "proudly", "pride", "prouder"], "answer": "proud" }
+    ]
+  },
+  {
+    "id": "rc-6",
+    "title": "Adopting a Pet",
+    "paragraph": "Last month, Emma decided to {{1}} a dog from the local shelter after months of thinking about it. The staff explained that the dog would need {{2}} attention during its first few weeks in a new home. Emma spent the {{3}} afternoon preparing her apartment, buying a bed, bowls, and toys. Within a few days, the dog seemed happily {{4}} to its new surroundings.",
+    "blanks": [
+      { "id": 1, "options": ["adopt", "adopted", "adopting", "adopts"], "answer": "adopt" },
+      { "id": 2, "options": ["consistent", "consistently", "consistency", "consist"], "answer": "consistent" },
+      { "id": 3, "options": ["follow", "following", "followed", "follows"], "answer": "following" },
+      { "id": 4, "options": ["adjust", "adjusted", "adjusting", "adjustment"], "answer": "adjusted" }
+    ]
   }
 ]

@@ -376,5 +376,167 @@
       { "word": "parsimonious", "isReal": true },
       { "word": "parsimoneous", "isReal": false }
     ]
+  },
+  {
+    "id": "rs-22",
+    "difficulty": "easy",
+    "items": [
+      { "word": "pocket",  "isReal": true },
+      { "word": "pockit",  "isReal": false },
+      { "word": "jacket",  "isReal": true },
+      { "word": "jackot",  "isReal": false },
+      { "word": "basket",  "isReal": true },
+      { "word": "baskit",  "isReal": false },
+      { "word": "cloud",   "isReal": true },
+      { "word": "clowd",   "isReal": false },
+      { "word": "spider",  "isReal": true },
+      { "word": "spidor",  "isReal": false },
+      { "word": "rabbit",  "isReal": true },
+      { "word": "rabbut",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-23",
+    "difficulty": "easy",
+    "items": [
+      { "word": "cousin",   "isReal": true },
+      { "word": "cousen",   "isReal": false },
+      { "word": "husband",  "isReal": true },
+      { "word": "husbend",  "isReal": false },
+      { "word": "morning",  "isReal": true },
+      { "word": "mornung",  "isReal": false },
+      { "word": "kitten",   "isReal": true },
+      { "word": "kittan",   "isReal": false },
+      { "word": "pumpkin",  "isReal": true },
+      { "word": "pumpkan",  "isReal": false },
+      { "word": "lantern",  "isReal": true },
+      { "word": "lantorn",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-24",
+    "difficulty": "easy",
+    "items": [
+      { "word": "thunder",  "isReal": true },
+      { "word": "thundor",  "isReal": false },
+      { "word": "feather",  "isReal": true },
+      { "word": "fethar",   "isReal": false },
+      { "word": "engine",   "isReal": true },
+      { "word": "engene",   "isReal": false },
+      { "word": "pepper",   "isReal": true },
+      { "word": "peppar",   "isReal": false },
+      { "word": "cabinet",  "isReal": true },
+      { "word": "cabinat",  "isReal": false },
+      { "word": "volcano",  "isReal": true },
+      { "word": "volcanno", "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-25",
+    "difficulty": "medium",
+    "items": [
+      { "word": "pragmatic",  "isReal": true },
+      { "word": "pragmetic",  "isReal": false },
+      { "word": "ominous",    "isReal": true },
+      { "word": "ominious",   "isReal": false },
+      { "word": "verbose",    "isReal": true },
+      { "word": "verboze",    "isReal": false },
+      { "word": "meticulous", "isReal": true },
+      { "word": "meticulos",  "isReal": false },
+      { "word": "benevolent", "isReal": true },
+      { "word": "benevalent", "isReal": false },
+      { "word": "arbitrary",  "isReal": true },
+      { "word": "arbitrery",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-26",
+    "difficulty": "medium",
+    "items": [
+      { "word": "skeptical",  "isReal": true },
+      { "word": "skepticle",  "isReal": false },
+      { "word": "robust",     "isReal": true },
+      { "word": "robost",     "isReal": false },
+      { "word": "volatile",   "isReal": true },
+      { "word": "volitile",   "isReal": false },
+      { "word": "coincide",   "isReal": true },
+      { "word": "coincade",   "isReal": false },
+      { "word": "deprecate",  "isReal": true },
+      { "word": "deprecute",  "isReal": false },
+      { "word": "ambiguous",  "isReal": true },
+      { "word": "ambigeous",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-27",
+    "difficulty": "medium",
+    "items": [
+      { "word": "turbulent",  "isReal": true },
+      { "word": "turbulant",  "isReal": false },
+      { "word": "nostalgic",  "isReal": true },
+      { "word": "nostalgick", "isReal": false },
+      { "word": "resilient",  "isReal": true },
+      { "word": "resiliant",  "isReal": false },
+      { "word": "meager",     "isReal": true },
+      { "word": "meagor",     "isReal": false },
+      { "word": "dubious",    "isReal": true },
+      { "word": "dubius",     "isReal": false },
+      { "word": "candor",     "isReal": true },
+      { "word": "candar",     "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-28",
+    "difficulty": "hard",
+    "items": [
+      { "word": "perspicuous",  "isReal": true },
+      { "word": "perspicuious", "isReal": false },
+      { "word": "obstreperous", "isReal": true },
+      { "word": "obstreperus",  "isReal": false },
+      { "word": "vituperative", "isReal": true },
+      { "word": "vituperitive", "isReal": false },
+      { "word": "sardonic",     "isReal": true },
+      { "word": "sardonick",    "isReal": false },
+      { "word": "pellucid",     "isReal": true },
+      { "word": "pellucyd",     "isReal": false },
+      { "word": "ineluctable",  "isReal": true },
+      { "word": "ineluctible",  "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-29",
+    "difficulty": "hard",
+    "items": [
+      { "word": "peripatetic", "isReal": true },
+      { "word": "peripatettic","isReal": false },
+      { "word": "apocryphal",  "isReal": true },
+      { "word": "apocriphal",  "isReal": false },
+      { "word": "esoteric",    "isReal": true },
+      { "word": "esoterick",   "isReal": false },
+      { "word": "bellicose",   "isReal": true },
+      { "word": "bellicoze",   "isReal": false },
+      { "word": "temerity",    "isReal": true },
+      { "word": "temerety",    "isReal": false },
+      { "word": "hubris",      "isReal": true },
+      { "word": "hubrus",      "isReal": false }
+    ]
+  },
+  {
+    "id": "rs-30",
+    "difficulty": "hard",
+    "items": [
+      { "word": "circumlocution", "isReal": true },
+      { "word": "circumlacution", "isReal": false },
+      { "word": "anachronistic",  "isReal": true },
+      { "word": "anachronystic",  "isReal": false },
+      { "word": "quixotic",       "isReal": true },
+      { "word": "quixottic",      "isReal": false },
+      { "word": "phlegmatic",     "isReal": true },
+      { "word": "phlegmattic",    "isReal": false },
+      { "word": "obstinate",      "isReal": true },
+      { "word": "obstinete",      "isReal": false },
+      { "word": "effete",         "isReal": true },
+      { "word": "effeete",        "isReal": false }
+    ]
   }
 ]

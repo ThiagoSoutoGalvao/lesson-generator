@@ -1,0 +1,332 @@
+[
+  {
+    "id": "vp-1",
+    "word": "itinerary",
+    "difficulty": "medium",
+    "correctDefinition": "A planned schedule or route for a journey, listing the places to be visited.",
+    "distractors": [
+      "A formal written agreement between two or more parties.",
+      "A detailed written account of a person's daily thoughts and activities.",
+      "A list of items offered for sale at reduced prices."
+    ]
+  },
+  {
+    "id": "vp-2",
+    "word": "plausible",
+    "difficulty": "medium",
+    "correctDefinition": "Reasonable or likely to be true based on the available information.",
+    "distractors": [
+      "Impossible to prove or disprove with current evidence.",
+      "Deliberately exaggerated to make something seem more impressive.",
+      "Completely lacking in logical structure or order."
+    ]
+  },
+  {
+    "id": "vp-3",
+    "word": "magnitude",
+    "difficulty": "medium",
+    "correctDefinition": "The great size, extent, or importance of something.",
+    "distractors": [
+      "A precise measurement of the distance between two fixed points.",
+      "The speed at which something increases or changes over time.",
+      "A formal system used to rank items by quality."
+    ]
+  },
+  {
+    "id": "vp-4",
+    "word": "camouflage",
+    "difficulty": "medium",
+    "correctDefinition": "A way of disguising something so that it blends in with its surroundings.",
+    "distractors": [
+      "A loud, sudden sound intended to startle or warn others.",
+      "A strong, unpleasant smell released as a form of defense.",
+      "A physical barrier built to keep something contained."
+    ]
+  },
+  {
+    "id": "vp-5",
+    "word": "meander",
+    "difficulty": "medium",
+    "correctDefinition": "To follow a winding course, or to move slowly without a clear destination.",
+    "distractors": [
+      "To move forward with great speed and determination.",
+      "To repeat the same action over and over without variation.",
+      "To collapse suddenly under pressure or weight."
+    ]
+  },
+  {
+    "id": "vp-6",
+    "word": "buoyant",
+    "difficulty": "medium",
+    "correctDefinition": "Cheerful and optimistic, or able to float easily.",
+    "distractors": [
+      "Extremely cautious and unwilling to take any risks.",
+      "Overwhelmed by sadness and unable to concentrate.",
+      "Rigid and resistant to any kind of change."
+    ]
+  },
+  {
+    "id": "vp-7",
+    "word": "tedious",
+    "difficulty": "medium",
+    "correctDefinition": "Boring and tiresome, especially because it lasts too long.",
+    "distractors": [
+      "Dangerous and likely to cause serious harm.",
+      "Confusing because it contains too many unrelated ideas.",
+      "Expensive beyond what most people could reasonably afford."
+    ]
+  },
+  {
+    "id": "vp-8",
+    "word": "elaborate",
+    "difficulty": "medium",
+    "correctDefinition": "Detailed and complicated in design or planning.",
+    "distractors": [
+      "Kept deliberately simple to avoid any confusion.",
+      "Created quickly with very little thought or preparation.",
+      "Based entirely on guesswork rather than fact."
+    ]
+  },
+  {
+    "id": "vp-9",
+    "word": "relentless",
+    "difficulty": "medium",
+    "correctDefinition": "Continuing in a determined way without stopping or weakening.",
+    "distractors": [
+      "Changing direction frequently and without any warning.",
+      "Easily persuaded to abandon a plan or goal.",
+      "Occurring only once and never happening again."
+    ]
+  },
+  {
+    "id": "vp-10",
+    "word": "composed",
+    "difficulty": "medium",
+    "correctDefinition": "Calm and in control of one's emotions, especially under pressure.",
+    "distractors": [
+      "Filled with nervous energy and unable to sit still.",
+      "Openly hostile and quick to start an argument.",
+      "Uncertain and constantly changing one's mind."
+    ]
+  },
+  {
+    "id": "vp-11",
+    "word": "gradual",
+    "difficulty": "medium",
+    "correctDefinition": "Happening slowly or in small stages over a period of time.",
+    "distractors": [
+      "Occurring suddenly and without any warning.",
+      "Repeating in a fixed, entirely predictable pattern.",
+      "Affecting only a small, isolated part of something."
+    ]
+  },
+  {
+    "id": "vp-12",
+    "word": "versatile",
+    "difficulty": "medium",
+    "correctDefinition": "Able to adapt easily to many different functions or situations.",
+    "distractors": [
+      "Limited to a single, specific use or purpose.",
+      "Dependent entirely on the guidance of others.",
+      "Valuable mainly because of how rare it is."
+    ]
+  },
+  {
+    "id": "vp-13",
+    "word": "ambivalent",
+    "difficulty": "medium",
+    "correctDefinition": "Having mixed or contradictory feelings about something.",
+    "distractors": [
+      "Completely certain and free of any doubt.",
+      "Indifferent to the point of not caring at all.",
+      "Enthusiastic and eager to begin immediately."
+    ]
+  },
+  {
+    "id": "vp-14",
+    "word": "resourceful",
+    "difficulty": "medium",
+    "correctDefinition": "Good at finding quick and clever ways to solve problems.",
+    "distractors": [
+      "Reliant on expensive equipment to complete simple tasks.",
+      "Unwilling to try new or unfamiliar approaches.",
+      "Skilled at persuading others mainly through flattery."
+    ]
+  },
+  {
+    "id": "vp-15",
+    "word": "cognizant",
+    "difficulty": "medium",
+    "correctDefinition": "Aware of, or having knowledge of, something.",
+    "distractors": [
+      "Unaware of the consequences of one's own actions.",
+      "Openly critical of ideas that are widely accepted.",
+      "Formally trained in a specific academic subject."
+    ]
+  },
+  {
+    "id": "vp-16",
+    "word": "ephemeral",
+    "difficulty": "hard",
+    "correctDefinition": "Lasting for only a very short time.",
+    "distractors": [
+      "Impossible to destroy or wear down over time.",
+      "Repeated at fixed, regular intervals indefinitely.",
+      "Extremely heavy and difficult to move or lift."
+    ]
+  },
+  {
+    "id": "vp-17",
+    "word": "obfuscate",
+    "difficulty": "hard",
+    "correctDefinition": "To deliberately make something unclear or difficult to understand.",
+    "distractors": [
+      "To repair something that has been damaged or broken.",
+      "To publicly praise or express admiration for someone.",
+      "To combine several small parts into one larger whole."
+    ]
+  },
+  {
+    "id": "vp-18",
+    "word": "cacophony",
+    "difficulty": "hard",
+    "correctDefinition": "A harsh, jarring mixture of loud sounds.",
+    "distractors": [
+      "A peaceful silence broken only occasionally by soft noise.",
+      "A single musical note held for an unusually long time.",
+      "A carefully arranged sequence of colors or patterns."
+    ]
+  },
+  {
+    "id": "vp-19",
+    "word": "surreptitious",
+    "difficulty": "hard",
+    "correctDefinition": "Done secretly or in a stealthy way, so as to avoid being noticed.",
+    "distractors": [
+      "Done publicly and with a great deal of ceremony.",
+      "Carried out with official permission and documentation.",
+      "Performed clumsily, drawing immediate attention."
+    ]
+  },
+  {
+    "id": "vp-20",
+    "word": "ostentatious",
+    "difficulty": "hard",
+    "correctDefinition": "Showy and designed to impress others, often excessively so.",
+    "distractors": [
+      "Modest and deliberately avoiding any attention.",
+      "Practical and focused purely on function over appearance.",
+      "Outdated and no longer considered fashionable."
+    ]
+  },
+  {
+    "id": "vp-21",
+    "word": "capricious",
+    "difficulty": "hard",
+    "correctDefinition": "Given to sudden and unpredictable changes in mood or behavior.",
+    "distractors": [
+      "Fixed in opinion and never open to persuasion.",
+      "Cautious to the point of avoiding all decisions.",
+      "Generous with time and money toward others."
+    ]
+  },
+  {
+    "id": "vp-22",
+    "word": "disingenuous",
+    "difficulty": "hard",
+    "correctDefinition": "Not truthful or sincere, especially by pretending to know less than one does.",
+    "distractors": [
+      "Excessively formal in one's speech and manner.",
+      "Unable to express emotion in any situation.",
+      "Overly generous in praising the achievements of others."
+    ]
+  },
+  {
+    "id": "vp-23",
+    "word": "garrulous",
+    "difficulty": "hard",
+    "correctDefinition": "Excessively talkative, especially about unimportant things.",
+    "distractors": [
+      "Reluctant to speak even when directly asked a question.",
+      "Skilled at persuading people through carefully chosen words.",
+      "Prone to sudden outbursts of anger."
+    ]
+  },
+  {
+    "id": "vp-24",
+    "word": "obsequious",
+    "difficulty": "hard",
+    "correctDefinition": "Excessively eager to please or obey someone, often insincerely.",
+    "distractors": [
+      "Openly defiant toward those in positions of authority.",
+      "Indifferent to the opinions of everyone around them.",
+      "Quick to criticize even the smallest mistakes in others."
+    ]
+  },
+  {
+    "id": "vp-25",
+    "word": "recalcitrant",
+    "difficulty": "hard",
+    "correctDefinition": "Stubbornly resistant to authority or control.",
+    "distractors": [
+      "Easily persuaded to change one's mind.",
+      "Anxious and uncertain when making decisions.",
+      "Generous in sharing credit for shared work."
+    ]
+  },
+  {
+    "id": "vp-26",
+    "word": "taciturn",
+    "difficulty": "hard",
+    "correctDefinition": "Reserved in speech and tending to say very little.",
+    "distractors": [
+      "Prone to exaggerating stories for dramatic effect.",
+      "Quick to lose one's temper over small things.",
+      "Skilled at speaking persuasively in public."
+    ]
+  },
+  {
+    "id": "vp-27",
+    "word": "nefarious",
+    "difficulty": "hard",
+    "correctDefinition": "Wicked or criminal, typically involving deliberate wrongdoing.",
+    "distractors": [
+      "Careless and prone to making honest mistakes.",
+      "Overly cautious about breaking any rule.",
+      "Unaware of the effects of one's own actions."
+    ]
+  },
+  {
+    "id": "vp-28",
+    "word": "unprecedented",
+    "difficulty": "hard",
+    "correctDefinition": "Never having happened or existed before.",
+    "distractors": [
+      "Expected based on a clear historical pattern.",
+      "Common and occurring on a regular basis.",
+      "Limited to a very small, specific group."
+    ]
+  },
+  {
+    "id": "vp-29",
+    "word": "exacerbate",
+    "difficulty": "hard",
+    "correctDefinition": "To make a problem, situation, or feeling worse.",
+    "distractors": [
+      "To gradually improve a difficult situation.",
+      "To bring a disagreement to a peaceful resolution.",
+      "To measure the seriousness of a problem accurately."
+    ]
+  },
+  {
+    "id": "vp-30",
+    "word": "audacious",
+    "difficulty": "hard",
+    "correctDefinition": "Showing a willingness to take bold risks, often surprisingly so.",
+    "distractors": [
+      "Overly careful and unwilling to take any chances.",
+      "Quietly persistent without seeking any attention.",
+      "Skilled at avoiding conflict with others."
+    ]
+  }
+]
