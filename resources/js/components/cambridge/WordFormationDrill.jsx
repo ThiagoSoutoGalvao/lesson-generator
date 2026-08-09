@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import wordFormationSets from '@/data/cambridge/b2/wordFormation.json';
 
 const ROOT_SIZES     = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
@@ -66,6 +67,7 @@ export default function WordFormationDrill() {
 
     return (
         <PracticeSessionShell
+            watermark={<CambridgeWatermark />}
             title="Word Formation — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a set to practice — Reading & Use of English, Part 3'}
             progressLabel={phase === 'drilling' ? `Item ${index + 1} of ${total}` : undefined}

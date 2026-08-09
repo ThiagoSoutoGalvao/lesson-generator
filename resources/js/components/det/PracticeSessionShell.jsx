@@ -53,12 +53,13 @@ export default function PracticeSessionShell({
     title, subtitle, progressLabel, paused, onTogglePause, onRedo, onBack, children,
     fontSizeIdx, fontSizeMax, onFontDecrease, onFontIncrease,
     textColor, onTextColorChange,
+    watermark,
 }) {
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     return (
         <div className="fixed inset-0 flex flex-col z-50" style={{ backgroundColor: SHELL_BG }}>
-            <OwlWatermark />
+            {watermark ?? <OwlWatermark />}
 
             <div className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/10">
                 <div>

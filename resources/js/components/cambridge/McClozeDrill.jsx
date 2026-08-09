@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import mcClozeSets from '@/data/cambridge/b2/mcCloze.json';
 
 const PARAGRAPH_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
@@ -82,6 +83,7 @@ export default function McClozeDrill() {
 
     return (
         <PracticeSessionShell
+            watermark={<CambridgeWatermark />}
             title="Multiple-Choice Cloze — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a text to practice — Reading & Use of English, Part 1'}
             onRedo={phase === 'drilling' ? redo : undefined}

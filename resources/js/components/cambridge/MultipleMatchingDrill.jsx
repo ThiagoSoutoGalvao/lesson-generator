@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import multipleMatchingSets from '@/data/cambridge/b2/multipleMatching.json';
 
 const TEXT_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
@@ -72,6 +73,7 @@ export default function MultipleMatchingDrill() {
 
     return (
         <PracticeSessionShell
+            watermark={<CambridgeWatermark />}
             title="Multiple Matching — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a set to practice — Reading & Use of English, Part 7'}
             progressLabel={phase === 'drilling' ? `Question ${qIndex + 1} of ${set.questions.length}` : undefined}

@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import keyWordSets from '@/data/cambridge/b2/keyWordTransformation.json';
 
 const SENTENCE_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
@@ -50,6 +51,7 @@ export default function KeyWordTransformationDrill() {
 
     return (
         <PracticeSessionShell
+            watermark={<CambridgeWatermark />}
             title="Key Word Transformation — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a set to practice — Reading & Use of English, Part 4'}
             progressLabel={phase === 'drilling' ? `Item ${index + 1} of ${total}` : undefined}

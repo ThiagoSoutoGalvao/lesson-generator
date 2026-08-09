@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import mcReadingSets from '@/data/cambridge/b2/mcReading.json';
 
 const PASSAGE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
@@ -72,6 +73,7 @@ export default function McReadingDrill() {
 
     return (
         <PracticeSessionShell
+            watermark={<CambridgeWatermark />}
             title="Multiple Choice Reading — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a passage to practice — Reading & Use of English, Part 5'}
             progressLabel={phase === 'drilling' ? `Question ${qIndex + 1} of ${set.questions.length}` : undefined}

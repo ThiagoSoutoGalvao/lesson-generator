@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import gappedTextSets from '@/data/cambridge/b2/gappedText.json';
 
 const PARAGRAPH_SIZES = ['text-lg',   'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
@@ -83,6 +84,7 @@ export default function GappedTextDrill() {
 
     return (
         <PracticeSessionShell
+            watermark={<CambridgeWatermark />}
             title="Gapped Text — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a text to practice — Reading & Use of English, Part 6'}
             onRedo={phase === 'drilling' ? redo : undefined}
