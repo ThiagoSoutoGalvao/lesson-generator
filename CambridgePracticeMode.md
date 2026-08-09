@@ -63,5 +63,6 @@ Same reasoning as the DET Listening decision earlier in the project: real value 
 - Get the licensed beta teacher to actually try the shipped B2 First parts with a student, and see what breaks or feels off before investing further.
 - ✅ Content batch 1 done — all original 6 parts went from 2 → 5 sets each via 6 parallel subagents, plus explicit `"level": "B2 First"` labeling in both data and UI so C1 can slot in cleanly later. See CLAUDE.md §16 for details, including two flagged-but-accepted content items.
 - ✅ Gapped Text (Part 6) done — the one previously-deferred B2 component, 2 sets shipped. See CLAUDE.md §16.
-- Backfill further B2 content (now 7 parts) once real usage with the teacher's student shows what's running low.
-- Then: C1 Advanced content for all 7 shipped parts, Cross-Text Multiple Matching (C1-only), and Phases 2–4 (Writing, Speaking, Listening) in roughly that order.
+- ✅ Cross-Text Multiple Matching (C1 Advanced, Part 6) done — the other previously-deferred component, and the first C1 content in the app (explicit exception to the "validate B2 first" plan, approved for this one C1-only part). Turned out to reuse B2 Multiple Matching's UI entirely via a shared `TextMatchingDrill` engine — no new component needed after all. Launcher is now split into "B2 First" / "C1 Advanced" sections. See CLAUDE.md §16.
+- Backfill further B2 content (7 parts) once real usage with the teacher's student shows what's running low.
+- Remaining: C1 Advanced content for the other 6 parts (still B2-only), and Phases 2–4 (Writing, Speaking, Listening) — all still waiting on B2 validation with real students before expanding further.

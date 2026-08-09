@@ -1,0 +1,40 @@
+[
+  {
+    "id": "ctm-c1-1",
+    "level": "C1 Advanced",
+    "title": "Four Film Reviews",
+    "instruction": "For questions 1–4, choose from the four reviewers (A–D).",
+    "questionPrefix": "",
+    "texts": [
+      { "label": "A", "name": "Reviewer A", "text": "The Long Horizon boasts genuinely powerful central performances, and I found myself completely convinced by every member of the cast. Visually, the film is stunning — several shots of the abandoned space station look like moving paintings. Unfortunately, the pacing lets it down badly; entire scenes stretch on far longer than they need to, and by the second act I found my attention drifting. The ending, too, felt like a missed opportunity, wrapping up too neatly after two hours of careful ambiguity." },
+      { "label": "B", "name": "Reviewer B", "text": "Where other reviewers have complained about slow pacing, I found The Long Horizon genuinely gripping from start to finish, with tension that never let up. The performances matched that intensity — the central cast commits fully, and I never doubted a single choice they made. If the film has a weakness, it's the ending, which ties up loose ends far too quickly after so much careful build-up." },
+      { "label": "C", "name": "Reviewer C", "text": "The pacing of The Long Horizon tests the patience at times, with long stretches that add little to the story. The performances, unfortunately, don't do much to compensate — the lead in particular seems to be reading lines rather than living them, and the supporting cast fares little better. Visually, too, I found the film surprisingly unremarkable; for a story set among the stars, there's little here that lingers in the memory. Where I differ most from other reviewers, though, is the ending, which I found genuinely moving rather than disappointing, a rare example of a slow burn that pays off." },
+      { "label": "D", "name": "Reviewer D", "text": "Much like the central performances, which are consistently excellent throughout, the film's visuals are a real achievement — the cinematography alone is worth the price of admission. The pacing, admittedly, drags in places, particularly in the middle section. As with most of the other reviews here, I came away from the ending frustrated, feeling that two hours of build-up deserved a stronger conclusion." }
+    ],
+    "questions": [
+      { "id": 1, "question": "Which reviewer, unlike the other three, found the pacing gripping rather than slow?", "answer": "B" },
+      { "id": 2, "question": "Which reviewer disagrees with the other three about the quality of the acting?", "answer": "C" },
+      { "id": 3, "question": "Which reviewer, like Reviewer A, is impressed by the film's visual style?", "answer": "D" },
+      { "id": 4, "question": "Which reviewer has a different opinion from the others about the ending?", "answer": "C" }
+    ]
+  },
+  {
+    "id": "ctm-c1-2",
+    "level": "C1 Advanced",
+    "title": "Four Fitness Tracker Reviews",
+    "instruction": "For questions 1–4, choose from the four reviews (A–D).",
+    "questionPrefix": "",
+    "texts": [
+      { "label": "A", "name": "Review A", "text": "The Wave X's battery genuinely lives up to the marketing — I went eight days between charges without any noticeable drop in accuracy from the sensors. It sits comfortably on the wrist too, even overnight, which not every tracker in this price range manages. My main frustration is the companion app, which frequently fails to sync and buries basic settings behind three or four unnecessary menus. On the plus side, the readings themselves — heart rate, sleep stages, steps — have consistently matched what I'd expect from more expensive devices." },
+      { "label": "B", "name": "Review B", "text": "Where this tracker falls down for me is battery life; I was recharging every two to three days, well short of the week the manufacturer promises. That disappointment aside, it's a comfortable device to wear, and I've had no issues keeping it on through workouts and sleep alike. The app, unlike what other reviewers here describe, struck me as genuinely well designed — clear, fast, and easy to navigate. The data it collects also seems trustworthy, lining up closely with a chest-strap monitor I tested it against." },
+      { "label": "C", "name": "Review C", "text": "Battery life on the Wave X is excellent, easily lasting a full week under normal use. Comfort is where it lets itself down, though — the casing is noticeably bulkier than competitors, and I found it dug into my wrist during sleep more than once. The app itself is serviceable if unremarkable, similar to what others have described here. What concerns me more is the accuracy of the readings themselves; on more than one occasion the sleep tracking bore little resemblance to how the night actually went, which undermines confidence in the rest of the data." },
+      { "label": "D", "name": "Review D", "text": "Much like other reviewers have found, the Wave X comfortably lasts a full week on a single charge, and the band itself is soft enough to forget you're wearing it. The app remains the weak point across the board, mine included — sync failures and a cluttered menu structure make simple tasks more frustrating than they should be. On accuracy, though, I have no complaints; heart rate and step counts have consistently matched a separate device I wore alongside it for comparison." }
+    ],
+    "questions": [
+      { "id": 1, "question": "Which reviewer, unlike the other three, was disappointed by the battery life?", "answer": "B" },
+      { "id": 2, "question": "Which reviewer found the tracker uncomfortable to wear, in contrast to the others?", "answer": "C" },
+      { "id": 3, "question": "Which reviewer's opinion of the companion app differs from the consensus of the other three?", "answer": "B" },
+      { "id": 4, "question": "Which reviewer raises concerns about the accuracy of the tracker's data, unlike the other three?", "answer": "C" }
+    ]
+  }
+]
