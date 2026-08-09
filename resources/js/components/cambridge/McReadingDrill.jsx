@@ -72,7 +72,7 @@ export default function McReadingDrill() {
 
     return (
         <PracticeSessionShell
-            title="Multiple Choice Reading"
+            title="Multiple Choice Reading — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a passage to practice — Reading & Use of English, Part 5'}
             progressLabel={phase === 'drilling' ? `Question ${qIndex + 1} of ${set.questions.length}` : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}

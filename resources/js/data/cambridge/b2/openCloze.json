@@ -1,30 +1,182 @@
 [
   {
     "id": "cloze-open-b2-1",
+    "level": "B2 First",
     "title": "Learning a New Skill",
     "paragraph": "Many people believe that {{1}} is never too late to learn a new skill. Whether it {{2}} playing an instrument, cooking or a foreign language, the most important thing is to practise regularly rather {{3}} occasionally for long periods. It also helps {{4}} set small, realistic goals, {{5}} makes progress easier to notice. Of course, everyone learns {{6}} their own pace, so it is best not to compare yourself too closely {{7}} others.",
     "blanks": [
-      { "id": 1, "answer": "it" },
-      { "id": 2, "answer": "is" },
-      { "id": 3, "answer": "than" },
-      { "id": 4, "answer": "to" },
-      { "id": 5, "answer": "which" },
-      { "id": 6, "answer": "at" },
-      { "id": 7, "answer": "with" }
+      {
+        "id": 1,
+        "answer": "it"
+      },
+      {
+        "id": 2,
+        "answer": "is"
+      },
+      {
+        "id": 3,
+        "answer": "than"
+      },
+      {
+        "id": 4,
+        "answer": "to"
+      },
+      {
+        "id": 5,
+        "answer": "which"
+      },
+      {
+        "id": 6,
+        "answer": "at"
+      },
+      {
+        "id": 7,
+        "answer": "with"
+      }
     ]
   },
   {
     "id": "cloze-open-b2-2",
+    "level": "B2 First",
     "title": "City Wildlife",
     "paragraph": "It might come {{1}} a surprise, but a growing number {{2}} wild animals now live in cities rather than in the countryside. Foxes, for example, {{3}} become a common sight in urban gardens at night. Some experts believe this is {{4}} to the fact that cities offer plenty of food and fewer natural predators. {{5}} the same time, this closeness to humans can cause problems, {{6}} animals sometimes damage property while searching for food. As a result, {{7}} number of cities have started programmes to help residents live alongside urban wildlife safely.",
     "blanks": [
-      { "id": 1, "answer": "as" },
-      { "id": 2, "answer": "of" },
-      { "id": 3, "answer": "have" },
-      { "id": 4, "answer": "due" },
-      { "id": 5, "answer": "At" },
-      { "id": 6, "answer": "as" },
-      { "id": 7, "answer": "a" }
+      {
+        "id": 1,
+        "answer": "as"
+      },
+      {
+        "id": 2,
+        "answer": "of"
+      },
+      {
+        "id": 3,
+        "answer": "have"
+      },
+      {
+        "id": 4,
+        "answer": "due"
+      },
+      {
+        "id": 5,
+        "answer": "At"
+      },
+      {
+        "id": 6,
+        "answer": "as"
+      },
+      {
+        "id": 7,
+        "answer": "a"
+      }
+    ]
+  },
+  {
+    "id": "cloze-open-b2-3",
+    "level": "B2 First",
+    "title": "The Rise of Street Food",
+    "paragraph": "Street food has become increasingly popular around the world in recent years, and {{1}} is now common to find stalls selling everything from noodles {{2}} tacos in almost every major city. One of the main reasons {{3}} this popularity is that street food tends to be far cheaper than eating {{4}} a restaurant, while still offering an impressive variety of flavours and ingredients. Many well-known chefs {{5}} actually started their careers at a small market stall long before opening their own restaurants. {{6}} addition, street food often reflects local culture and history, {{7}} makes it especially appealing to travellers who want to experience something authentic without spending a lot of money.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "it"
+      },
+      {
+        "id": 2,
+        "answer": "to"
+      },
+      {
+        "id": 3,
+        "answer": "for"
+      },
+      {
+        "id": 4,
+        "answer": "in"
+      },
+      {
+        "id": 5,
+        "answer": "have"
+      },
+      {
+        "id": 6,
+        "answer": "In"
+      },
+      {
+        "id": 7,
+        "answer": "which"
+      }
+    ]
+  },
+  {
+    "id": "cloze-open-b2-4",
+    "level": "B2 First",
+    "title": "Cycling to Work",
+    "paragraph": "More people {{1}} choosing to cycle to work instead {{2}} driving or taking public transport, and it is easy to see why. Cycling is not only cheaper than running a car, {{3}} it also allows commuters to avoid traffic jams during busy periods. In addition, regular cycling {{4}} known to improve both physical fitness and mental wellbeing, which is something {{5}} more employers are beginning to recognise. Some companies have even started offering financial incentives {{6}} staff who choose to cycle rather than drive, {{7}} as covering the cost of new bikes or safety equipment. As cities continue to build better cycle lanes, this trend looks set to continue.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "are"
+      },
+      {
+        "id": 2,
+        "answer": "of"
+      },
+      {
+        "id": 3,
+        "answer": "but"
+      },
+      {
+        "id": 4,
+        "answer": "is"
+      },
+      {
+        "id": 5,
+        "answer": "that"
+      },
+      {
+        "id": 6,
+        "answer": "for"
+      },
+      {
+        "id": 7,
+        "answer": "such"
+      }
+    ]
+  },
+  {
+    "id": "cloze-open-b2-5",
+    "level": "B2 First",
+    "title": "Public Libraries",
+    "paragraph": "Although many people now read books {{1}} their phones or tablets, public libraries continue to play an important role {{2}} local communities. Libraries offer free access to books, magazines and computers, {{3}} makes them especially valuable to people who cannot afford to buy these things themselves. {{4}} providing reading materials, most libraries also run activities such as children's story time and free English classes for adults. Some visitors simply go {{5}} order {{6}} enjoy a quiet space to study or work, away from the noise and distractions of home. Despite competition from the internet, libraries {{7}} managed to remain popular by adapting to what their communities actually need.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "on"
+      },
+      {
+        "id": 2,
+        "answer": "in"
+      },
+      {
+        "id": 3,
+        "answer": "which"
+      },
+      {
+        "id": 4,
+        "answer": "Besides"
+      },
+      {
+        "id": 5,
+        "answer": "in"
+      },
+      {
+        "id": 6,
+        "answer": "to"
+      },
+      {
+        "id": 7,
+        "answer": "have"
+      }
     ]
   }
 ]

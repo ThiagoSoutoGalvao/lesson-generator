@@ -82,7 +82,7 @@ export default function McClozeDrill() {
 
     return (
         <PracticeSessionShell
-            title="Multiple-Choice Cloze"
+            title="Multiple-Choice Cloze — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a text to practice — Reading & Use of English, Part 1'}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}

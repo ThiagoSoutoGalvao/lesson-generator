@@ -1,6 +1,7 @@
 [
   {
     "id": "mcr-b2-1",
+    "level": "B2 First",
     "title": "The Reluctant Runner",
     "passage": [
       "I never thought of myself as a runner. At school, I was always the last to finish the annual cross-country race, and I spent most of my adult life avoiding any form of exercise that involved actual effort. So when my sister persuaded me to sign up for a five-kilometre charity run, I agreed mainly because I didn't think I'd have to go through with it.",
@@ -12,37 +13,63 @@
       {
         "id": 1,
         "question": "Why did the writer originally agree to do the charity run?",
-        "options": ["She had always wanted to try running.", "She didn't expect to actually take part.", "Her sister offered to train with her.", "She wanted to prove something at school."],
+        "options": [
+          "She had always wanted to try running.",
+          "She didn't expect to actually take part.",
+          "Her sister offered to train with her.",
+          "She wanted to prove something at school."
+        ],
         "answerIndex": 1
       },
       {
         "id": 2,
         "question": "How did the writer feel during her first training attempt?",
-        "options": ["Confident it would get easier quickly.", "Embarrassed but determined to continue.", "Convinced she shouldn't have started.", "Surprised by how easy it felt."],
+        "options": [
+          "Confident it would get easier quickly.",
+          "Embarrassed but determined to continue.",
+          "Convinced she shouldn't have started.",
+          "Surprised by how easy it felt."
+        ],
         "answerIndex": 2
       },
       {
         "id": 3,
         "question": "What does 'those two minutes slowly became five, then ten, then twenty' suggest?",
-        "options": ["The writer kept losing track of time.", "The race distance was longer than planned.", "Her running time gradually increased.", "She kept restarting the same run."],
+        "options": [
+          "The writer kept losing track of time.",
+          "The race distance was longer than planned.",
+          "Her running time gradually increased.",
+          "She kept restarting the same run."
+        ],
         "answerIndex": 2
       },
       {
         "id": 4,
         "question": "What most surprised the writer about her training?",
-        "options": ["How quickly her fitness improved.", "How much her mood improved afterwards.", "How little the exercise tired her.", "How fast she recovered from injury."],
+        "options": [
+          "How quickly her fitness improved.",
+          "How much her mood improved afterwards.",
+          "How little the exercise tired her.",
+          "How fast she recovered from injury."
+        ],
         "answerIndex": 1
       },
       {
         "id": 5,
         "question": "How did the writer feel at the end of the race?",
-        "options": ["Disappointed with her finishing time.", "Relieved that it was finally over.", "Unexpectedly proud of herself.", "Embarrassed about finishing last."],
+        "options": [
+          "Disappointed with her finishing time.",
+          "Relieved that it was finally over.",
+          "Unexpectedly proud of herself.",
+          "Embarrassed about finishing last."
+        ],
         "answerIndex": 2
       }
     ]
   },
   {
     "id": "mcr-b2-2",
+    "level": "B2 First",
     "title": "A Lesson in Slow Travel",
     "passage": [
       "When my flight to Portugal was cancelled last summer, I had a decision to make: wait two days for another flight, or take the overnight train and ferry instead. Reluctantly, I chose the second option, expecting an uncomfortable and exhausting journey. What I got instead changed the way I think about travel.",
@@ -54,32 +81,261 @@
       {
         "id": 1,
         "question": "Why did the writer take the train and ferry?",
-        "options": ["It was cheaper than flying.", "Her flight had been cancelled.", "She had always preferred slow travel.", "The ferry company offered a discount."],
+        "options": [
+          "It was cheaper than flying.",
+          "Her flight had been cancelled.",
+          "She had always preferred slow travel.",
+          "The ferry company offered a discount."
+        ],
         "answerIndex": 1
       },
       {
         "id": 2,
         "question": "What was the writer's attitude before the journey began?",
-        "options": ["Excited about a new experience.", "Confident it would be comfortable.", "Expecting it to be unpleasant.", "Indifferent about the outcome."],
+        "options": [
+          "Excited about a new experience.",
+          "Confident it would be comfortable.",
+          "Expecting it to be unpleasant.",
+          "Indifferent about the outcome."
+        ],
         "answerIndex": 2
       },
       {
         "id": 3,
         "question": "What did the writer particularly notice during the train journey?",
-        "options": ["How uncomfortable the seats were.", "How the scenery changed gradually.", "How crowded the carriages became.", "How quickly the time passed."],
+        "options": [
+          "How uncomfortable the seats were.",
+          "How the scenery changed gradually.",
+          "How crowded the carriages became.",
+          "How quickly the time passed."
+        ],
         "answerIndex": 1
       },
       {
         "id": 4,
         "question": "What does the writer say about her phone during the ferry crossing?",
-        "options": ["She used it to plan the rest of her trip.", "She realised she hadn't needed it.", "It stopped working during the journey.", "She used it to contact her family."],
+        "options": [
+          "She used it to plan the rest of her trip.",
+          "She realised she hadn't needed it.",
+          "It stopped working during the journey.",
+          "She used it to contact her family."
+        ],
         "answerIndex": 1
       },
       {
         "id": 5,
         "question": "What has the writer concluded since the trip?",
-        "options": ["Slow travel is always the better choice.", "Fast travel is generally more reliable.", "The way you travel can be worth considering.", "Trains are more comfortable than planes."],
+        "options": [
+          "Slow travel is always the better choice.",
+          "Fast travel is generally more reliable.",
+          "The way you travel can be worth considering.",
+          "Trains are more comfortable than planes."
+        ],
         "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "id": "mcr-b2-3",
+    "level": "B2 First",
+    "title": "The Buzz About Rooftop Bees",
+    "passage": [
+      "Twelve floors above one of London's busiest streets, a row of wooden boxes attracts little attention from passers-by below, until you notice the low, steady hum drifting across the rooftop. Inside live roughly eighty thousand bees, cared for by an office manager who never expected to become a beekeeper. Scenes like this are becoming increasingly familiar across major cities, part of a trend known as urban beekeeping. What began as a niche hobby for a handful of enthusiasts has, in the space of a decade, spread to hotels, museums and corporate headquarters keen to be seen doing something for the environment.",
+      "Supporters argue that cities, perhaps surprisingly, can suit bees rather well. Urban gardens, parks and even weeds growing between paving stones offer a wider variety of flowers than the vast, single-crop fields found in much of the countryside, and the absence of certain pesticides can work in the bees' favour. Even so, experts warn that enthusiasm has occasionally outpaced good sense. In some areas, so many hives have appeared that local bee populations are now competing for the same limited food sources, a problem that undermines the very cause the hobby is meant to support.",
+      "Maria Lopes, who installed her first hive on a hotel roof three years ago, admits she was drawn in for reasons that had little to do with honey. 'I liked the idea of slowing down and paying attention to something outside my usual routine,' she explains. What she hadn't anticipated was how demanding the responsibility would become: checking the colony weekly, learning to read its mood, and occasionally being stung despite her care. Still, she has no regrets. Watching guests stop to ask questions about the hive, she says, has done more to interest people in the environment than any leaflet ever could.",
+      "Whether the trend will keep growing is harder to predict. Some city councils have begun restricting new hives in crowded areas, worried about overcrowding and safety, while beekeeping associations are pushing for more training before anyone is allowed to start. For now, though, the sight of bees on a city rooftop no longer raises many eyebrows. What was once considered eccentric has quietly become part of the urban landscape, a small reminder, advocates say, that even the busiest cities still depend on the natural world."
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "What is suggested about the office manager mentioned in the first paragraph?",
+        "options": [
+          "She had wanted to become a beekeeper for years.",
+          "She took up beekeeping unexpectedly.",
+          "She was hired specifically to manage bees.",
+          "She dislikes being near the hives."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 2,
+        "question": "According to the second paragraph, why might cities suit bees well?",
+        "options": [
+          "Cities have fewer birds that prey on bees.",
+          "Urban areas offer a greater variety of flowers than farmland.",
+          "Bees produce more honey in warmer city climates.",
+          "Local governments provide free hives to businesses."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 3,
+        "question": "What problem does the writer mention regarding the popularity of urban beekeeping?",
+        "options": [
+          "Hives are too expensive for most businesses.",
+          "Bees are being replaced by more efficient pollinators.",
+          "Too many hives can lead to competition for food.",
+          "Cities have banned rooftop hives altogether."
+        ],
+        "answerIndex": 2
+      },
+      {
+        "id": 4,
+        "question": "What does Maria Lopes's comment about 'slowing down' suggest about her motivation?",
+        "options": [
+          "She wanted a way to relax and disconnect from her routine.",
+          "She hoped to sell honey commercially.",
+          "She was persuaded by her employer to take part.",
+          "She wanted to raise money for charity."
+        ],
+        "answerIndex": 0
+      },
+      {
+        "id": 5,
+        "question": "What is the writer's overall attitude toward the future of urban beekeeping?",
+        "options": [
+          "Certain that it will disappear within a few years.",
+          "Convinced every city should adopt it immediately.",
+          "Uncertain, noting both growing restrictions and continued interest.",
+          "Dismissive of it as a passing fad with no real value."
+        ],
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "id": "mcr-b2-4",
+    "level": "B2 First",
+    "title": "Learning to Say No",
+    "passage": [
+      "For most of my twenties, I prided myself on being the person who never said no. If a colleague needed help finishing a report, a friend needed a lift to the airport at six in the morning, or a neighbour needed someone to walk their dog for a week, I would agree before I had properly thought it through. I told myself this made me generous and dependable, the sort of person others could rely on. In truth, I think part of me simply found it easier to please people than to risk disappointing them, even when saying yes cost me evenings, weekends, and eventually my patience.",
+      "The turning point came during a particularly chaotic month, when I had agreed to organise a friend's leaving party, cover a colleague's shift, and help my sister move flats, all in the same week I was already behind on a work deadline. By the Wednesday, I was so exhausted that I forgot an important meeting entirely, something that had never happened to me before. Sitting in my car afterwards, feeling more embarrassed than I can describe, I finally admitted that constantly saying yes wasn't making me reliable; it was making me unreliable, because I no longer had the energy to do anything properly.",
+      "Learning to say no turned out to be far harder than I expected. The first few times, I rehearsed the words in advance and still stumbled over them, half expecting the other person to be offended. To my surprise, most people simply accepted it and moved on, which made me wonder how much of my earlier anxiety had been in my own head. Slowly, I began to notice a difference: I had more time for the commitments I did make, and I approached them with far more enthusiasm than before, rather than the quiet resentment that used to creep in.",
+      "I wouldn't claim I've become someone who refuses requests easily, and there are still moments when the old instinct to agree to everything returns. But I've come to see saying no, occasionally and thoughtfully, not as letting people down but as a way of making sure that when I do say yes, I actually mean it. It's a small shift, but one that has changed how I manage my time and, more importantly, how I feel at the end of most days."
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "Why did the writer originally find it hard to say no?",
+        "options": [
+          "She feared losing her job if she refused.",
+          "She found it easier to please others than risk disappointing them.",
+          "She genuinely enjoyed being extremely busy.",
+          "She had no other commitments to prioritise."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 2,
+        "question": "What happened during the 'particularly chaotic month' that made the writer reconsider her habits?",
+        "options": [
+          "She lost her job due to poor performance.",
+          "She forgot an important meeting because she was overcommitted.",
+          "A friend confronted her about being unreliable.",
+          "She was hospitalised from exhaustion."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 3,
+        "question": "What does the writer mean by 'it was making me unreliable'?",
+        "options": [
+          "People stopped trusting her because she often said yes.",
+          "Overcommitting meant she couldn't do things properly.",
+          "She started cancelling plans without warning.",
+          "Her friends began to avoid asking her for help."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 4,
+        "question": "How did the writer feel when she first started saying no?",
+        "options": [
+          "Confident and relieved from the very first attempt.",
+          "Nervous and expecting a negative reaction.",
+          "Indifferent, since it had never been difficult before.",
+          "Angry at herself for being selfish."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 5,
+        "question": "What is the writer's attitude toward saying no by the end of the passage?",
+        "options": [
+          "She regrets ever changing her behaviour.",
+          "She now refuses almost every request she receives.",
+          "She sees it as a way to make her commitments more meaningful.",
+          "She believes it has made her less dependable overall."
+        ],
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "id": "mcr-b2-5",
+    "level": "B2 First",
+    "title": "Finding My Voice",
+    "passage": [
+      "I joined my local community choir on something of a dare. A friend, tired of hearing me claim I 'couldn't sing a note', signed us both up for a taster session and told me I had no excuse not to go. I turned up expecting to quietly mouth the words at the back and slip away afterwards, convinced that decades of being told I was tone-deaf in school music lessons had settled the matter permanently. Instead, I found myself standing in a circle of complete strangers, being asked to actually open my mouth and sing, with nowhere obvious to hide.",
+      "The first few rehearsals were, frankly, uncomfortable. I was certain everyone around me could hear how unsteady my voice was, and I spent most of each session bracing myself to be quietly asked to mime instead. The conductor, though, seemed entirely unbothered by my nerves. She kept reminding the group that singing was a skill like any other, something built through practice rather than a talent you either had or didn't, a claim I only half believed at the time but repeated to myself anyway whenever I wanted to give up.",
+      "What changed things wasn't a sudden breakthrough but a slow accumulation of small moments: hitting a note I'd struggled with for weeks, following a harmony line without losing my place, being asked by the person next to me where I'd trained. None of these things would mean much to a confident singer, but to me they felt like real evidence that the conductor might have been right all along. By the time of our first public concert, eight months after that reluctant taster session, I no longer dreaded rehearsals; I looked forward to them.",
+      "I still wouldn't describe myself as a natural singer, and there are rehearsals when my voice refuses to cooperate no matter how hard I try. But the choir taught me something I hadn't expected: that the label I'd carried since childhood, tone-deaf, said far more about one unkind comment years ago than about any real limitation. These days, when people tell me they can't sing, I find myself repeating my conductor's words back to them, not entirely sure I believe them myself, but hoping that saying them out loud might help someone else the way it eventually helped me."
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "Why did the writer originally join the choir?",
+        "options": [
+          "She had always dreamed of performing on stage.",
+          "A friend persuaded her to attend a taster session.",
+          "She wanted to prove her music teacher wrong.",
+          "She needed it as part of a school assignment."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 2,
+        "question": "What does the phrase 'with nowhere obvious to hide' suggest about the first session?",
+        "options": [
+          "The choir room was very small and crowded.",
+          "She felt exposed and unable to avoid singing.",
+          "She got lost trying to find the venue.",
+          "The other singers refused to stand near her."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 3,
+        "question": "How did the writer feel during the early rehearsals?",
+        "options": [
+          "Relaxed, since no one was paying attention to her.",
+          "Confident that she would improve quickly.",
+          "Anxious that others could hear her mistakes.",
+          "Annoyed at the conductor's teaching methods."
+        ],
+        "answerIndex": 2
+      },
+      {
+        "id": 4,
+        "question": "What did the writer find convincing evidence of her progress?",
+        "options": [
+          "A formal assessment from the conductor.",
+          "Small achievements like hitting difficult notes.",
+          "Being asked to sing a solo part.",
+          "Praise from her friend who signed her up."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 5,
+        "question": "What does the writer conclude about being labelled 'tone-deaf' as a child?",
+        "options": [
+          "It was an accurate description of a real limitation.",
+          "It reflected one unkind comment rather than the truth.",
+          "It motivated her to prove her teacher wrong.",
+          "It stopped her from ever trying to sing again."
+        ],
+        "answerIndex": 1
       }
     ]
   }

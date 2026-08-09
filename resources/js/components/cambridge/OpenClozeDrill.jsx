@@ -82,7 +82,7 @@ export default function OpenClozeDrill() {
 
     return (
         <PracticeSessionShell
-            title="Open Cloze"
+            title="Open Cloze — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a text to practice — Reading & Use of English, Part 2'}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}

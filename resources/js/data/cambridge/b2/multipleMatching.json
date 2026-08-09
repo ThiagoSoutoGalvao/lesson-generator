@@ -1,44 +1,352 @@
 [
   {
     "id": "mm-b2-1",
+    "level": "B2 First",
     "title": "Four Home Offices",
     "instruction": "Which person…",
     "texts": [
-      { "label": "A", "name": "Priya", "text": "I turned a corner of my bedroom into a desk space, which wasn't ideal at first because I kept getting distracted by the bed being right there. What really made the difference was investing in a proper chair — my back used to ache after just a couple of hours, and now I can comfortably work a full day. I still miss having colleagues nearby to bounce ideas off, though; video calls aren't quite the same." },
-      { "label": "B", "name": "Marcus", "text": "My flat is tiny, so I work from the kitchen table, which I have to clear away every evening before dinner. It's a bit of a hassle, but it does mean I never end up working late into the night, since the table has to be free by seven. The biggest challenge has been the noise from the street outside — I've had to get used to wearing headphones most of the day." },
-      { "label": "C", "name": "Elena", "text": "I converted our garden shed into a small office, and it's honestly the best decision I've made. Having a separate building means I can properly switch off at the end of the day, just by walking back to the house. The only downside is that it gets quite cold in winter, so I had to buy a heater to make it bearable." },
-      { "label": "D", "name": "Tom", "text": "I share a desk in the spare room with my partner, who also works from home, and coordinating our video calls so we don't talk over each other took some getting used to. What surprised me is how much I've enjoyed having someone to have lunch with every day — it's less isolating than I expected working from home to be." }
+      {
+        "label": "A",
+        "name": "Priya",
+        "text": "I turned a corner of my bedroom into a desk space, which wasn't ideal at first because I kept getting distracted by the bed being right there. What really made the difference was investing in a proper chair — my back used to ache after just a couple of hours, and now I can comfortably work a full day. I still miss having colleagues nearby to bounce ideas off, though; video calls aren't quite the same."
+      },
+      {
+        "label": "B",
+        "name": "Marcus",
+        "text": "My flat is tiny, so I work from the kitchen table, which I have to clear away every evening before dinner. It's a bit of a hassle, but it does mean I never end up working late into the night, since the table has to be free by seven. The biggest challenge has been the noise from the street outside — I've had to get used to wearing headphones most of the day."
+      },
+      {
+        "label": "C",
+        "name": "Elena",
+        "text": "I converted our garden shed into a small office, and it's honestly the best decision I've made. Having a separate building means I can properly switch off at the end of the day, just by walking back to the house. The only downside is that it gets quite cold in winter, so I had to buy a heater to make it bearable."
+      },
+      {
+        "label": "D",
+        "name": "Tom",
+        "text": "I share a desk in the spare room with my partner, who also works from home, and coordinating our video calls so we don't talk over each other took some getting used to. What surprised me is how much I've enjoyed having someone to have lunch with every day — it's less isolating than I expected working from home to be."
+      }
     ],
     "questions": [
-      { "id": 1, "question": "found that a piece of furniture solved a physical problem?", "answer": "A" },
-      { "id": 2, "question": "has a routine that stops them from working too late?", "answer": "B" },
-      { "id": 3, "question": "is glad to share their work day with another person?", "answer": "D" },
-      { "id": 4, "question": "finds it easier to stop working because of where their office is?", "answer": "C" },
-      { "id": 5, "question": "mentions missing the company of coworkers?", "answer": "A" },
-      { "id": 6, "question": "had to deal with an unwanted sound while working?", "answer": "B" },
-      { "id": 7, "question": "needed to buy something to deal with the weather?", "answer": "C" },
-      { "id": 8, "question": "had to get used to sharing their workspace with someone else?", "answer": "D" }
+      {
+        "id": 1,
+        "question": "found that a piece of furniture solved a physical problem?",
+        "answer": "A"
+      },
+      {
+        "id": 2,
+        "question": "has a routine that stops them from working too late?",
+        "answer": "B"
+      },
+      {
+        "id": 3,
+        "question": "is glad to share their work day with another person?",
+        "answer": "D"
+      },
+      {
+        "id": 4,
+        "question": "finds it easier to stop working because of where their office is?",
+        "answer": "C"
+      },
+      {
+        "id": 5,
+        "question": "mentions missing the company of coworkers?",
+        "answer": "A"
+      },
+      {
+        "id": 6,
+        "question": "had to deal with an unwanted sound while working?",
+        "answer": "B"
+      },
+      {
+        "id": 7,
+        "question": "needed to buy something to deal with the weather?",
+        "answer": "C"
+      },
+      {
+        "id": 8,
+        "question": "had to get used to sharing their workspace with someone else?",
+        "answer": "D"
+      }
     ]
   },
   {
     "id": "mm-b2-2",
+    "level": "B2 First",
     "title": "Four Restaurant Reviews",
     "instruction": "Which review…",
     "texts": [
-      { "label": "A", "name": "The Copper Pot", "text": "The menu changes weekly depending on what's fresh, which I love, though it does mean you can't count on your favourite dish still being there next time. Service was a little slow on the night we visited, but the staff were friendly enough that it didn't really bother us. Prices are on the higher side, but portions are generous enough to justify it." },
-      { "label": "B", "name": "Riverside Grill", "text": "What stood out most was the view — every table looks out over the river, which makes it a great spot for a special occasion. The food itself was decent rather than outstanding; nothing was bad, but nothing particularly stood out either. Booking ahead is essential, as it fills up fast even on weeknights." },
-      { "label": "C", "name": "Noodle House", "text": "This is where I go when I want something quick and reliably good without spending much. The menu barely changes, but that's fine because everything on it is done well. It can get noisy and cramped during the lunch rush, so it's not somewhere to linger over a long conversation." },
-      { "label": "D", "name": "Bella Vita", "text": "Portions here are smaller than I expected for the price, though the quality of the ingredients was obvious in every dish. The dining room is beautifully decorated, and it felt like a genuinely special evening out. I'd recommend it for an anniversary rather than a casual midweek dinner." }
+      {
+        "label": "A",
+        "name": "The Copper Pot",
+        "text": "The menu changes weekly depending on what's fresh, which I love, though it does mean you can't count on your favourite dish still being there next time. Service was a little slow on the night we visited, but the staff were friendly enough that it didn't really bother us. Prices are on the higher side, but portions are generous enough to justify it."
+      },
+      {
+        "label": "B",
+        "name": "Riverside Grill",
+        "text": "What stood out most was the view — every table looks out over the river, which makes it a great spot for a special occasion. The food itself was decent rather than outstanding; nothing was bad, but nothing particularly stood out either. Booking ahead is essential, as it fills up fast even on weeknights."
+      },
+      {
+        "label": "C",
+        "name": "Noodle House",
+        "text": "This is where I go when I want something quick and reliably good without spending much. The menu barely changes, but that's fine because everything on it is done well. It can get noisy and cramped during the lunch rush, so it's not somewhere to linger over a long conversation."
+      },
+      {
+        "label": "D",
+        "name": "Bella Vita",
+        "text": "Portions here are smaller than I expected for the price, though the quality of the ingredients was obvious in every dish. The dining room is beautifully decorated, and it felt like a genuinely special evening out. I'd recommend it for an anniversary rather than a casual midweek dinner."
+      }
     ],
     "questions": [
-      { "id": 1, "question": "is recommended for a celebration rather than an everyday meal?", "answer": "D" },
-      { "id": 2, "question": "mentions that the food choices don't stay the same for long?", "answer": "A" },
-      { "id": 3, "question": "suggests the surroundings were more impressive than the food?", "answer": "B" },
-      { "id": 4, "question": "is a good choice when you're in a hurry?", "answer": "C" },
-      { "id": 5, "question": "says the amount of food didn't quite match what was paid?", "answer": "D" },
-      { "id": 6, "question": "notes that arriving without a reservation could be a problem?", "answer": "B" },
-      { "id": 7, "question": "mentions that the atmosphere isn't suited to a relaxed chat?", "answer": "C" },
-      { "id": 8, "question": "felt that a slow aspect of the experience wasn't a big issue?", "answer": "A" }
+      {
+        "id": 1,
+        "question": "is recommended for a celebration rather than an everyday meal?",
+        "answer": "D"
+      },
+      {
+        "id": 2,
+        "question": "mentions that the food choices don't stay the same for long?",
+        "answer": "A"
+      },
+      {
+        "id": 3,
+        "question": "suggests the surroundings were more impressive than the food?",
+        "answer": "B"
+      },
+      {
+        "id": 4,
+        "question": "is a good choice when you're in a hurry?",
+        "answer": "C"
+      },
+      {
+        "id": 5,
+        "question": "says the amount of food didn't quite match what was paid?",
+        "answer": "D"
+      },
+      {
+        "id": 6,
+        "question": "notes that arriving without a reservation could be a problem?",
+        "answer": "B"
+      },
+      {
+        "id": 7,
+        "question": "mentions that the atmosphere isn't suited to a relaxed chat?",
+        "answer": "C"
+      },
+      {
+        "id": 8,
+        "question": "felt that a slow aspect of the experience wasn't a big issue?",
+        "answer": "A"
+      }
+    ]
+  },
+  {
+    "id": "mm-b2-3",
+    "level": "B2 First",
+    "title": "Four Memorable Trips",
+    "instruction": "Which person…",
+    "texts": [
+      {
+        "label": "A",
+        "name": "Sofia",
+        "text": "I travelled around Japan on my own last spring, and the moment I remember most is getting completely lost trying to find my hotel in Osaka late at night. A woman waiting at a bus stop noticed I was staring helplessly at my phone and ended up walking me the whole way there herself, even though it was clearly out of her direction. I'd read that Japan was formal and reserved, but that one act of kindness changed how I saw the whole trip. I came home determined to be more helpful to lost tourists myself."
+      },
+      {
+        "label": "B",
+        "name": "Liam",
+        "text": "Four of us hired a car and drove around the Scottish Highlands last August, and on the second day the engine started making a strange noise just outside a tiny village. While we waited three hours for a mechanic to arrive, we wandered into the only pub in the village and ended up chatting with the owner for so long that missing our planned route didn't feel like a loss at all. We never made it to the castle we'd planned to see that day, but the evening we spent in that pub is the one story everyone asks me to tell."
+      },
+      {
+        "label": "C",
+        "name": "Aisha",
+        "text": "We'd planned a week of beach days in the Algarve, but it rained for four of the seven days, which was miserable at first with two tired children and nowhere to go. On the third rainy afternoon we ducked into a covered market we'd walked past without a second glance, and it turned out to have the best food we ate all week — the kids still talk about the pastries. Looking back, the trip I remember most fondly isn't the two sunny beach days at all, but that one unplanned afternoon indoors."
+      },
+      {
+        "label": "D",
+        "name": "Noah",
+        "text": "I'd trained for months before hiking to Machu Picchu, but nothing prepared me for how badly the altitude hit me on the second day — I could barely stand up without feeling dizzy. Our guide noticed before I even said anything and made me sit down and drink coca tea, which the local Quechua guides swear by for altitude sickness. Within an hour I felt well enough to keep walking, though much more slowly than the rest of the group. I'd assumed the physical training was the hard part, but it turned out the altitude was something no amount of gym work could have prepared me for."
+      }
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "received help from someone who went out of their way to give it?",
+        "answer": "A"
+      },
+      {
+        "id": 2,
+        "question": "had an assumption about a country's people proven wrong?",
+        "answer": "A"
+      },
+      {
+        "id": 3,
+        "question": "ended up with a story that people often ask them to retell?",
+        "answer": "B"
+      },
+      {
+        "id": 4,
+        "question": "missed a planned destination but didn't consider it a real loss?",
+        "answer": "B"
+      },
+      {
+        "id": 5,
+        "question": "found something enjoyable in a place they had almost overlooked?",
+        "answer": "C"
+      },
+      {
+        "id": 6,
+        "question": "remembers an unplanned part of the trip more fondly than the part they had planned?",
+        "answer": "C"
+      },
+      {
+        "id": 7,
+        "question": "was offered help before they had asked for it?",
+        "answer": "D"
+      },
+      {
+        "id": 8,
+        "question": "discovered that physical preparation alone wasn't enough for part of the trip?",
+        "answer": "D"
+      }
+    ]
+  },
+  {
+    "id": "mm-b2-4",
+    "level": "B2 First",
+    "title": "Four People Describe Their Jobs",
+    "instruction": "Which person…",
+    "texts": [
+      {
+        "label": "A",
+        "name": "Grace",
+        "text": "People assume being a vet is mostly about cute animals, but a lot of the job is actually managing worried owners, which took me years to get comfortable with. The hardest cases aren't the medical ones — they're the conversations where I have to explain that there's nothing more we can do. What keeps me going is the small number of times a treatment works better than expected and an owner who'd given up hope gets to take their pet home after all. I still cry in my car sometimes, and I've stopped being embarrassed about that."
+      },
+      {
+        "label": "B",
+        "name": "Daniel",
+        "text": "I spend more of my evenings than I'd like marking books, but the part of the job nobody warns you about is how much of your own money you end up spending on classroom supplies. Last year I must have bought pencils, notebooks and even a few coats for kids whose families were struggling, without really thinking twice about it. The exhausting bit isn't the children — it's the paperwork that seems to double every year. Still, the one moment each term that makes it worthwhile is watching a child who couldn't read in September manage a whole book by themselves in July."
+      },
+      {
+        "label": "C",
+        "name": "Marta",
+        "text": "I'm on the road for up to two weeks at a stretch, and the thing people always ask about is loneliness, but honestly I've made peace with that — I listen to audiobooks and call my sister most evenings. What I hadn't expected when I started was how much the job would depend on the weather; a single snowstorm can throw off a whole week's schedule and there's nothing to do but wait it out at a service station. I do miss being there for ordinary family dinners, though, and that's the part I find hardest around the holidays."
+      },
+      {
+        "label": "D",
+        "name": "Kenji",
+        "text": "Working from a different country every few months sounded glamorous when I started, but keeping to my company's time zone back home means I'm often on calls at midnight local time, which nobody warns you about. The upside is that I've learned to structure my whole day around three or four hours of real focused work rather than pretending to be busy for eight, and I get far more done than I ever did in an office. The thing I struggle with most is that I rarely meet the same colleagues twice on a video call, since half the team seems to change every few months."
+      }
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "admits to being emotional about their work and no longer minds it?",
+        "answer": "A"
+      },
+      {
+        "id": 2,
+        "question": "says the most difficult part of the job isn't the technical or hands-on side?",
+        "answer": "A"
+      },
+      {
+        "id": 3,
+        "question": "has spent their own money helping people they work with?",
+        "answer": "B"
+      },
+      {
+        "id": 4,
+        "question": "says a certain kind of task takes up more time with each year that passes?",
+        "answer": "B"
+      },
+      {
+        "id": 5,
+        "question": "has found a way to cope with a difficulty people usually ask them about?",
+        "answer": "C"
+      },
+      {
+        "id": 6,
+        "question": "explains how the weather can disrupt their work schedule?",
+        "answer": "C"
+      },
+      {
+        "id": 7,
+        "question": "discovered that working fewer hours could make them more productive?",
+        "answer": "D"
+      },
+      {
+        "id": 8,
+        "question": "finds it hard to build relationships with colleagues because of how often the team changes?",
+        "answer": "D"
+      }
+    ]
+  },
+  {
+    "id": "mm-b2-5",
+    "level": "B2 First",
+    "title": "Four People Describe a Hobby They Took Up",
+    "instruction": "Which person…",
+    "texts": [
+      {
+        "label": "A",
+        "name": "Ben",
+        "text": "I signed up for a six-week pottery course on a whim after a stressful year at work, mostly because a friend was going and I didn't want to go alone. I was terrible at first — my early bowls were so wonky that my teacher gently suggested I try plates instead — but something about the repetitive motion of the wheel turned out to be exactly the kind of mindless focus I needed after a day of emails. Eighteen months later I've taken over half our kitchen shelf with my own mugs and bowls, and my family has had to start politely declining more as gifts."
+      },
+      {
+        "label": "B",
+        "name": "Yuki",
+        "text": "A colleague dragged me to an indoor climbing wall for her birthday, and I spent the whole first session terrified, unable to get more than a few metres off the ground. What changed things was realising climbing is far more about problem-solving than pure strength — once I started treating each route like a puzzle rather than a test of muscle, I improved much faster than the stronger people in my group. I've since climbed outdoors a handful of times, though nothing yet has matched the satisfaction of finally completing that first route that used to defeat me every single week."
+      },
+      {
+        "label": "C",
+        "name": "Fatima",
+        "text": "I started keeping bees on our building's rooftop after attending a single evening workshop, which in hindsight taught me nowhere near enough — my first year involved a lot of frantic phone calls to a local beekeeping group when things went wrong. The biggest surprise has been how much it's changed my relationship with the neighbours; people who'd never spoken to me before now stop me in the corridor to ask about honey or to complain gently about bees near their washing line. I only harvested a small jar of honey in my first year, but I've never been prouder of anything that small."
+      },
+      {
+        "label": "D",
+        "name": "Carlos",
+        "text": "I decided to learn the violin at forty-five, mostly because I'd always regretted giving up piano lessons as a child and didn't want to have the same regret twice. Progress has been humbling — I share a thin-walled flat, and my neighbour left a polite note after my first few weeks of practice asking if I could keep it to certain hours. What's kept me going, even through months of sounding genuinely awful, is my teacher's rule that I'm not allowed to apologise for a bad note during lessons, which has slowly taught me to be less hard on myself generally."
+      }
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "joined a class mainly because someone else was going, not entirely by choice?",
+        "answer": "A"
+      },
+      {
+        "id": 2,
+        "question": "has had to stop family members from receiving so many of the same gift?",
+        "answer": "A"
+      },
+      {
+        "id": 3,
+        "question": "found they progressed faster than people who were physically stronger than them?",
+        "answer": "B"
+      },
+      {
+        "id": 4,
+        "question": "says no later achievement has matched the satisfaction of an early one?",
+        "answer": "B"
+      },
+      {
+        "id": 5,
+        "question": "says the hobby changed the way they interact with people nearby?",
+        "answer": "C"
+      },
+      {
+        "id": 6,
+        "question": "needed extra help because a class hadn't taught them enough?",
+        "answer": "C"
+      },
+      {
+        "id": 7,
+        "question": "received an indirect complaint about the hobby from a neighbour?",
+        "answer": "D"
+      },
+      {
+        "id": 8,
+        "question": "says a rule from their teacher taught them a broader lesson about themselves?",
+        "answer": "D"
+      }
     ]
   }
 ]

@@ -1,26 +1,217 @@
 [
   {
     "id": "wf-b2-1",
+    "level": "B2 First",
     "title": "Travel and Tourism",
     "items": [
-      { "root": "AMAZE",     "sentence": "The view from the top of the tower was absolutely ___.",             "answer": "amazing",      "form": "adjective" },
-      { "root": "DECIDE",    "sentence": "After a lot of thought, we made the ___ to travel by train instead of flying.", "answer": "decision",    "form": "noun" },
-      { "root": "RELY",      "sentence": "Local buses are cheap but not always ___, so leave extra time.",     "answer": "reliable",     "form": "adjective" },
-      { "root": "CROWD",     "sentence": "The old town gets very ___ during the summer festival.",             "answer": "crowded",      "form": "adjective" },
-      { "root": "IMPRESS",   "sentence": "Visitors are usually ___ by the size of the cathedral.",              "answer": "impressed",    "form": "adjective" },
-      { "root": "EXPENSE",   "sentence": "Staying in the city centre can be quite ___, so we booked a hotel further out.", "answer": "expensive", "form": "adjective" }
+      {
+        "root": "AMAZE",
+        "sentence": "The view from the top of the tower was absolutely ___.",
+        "answer": "amazing",
+        "form": "adjective"
+      },
+      {
+        "root": "DECIDE",
+        "sentence": "After a lot of thought, we made the ___ to travel by train instead of flying.",
+        "answer": "decision",
+        "form": "noun"
+      },
+      {
+        "root": "RELY",
+        "sentence": "Local buses are cheap but not always ___, so leave extra time.",
+        "answer": "reliable",
+        "form": "adjective"
+      },
+      {
+        "root": "CROWD",
+        "sentence": "The old town gets very ___ during the summer festival.",
+        "answer": "crowded",
+        "form": "adjective"
+      },
+      {
+        "root": "IMPRESS",
+        "sentence": "Visitors are usually ___ by the size of the cathedral.",
+        "answer": "impressed",
+        "form": "adjective"
+      },
+      {
+        "root": "EXPENSE",
+        "sentence": "Staying in the city centre can be quite ___, so we booked a hotel further out.",
+        "answer": "expensive",
+        "form": "adjective"
+      }
     ]
   },
   {
     "id": "wf-b2-2",
+    "level": "B2 First",
     "title": "Technology and Work",
     "items": [
-      { "root": "PRODUCE",   "sentence": "The new software has made the whole team much more ___.",           "answer": "productive",   "form": "adjective" },
-      { "root": "COMMUNICATE","sentence": "Good ___ between departments is essential for the project to succeed.", "answer": "communication", "form": "noun" },
-      { "root": "DEPEND",    "sentence": "Our online systems have become almost completely ___ on a stable internet connection.", "answer": "dependent", "form": "adjective" },
-      { "root": "SOLVE",     "sentence": "The IT team came up with a simple ___ to the login problem.",         "answer": "solution",     "form": "noun" },
-      { "root": "EMPLOY",    "sentence": "The company's ___ have been asked to work from home twice a week.",   "answer": "employees",    "form": "noun" },
-      { "root": "SUCCESS",   "sentence": "The app launch was ___ beyond what anyone had expected.",             "answer": "successful",   "form": "adjective" }
+      {
+        "root": "PRODUCE",
+        "sentence": "The new software has made the whole team much more ___.",
+        "answer": "productive",
+        "form": "adjective"
+      },
+      {
+        "root": "COMMUNICATE",
+        "sentence": "Good ___ between departments is essential for the project to succeed.",
+        "answer": "communication",
+        "form": "noun"
+      },
+      {
+        "root": "DEPEND",
+        "sentence": "Our online systems have become almost completely ___ on a stable internet connection.",
+        "answer": "dependent",
+        "form": "adjective"
+      },
+      {
+        "root": "SOLVE",
+        "sentence": "The IT team came up with a simple ___ to the login problem.",
+        "answer": "solution",
+        "form": "noun"
+      },
+      {
+        "root": "EMPLOY",
+        "sentence": "The company's ___ have been asked to work from home twice a week.",
+        "answer": "employees",
+        "form": "noun"
+      },
+      {
+        "root": "SUCCESS",
+        "sentence": "The app launch was ___ beyond what anyone had expected.",
+        "answer": "successful",
+        "form": "adjective"
+      }
+    ]
+  },
+  {
+    "id": "wf-b2-3",
+    "level": "B2 First",
+    "title": "Health and Fitness",
+    "items": [
+      {
+        "root": "ANXIOUS",
+        "sentence": "Many patients feel a certain amount of ___ before surgery, which is completely normal.",
+        "answer": "anxiety",
+        "form": "noun"
+      },
+      {
+        "root": "NUTRITION",
+        "sentence": "Eating a ___ breakfast helps children concentrate better at school.",
+        "answer": "nutritious",
+        "form": "adjective"
+      },
+      {
+        "root": "FIT",
+        "sentence": "Regular exercise is one of the best ways to improve your overall ___.",
+        "answer": "fitness",
+        "form": "noun"
+      },
+      {
+        "root": "ILL",
+        "sentence": "A sudden ___ forced her to cancel her appointment with the dentist.",
+        "answer": "illness",
+        "form": "noun"
+      },
+      {
+        "root": "TREAT",
+        "sentence": "The doctor recommended a new ___ for his persistent back pain.",
+        "answer": "treatment",
+        "form": "noun"
+      },
+      {
+        "root": "STRESS",
+        "sentence": "Working long shifts in the emergency department can be extremely ___.",
+        "answer": "stressful",
+        "form": "adjective"
+      }
+    ]
+  },
+  {
+    "id": "wf-b2-4",
+    "level": "B2 First",
+    "title": "Food and Cooking",
+    "items": [
+      {
+        "root": "TASTE",
+        "sentence": "Grandma's cooking is always incredibly ___, even when the recipe is simple.",
+        "answer": "tasty",
+        "form": "adjective"
+      },
+      {
+        "root": "NOURISH",
+        "sentence": "A ___ meal after training helps your muscles recover more quickly.",
+        "answer": "nourishing",
+        "form": "adjective"
+      },
+      {
+        "root": "PREPARE",
+        "sentence": "The ___ of a traditional roast dinner can take several hours.",
+        "answer": "preparation",
+        "form": "noun"
+      },
+      {
+        "root": "FRESH",
+        "sentence": "The chef always talks about the ___ of the ingredients he uses.",
+        "answer": "freshness",
+        "form": "noun"
+      },
+      {
+        "root": "HEALTH",
+        "sentence": "Fast food is often ___ if it is eaten too regularly.",
+        "answer": "unhealthy",
+        "form": "adjective"
+      },
+      {
+        "root": "VARY",
+        "sentence": "It's important to have ___ in your diet rather than eating the same meals every day.",
+        "answer": "variety",
+        "form": "noun"
+      }
+    ]
+  },
+  {
+    "id": "wf-b2-5",
+    "level": "B2 First",
+    "title": "Sport",
+    "items": [
+      {
+        "root": "COMPETE",
+        "sentence": "Only the top athletes qualify for the international ___.",
+        "answer": "competition",
+        "form": "noun"
+      },
+      {
+        "root": "ACHIEVE",
+        "sentence": "Winning the championship was a huge ___ for the young team.",
+        "answer": "achievement",
+        "form": "noun"
+      },
+      {
+        "root": "ENCOURAGE",
+        "sentence": "The coach's ___ words helped the players believe they could still win.",
+        "answer": "encouraging",
+        "form": "adjective"
+      },
+      {
+        "root": "INJURE",
+        "sentence": "The star player is still recovering from a serious ___.",
+        "answer": "injury",
+        "form": "noun"
+      },
+      {
+        "root": "STRONG",
+        "sentence": "Daily training has clearly improved his physical ___.",
+        "answer": "strength",
+        "form": "noun"
+      },
+      {
+        "root": "PATIENT",
+        "sentence": "Fans grew increasingly ___ while waiting for the match to start.",
+        "answer": "impatient",
+        "form": "adjective"
+      }
     ]
   }
 ]

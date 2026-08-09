@@ -1,26 +1,217 @@
 [
   {
     "id": "kwt-b2-1",
+    "level": "B2 First",
     "title": "Everyday Situations",
     "items": [
-      { "original": "It's possible that Mark forgot about the meeting.",           "key_word": "MIGHT",   "stem": "Mark",                              "answer": "Mark might have forgotten about the meeting." },
-      { "original": "I haven't seen a film this exciting for years.",              "key_word": "WAS",     "stem": "It",                                "answer": "It was years since I had seen such an exciting film." },
-      { "original": "She started working here three years ago.",                  "key_word": "FOR",     "stem": "She",                               "answer": "She has worked here for three years." },
-      { "original": "\"Don't forget to lock the door,\" said Anna to her brother.", "key_word": "REMINDED","stem": "Anna",                              "answer": "Anna reminded her brother to lock the door." },
-      { "original": "It wasn't necessary for us to bring our own equipment.",      "key_word": "HAVE",    "stem": "We",                                "answer": "We didn't have to bring our own equipment." },
-      { "original": "People say that the company is planning to relocate.",       "key_word": "SAID",    "stem": "The company",                       "answer": "The company is said to be planning to relocate." }
+      {
+        "original": "It's possible that Mark forgot about the meeting.",
+        "key_word": "MIGHT",
+        "stem": "Mark",
+        "answer": "Mark might have forgotten about the meeting."
+      },
+      {
+        "original": "I haven't seen a film this exciting for years.",
+        "key_word": "WAS",
+        "stem": "It",
+        "answer": "It was years since I had seen such an exciting film."
+      },
+      {
+        "original": "She started working here three years ago.",
+        "key_word": "FOR",
+        "stem": "She",
+        "answer": "She has worked here for three years."
+      },
+      {
+        "original": "\"Don't forget to lock the door,\" said Anna to her brother.",
+        "key_word": "REMINDED",
+        "stem": "Anna",
+        "answer": "Anna reminded her brother to lock the door."
+      },
+      {
+        "original": "It wasn't necessary for us to bring our own equipment.",
+        "key_word": "HAVE",
+        "stem": "We",
+        "answer": "We didn't have to bring our own equipment."
+      },
+      {
+        "original": "People say that the company is planning to relocate.",
+        "key_word": "SAID",
+        "stem": "The company",
+        "answer": "The company is said to be planning to relocate."
+      }
     ]
   },
   {
     "id": "kwt-b2-2",
+    "level": "B2 First",
     "title": "Work and Study",
     "items": [
-      { "original": "I regret not applying for that job last year.",              "key_word": "WISH",    "stem": "I",                                 "answer": "I wish I had applied for that job last year." },
-      { "original": "She is a better public speaker than me.",                    "key_word": "AS",      "stem": "I",                                 "answer": "I am not as good a public speaker as her." },
-      { "original": "Despite studying hard, Tom failed the exam.",                "key_word": "ALTHOUGH","stem": "Tom failed the exam",              "answer": "Tom failed the exam although he studied hard." },
-      { "original": "The last time I spoke to my old teacher was five years ago.","key_word": "SINCE",   "stem": "I",                                 "answer": "I haven't spoken to my old teacher since five years ago." },
-      { "original": "It is possible that the delay was caused by the weather.",   "key_word": "HAVE",    "stem": "The delay",                        "answer": "The delay may have been caused by the weather." },
-      { "original": "You shouldn't have spent so much money on that laptop.",     "key_word": "SPENDING","stem": "You",                               "answer": "You spent too much money on that laptop." }
+      {
+        "original": "I regret not applying for that job last year.",
+        "key_word": "WISH",
+        "stem": "I",
+        "answer": "I wish I had applied for that job last year."
+      },
+      {
+        "original": "She is a better public speaker than me.",
+        "key_word": "AS",
+        "stem": "I",
+        "answer": "I am not as good a public speaker as her."
+      },
+      {
+        "original": "Despite studying hard, Tom failed the exam.",
+        "key_word": "ALTHOUGH",
+        "stem": "Tom failed the exam",
+        "answer": "Tom failed the exam although he studied hard."
+      },
+      {
+        "original": "The last time I spoke to my old teacher was five years ago.",
+        "key_word": "SINCE",
+        "stem": "I",
+        "answer": "I haven't spoken to my old teacher since five years ago."
+      },
+      {
+        "original": "It is possible that the delay was caused by the weather.",
+        "key_word": "HAVE",
+        "stem": "The delay",
+        "answer": "The delay may have been caused by the weather."
+      },
+      {
+        "original": "You shouldn't have spent so much money on that laptop.",
+        "key_word": "SPENDING",
+        "stem": "You",
+        "answer": "You spent too much money on that laptop."
+      }
+    ]
+  },
+  {
+    "id": "kwt-b2-3",
+    "level": "B2 First",
+    "title": "Travel",
+    "items": [
+      {
+        "original": "I'm sure they didn't miss the flight because they left early.",
+        "key_word": "CAN'T",
+        "stem": "They",
+        "answer": "They can't have missed the flight because they left early."
+      },
+      {
+        "original": "Someone stole my passport while I was on the train.",
+        "key_word": "STOLEN",
+        "stem": "My passport",
+        "answer": "My passport was stolen while I was on the train."
+      },
+      {
+        "original": "\"I will book the hotel tomorrow,\" Sarah told me.",
+        "key_word": "WOULD",
+        "stem": "Sarah told me",
+        "answer": "Sarah told me that she would book the hotel the next day."
+      },
+      {
+        "original": "We didn't have enough time, so we couldn't visit the museum.",
+        "key_word": "HAD",
+        "stem": "If we",
+        "answer": "If we had had enough time, we could have visited the museum."
+      },
+      {
+        "original": "We stayed at a small hotel, and its owner used to be a chef.",
+        "key_word": "WHOSE",
+        "stem": "We stayed at a small hotel",
+        "answer": "We stayed at a small hotel whose owner used to be a chef."
+      },
+      {
+        "original": "The trip was so tiring that we slept for twelve hours afterwards.",
+        "key_word": "SUCH",
+        "stem": "It",
+        "answer": "It was such a tiring trip that we slept for twelve hours afterwards."
+      }
+    ]
+  },
+  {
+    "id": "kwt-b2-4",
+    "level": "B2 First",
+    "title": "Technology",
+    "items": [
+      {
+        "original": "This new smartphone costs a lot more than the previous model.",
+        "key_word": "FAR",
+        "stem": "The new smartphone is",
+        "answer": "The new smartphone is far more expensive than the previous model."
+      },
+      {
+        "original": "You must update the app before you use it again.",
+        "key_word": "BE",
+        "stem": "The app",
+        "answer": "The app must be updated before you use it again."
+      },
+      {
+        "original": "\"Have you backed up your files?\" the technician asked me.",
+        "key_word": "WHETHER",
+        "stem": "The technician asked me",
+        "answer": "The technician asked me whether I had backed up my files."
+      },
+      {
+        "original": "If you don't charge your phone, it will turn off.",
+        "key_word": "UNLESS",
+        "stem": "Your phone will turn off",
+        "answer": "Your phone will turn off unless you charge it."
+      },
+      {
+        "original": "We found a great new app completely by chance.",
+        "key_word": "ACROSS",
+        "stem": "We",
+        "answer": "We came across a great new app completely by chance."
+      },
+      {
+        "original": "A technician repaired my laptop yesterday.",
+        "key_word": "HAD",
+        "stem": "I",
+        "answer": "I had my laptop repaired yesterday."
+      }
+    ]
+  },
+  {
+    "id": "kwt-b2-5",
+    "level": "B2 First",
+    "title": "Health",
+    "items": [
+      {
+        "original": "I'm sure he's ill because he looks so pale.",
+        "key_word": "MUST",
+        "stem": "He",
+        "answer": "He must be ill because he looks so pale."
+      },
+      {
+        "original": "\"You should drink more water every day,\" the doctor said to me.",
+        "key_word": "ADVISED",
+        "stem": "The doctor",
+        "answer": "The doctor advised me to drink more water every day."
+      },
+      {
+        "original": "The pain was so bad that she couldn't sleep.",
+        "key_word": "TOO",
+        "stem": "The pain was",
+        "answer": "The pain was too bad for her to sleep."
+      },
+      {
+        "original": "He stopped smoking two years ago for health reasons.",
+        "key_word": "UP",
+        "stem": "He",
+        "answer": "He gave up smoking two years ago for health reasons."
+      },
+      {
+        "original": "Regular exercise improves mental health, and this is now widely recognised.",
+        "key_word": "WHICH",
+        "stem": "Regular exercise improves mental health",
+        "answer": "Regular exercise improves mental health, which is now widely recognised."
+      },
+      {
+        "original": "She had never felt so unwell in her life until she caught this virus.",
+        "key_word": "NEVER",
+        "stem": "Never before",
+        "answer": "Never before had she felt so unwell until she caught this virus."
+      }
     ]
   }
 ]

@@ -50,7 +50,7 @@ export default function KeyWordTransformationDrill() {
 
     return (
         <PracticeSessionShell
-            title="Key Word Transformation"
+            title="Key Word Transformation — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a set to practice — Reading & Use of English, Part 4'}
             progressLabel={phase === 'drilling' ? `Item ${index + 1} of ${total}` : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}

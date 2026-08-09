@@ -66,7 +66,7 @@ export default function WordFormationDrill() {
 
     return (
         <PracticeSessionShell
-            title="Word Formation"
+            title="Word Formation — B2 First"
             subtitle={phase === 'drilling' ? set.title : 'Choose a set to practice — Reading & Use of English, Part 3'}
             progressLabel={phase === 'drilling' ? `Item ${index + 1} of ${total}` : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}
