@@ -1,0 +1,26 @@
+[
+  {
+    "id": "wf-b2-1",
+    "title": "Travel and Tourism",
+    "items": [
+      { "root": "AMAZE",     "sentence": "The view from the top of the tower was absolutely ___.",             "answer": "amazing",      "form": "adjective" },
+      { "root": "DECIDE",    "sentence": "After a lot of thought, we made the ___ to travel by train instead of flying.", "answer": "decision",    "form": "noun" },
+      { "root": "RELY",      "sentence": "Local buses are cheap but not always ___, so leave extra time.",     "answer": "reliable",     "form": "adjective" },
+      { "root": "CROWD",     "sentence": "The old town gets very ___ during the summer festival.",             "answer": "crowded",      "form": "adjective" },
+      { "root": "IMPRESS",   "sentence": "Visitors are usually ___ by the size of the cathedral.",              "answer": "impressed",    "form": "adjective" },
+      { "root": "EXPENSE",   "sentence": "Staying in the city centre can be quite ___, so we booked a hotel further out.", "answer": "expensive", "form": "adjective" }
+    ]
+  },
+  {
+    "id": "wf-b2-2",
+    "title": "Technology and Work",
+    "items": [
+      { "root": "PRODUCE",   "sentence": "The new software has made the whole team much more ___.",           "answer": "productive",   "form": "adjective" },
+      { "root": "COMMUNICATE","sentence": "Good ___ between departments is essential for the project to succeed.", "answer": "communication", "form": "noun" },
+      { "root": "DEPEND",    "sentence": "Our online systems have become almost completely ___ on a stable internet connection.", "answer": "dependent", "form": "adjective" },
+      { "root": "SOLVE",     "sentence": "The IT team came up with a simple ___ to the login problem.",         "answer": "solution",     "form": "noun" },
+      { "root": "EMPLOY",    "sentence": "The company's ___ have been asked to work from home twice a week.",   "answer": "employees",    "form": "noun" },
+      { "root": "SUCCESS",   "sentence": "The app launch was ___ beyond what anyone had expected.",             "answer": "successful",   "form": "adjective" }
+    ]
+  }
+]

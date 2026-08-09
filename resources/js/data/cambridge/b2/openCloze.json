@@ -1,0 +1,30 @@
+[
+  {
+    "id": "cloze-open-b2-1",
+    "title": "Learning a New Skill",
+    "paragraph": "Many people believe that {{1}} is never too late to learn a new skill. Whether it {{2}} playing an instrument, cooking or a foreign language, the most important thing is to practise regularly rather {{3}} occasionally for long periods. It also helps {{4}} set small, realistic goals, {{5}} makes progress easier to notice. Of course, everyone learns {{6}} their own pace, so it is best not to compare yourself too closely {{7}} others.",
+    "blanks": [
+      { "id": 1, "answer": "it" },
+      { "id": 2, "answer": "is" },
+      { "id": 3, "answer": "than" },
+      { "id": 4, "answer": "to" },
+      { "id": 5, "answer": "which" },
+      { "id": 6, "answer": "at" },
+      { "id": 7, "answer": "with" }
+    ]
+  },
+  {
+    "id": "cloze-open-b2-2",
+    "title": "City Wildlife",
+    "paragraph": "It might come {{1}} a surprise, but a growing number {{2}} wild animals now live in cities rather than in the countryside. Foxes, for example, {{3}} become a common sight in urban gardens at night. Some experts believe this is {{4}} to the fact that cities offer plenty of food and fewer natural predators. {{5}} the same time, this closeness to humans can cause problems, {{6}} animals sometimes damage property while searching for food. As a result, {{7}} number of cities have started programmes to help residents live alongside urban wildlife safely.",
+    "blanks": [
+      { "id": 1, "answer": "as" },
+      { "id": 2, "answer": "of" },
+      { "id": 3, "answer": "have" },
+      { "id": 4, "answer": "due" },
+      { "id": 5, "answer": "At" },
+      { "id": 6, "answer": "as" },
+      { "id": 7, "answer": "a" }
+    ]
+  }
+]

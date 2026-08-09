@@ -1,0 +1,26 @@
+[
+  {
+    "id": "kwt-b2-1",
+    "title": "Everyday Situations",
+    "items": [
+      { "original": "It's possible that Mark forgot about the meeting.",           "key_word": "MIGHT",   "stem": "Mark",                              "answer": "Mark might have forgotten about the meeting." },
+      { "original": "I haven't seen a film this exciting for years.",              "key_word": "WAS",     "stem": "It",                                "answer": "It was years since I had seen such an exciting film." },
+      { "original": "She started working here three years ago.",                  "key_word": "FOR",     "stem": "She",                               "answer": "She has worked here for three years." },
+      { "original": "\"Don't forget to lock the door,\" said Anna to her brother.", "key_word": "REMINDED","stem": "Anna",                              "answer": "Anna reminded her brother to lock the door." },
+      { "original": "It wasn't necessary for us to bring our own equipment.",      "key_word": "HAVE",    "stem": "We",                                "answer": "We didn't have to bring our own equipment." },
+      { "original": "People say that the company is planning to relocate.",       "key_word": "SAID",    "stem": "The company",                       "answer": "The company is said to be planning to relocate." }
+    ]
+  },
+  {
+    "id": "kwt-b2-2",
+    "title": "Work and Study",
+    "items": [
+      { "original": "I regret not applying for that job last year.",              "key_word": "WISH",    "stem": "I",                                 "answer": "I wish I had applied for that job last year." },
+      { "original": "She is a better public speaker than me.",                    "key_word": "AS",      "stem": "I",                                 "answer": "I am not as good a public speaker as her." },
+      { "original": "Despite studying hard, Tom failed the exam.",                "key_word": "ALTHOUGH","stem": "Tom failed the exam",              "answer": "Tom failed the exam although he studied hard." },
+      { "original": "The last time I spoke to my old teacher was five years ago.","key_word": "SINCE",   "stem": "I",                                 "answer": "I haven't spoken to my old teacher since five years ago." },
+      { "original": "It is possible that the delay was caused by the weather.",   "key_word": "HAVE",    "stem": "The delay",                        "answer": "The delay may have been caused by the weather." },
+      { "original": "You shouldn't have spent so much money on that laptop.",     "key_word": "SPENDING","stem": "You",                               "answer": "You spent too much money on that laptop." }
+    ]
+  }
+]

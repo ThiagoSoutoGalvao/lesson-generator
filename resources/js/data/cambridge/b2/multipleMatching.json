@@ -1,0 +1,44 @@
+[
+  {
+    "id": "mm-b2-1",
+    "title": "Four Home Offices",
+    "instruction": "Which person…",
+    "texts": [
+      { "label": "A", "name": "Priya", "text": "I turned a corner of my bedroom into a desk space, which wasn't ideal at first because I kept getting distracted by the bed being right there. What really made the difference was investing in a proper chair — my back used to ache after just a couple of hours, and now I can comfortably work a full day. I still miss having colleagues nearby to bounce ideas off, though; video calls aren't quite the same." },
+      { "label": "B", "name": "Marcus", "text": "My flat is tiny, so I work from the kitchen table, which I have to clear away every evening before dinner. It's a bit of a hassle, but it does mean I never end up working late into the night, since the table has to be free by seven. The biggest challenge has been the noise from the street outside — I've had to get used to wearing headphones most of the day." },
+      { "label": "C", "name": "Elena", "text": "I converted our garden shed into a small office, and it's honestly the best decision I've made. Having a separate building means I can properly switch off at the end of the day, just by walking back to the house. The only downside is that it gets quite cold in winter, so I had to buy a heater to make it bearable." },
+      { "label": "D", "name": "Tom", "text": "I share a desk in the spare room with my partner, who also works from home, and coordinating our video calls so we don't talk over each other took some getting used to. What surprised me is how much I've enjoyed having someone to have lunch with every day — it's less isolating than I expected working from home to be." }
+    ],
+    "questions": [
+      { "id": 1, "question": "found that a piece of furniture solved a physical problem?", "answer": "A" },
+      { "id": 2, "question": "has a routine that stops them from working too late?", "answer": "B" },
+      { "id": 3, "question": "is glad to share their work day with another person?", "answer": "D" },
+      { "id": 4, "question": "finds it easier to stop working because of where their office is?", "answer": "C" },
+      { "id": 5, "question": "mentions missing the company of coworkers?", "answer": "A" },
+      { "id": 6, "question": "had to deal with an unwanted sound while working?", "answer": "B" },
+      { "id": 7, "question": "needed to buy something to deal with the weather?", "answer": "C" },
+      { "id": 8, "question": "had to get used to sharing their workspace with someone else?", "answer": "D" }
+    ]
+  },
+  {
+    "id": "mm-b2-2",
+    "title": "Four Restaurant Reviews",
+    "instruction": "Which review…",
+    "texts": [
+      { "label": "A", "name": "The Copper Pot", "text": "The menu changes weekly depending on what's fresh, which I love, though it does mean you can't count on your favourite dish still being there next time. Service was a little slow on the night we visited, but the staff were friendly enough that it didn't really bother us. Prices are on the higher side, but portions are generous enough to justify it." },
+      { "label": "B", "name": "Riverside Grill", "text": "What stood out most was the view — every table looks out over the river, which makes it a great spot for a special occasion. The food itself was decent rather than outstanding; nothing was bad, but nothing particularly stood out either. Booking ahead is essential, as it fills up fast even on weeknights." },
+      { "label": "C", "name": "Noodle House", "text": "This is where I go when I want something quick and reliably good without spending much. The menu barely changes, but that's fine because everything on it is done well. It can get noisy and cramped during the lunch rush, so it's not somewhere to linger over a long conversation." },
+      { "label": "D", "name": "Bella Vita", "text": "Portions here are smaller than I expected for the price, though the quality of the ingredients was obvious in every dish. The dining room is beautifully decorated, and it felt like a genuinely special evening out. I'd recommend it for an anniversary rather than a casual midweek dinner." }
+    ],
+    "questions": [
+      { "id": 1, "question": "is recommended for a celebration rather than an everyday meal?", "answer": "D" },
+      { "id": 2, "question": "mentions that the food choices don't stay the same for long?", "answer": "A" },
+      { "id": 3, "question": "suggests the surroundings were more impressive than the food?", "answer": "B" },
+      { "id": 4, "question": "is a good choice when you're in a hurry?", "answer": "C" },
+      { "id": 5, "question": "says the amount of food didn't quite match what was paid?", "answer": "D" },
+      { "id": 6, "question": "notes that arriving without a reservation could be a problem?", "answer": "B" },
+      { "id": 7, "question": "mentions that the atmosphere isn't suited to a relaxed chat?", "answer": "C" },
+      { "id": 8, "question": "felt that a slow aspect of the experience wasn't a big issue?", "answer": "A" }
+    ]
+  }
+]

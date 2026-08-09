@@ -1,0 +1,86 @@
+[
+  {
+    "id": "mcr-b2-1",
+    "title": "The Reluctant Runner",
+    "passage": [
+      "I never thought of myself as a runner. At school, I was always the last to finish the annual cross-country race, and I spent most of my adult life avoiding any form of exercise that involved actual effort. So when my sister persuaded me to sign up for a five-kilometre charity run, I agreed mainly because I didn't think I'd have to go through with it.",
+      "The training turned out to be far harder than I expected. During my first attempt, I managed less than two minutes before I had to stop, red-faced and gasping, convinced I had made a terrible mistake. Over the following weeks, though, something unexpected happened: those two minutes slowly became five, then ten, then twenty. I started to notice that the run I dreaded on Monday felt slightly easier by Thursday.",
+      "What surprised me most wasn't the change in my body, but the change in my mood. I had always assumed people who talked about a 'runner's high' were exaggerating, but after a few weeks I began to understand what they meant. The run itself was still hard, yet I finished each session feeling calmer than when I started.",
+      "On the day of the race, I was nervous, certain I would be last. In the end, I wasn't fast, but I wasn't last either, and crossing the finish line I felt an unfamiliar rush of pride. I still wouldn't call myself a natural runner, but for the first time I understood why so many people choose to do it anyway."
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "Why did the writer originally agree to do the charity run?",
+        "options": ["She had always wanted to try running.", "She didn't expect to actually take part.", "Her sister offered to train with her.", "She wanted to prove something at school."],
+        "answerIndex": 1
+      },
+      {
+        "id": 2,
+        "question": "How did the writer feel during her first training attempt?",
+        "options": ["Confident it would get easier quickly.", "Embarrassed but determined to continue.", "Convinced she shouldn't have started.", "Surprised by how easy it felt."],
+        "answerIndex": 2
+      },
+      {
+        "id": 3,
+        "question": "What does 'those two minutes slowly became five, then ten, then twenty' suggest?",
+        "options": ["The writer kept losing track of time.", "The race distance was longer than planned.", "Her running time gradually increased.", "She kept restarting the same run."],
+        "answerIndex": 2
+      },
+      {
+        "id": 4,
+        "question": "What most surprised the writer about her training?",
+        "options": ["How quickly her fitness improved.", "How much her mood improved afterwards.", "How little the exercise tired her.", "How fast she recovered from injury."],
+        "answerIndex": 1
+      },
+      {
+        "id": 5,
+        "question": "How did the writer feel at the end of the race?",
+        "options": ["Disappointed with her finishing time.", "Relieved that it was finally over.", "Unexpectedly proud of herself.", "Embarrassed about finishing last."],
+        "answerIndex": 2
+      }
+    ]
+  },
+  {
+    "id": "mcr-b2-2",
+    "title": "A Lesson in Slow Travel",
+    "passage": [
+      "When my flight to Portugal was cancelled last summer, I had a decision to make: wait two days for another flight, or take the overnight train and ferry instead. Reluctantly, I chose the second option, expecting an uncomfortable and exhausting journey. What I got instead changed the way I think about travel.",
+      "The train was slower than I'd have liked, and the seats were far from luxurious, but I found myself watching the landscape change hour by hour in a way I never do from a plane window. Fields gave way to hills, then coastline, and I began chatting with the passenger next to me, an elderly man who had taken the same route every summer for thirty years.",
+      "By the time I boarded the ferry the next morning, I realised I hadn't looked at my phone in hours. Normally I fill every spare moment scrolling through messages, but there was something about the journey that made that feel unnecessary. I watched the sea instead, half amused at how unusual this stillness felt.",
+      "I arrived a full day later than originally planned, tired but oddly content. Since then, I've chosen the slower route more than once, not because it's convenient, but because it forces me to notice things a fast flight never would. It isn't always practical, and I wouldn't recommend it for every trip, but it taught me that how you travel can matter as much as where you're going."
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "Why did the writer take the train and ferry?",
+        "options": ["It was cheaper than flying.", "Her flight had been cancelled.", "She had always preferred slow travel.", "The ferry company offered a discount."],
+        "answerIndex": 1
+      },
+      {
+        "id": 2,
+        "question": "What was the writer's attitude before the journey began?",
+        "options": ["Excited about a new experience.", "Confident it would be comfortable.", "Expecting it to be unpleasant.", "Indifferent about the outcome."],
+        "answerIndex": 2
+      },
+      {
+        "id": 3,
+        "question": "What did the writer particularly notice during the train journey?",
+        "options": ["How uncomfortable the seats were.", "How the scenery changed gradually.", "How crowded the carriages became.", "How quickly the time passed."],
+        "answerIndex": 1
+      },
+      {
+        "id": 4,
+        "question": "What does the writer say about her phone during the ferry crossing?",
+        "options": ["She used it to plan the rest of her trip.", "She realised she hadn't needed it.", "It stopped working during the journey.", "She used it to contact her family."],
+        "answerIndex": 1
+      },
+      {
+        "id": 5,
+        "question": "What has the writer concluded since the trip?",
+        "options": ["Slow travel is always the better choice.", "Fast travel is generally more reliable.", "The way you travel can be worth considering.", "Trains are more comfortable than planes."],
+        "answerIndex": 2
+      }
+    ]
+  }
+]

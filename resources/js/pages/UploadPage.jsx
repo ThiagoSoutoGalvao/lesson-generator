@@ -672,6 +672,44 @@ function DetPracticeLauncher() {
     );
 }
 
+// ─── Cambridge Practice Tab ────────────────────────────────────────────────────
+
+function CambridgePracticeLauncher() {
+    const navigate = useNavigate();
+
+    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
+
+    return (
+        <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
+                <p className="lg-shell-text text-white/60 text-xs">
+                    Cambridge-style practice (B2 First) — Reading &amp; Use of English. Original content, not real exam material; no official score, no recording.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onClick={() => navigate('/cambridge/practice/word-formation')} className={drillButtonCls}>
+                        Word Formation
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/key-word-transformation')} className={drillButtonCls}>
+                        Key Word Transformation
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/mc-cloze')} className={drillButtonCls}>
+                        Multiple-Choice Cloze
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/open-cloze')} className={drillButtonCls}>
+                        Open Cloze
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/mc-reading')} className={drillButtonCls}>
+                        Multiple Choice Reading
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/multiple-matching')} className={drillButtonCls}>
+                        Multiple Matching
+                    </button>
+                </div>
+            </div>
+        </div>
+    );
+}
+
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function UploadPage() {
@@ -685,6 +723,7 @@ export default function UploadPage() {
         { id: 'reading',       label: '📖 Reading Text',  active: 'bg-emerald-500/30 border-emerald-400/50 text-emerald-200' },
         { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/30 border-teal-400/50 text-teal-200' },
         { id: 'det',           label: '🎯 DET Practice',  active: 'bg-amber-500/30 border-amber-400/50 text-amber-200' },
+        { id: 'cambridge',     label: '🎓 Cambridge',     active: 'bg-rose-500/30 border-rose-400/50 text-rose-200' },
     ];
 
     return (
@@ -717,6 +756,7 @@ export default function UploadPage() {
             {tab === 'reading'       && <ReadingTextGenerator />}
             {tab === 'pronunciation' && <PronunciationLauncher />}
             {tab === 'det'           && <DetPracticeLauncher />}
+            {tab === 'cambridge'     && <CambridgePracticeLauncher />}
         </div>
     );
 }

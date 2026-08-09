@@ -1,0 +1,30 @@
+[
+  {
+    "id": "cloze-mc-b2-1",
+    "title": "The History of Chocolate",
+    "paragraph": "Chocolate has a history that {{1}} back thousands of years. It was first {{2}} by the ancient civilisations of Central America, who {{3}} cacao beans to make a bitter drink. When chocolate {{4}} arrived in Europe in the sixteenth century, sugar was added to make it sweeter, and it quickly {{5}} into a fashionable drink among the wealthy. It wasn't {{6}} the nineteenth century that solid chocolate bars, similar to the ones we {{7}} today, were first produced.",
+    "blanks": [
+      { "id": 1, "answer": "goes",      "options": ["goes", "runs", "moves", "turns"] },
+      { "id": 2, "answer": "enjoyed",   "options": ["enjoyed", "held", "kept", "won"] },
+      { "id": 3, "answer": "used",      "options": ["made", "used", "took", "did"] },
+      { "id": 4, "answer": "eventually","options": ["eventually", "hardly", "nearly", "shortly"] },
+      { "id": 5, "answer": "developed", "options": ["developed", "grew", "changed", "raised"] },
+      { "id": 6, "answer": "until",     "options": ["until", "since", "during", "while"] },
+      { "id": 7, "answer": "recognise", "options": ["recognise", "notice", "realise", "remark"] }
+    ]
+  },
+  {
+    "id": "cloze-mc-b2-2",
+    "title": "Working from Home",
+    "paragraph": "In recent years, more and more companies have {{1}} their staff the option of working from home. Supporters {{2}} that this arrangement can improve productivity, since employees avoid the stress of a long commute and are {{3}} able to focus without office distractions. On the other {{4}}, some managers worry that team spirit may {{5}} if colleagues rarely meet in person. As a {{6}}, many businesses now offer a hybrid model, {{7}} employees to divide their time between home and the office.",
+    "blanks": [
+      { "id": 1, "answer": "given",     "options": ["given", "let", "made", "offered"] },
+      { "id": 2, "answer": "argue",     "options": ["argue", "tell", "speak", "talk"] },
+      { "id": 3, "answer": "often",     "options": ["often", "already", "still", "quite"] },
+      { "id": 4, "answer": "hand",      "options": ["hand", "side", "way", "point"] },
+      { "id": 5, "answer": "suffer",    "options": ["suffer", "break", "lose", "fall"] },
+      { "id": 6, "answer": "result",    "options": ["result", "reason", "cause", "purpose"] },
+      { "id": 7, "answer": "allowing",  "options": ["allowing", "letting", "making", "having"] }
+    ]
+  }
+]

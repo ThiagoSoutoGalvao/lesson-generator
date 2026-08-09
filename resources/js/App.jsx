@@ -10,6 +10,7 @@ import LibraryPage from '@/pages/LibraryPage';
 import PronunciationChartPage from '@/pages/PronunciationChartPage';
 import PronunciationDrillPage from '@/pages/PronunciationDrillPage';
 import DetPracticePage from '@/pages/DetPracticePage';
+import CambridgePracticePage from '@/pages/CambridgePracticePage';
 
 function Home() {
     return (
@@ -33,6 +34,7 @@ function App() {
                         <Route path="/pronunciation" element={<PronunciationChartPage />} />
                         <Route path="/pronunciation/drill/:type" element={<PronunciationDrillPage />} />
                         <Route path="/det/practice/:type" element={<DetPracticePage />} />
+                        <Route path="/cambridge/practice/:type" element={<CambridgePracticePage />} />
                     </Routes>
                 </Layout>
             </ErrorBoundary>
