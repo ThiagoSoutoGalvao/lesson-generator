@@ -126,11 +126,11 @@ export default function GeneratePage() {
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
             <div>
-                <h2 className="text-3xl font-bold text-white">Generate an Activity</h2>
-                <p className="text-white/60 mt-1 text-sm">Select a document, choose an activity type, and describe what you want.</p>
+                <h2 className="lg-shell-text text-3xl font-bold text-white">Generate an Activity</h2>
+                <p className="lg-shell-text text-white/70 mt-1 text-sm">Select a document, choose an activity type, and describe what you want.</p>
             </div>
 
-            <div className="bg-white/8 backdrop-blur-md border border-white/15 rounded-2xl p-6">
+            <div className="lg-surface border rounded-2xl p-6">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-5">
 
                     {/* Course book */}

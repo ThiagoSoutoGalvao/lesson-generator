@@ -32,7 +32,7 @@ function PresentationGenerator() {
         }
     }
 
-    const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent backdrop-blur-sm transition-colors';
+    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/45 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-colors';
 
     return (
         <div className="flex flex-col gap-4">
@@ -75,7 +75,7 @@ function PresentationGenerator() {
                             className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
                                 slides === n
                                     ? 'bg-indigo-500 border-indigo-400 text-white'
-                                    : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/20 hover:text-white'
+                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
                             }`}
                         >
                             {n}
@@ -138,7 +138,7 @@ function ReadingTextGenerator() {
         }
     }
 
-    const inputCls = 'w-full bg-white/10 border border-white/20 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent backdrop-blur-sm transition-colors';
+    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/45 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-colors';
 
     return (
         <div className="flex flex-col gap-4">
@@ -182,7 +182,7 @@ function ReadingTextGenerator() {
                             className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
                                 paragraphs === n
                                     ? 'bg-emerald-500 border-emerald-400 text-white'
-                                    : 'bg-white/10 border-white/20 text-white/70 hover:bg-white/20 hover:text-white'
+                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
                             }`}
                         >
                             {n}
@@ -300,10 +300,10 @@ function PdfUploader() {
                     onDragLeave={() => setDragging(false)}
                     onDrop={onDrop}
                     className={[
-                        'border-2 border-dashed rounded-2xl p-14 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200 backdrop-blur-md',
+                        'border-2 border-dashed rounded-2xl p-14 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200',
                         dragging
-                            ? 'border-blue-400 bg-blue-500/20'
-                            : 'border-white/25 bg-white/8 hover:border-white/50 hover:bg-white/12',
+                            ? 'border-blue-400 bg-blue-500/20 backdrop-blur-md'
+                            : 'lg-surface lg-surface-hover border',
                     ].join(' ')}
                 >
                     <svg className={`w-12 h-12 transition-colors ${dragging ? 'text-blue-300' : 'text-white/40'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -547,12 +547,12 @@ function AudioUploader() {
                     onDragLeave={() => setDragging(false)}
                     onDrop={status === 'idle' ? onDrop : undefined}
                     className={[
-                        'border-2 border-dashed rounded-2xl p-14 flex flex-col items-center gap-3 transition-all duration-200 backdrop-blur-md',
+                        'border-2 border-dashed rounded-2xl p-14 flex flex-col items-center gap-3 transition-all duration-200',
                         status === 'idle'
                             ? dragging
-                                ? 'border-purple-400 bg-purple-500/20 cursor-pointer'
-                                : 'border-white/25 bg-white/8 hover:border-white/50 hover:bg-white/12 cursor-pointer'
-                            : 'border-white/15 bg-white/5 cursor-default',
+                                ? 'border-purple-400 bg-purple-500/20 backdrop-blur-md cursor-pointer'
+                                : 'lg-surface lg-surface-hover border cursor-pointer'
+                            : 'lg-surface border cursor-default',
                     ].join(' ')}
                 >
                     {status === 'processing' ? (
@@ -594,7 +594,7 @@ function AudioUploader() {
 function PronunciationLauncher() {
     const navigate = useNavigate();
 
-    const drillButtonCls = 'py-6 px-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
+    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
 
     return (
         <div className="flex flex-col gap-4">
@@ -625,12 +625,12 @@ function PronunciationLauncher() {
 function DetPracticeLauncher() {
     const navigate = useNavigate();
 
-    const drillButtonCls = 'py-6 px-4 rounded-2xl bg-white/10 hover:bg-white/20 border border-white/20 text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
+    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
 
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
-                <p className="text-white/50 text-xs">
+                <p className="lg-shell-text text-white/60 text-xs">
                     DET-format reading and vocabulary practice — no scoring, teacher-controlled pace.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -650,7 +650,7 @@ function DetPracticeLauncher() {
             </div>
 
             <div className="flex flex-col gap-4">
-                <p className="text-white/50 text-xs">
+                <p className="lg-shell-text text-white/60 text-xs">
                     Speaking practice — no timer, no recording, you run it live — plus a quick vocabulary check-in.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -690,8 +690,8 @@ export default function UploadPage() {
     return (
         <div className="max-w-xl mx-auto mt-4 flex flex-col gap-6">
             <div>
-                <h2 className="text-3xl font-bold text-white">Upload Content</h2>
-                <p className="text-white/60 mt-1 text-sm">Upload a PDF or audio file, create a presentation or reading text from any topic, or practice pronunciation and DET question types.</p>
+                <h2 className="lg-shell-text text-3xl font-bold text-white">Upload Content</h2>
+                <p className="lg-shell-text text-white/70 mt-1 text-sm">Upload a PDF or audio file, create a presentation or reading text from any topic, or practice pronunciation and DET question types.</p>
             </div>
 
             {/* Tab switcher */}
@@ -703,7 +703,7 @@ export default function UploadPage() {
                         className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
                             tab === t.id
                                 ? t.active
-                                : 'bg-white/5 border-white/15 text-white/50 hover:bg-white/10 hover:text-white/70'
+                                : 'lg-chip lg-chip-hover text-white/60 hover:text-white/85'
                         }`}
                     >
                         {t.label}

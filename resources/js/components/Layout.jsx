@@ -9,8 +9,8 @@ const NAV_LINKS = [
 
 const PAGE_BACKGROUNDS = {
     '/':         '/backgrounds/pic1.jpg',
-    '/upload':   '/backgrounds/upload.jpg',
-    '/generate': '/backgrounds/generate.jpg',
+    '/upload':   '/backgrounds/pic4.jpg',
+    '/generate': '/backgrounds/pic4.jpg',
     '/library':  '/backgrounds/pic4.jpg',
 };
 
@@ -60,7 +60,7 @@ export default function Layout({ children }) {
 
     return (
         <div className="min-h-screen relative" style={bgStyle}>
-            <div className="fixed inset-0 bg-black/40 pointer-events-none z-0" />
+            <div className="fixed inset-0 lg-shell-overlay pointer-events-none z-0" />
 
             <header className="relative z-10 bg-black/15 backdrop-blur-xl border-b border-white/8 px-6 py-4 sticky top-0">
                 <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-2">

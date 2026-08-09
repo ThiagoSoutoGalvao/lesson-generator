@@ -397,3 +397,44 @@ body.tf-active main .text-xs {
   font-size: calc(var(--tf-size) * 0.55) !important;
   color: var(--tf-color) !important;
 }
+
+/* ── Shell surface (Library / Generate / Upload) ──
+   Cards/panels sit on a full-page photo. They stay near-opaque with a heavy,
+   brightened blur behind them — enough to pick up the photo's warm color as a
+   soft tint without letting any sharp photo detail through and threatening
+   text contrast. Tuned visually via a mockup; adjust here, not per-page. */
+.lg-surface {
+    background: rgba(76, 60, 49, .88);
+    -webkit-backdrop-filter: blur(28px) saturate(1.25) brightness(1.22);
+    backdrop-filter: blur(28px) saturate(1.25) brightness(1.22);
+    border-color: rgba(255, 255, 255, .14);
+}
+.lg-surface-hover:hover {
+    background: rgba(88, 70, 57, .91);
+    border-color: rgba(255, 255, 255, .2);
+}
+
+/* Shell background overlay — light top fade only, not a full-page wash,
+   since the surfaces above (not the overlay) carry the contrast guarantee. */
+.lg-shell-overlay {
+    background: linear-gradient(180deg, rgba(8, 6, 4, .4) 0%, rgba(8, 6, 4, .08) 200px, rgba(8, 6, 4, .05) 100%);
+}
+.lg-shell-text {
+    text-shadow: 0 1px 2px rgba(0, 0, 0, .9), 0 2px 12px rgba(0, 0, 0, .6);
+}
+
+/* Lighter-footprint variant of .lg-surface for small controls (tabs, inputs)
+   that still sit directly on the photo. NOTE: must stay dark, not white —
+   a light/white-tinted glass is invisible against bright photo regions (e.g.
+   a laptop screen in the shot); only a dark, self-opaque chip guarantees
+   contrast regardless of what's behind it. Learned the hard way via screenshot. */
+.lg-chip {
+    background: rgba(28, 22, 18, .62);
+    -webkit-backdrop-filter: blur(18px) saturate(1.2) brightness(1.1);
+    backdrop-filter: blur(18px) saturate(1.2) brightness(1.1);
+    border-color: rgba(255, 255, 255, .16);
+}
+.lg-chip-hover:hover {
+    background: rgba(40, 32, 26, .72);
+    border-color: rgba(255, 255, 255, .24);
+}

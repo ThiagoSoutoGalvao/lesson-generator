@@ -61,8 +61,8 @@ const TYPE_FILTERS = [
 ];
 
 const filterBtnCls = (active) =>
-    `px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer ${
-        active ? 'bg-white/25 text-white' : 'bg-white/8 text-white/55 hover:bg-white/15 hover:text-white border border-white/10'
+    `px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer border ${
+        active ? 'bg-blue-500 border-blue-400 text-white shadow-lg shadow-blue-500/25' : 'lg-chip lg-chip-hover text-white/75 hover:text-white'
     }`;
 
 export default function LibraryPage() {
@@ -128,8 +128,8 @@ export default function LibraryPage() {
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h2 className="text-3xl font-bold text-white">Activity Library</h2>
-                <p className="text-white/60 mt-1 text-sm">Your saved activities — relaunch them any time.</p>
+                <h2 className="lg-shell-text text-3xl font-bold text-white">Activity Library</h2>
+                <p className="lg-shell-text text-white/70 mt-1 text-sm">Your saved activities — relaunch them any time.</p>
             </div>
 
             {/* Type filter */}
@@ -172,7 +172,7 @@ export default function LibraryPage() {
             )}
 
             {!loading && !error && filtered.length === 0 && (
-                <div className="text-center py-20 text-white/40">
+                <div className="lg-shell-text text-center py-20 text-white/70">
                     <p className="text-lg">No saved activities yet.</p>
                     <p className="text-sm mt-1">Generate an activity and click Save to add it here.</p>
                 </div>
@@ -182,7 +182,7 @@ export default function LibraryPage() {
                 {filtered.map(a => (
                     <div
                         key={a.id}
-                        className="bg-white/8 backdrop-blur-md border border-white/12 rounded-2xl p-5 flex flex-col gap-3 hover:bg-white/12 transition-colors"
+                        className="lg-surface lg-surface-hover border rounded-2xl p-5 flex flex-col gap-3 transition-colors"
                     >
                         <div className="flex items-start justify-between gap-2">
                             <h3 className="text-xl font-bold text-white leading-snug min-w-0 break-words">{a.name}</h3>
