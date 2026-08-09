@@ -110,9 +110,10 @@ export default function GappedTextDrill() {
             )}
 
             {phase === 'drilling' && set && (
-                <div key={sessionKey} className="flex-1 overflow-y-auto px-8 py-8">
-                    <div className="max-w-3xl w-full mx-auto flex flex-col gap-6">
-                        <p className={`${PARAGRAPH_SIZES[fontSizeIdx]} leading-relaxed ${textColor}`}>
+                <div key={sessionKey} className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
+                    <div className={`md:w-[52%] overflow-y-auto p-8 border-b md:border-b-0 md:border-r border-white/10 ${PARAGRAPH_SIZES[fontSizeIdx]} leading-relaxed ${textColor}`}>
+                        <p className="text-white/40 text-xs font-semibold uppercase tracking-wide mb-3">Passage</p>
+                        <p>
                             {segments.map(seg => seg.type === 'text'
                                 ? <span key={seg.key}>{seg.value}</span>
                                 : (
@@ -126,19 +127,20 @@ export default function GappedTextDrill() {
                                     />
                                 ))}
                         </p>
+                    </div>
 
-                        <div className="rounded-2xl bg-black/30 border border-white/15 p-5">
-                            <p className="text-white/40 text-xs uppercase tracking-widest mb-3">Removed sentences</p>
-                            <div className="flex flex-col gap-2">
+                    <div className="flex-1 flex flex-col min-h-0">
+                        <div className="flex-1 overflow-y-auto p-8">
+                            <p className="text-white/40 text-xs font-semibold uppercase tracking-wide mb-3">Removed sentences</p>
+                            <div className="flex flex-col gap-2.5">
                                 {set.sentences.map(s => (
-                                    <p key={s.label} className={`${REF_SIZES[fontSizeIdx]} text-white/75`}>
+                                    <p key={s.label} className={`${REF_SIZES[fontSizeIdx]} text-white/75 leading-snug`}>
                                         <span className="font-bold text-amber-300/90 mr-1.5">{s.label}</span>{s.text}
                                     </p>
                                 ))}
                             </div>
                         </div>
-
-                        <div className="flex justify-center">
+                        <div className="shrink-0 flex justify-center pb-8">
                             {!revealed ? (
                                 <button onClick={() => setRevealed(true)} disabled={!allAnswered} className={primaryBtnCls}>
                                     Submit
