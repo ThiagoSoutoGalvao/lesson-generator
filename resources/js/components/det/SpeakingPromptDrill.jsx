@@ -26,6 +26,7 @@ export default function SpeakingPromptDrill({
     backToPrepLabel = '← Re-read',
     onBack,
     doneSecondaryLabel = 'Back to DET Practice',
+    watermark,
 }) {
     const navigate = useNavigate();
     const [index, setIndex] = useState(0);
@@ -73,13 +74,34 @@ export default function SpeakingPromptDrill({
             onFontIncrease={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))}
             textColor={textColor}
             onTextColorChange={setTextColor}
+            watermark={watermark}
         >
             {phase === 'prep' && item?.prep && (
                 <div key={`${index}-prep`} className="flex-1 flex flex-col items-center justify-center gap-8 px-8 overflow-y-auto py-8">
                     <p className="text-amber-300/80 text-xs font-semibold uppercase tracking-wide">{prepLabel}</p>
 
-                    {item.prep.type === 'photo' ? (
+                    {item.prep.type === 'photos' ? (
+                        <div className="flex flex-wrap items-center justify-center gap-6">
+                            {item.prep.content.map((src, i) => (
+                                <div key={src} className="flex flex-col items-center gap-2">
+                                    <img src={src} alt="" className="max-h-[42vh] max-w-[42vw] rounded-2xl border border-white/20 object-contain" />
+                                    <span className="text-white/40 text-xs font-semibold uppercase tracking-wide">Photo {String.fromCharCode(65 + i)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    ) : item.prep.type === 'photo' ? (
                         <img src={item.prep.content} alt="" className="max-h-[55vh] max-w-full rounded-2xl border border-white/20 object-contain" />
+                    ) : item.prep.type === 'list' ? (
+                        <div className="flex flex-col gap-3 max-w-2xl w-full">
+                            {item.prep.intro && (
+                                <p className={`${PREP_SIZES[fontSizeIdx]} leading-relaxed text-center ${textColor} mb-2`}>{item.prep.intro}</p>
+                            )}
+                            {item.prep.content.map((option, i) => (
+                                <div key={i} className="px-5 py-3 rounded-xl bg-white/8 border border-white/15 text-white/85 text-base">
+                                    {option}
+                                </div>
+                            ))}
+                        </div>
                     ) : (
                         <p className={`${PREP_SIZES[fontSizeIdx]} leading-relaxed text-center max-w-3xl ${textColor}`}>
                             {item.prep.content}
@@ -97,6 +119,13 @@ export default function SpeakingPromptDrill({
                 <div key={`${index}-prompt`} className="flex-1 flex flex-col items-center justify-center gap-8 px-8 overflow-y-auto py-8">
                     <p className="text-amber-300/80 text-xs font-semibold uppercase tracking-wide">{promptLabel}</p>
 
+                    {item.prep?.type === 'photos' && (
+                        <div className="flex flex-wrap items-center justify-center gap-4">
+                            {item.prep.content.map(src => (
+                                <img key={src} src={src} alt="" className="max-h-[28vh] max-w-[32vw] rounded-2xl border border-white/20 object-contain opacity-80" />
+                            ))}
+                        </div>
+                    )}
                     {item.prep?.type === 'photo' && (
                         <img src={item.prep.content} alt="" className="max-h-[35vh] max-w-full rounded-2xl border border-white/20 object-contain opacity-80" />
                     )}

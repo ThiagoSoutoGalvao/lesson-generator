@@ -1,0 +1,38 @@
+[
+  {
+    "id": "interview-b2-1",
+    "level": "B2 First",
+    "title": "Work and Study",
+    "items": [
+      { "prompt": "What do you do — are you working or studying at the moment?" },
+      { "prompt": "What do you enjoy most about your work or studies?" },
+      { "prompt": "Is there anything you find difficult or stressful about it?" },
+      { "prompt": "Do you think you'll still be doing the same thing in five years? Why or why not?" },
+      { "prompt": "What's one skill you'd like to improve, and how would you go about it?" }
+    ]
+  },
+  {
+    "id": "interview-b2-2",
+    "level": "B2 First",
+    "title": "Free Time and Hobbies",
+    "items": [
+      { "prompt": "What do you usually do in your free time?" },
+      { "prompt": "How did you first get interested in that?" },
+      { "prompt": "Do you prefer spending your free time alone or with other people? Why?" },
+      { "prompt": "Is there a hobby you used to enjoy but don't do anymore? What happened?" },
+      { "prompt": "Is there something new you'd like to try in the future?" }
+    ]
+  },
+  {
+    "id": "interview-b2-3",
+    "level": "B2 First",
+    "title": "Hometown and Future Plans",
+    "items": [
+      { "prompt": "Can you tell me a little about the place where you grew up?" },
+      { "prompt": "What do you like most about living there — or wherever you live now?" },
+      { "prompt": "Has the area changed much since you were younger?" },
+      { "prompt": "Would you like to live somewhere else one day? Where, and why?" },
+      { "prompt": "What are you most looking forward to in the next year or two?" }
+    ]
+  }
+]

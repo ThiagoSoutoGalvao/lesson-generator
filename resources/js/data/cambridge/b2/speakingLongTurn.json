@@ -1,0 +1,32 @@
+[
+  {
+    "id": "longturn-b2-1",
+    "prep": { "type": "photos", "content": ["/images/det-photos/q0-0.jpg", "/images/det-photos/q0-1.jpg"] },
+    "prompt": "Compare the two photographs. Say what the people are doing in each kitchen, and say which situation looks more enjoyable to you, giving reasons."
+  },
+  {
+    "id": "longturn-b2-2",
+    "prep": { "type": "photos", "content": ["/images/det-photos/q1-1.jpg", "/images/det-photos/q1-2.jpg"] },
+    "prompt": "Compare the two photographs. Say what you can tell about each place from the picture, and say which one you would rather visit, giving reasons."
+  },
+  {
+    "id": "longturn-b2-3",
+    "prep": { "type": "photos", "content": ["/images/det-photos/q2-0.jpg", "/images/det-photos/q2-1.jpg"] },
+    "prompt": "Compare the two photographs. Say how the people seem to feel about their work in each picture, and say which working environment you would prefer, giving reasons."
+  },
+  {
+    "id": "longturn-b2-4",
+    "prep": { "type": "photos", "content": ["/images/det-photos/q3-0.jpg", "/images/det-photos/q3-1.jpg"] },
+    "prompt": "Compare the two photographs. Say what the children might be learning from each activity, and say which one you think is more valuable, giving reasons."
+  },
+  {
+    "id": "longturn-b2-5",
+    "prep": { "type": "photos", "content": ["/images/det-photos/q4-0.jpg", "/images/det-photos/q4-2.jpg"] },
+    "prompt": "Compare the two photographs. Say why the people might have chosen to spend their time this way, and say which occasion looks more relaxing, giving reasons."
+  },
+  {
+    "id": "longturn-b2-6",
+    "prep": { "type": "photos", "content": ["/images/det-photos/q6-1.jpg", "/images/det-photos/q6-2.jpg"] },
+    "prompt": "Compare the two photographs. Say what the atmosphere seems to be like at each meal, and say which one is more similar to meals in your own family, giving reasons."
+  }
+]

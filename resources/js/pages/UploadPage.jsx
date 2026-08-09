@@ -682,10 +682,12 @@ function CambridgePracticeLauncher() {
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
-                <p className="lg-shell-text text-white/70 text-sm font-semibold">B2 First</p>
+                <p className="lg-shell-text text-white text-2xl font-bold">B2 First</p>
                 <p className="lg-shell-text text-white/60 text-xs -mt-2">
-                    Cambridge-style practice (B2 First) — Reading &amp; Use of English. Original content, not real exam material; no official score, no recording.
+                    Cambridge-style practice. Original content, not real exam material; no official score, no recording.
                 </p>
+
+                <p className="lg-shell-text text-white/50 text-xs font-semibold uppercase tracking-wide mt-2">Reading &amp; Use of English</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button onClick={() => navigate('/cambridge/practice/word-formation')} className={drillButtonCls}>
                         Word Formation
@@ -709,10 +711,26 @@ function CambridgePracticeLauncher() {
                         Gapped Text
                     </button>
                 </div>
+
+                <p className="lg-shell-text text-white/50 text-xs font-semibold uppercase tracking-wide mt-2">Speaking — no timer, no recording, you run it live</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onClick={() => navigate('/cambridge/practice/interview')} className={drillButtonCls}>
+                        Interview
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/long-turn')} className={drillButtonCls}>
+                        Individual Long Turn
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/collaborative')} className={drillButtonCls}>
+                        Collaborative Task
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/discussion')} className={drillButtonCls}>
+                        Discussion
+                    </button>
+                </div>
             </div>
 
             <div className="flex flex-col gap-4 border-t border-white/10 pt-6">
-                <p className="lg-shell-text text-white/70 text-sm font-semibold">C1 Advanced</p>
+                <p className="lg-shell-text text-white text-2xl font-bold">C1 Advanced</p>
                 <p className="lg-shell-text text-white/60 text-xs -mt-2">
                     Harder, C1-level practice — currently just one part while B2 First is being validated with real students.
                 </p>

@@ -7,6 +7,10 @@ import McReadingDrill from '@/components/cambridge/McReadingDrill';
 import MultipleMatchingDrill from '@/components/cambridge/MultipleMatchingDrill';
 import GappedTextDrill from '@/components/cambridge/GappedTextDrill';
 import CrossTextMatchingDrill from '@/components/cambridge/CrossTextMatchingDrill';
+import InterviewDrill from '@/components/cambridge/InterviewDrill';
+import LongTurnDrill from '@/components/cambridge/LongTurnDrill';
+import CollaborativeDrill from '@/components/cambridge/CollaborativeDrill';
+import DiscussionDrill from '@/components/cambridge/DiscussionDrill';
 
 function BackButton({ onClick }) {
     return (
@@ -28,6 +32,10 @@ const DRILLS = {
     'multiple-matching': MultipleMatchingDrill,
     'gapped-text': GappedTextDrill,
     'cross-text-matching': CrossTextMatchingDrill,
+    'interview': InterviewDrill,
+    'long-turn': LongTurnDrill,
+    'collaborative': CollaborativeDrill,
+    'discussion': DiscussionDrill,
 };
 
 export default function CambridgePracticePage() {
@@ -45,7 +53,7 @@ export default function CambridgePracticePage() {
             <div className="max-w-xl mx-auto mt-4 flex flex-col gap-4">
                 <h2 className="text-3xl font-bold text-white">Unknown practice type</h2>
                 <p className="text-white/60 text-sm">
-                    "{type}" isn't a recognised Cambridge practice type. Expected one of: word-formation, key-word-transformation, mc-cloze, open-cloze, mc-reading, multiple-matching, gapped-text, cross-text-matching.
+                    "{type}" isn't a recognised Cambridge practice type. Expected one of: word-formation, key-word-transformation, mc-cloze, open-cloze, mc-reading, multiple-matching, gapped-text, cross-text-matching, interview, long-turn, collaborative, discussion.
                 </p>
                 <BackButton onClick={backToCambridgeTab} />
             </div>

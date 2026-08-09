@@ -1,0 +1,77 @@
+[
+  {
+    "id": "collab-b2-1",
+    "prep": {
+      "type": "list",
+      "intro": "A colleague at work is leaving to take a new job, and the team wants to buy her a leaving gift. Talk together about the advantages and disadvantages of each idea below.",
+      "content": [
+        "A framed photo of the whole team",
+        "A gift card for a restaurant",
+        "A house plant for her new home",
+        "A weekend trip voucher",
+        "A donation to a charity she cares about"
+      ]
+    },
+    "prompt": "Now decide together which idea would be the best leaving gift."
+  },
+  {
+    "id": "collab-b2-2",
+    "prep": {
+      "type": "list",
+      "intro": "A local school is planning a day trip for a class of teenagers and is considering these destinations. Talk together about the advantages and disadvantages of each one.",
+      "content": [
+        "A science museum",
+        "A theme park",
+        "A nature reserve with guided walks",
+        "A historic castle",
+        "An art gallery with a workshop"
+      ]
+    },
+    "prompt": "Now decide together which destination would be the best choice for the class trip."
+  },
+  {
+    "id": "collab-b2-3",
+    "prep": {
+      "type": "list",
+      "intro": "A family wants to reduce the amount of plastic waste they produce at home and is considering these changes. Talk together about how easy or difficult each one would be.",
+      "content": [
+        "Buying food without plastic packaging",
+        "Using refillable bottles and containers",
+        "Switching to bar soap and shampoo",
+        "Composting food waste instead of using bin bags",
+        "Choosing second-hand items instead of new ones"
+      ]
+    },
+    "prompt": "Now decide together which change would make the biggest difference for this family."
+  },
+  {
+    "id": "collab-b2-4",
+    "prep": {
+      "type": "list",
+      "intro": "A group of friends is organising entertainment for a big family party and is considering these options. Talk together about the advantages and disadvantages of each one.",
+      "content": [
+        "Hiring a live band",
+        "Setting up a photo booth",
+        "Organising party games for all ages",
+        "Booking a magician or entertainer",
+        "Creating a shared playlist and letting guests choose songs"
+      ]
+    },
+    "prompt": "Now decide together which form of entertainment would work best for the party."
+  },
+  {
+    "id": "collab-b2-5",
+    "prep": {
+      "type": "list",
+      "intro": "A small company has some extra money left in its budget this year and is considering how to spend it on the team. Talk together about the advantages and disadvantages of each idea.",
+      "content": [
+        "A team day out",
+        "New equipment for the office",
+        "A training course for staff",
+        "A bonus shared equally among everyone",
+        "Better coffee and snacks in the office"
+      ]
+    },
+    "prompt": "Now decide together which option would benefit the team the most."
+  }
+]
