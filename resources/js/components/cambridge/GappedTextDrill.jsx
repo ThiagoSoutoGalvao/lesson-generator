@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import gappedTextSets from '@/data/cambridge/b2/gappedText.json';
 
-const PARAGRAPH_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
-const REF_SIZES       = ['text-xs',   'text-sm', 'text-base', 'text-lg', 'text-xl'];
+const PARAGRAPH_SIZES = ['text-lg',   'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
+const REF_SIZES       = ['text-base', 'text-lg', 'text-xl',  'text-2xl', 'text-3xl'];
 const FONT_SIZE_MAX = PARAGRAPH_SIZES.length - 1;
 
 const primaryBtnCls = 'px-6 py-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold transition-colors cursor-pointer';
