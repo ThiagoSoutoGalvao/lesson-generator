@@ -60,7 +60,8 @@ Same reasoning as the DET Listening decision earlier in the project: real value 
 
 ## Next up
 
-- Get the licensed beta teacher to actually try the 6 shipped B2 First parts with a student, and see what breaks or feels off before investing further.
-- ✅ Content batch 1 done — all 6 parts went from 2 → 5 sets each via 6 parallel subagents, plus explicit `"level": "B2 First"` labeling in both data and UI so C1 can slot in cleanly later. See CLAUDE.md §16 for details, including two flagged-but-accepted content items.
-- Backfill further once real usage with the teacher's student shows what's running low.
-- Then: Gapped Text, C1 Advanced content, Cross-Text Multiple Matching, and Phases 2–4 (Writing, Speaking, Listening) in roughly that order.
+- Get the licensed beta teacher to actually try the shipped B2 First parts with a student, and see what breaks or feels off before investing further.
+- ✅ Content batch 1 done — all original 6 parts went from 2 → 5 sets each via 6 parallel subagents, plus explicit `"level": "B2 First"` labeling in both data and UI so C1 can slot in cleanly later. See CLAUDE.md §16 for details, including two flagged-but-accepted content items.
+- ✅ Gapped Text (Part 6) done — the one previously-deferred B2 component, 2 sets shipped. See CLAUDE.md §16.
+- Backfill further B2 content (now 7 parts) once real usage with the teacher's student shows what's running low.
+- Then: C1 Advanced content for all 7 shipped parts, Cross-Text Multiple Matching (C1-only), and Phases 2–4 (Writing, Speaking, Listening) in roughly that order.

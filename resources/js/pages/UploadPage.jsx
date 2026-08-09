@@ -704,6 +704,9 @@ function CambridgePracticeLauncher() {
                     <button onClick={() => navigate('/cambridge/practice/multiple-matching')} className={drillButtonCls}>
                         Multiple Matching
                     </button>
+                    <button onClick={() => navigate('/cambridge/practice/gapped-text')} className={drillButtonCls}>
+                        Gapped Text
+                    </button>
                 </div>
             </div>
         </div>

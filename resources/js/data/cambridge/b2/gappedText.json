@@ -1,0 +1,48 @@
+[
+  {
+    "id": "gap-b2-1",
+    "level": "B2 First",
+    "title": "Back to the Classroom",
+    "paragraph": "When Maria decided to go back to university at the age of thirty-eight, most of her friends thought she was making a mistake. {{1}} She had a stable job, a mortgage to pay, and two children to look after, so starting a three-year law degree seemed, to many people, like an unnecessary risk. The first few weeks were difficult. {{2}} Sitting in lecture halls surrounded by students in their early twenties made her feel out of place, and she often wondered whether she had made the right choice. Simple things, like writing essays under time pressure, felt far harder than she remembered from her school days. {{3}} Slowly, Maria began to realise that the skills she had built up over almost two decades of working life were just as valuable as anything a younger student could offer. She was better at managing her time, and she rarely panicked before deadlines the way some of her classmates did. By the end of her first year, her confidence had grown considerably. {{4}} Her tutors noticed the change too, and one of them later told her that her essays had become some of the strongest in the class. {{5}} Now in her final year, Maria often finds herself giving advice to other mature students who are just starting out. {{6}} Her message is always the same: it is never too late to start something new, as long as you are willing to be patient with yourself while you adjust.",
+    "blanks": [
+      { "id": 1, "answer": "C" },
+      { "id": 2, "answer": "G" },
+      { "id": 3, "answer": "E" },
+      { "id": 4, "answer": "A" },
+      { "id": 5, "answer": "F" },
+      { "id": 6, "answer": "D" }
+    ],
+    "sentences": [
+      { "label": "A", "text": "She had started speaking up in seminars and even led a group project on employment law." },
+      { "label": "B", "text": "She eventually decided that a career change was not worth the financial risk after all." },
+      { "label": "C", "text": "In their eyes, she was giving up financial security for a qualification she might never need." },
+      { "label": "D", "text": "Many of them arrive with the same doubts she once had." },
+      { "label": "E", "text": "Just when she was ready to give up, however, something shifted." },
+      { "label": "F", "text": "That praise, small as it seemed, gave her exactly the encouragement she needed to keep going." },
+      { "label": "G", "text": "She quickly discovered just how much the world of full-time study had changed since she was last in a classroom." }
+    ]
+  },
+  {
+    "id": "gap-b2-2",
+    "level": "B2 First",
+    "title": "From Kitchen Table to Storefront",
+    "paragraph": "When Daniel began baking sourdough bread in his kitchen during a quiet winter, he had no intention of turning it into a business. {{1}} Friends who tried the bread kept asking where they could buy more, and within a few months he was baking for a dozen households every weekend. What had started as a way to fill his free time was slowly turning into something far bigger. {{2}} He spent his evenings researching food hygiene certificates, delivery logistics, and pricing, often staying up long after his day job had finished. There were moments when he wondered whether he had taken on more than he could manage. {{3}} A local café owner, impressed by a loaf he had brought in as a gift, offered him a standing order for fifty loaves a week. Suddenly Daniel had to decide whether baking was still just a hobby or something he was ready to commit to properly. {{4}} He gave notice at his office job and rented a small unit near the market, half excited and half terrified about what he had just agreed to. The first few months in the new space were exhausting. {{5}} Ingredient costs were higher than he had budgeted for, and a faulty oven meant an entire week's orders had to be baked overnight in batches. Even so, he refused to lower the quality of the bread just to save time or money. {{6}} Today, his small bakery supplies six cafés across the city, and he still starts every batch the same way he did at his kitchen table: by hand, and without rushing.",
+    "blanks": [
+      { "id": 1, "answer": "C" },
+      { "id": 2, "answer": "F" },
+      { "id": 3, "answer": "E" },
+      { "id": 4, "answer": "A" },
+      { "id": 5, "answer": "G" },
+      { "id": 6, "answer": "D" }
+    ],
+    "sentences": [
+      { "label": "A", "text": "After a long conversation with his partner, he finally decided to take the leap." },
+      { "label": "B", "text": "He eventually decided that running a bakery was too stressful and returned to his old office job." },
+      { "label": "C", "text": "He simply enjoyed the slow, repetitive process of mixing, folding and waiting for the dough to rise." },
+      { "label": "D", "text": "That decision, though costly in the short term, is what eventually earned him a loyal following." },
+      { "label": "E", "text": "Then, quite unexpectedly, an opportunity arrived that changed everything." },
+      { "label": "F", "text": "Before long, he began looking seriously into what it would take to sell food legally." },
+      { "label": "G", "text": "Nothing about running a business turned out to be as straightforward as he had imagined." }
+    ]
+  }
+]
