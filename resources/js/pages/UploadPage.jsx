@@ -712,6 +712,16 @@ function CambridgePracticeLauncher() {
                     </button>
                 </div>
 
+                <p className="lg-shell-text text-white/50 text-xs font-semibold uppercase tracking-wide mt-2">Writing — the student writes on paper or their own doc, no capture, no auto-checking</p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onClick={() => navigate('/cambridge/practice/essay')} className={drillButtonCls}>
+                        Essay
+                    </button>
+                    <button onClick={() => navigate('/cambridge/practice/genre')} className={drillButtonCls}>
+                        Genre Choice
+                    </button>
+                </div>
+
                 <p className="lg-shell-text text-white/50 text-xs font-semibold uppercase tracking-wide mt-2">Speaking — no timer, no recording, you run it live</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button onClick={() => navigate('/cambridge/practice/interview')} className={drillButtonCls}>

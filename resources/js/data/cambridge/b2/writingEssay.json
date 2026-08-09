@@ -1,0 +1,38 @@
+[
+  {
+    "id": "essay-b2-1",
+    "context": "In your English class you have been talking about how young people spend their free time.",
+    "question": "Do you think young people spend too much time on their phones?",
+    "points": ["social relationships", "mental health"]
+  },
+  {
+    "id": "essay-b2-2",
+    "context": "In your English class you have been talking about work and careers.",
+    "question": "Should everyone go to university?",
+    "points": ["job opportunities", "cost"]
+  },
+  {
+    "id": "essay-b2-3",
+    "context": "In your English class you have been talking about protecting the environment.",
+    "question": "What can individuals do to help protect the environment?",
+    "points": ["recycling", "transport"]
+  },
+  {
+    "id": "essay-b2-4",
+    "context": "In your English class you have been talking about travel and tourism.",
+    "question": "Is tourism good or bad for local communities?",
+    "points": ["economy", "local culture"]
+  },
+  {
+    "id": "essay-b2-5",
+    "context": "In your English class you have been talking about health and lifestyle.",
+    "question": "Is it more important to eat well or to exercise regularly?",
+    "points": ["diet", "physical activity"]
+  },
+  {
+    "id": "essay-b2-6",
+    "context": "In your English class you have been talking about technology in education.",
+    "question": "Should schools allow students to use smartphones in the classroom?",
+    "points": ["learning", "distraction"]
+  }
+]

@@ -1,0 +1,42 @@
+[
+  {
+    "id": "article",
+    "genre": "Article",
+    "description": "An engaging piece for a magazine or website — informal to semi-formal tone, aims to interest the reader.",
+    "items": [
+      { "id": "article-b2-1", "prompt": "You see this notice on an international website:\n\nWe're looking for articles about a place you love visiting. Write about the place, what makes it special, and why other people should visit it.\n\nWrite your article." },
+      { "id": "article-b2-2", "prompt": "Your local magazine has asked readers to write an article about a skill that changed their life. Write about the skill, how you learned it, and how it has helped you." },
+      { "id": "article-b2-3", "prompt": "An online magazine is collecting articles about memorable meals. Write about a meal you will never forget and why it was so memorable." }
+    ]
+  },
+  {
+    "id": "email",
+    "genre": "Email / Letter",
+    "description": "A semi-formal or formal response to a specific situation — clear structure, appropriate register.",
+    "items": [
+      { "id": "email-b2-1", "prompt": "You recently stayed at a hotel and had a problem with your room. Write an email to the hotel manager explaining what happened and what you would like them to do about it." },
+      { "id": "email-b2-2", "prompt": "A friend is planning to visit your country for the first time. Write an email giving them advice about what to bring, where to go, and what to avoid." },
+      { "id": "email-b2-3", "prompt": "You have seen a job advertisement for a part-time position that interests you. Write an email applying for the job, explaining your skills and why you are suitable." }
+    ]
+  },
+  {
+    "id": "review",
+    "genre": "Review",
+    "description": "An opinion piece evaluating something for other readers — description plus a clear recommendation.",
+    "items": [
+      { "id": "review-b2-1", "prompt": "Write a review of a restaurant you have visited recently for a local website. Say what the food and service were like, and whether you would recommend it." },
+      { "id": "review-b2-2", "prompt": "An online magazine has asked readers to review a book they have read recently. Write a review saying what the book was about and whether you would recommend it." },
+      { "id": "review-b2-3", "prompt": "Write a review of an app or piece of software you use regularly. Say what it does, what you like and dislike about it, and whether you would recommend it." }
+    ]
+  },
+  {
+    "id": "story",
+    "genre": "Story",
+    "description": "A short narrative — clear sequence of events, often built around a given opening or closing line.",
+    "items": [
+      { "id": "story-b2-1", "prompt": "Your English teacher has asked you to write a story. Your story must begin with this sentence:\n\n\"As soon as I opened the door, I knew something was wrong.\"" },
+      { "id": "story-b2-2", "prompt": "You have been asked to write a story for a competition. Your story must end with this sentence:\n\n\"From that day on, everything was different.\"" },
+      { "id": "story-b2-3", "prompt": "Your English teacher has asked you to write a story. Your story must include:\n\na lost object and an unexpected phone call." }
+    ]
+  }
+]
