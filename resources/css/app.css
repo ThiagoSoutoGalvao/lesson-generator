@@ -420,13 +420,13 @@ body.tf-active main .text-xs {
    white text readable through it (e.g. Pronunciation's dark sound-wave photo);
    .lg-surface remains the safe default for busier/brighter photos. */
 .lg-surface-soft {
-    background: rgba(76, 60, 49, .55);
-    -webkit-backdrop-filter: blur(24px) saturate(1.35) brightness(1.15);
-    backdrop-filter: blur(24px) saturate(1.35) brightness(1.15);
-    border-color: rgba(255, 255, 255, .16);
+    background: rgba(76, 60, 49, .38);
+    -webkit-backdrop-filter: blur(20px) saturate(1.5) brightness(1.45);
+    backdrop-filter: blur(20px) saturate(1.5) brightness(1.45);
+    border-color: rgba(255, 255, 255, .18);
 }
 .lg-surface-soft-hover:hover {
-    background: rgba(88, 70, 57, .68);
+    background: rgba(88, 70, 57, .5);
     border-color: rgba(255, 255, 255, .22);
 }
 

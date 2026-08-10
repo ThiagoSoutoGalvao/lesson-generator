@@ -90,8 +90,8 @@ export default function MinimalPairsDrill() {
             </div>
 
             {phase === 'select' && (
-                <div className="relative z-10 flex-1 flex items-center justify-center px-8">
-                    <div className="grid grid-cols-2 gap-4 max-w-2xl w-full">
+                <div className="relative z-10 flex-1 overflow-y-auto px-8 py-8">
+                    <div className="grid grid-cols-2 gap-4 max-w-2xl w-full mx-auto">
                         {minimalPairs.map(group => (
                             <button
                                 key={group.label}
