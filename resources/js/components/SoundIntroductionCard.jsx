@@ -46,11 +46,16 @@ export default function SoundIntroductionCard() {
     }, [toggleFullscreen, navigate, index]);
 
     return (
-        <div className="fixed inset-0 flex flex-col z-50 bg-[#1a1a2e]">
-            <div className="flex items-center justify-between px-8 py-4 border-b border-white/10">
+        <div
+            className="fixed inset-0 flex flex-col z-50"
+            style={{ backgroundImage: "url('/backgrounds/pronunciation.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
+            <div className="absolute inset-0 bg-black/70" />
+
+            <div className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/10">
                 <div>
                     <h2 className="text-xl font-bold text-white">Sound Introduction</h2>
-                    <p className="text-white/40 text-xs">{index + 1} / {soundCards.length}</p>
+                    <p className="text-white/50 text-xs">{index + 1} / {soundCards.length}</p>
                 </div>
                 <div className="flex items-center gap-5">
                     <button
@@ -66,7 +71,7 @@ export default function SoundIntroductionCard() {
                 </div>
             </div>
 
-            <div className="flex-1 flex items-center justify-center gap-6 px-8">
+            <div className="relative z-10 flex-1 flex items-center justify-center gap-6 px-8">
                 <button
                     onClick={goPrev}
                     disabled={atStart}
@@ -89,7 +94,7 @@ export default function SoundIntroductionCard() {
                                 className={`flex flex-col items-center gap-1 py-4 rounded-xl border transition-all cursor-pointer ${
                                     playingWord === w.word
                                         ? 'bg-teal-500/40 border-teal-300 scale-105'
-                                        : 'bg-white/8 border-white/15 hover:bg-white/15 hover:border-white/30'
+                                        : 'lg-surface-soft lg-surface-soft-hover border'
                                 }`}
                             >
                                 <span className="text-lg">🔊</span>

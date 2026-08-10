@@ -381,6 +381,13 @@ Improvements across four activity templates:
 - **This reproduced the exact failure mode documented in Phase P** — `.lg-surface-soft`'s low alpha (.38) and boosted `brightness(1.45)` were tuned specifically for the old near-black photo; against this much brighter notebook photo, the same treatment washed the cards out toward pale grey, clearly weaker contrast in a real screenshot. Confirms the Phase P rule generalizes beyond that one page: *a card treatment tuned against one photo's tonal range doesn't automatically transfer to a different photo.*
 - Fixed by treating this as a fresh tuning pass rather than reusing the prior values: `MinimalPairsDrill.jsx`'s dark overlay strengthened from `bg-black/55` to `bg-black/70` (dims the photo itself before any card renders), and `.lg-surface-soft` moved to a darker base colour (`rgba(40,32,26,…)`, closer to `.lg-chip`'s tone) with `brightness` pulled back from 1.45 to a near-neutral 1.05 so it stops amplifying the backdrop. Re-screenshotted both the select and drilling screens — text now reads crisply throughout, and the notebook/pen photo is still clearly visible at the edges and corners.
 
+### Same background + card treatment extended to -ed Endings and Sound Introduction ✅ COMPLETED
+
+- `EdEndingsDrill.jsx` and `SoundIntroductionCard.jsx` both moved from the flat `bg-[#1a1a2e]` root to the same `pronunciation.jpg` background + `bg-black/70` overlay as `MinimalPairsDrill.jsx` — one consistent visual identity across all three drill screens rather than one styled and two left flat.
+- Their card-shaped buttons (the "Mixed"/`/t/`/`/d/`/`/ɪd/` select buttons and the drilling choice cards for `EdEndingsDrill`; the example-word play buttons for `SoundIntroductionCard`) switched from plain `bg-white/8` to `.lg-surface-soft`/`.lg-surface-soft-hover`, the same token already tuned for this specific photo. `EdEndingsDrill`'s `DrillLoop` call now passes `softCards` (previously the default `false`, which is why it was unaffected by `MinimalPairsDrill`'s earlier tuning passes).
+- `PronunciationChartPage.jsx` (the 4th pronunciation screen, the interactive Underhill grid) still has the flat navy background — out of scope here since it wasn't requested, left as a known option for later.
+- Verified via Playwright screenshots on all three updated screens (select and drilling states for `-ed Endings`, the card view for `Sound Introduction`) — consistent look, text fully legible, zero console/page errors.
+
 ---
 
 ## 13. Phase N — DET Practice Mode (IN PROGRESS)

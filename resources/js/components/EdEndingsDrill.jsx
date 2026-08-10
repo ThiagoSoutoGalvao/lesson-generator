@@ -80,11 +80,16 @@ export default function EdEndingsDrill() {
     );
 
     return (
-        <div className="fixed inset-0 flex flex-col z-50 bg-[#1a1a2e]">
-            <div className="flex items-center justify-between px-8 py-4 border-b border-white/10">
+        <div
+            className="fixed inset-0 flex flex-col z-50"
+            style={{ backgroundImage: "url('/backgrounds/pronunciation.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
+            <div className="absolute inset-0 bg-black/70" />
+
+            <div className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/10">
                 <div>
                     <h2 className="text-xl font-bold text-white">-ed Endings Drill</h2>
-                    <p className="text-white/40 text-xs">
+                    <p className="text-white/50 text-xs">
                         {phase === 'select' && 'Drill all endings mixed, or focus on one at a time'}
                         {phase === 'drilling' && modeLabel(mode)}
                         {phase === 'results' && `${modeLabel(mode)} — results`}
@@ -111,11 +116,11 @@ export default function EdEndingsDrill() {
             </div>
 
             {phase === 'select' && (
-                <div className="flex-1 flex items-center justify-center px-8">
+                <div className="relative z-10 flex-1 flex items-center justify-center px-8">
                     <div className="flex flex-col gap-4 max-w-2xl w-full">
                         <button
                             onClick={() => startMode('mixed')}
-                            className="px-6 py-8 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white text-2xl font-bold transition-all cursor-pointer"
+                            className="px-6 py-8 rounded-2xl lg-surface-soft lg-surface-soft-hover border text-white text-2xl font-bold transition-all cursor-pointer"
                         >
                             Mixed — all three endings
                         </button>
@@ -124,7 +129,7 @@ export default function EdEndingsDrill() {
                                 <button
                                     key={group.ending}
                                     onClick={() => startMode(group.ending)}
-                                    className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white text-xl font-bold transition-all cursor-pointer"
+                                    className="px-6 py-6 rounded-2xl lg-surface-soft lg-surface-soft-hover border text-white text-xl font-bold transition-all cursor-pointer"
                                 >
                                     /{group.ending}/
                                 </button>
@@ -135,7 +140,7 @@ export default function EdEndingsDrill() {
             )}
 
             {phase === 'drilling' && session && (
-                <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
                     {showRule && (
                         <div className="px-8 py-4 bg-teal-500/10 border-b border-teal-400/20 flex flex-col gap-1.5">
                             {edEndings.map(group => (
@@ -145,12 +150,12 @@ export default function EdEndingsDrill() {
                             ))}
                         </div>
                     )}
-                    <DrillLoop items={session.items} choices={session.choices} onFinish={handleFinish} headerExtra={showRuleBtn} />
+                    <DrillLoop items={session.items} choices={session.choices} onFinish={handleFinish} headerExtra={showRuleBtn} softCards />
                 </div>
             )}
 
             {phase === 'results' && result && (
-                <div className="flex-1 flex flex-col items-center justify-center gap-6">
+                <div className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6">
                     <p className="text-white/50 text-lg">{modeLabel(mode)}</p>
                     <p className="text-white text-6xl font-bold">{result.score} / {result.total}</p>
                     <div className="flex gap-4">
