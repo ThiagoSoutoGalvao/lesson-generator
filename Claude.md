@@ -388,6 +388,14 @@ Improvements across four activity templates:
 - `PronunciationChartPage.jsx` (the 4th pronunciation screen, the interactive Underhill grid) still has the flat navy background — out of scope here since it wasn't requested, left as a known option for later.
 - Verified via Playwright screenshots on all three updated screens (select and drilling states for `-ed Endings`, the card view for `Sound Introduction`) — consistent look, text fully legible, zero console/page errors.
 
+### -ed Endings: dynamic choice cards + redesigned rule panel ✅ COMPLETED
+
+- **Dynamic choice cards, same fix as the Phoneme Drill**: `EdEndingsDrill.jsx`'s `buildSession()` no longer uses one fixed 3-way `CHOICES` array for the whole session. Each item now builds its own three cards: the actual played word (labeled with its real ending), plus one randomly picked word from each of the *other* two endings — so all three cards vary item to item instead of always showing the same three anchor words (walked/lived/wanted) regardless of what's playing. `correctKey` changed from the ending symbol to the specific word, matching the Phoneme Drill's approach. `DrillLoop`'s `item.choices ?? choices` fallback (already added for the Phoneme Drill) meant no engine changes were needed here.
+- **Redesigned rule panel**: previously a thin single-color banner with three cramped one-line sentences. Rebuilt as a three-column reference card (one column per ending) — big IPA symbol (`text-4xl font-black`), the existing rule sentence at a much larger size, and 3 real example word chips pulled from that ending's own word list (so a student can infer what "voiceless" means from `walked`/`laughed`/`kissed` rather than just being told). Panel background uses the same `.lg-surface-soft` token as everything else on this page.
+- **Color matched to the background photo**: swapped the rule panel (and the "Show Rule" toggle's active state) from the app's default teal to a warm amber palette, since amber reads far better against the notebook-and-pen photo's wood tones than teal did. Other teal accents on the page (e.g. the results screen's "Drill Again" button) were left as-is — that's the app's standard action-button color, not something tied to this specific panel.
+- Also switched the drilling container's `overflow-hidden` to `overflow-y-auto` as a precaution, since the taller rule panel could otherwise push the choice cards below the fold on a shorter viewport — same overflow trap fixed elsewhere in this project.
+- Verified via Playwright: captured the three example words shown across 5 consecutive drill items and confirmed all 5 sets were genuinely different (not the same fixed trio), confirmed all three IPA symbols and their example-word chips render when the rule panel opens, and screenshot-reviewed the full rule panel plus a live drilling card set for visual quality. Zero console/page errors.
+
 ---
 
 ## 13. Phase N — DET Practice Mode (IN PROGRESS)

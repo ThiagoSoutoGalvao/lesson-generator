@@ -6,16 +6,14 @@ import DrillLoop, { shuffle } from '@/components/DrillLoop';
 
 const SESSION_SIZE = 12;
 
-const CHOICES = edEndings.map(group => ({
-    key: group.ending,
-    ipa: group.ending,
-    example: group.words[0]?.word ?? '',
-}));
-
 function modeLabel(mode) {
     return mode === 'mixed' ? 'Mixed (/t/, /d/, /ɪd/)' : `/${mode}/ only`;
 }
 
+// Same approach as the Phoneme Drill: the played word itself is one of the
+// three choice cards, paired with a randomly picked word from each of the
+// other two endings — instead of one fixed anchor word per ending shown for
+// the whole session regardless of what's actually playing.
 function buildSession(mode) {
     const pool = mode === 'mixed'
         ? edEndings.flatMap(g => g.words)
@@ -23,9 +21,19 @@ function buildSession(mode) {
 
     const items = shuffle(pool)
         .slice(0, SESSION_SIZE)
-        .map((w, i) => ({ id: i, audio: w.audio, correctKey: w.ending, word: w.word }));
+        .map((w, i) => {
+            const target = { key: w.word, ipa: w.ending, example: w.word };
+            const foils = edEndings
+                .filter(g => g.ending !== w.ending)
+                .map(g => {
+                    const pick = g.words[Math.floor(Math.random() * g.words.length)];
+                    return { key: pick.word, ipa: pick.ending, example: pick.word };
+                });
+            const choices = shuffle([target, ...foils]);
+            return { id: i, audio: w.audio, correctKey: w.word, word: w.word, choices };
+        });
 
-    return { items, choices: CHOICES };
+    return { items };
 }
 
 export default function EdEndingsDrill() {
@@ -71,7 +79,7 @@ export default function EdEndingsDrill() {
             onClick={() => setShowRule(r => !r)}
             className={`px-3 py-1.5 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
                 showRule
-                    ? 'bg-teal-500/30 border-teal-400/60 text-teal-200'
+                    ? 'bg-amber-500/30 border-amber-400/60 text-amber-200'
                     : 'bg-white/10 border-white/20 text-white/60 hover:bg-white/20 hover:text-white'
             }`}
         >
@@ -140,17 +148,28 @@ export default function EdEndingsDrill() {
             )}
 
             {phase === 'drilling' && session && (
-                <div className="relative z-10 flex-1 flex flex-col overflow-hidden">
+                <div className="relative z-10 flex-1 flex flex-col overflow-y-auto">
                     {showRule && (
-                        <div className="px-8 py-4 bg-teal-500/10 border-b border-teal-400/20 flex flex-col gap-1.5">
+                        <div className="px-8 py-6 lg-surface-soft border-b border-amber-400/20 flex flex-col md:flex-row justify-center gap-6">
                             {edEndings.map(group => (
-                                <p key={group.ending} className="text-teal-200/90 text-sm text-center">
-                                    <span className="font-bold">/{group.ending}/</span> — {group.rule}
-                                </p>
+                                <div key={group.ending} className="flex-1 min-w-[220px] flex flex-col items-center gap-2 text-center">
+                                    <span className="text-amber-300 text-4xl font-black tracking-wide">/{group.ending}/</span>
+                                    <p className="text-amber-100/90 text-base leading-snug max-w-xs">{group.rule}</p>
+                                    <div className="flex flex-wrap justify-center gap-2 mt-1">
+                                        {group.words.slice(0, 3).map(w => (
+                                            <span
+                                                key={w.word}
+                                                className="px-3 py-1.5 rounded-lg text-sm font-semibold bg-amber-500/10 border border-amber-400/30 text-amber-200"
+                                            >
+                                                {w.word}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </div>
                             ))}
                         </div>
                     )}
-                    <DrillLoop items={session.items} choices={session.choices} onFinish={handleFinish} headerExtra={showRuleBtn} softCards />
+                    <DrillLoop items={session.items} onFinish={handleFinish} headerExtra={showRuleBtn} softCards />
                 </div>
             )}
 
