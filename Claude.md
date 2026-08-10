@@ -349,6 +349,20 @@ Improvements across four activity templates:
 
 **Pronunciation feature (Phases M1–M8) is now complete.**
 
+### Phoneme Drill — background photo, softer glass cards, 4 new minimal pair groups ✅ COMPLETED
+
+- **Background photo**: `public/backgrounds/pronunciation.jpg` — an abstract blue sound-wave image, sourced via a new one-off script (`scripts/fetch-pronunciation-bg.mjs`, same candidates/finalize pattern as `fetch-det-photos.mjs`, just for a single image). Chosen over microphone/dictionary/typography candidates specifically because it's abstract (won't clash with card content) and thematically reads as "sound," not just "speaking" — and its blue tone complements Pronunciation's existing teal launcher accent. `MinimalPairsDrill.jsx`'s root now uses this as a `backgroundImage` (same `bg-black/55` overlay pattern as the original Claude-generated activity templates, e.g. `WordFormationActivity`) instead of the flat `bg-[#1a1a2e]` it had before.
+- **Glass cards**: the select-screen group buttons and `DrillLoop`'s choice cards now use the `.lg-surface`/`.lg-surface-hover` dark-glass tokens from Phase P, instead of the old plain `bg-white/8`.
+- **Softer transparency follow-up**: the user asked for the cards to let more of the background's color bleed through. Since `.lg-surface` is a shared global token used across Library/Generate/Upload/DET/Cambridge, tuning its opacity directly would have affected all of those. Added a new lower-opacity sibling token instead — `.lg-surface-soft`/`.lg-surface-soft-hover` (alpha ~0.55 vs `.lg-surface`'s ~0.88, slightly higher saturate to pick up more of the backdrop's hue) — scoped to just this page. `DrillLoop.jsx` gained an opt-in `softCards` boolean prop (default `false`) so `MinimalPairsDrill` can opt into the softer look while `EdEndingsDrill` (still on a flat navy background, no photo) keeps the original `.lg-surface` look unchanged. Regression-checked via screenshot to confirm `-ed Endings` was unaffected.
+- **4 new minimal-pair groups** (`resources/js/data/pronunciation/minimalPairs.json`, 6 → 10 groups), chosen to continue the existing Brazilian-Portuguese-speaker priority (see Phase M1's original 6) plus one broadly useful pair:
+  - `/d/ vs /ð/` (day/they, dare/there, dough/though, den/then, udder/other, ladder/lather, wordy/worthy, riding/writhing…) — extends the existing `/θ/ vs /ð/` group, since BP speakers who substitute /d/ for /ð/ need this contrast specifically, not just the voiceless th.
+  - `/e/ vs /æ/` (bed/bad, pen/pan, said/sad, ten/tan, bet/bat, met/mat, send/sand, dead/dad, leg/lag, head/had) — Portuguese has no /æ/, so it's commonly merged into /e/; one of the most common BP vowel errors.
+  - `/s/ vs /z/` (loose/lose, price/prize, ice/eyes, peace/peas, bus/buzz, sink/zinc, seal/zeal, rice/rise, advice/advise, race/raise) — final-consonant devoicing is a strong BP habit.
+  - `/r/ vs /l/` (right/light, read/lead, row/low, rock/lock, red/led, rot/lot, free/flee, grass/glass, pray/play, crime/climb) — not BP-specific, but a widely useful classic English contrast, added regardless.
+  - Every pair is a genuine minimal pair (only the target sound changes), matching the quality bar of the original 6 groups — not just two loosely-related word lists.
+- **New audio**: 64 new word files generated via the existing `scripts/generate-pronunciation-audio.mjs words` mode — that mode already builds its word list dynamically from all three pronunciation JSON files and dedupes, so updating the JSON first and re-running it was the entire workflow; no script changes needed. Checked for the known silent-5,760-byte-file failure mode from Phase M2 — none found.
+- Verified via Playwright: all 4 new groups appear on the select screen, a full 10-item session on `/r/ vs /l/` actually played audio (no failed audio requests) and produced a real (non-hardcoded) score. Zero console/page errors.
+
 ---
 
 ## 13. Phase N — DET Practice Mode (IN PROGRESS)

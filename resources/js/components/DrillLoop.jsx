@@ -17,7 +17,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
  * (minimal pairs) drill and the -ed endings drill — they differ only in
  * how many choices are passed in and what headerExtra renders.
  */
-export default function DrillLoop({ items, choices, onFinish, headerExtra }) {
+export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false }) {
     const [index, setIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [status, setStatus] = useState(null); // null | 'correct' | 'wrong'
@@ -92,7 +92,7 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra }) {
                     const isSelected = selectedKey === choice.key;
                     const isCorrectChoice = choice.key === item.correctKey;
 
-                    let cls = 'bg-white/8 border-white/20 hover:bg-white/15 hover:border-white/35 cursor-pointer';
+                    let cls = softCards ? 'lg-surface-soft lg-surface-soft-hover border cursor-pointer' : 'lg-surface lg-surface-hover border cursor-pointer';
                     if (status !== null) {
                         if (isSelected && status === 'correct') cls = 'bg-green-500/30 border-green-400 scale-[1.03]';
                         else if (isSelected && status === 'wrong') cls = 'bg-red-500/30 border-red-400';

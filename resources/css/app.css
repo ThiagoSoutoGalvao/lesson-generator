@@ -414,6 +414,22 @@ body.tf-active main .text-xs {
     border-color: rgba(255, 255, 255, .2);
 }
 
+/* Lower-opacity variant of .lg-surface — same size/footprint, but let more of
+   whatever's behind (a photo, an accent colour) tint through the card instead
+   of staying near-opaque. Only use where the backdrop is dark enough to keep
+   white text readable through it (e.g. Pronunciation's dark sound-wave photo);
+   .lg-surface remains the safe default for busier/brighter photos. */
+.lg-surface-soft {
+    background: rgba(76, 60, 49, .55);
+    -webkit-backdrop-filter: blur(24px) saturate(1.35) brightness(1.15);
+    backdrop-filter: blur(24px) saturate(1.35) brightness(1.15);
+    border-color: rgba(255, 255, 255, .16);
+}
+.lg-surface-soft-hover:hover {
+    background: rgba(88, 70, 57, .68);
+    border-color: rgba(255, 255, 255, .22);
+}
+
 /* Shell background overlay — light top fade only, not a full-page wash,
    since the surfaces above (not the overlay) carry the contrast guarantee. */
 .lg-shell-overlay {

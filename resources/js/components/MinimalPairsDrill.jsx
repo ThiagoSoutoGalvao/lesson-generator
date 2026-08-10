@@ -54,11 +54,16 @@ export default function MinimalPairsDrill() {
     }, [toggleFullscreen, phase]);
 
     return (
-        <div className="fixed inset-0 flex flex-col z-50 bg-[#1a1a2e]">
-            <div className="flex items-center justify-between px-8 py-4 border-b border-white/10">
+        <div
+            className="fixed inset-0 flex flex-col z-50"
+            style={{ backgroundImage: "url('/backgrounds/pronunciation.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
+            <div className="absolute inset-0 bg-black/55" />
+
+            <div className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/10">
                 <div>
                     <h2 className="text-xl font-bold text-white">Phoneme Drill</h2>
-                    <p className="text-white/40 text-xs">
+                    <p className="text-white/50 text-xs">
                         {phase === 'select' && 'Pick a confusable sound pair to drill'}
                         {phase === 'drilling' && session.group.label}
                         {phase === 'results' && `${session.group.label} — results`}
@@ -85,13 +90,13 @@ export default function MinimalPairsDrill() {
             </div>
 
             {phase === 'select' && (
-                <div className="flex-1 flex items-center justify-center px-8">
+                <div className="relative z-10 flex-1 flex items-center justify-center px-8">
                     <div className="grid grid-cols-2 gap-4 max-w-2xl w-full">
                         {minimalPairs.map(group => (
                             <button
                                 key={group.label}
                                 onClick={() => startGroup(group)}
-                                className="px-6 py-8 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white text-2xl font-bold transition-all cursor-pointer"
+                                className="px-6 py-8 rounded-2xl lg-surface-soft lg-surface-soft-hover border text-white text-2xl font-bold transition-all cursor-pointer"
                             >
                                 {group.label}
                             </button>
@@ -101,12 +106,14 @@ export default function MinimalPairsDrill() {
             )}
 
             {phase === 'drilling' && session && (
-                <DrillLoop items={session.items} choices={session.choices} onFinish={handleFinish} />
+                <div className="relative z-10 flex-1 flex flex-col min-h-0">
+                    <DrillLoop items={session.items} choices={session.choices} onFinish={handleFinish} softCards />
+                </div>
             )}
 
             {phase === 'results' && result && (
-                <div className="flex-1 flex flex-col items-center justify-center gap-6">
-                    <p className="text-white/50 text-lg">{session.group.label}</p>
+                <div className="relative z-10 flex-1 flex flex-col items-center justify-center gap-6">
+                    <p className="text-white/70 text-lg">{session.group.label}</p>
                     <p className="text-white text-6xl font-bold">{result.score} / {result.total}</p>
                     <div className="flex gap-4">
                         <button
