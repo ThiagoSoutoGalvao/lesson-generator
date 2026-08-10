@@ -6,17 +6,24 @@ import DrillLoop, { shuffle } from '@/components/DrillLoop';
 
 const SESSION_SIZE = 20;
 
+// Each played word is shown as one of the two choice cards, paired with a
+// randomly picked word from the other sound (not necessarily a strict
+// minimal-pair partner — the word lists weren't built as 1:1 pairs — but a
+// real, valid contrasting word from the same group each time, rather than
+// one fixed anchor word shown for the whole session regardless of what plays.
 function buildSession(group) {
     const items = shuffle(group.words)
         .slice(0, SESSION_SIZE)
-        .map((w, i) => ({ id: i, audio: w.audio, correctKey: w.correctSound, word: w.word }));
+        .map((w, i) => {
+            const otherWords = group.words.filter(o => o.correctSound !== w.correctSound);
+            const contrast = otherWords[Math.floor(Math.random() * otherWords.length)];
+            const target = { key: w.word, ipa: w.correctSound, example: w.word };
+            const foil = { key: contrast.word, ipa: contrast.correctSound, example: contrast.word };
+            const choices = Math.random() < 0.5 ? [target, foil] : [foil, target];
+            return { id: i, audio: w.audio, correctKey: w.word, word: w.word, choices };
+        });
 
-    const choices = group.sounds.map(sound => {
-        const anchor = group.words.find(w => w.correctSound === sound);
-        return { key: sound, ipa: sound, example: anchor ? anchor.word : '' };
-    });
-
-    return { items, choices };
+    return { items };
 }
 
 export default function MinimalPairsDrill() {
@@ -109,7 +116,6 @@ export default function MinimalPairsDrill() {
                 <div className="relative z-10 flex-1 flex flex-col min-h-0">
                     <DrillLoop
                         items={session.items}
-                        choices={session.choices}
                         onFinish={handleFinish}
                         softCards
                         onExit={() => setPhase('select')}

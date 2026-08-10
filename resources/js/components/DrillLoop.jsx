@@ -28,6 +28,11 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
 
     const item = items[index];
     const total = items.length;
+    // Items can carry their own per-item choices (e.g. Minimal Pairs, where the
+    // played word itself is one of the options); falls back to the static
+    // top-level `choices` prop for drills where every item shares the same
+    // fixed choice set (e.g. -ed Endings' /t/, /d/, /ɪd/).
+    const activeChoices = item.choices ?? choices;
 
     useEffect(() => {
         return () => {
@@ -66,7 +71,7 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
         }, correct ? 1500 : 2000);
     }
 
-    const gridCols = choices.length >= 3 ? 'grid-cols-3' : 'grid-cols-2';
+    const gridCols = activeChoices.length >= 3 ? 'grid-cols-3' : 'grid-cols-2';
 
     return (
         <div className="flex-1 flex flex-col items-center justify-center gap-10 px-8">
@@ -88,7 +93,7 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
             </button>
 
             <div className={`grid ${gridCols} gap-4 w-full max-w-2xl`}>
-                {choices.map((choice, i) => {
+                {activeChoices.map((choice, i) => {
                     const isSelected = selectedKey === choice.key;
                     const isCorrectChoice = choice.key === item.correctKey;
 
