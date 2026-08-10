@@ -65,7 +65,7 @@ export default function MinimalPairsDrill() {
             className="fixed inset-0 flex flex-col z-50"
             style={{ backgroundImage: "url('/backgrounds/pronunciation.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
         >
-            <div className="absolute inset-0 bg-black/55" />
+            <div className="absolute inset-0 bg-black/70" />
 
             <div className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/10">
                 <div>

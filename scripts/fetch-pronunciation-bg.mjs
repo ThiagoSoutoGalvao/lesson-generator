@@ -15,9 +15,9 @@ const KEY = process.env.UNSPLASH_ACCESS_KEY;
 const UA = 'LessonGeneratorPronunciationBg/1.0 (educational app; contact: t.soutogalvao@gmail.com)';
 
 const QUERIES = [
-    'sound waves audio abstract dark',
-    'person speaking microphone close up',
-    'linguistics phonetics book',
+    'open book warm natural light learning',
+    'notebook pen desk bright studying',
+    'language book pages soft light',
 ];
 
 const PER_QUERY = 4;

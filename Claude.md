@@ -375,6 +375,12 @@ Improvements across four activity templates:
   - `DrillLoop.jsx` (shared with `EdEndingsDrill`) gained a fallback: `const activeChoices = item.choices ?? choices` — uses per-item choices when present, otherwise the original static top-level `choices` prop. `EdEndingsDrill`'s items never set `.choices`, so its fixed three-way `/t/`/`/d/`/`/ɪd/` choice set is completely unaffected.
   - Verified via Playwright: captured the choice pair shown across several consecutive items in a `/v/ vs /b/` session and confirmed they genuinely vary (not the same fixed pair every time), confirmed the played word always appears as one of the two options (screenshot: playing "vet" showed cards `/v/ vet` and `/b/ robe`), and re-confirmed `-ed Endings` still shows its fixed `/t/`, `/d/`, `/ɪd/` choices unchanged. Zero console/page errors.
 
+### Background photo swap — lighter image, same contrast discipline ✅ COMPLETED
+
+- User asked for a lighter background than the near-black sound-wave photo, "but that keep[s] contrast with text." `pronunciation.jpg` replaced with a new Unsplash source: a fountain pen on a spiral notebook, warm wood table (sourced via the same `fetch-pronunciation-bg.mjs` script, re-run with new queries against the same output filename).
+- **This reproduced the exact failure mode documented in Phase P** — `.lg-surface-soft`'s low alpha (.38) and boosted `brightness(1.45)` were tuned specifically for the old near-black photo; against this much brighter notebook photo, the same treatment washed the cards out toward pale grey, clearly weaker contrast in a real screenshot. Confirms the Phase P rule generalizes beyond that one page: *a card treatment tuned against one photo's tonal range doesn't automatically transfer to a different photo.*
+- Fixed by treating this as a fresh tuning pass rather than reusing the prior values: `MinimalPairsDrill.jsx`'s dark overlay strengthened from `bg-black/55` to `bg-black/70` (dims the photo itself before any card renders), and `.lg-surface-soft` moved to a darker base colour (`rgba(40,32,26,…)`, closer to `.lg-chip`'s tone) with `brightness` pulled back from 1.45 to a near-neutral 1.05 so it stops amplifying the backdrop. Re-screenshotted both the select and drilling screens — text now reads crisply throughout, and the notebook/pen photo is still clearly visible at the edges and corners.
+
 ---
 
 ## 13. Phase N — DET Practice Mode (IN PROGRESS)
