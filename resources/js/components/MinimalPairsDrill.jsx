@@ -4,7 +4,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 import minimalPairs from '@/data/pronunciation/minimalPairs.json';
 import DrillLoop, { shuffle } from '@/components/DrillLoop';
 
-const SESSION_SIZE = 10;
+const SESSION_SIZE = 20;
 
 function buildSession(group) {
     const items = shuffle(group.words)
@@ -107,7 +107,13 @@ export default function MinimalPairsDrill() {
 
             {phase === 'drilling' && session && (
                 <div className="relative z-10 flex-1 flex flex-col min-h-0">
-                    <DrillLoop items={session.items} choices={session.choices} onFinish={handleFinish} softCards />
+                    <DrillLoop
+                        items={session.items}
+                        choices={session.choices}
+                        onFinish={handleFinish}
+                        softCards
+                        onExit={() => setPhase('select')}
+                    />
                 </div>
             )}
 

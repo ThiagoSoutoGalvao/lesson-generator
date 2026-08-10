@@ -17,7 +17,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
  * (minimal pairs) drill and the -ed endings drill — they differ only in
  * how many choices are passed in and what headerExtra renders.
  */
-export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false }) {
+export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, onExit, exitLabel = '← Choose Another Pair' }) {
     const [index, setIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [status, setStatus] = useState(null); // null | 'correct' | 'wrong'
@@ -114,6 +114,15 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
                     );
                 })}
             </div>
+
+            {onExit && (
+                <button
+                    onClick={onExit}
+                    className="text-white/50 hover:text-white text-sm font-semibold transition-colors cursor-pointer"
+                >
+                    {exitLabel}
+                </button>
+            )}
         </div>
     );
 }
