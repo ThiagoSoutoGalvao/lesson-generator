@@ -4,7 +4,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 import edEndings from '@/data/pronunciation/edEndings.json';
 import DrillLoop, { shuffle } from '@/components/DrillLoop';
 
-const SESSION_SIZE = 12;
+const SESSION_SIZE = 20;
 
 function modeLabel(mode) {
     return mode === 'mixed' ? 'Mixed (/t/, /d/, /ɪd/)' : `/${mode}/ only`;
