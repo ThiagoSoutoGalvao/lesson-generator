@@ -396,6 +396,13 @@ Improvements across four activity templates:
 - Also switched the drilling container's `overflow-hidden` to `overflow-y-auto` as a precaution, since the taller rule panel could otherwise push the choice cards below the fold on a shorter viewport — same overflow trap fixed elsewhere in this project.
 - Verified via Playwright: captured the three example words shown across 5 consecutive drill items and confirmed all 5 sets were genuinely different (not the same fixed trio), confirmed all three IPA symbols and their example-word chips render when the rule panel opens, and screenshot-reviewed the full rule panel plus a live drilling card set for visual quality. Zero console/page errors.
 
+### -ed Endings content batch: 12 → 32 words per ending ✅ COMPLETED
+
+- User asked for "20 more examples on mixed, /d/, /t/, /ɪd/" — clarified during the work that "Mixed" isn't a separate word bank, it's just all three ending groups pooled together, so the actual task was +20 words to each of the 3 real groups (`/t/`, `/d/`, `/ɪd/`), which automatically grows "Mixed" too (36 → 96 pooled words).
+- Wrote 60 new regular-verb past-tense words by hand (not subagents — small, mechanical vocabulary addition, not the kind of linguistic-judgment task that benefited from delegating in the Phoneme Drill's minimal-pairs batch), 20 per ending, each checked against the actual phonetic rule (e.g. `/t/` only after voiceless consonants — `worked`, `stopped`, `wished`; `/d/` after voiced consonants/vowels — `moved`, `learned`, `tried`; `/ɪd/` after `/t/`/`/d/` sounds — `wasted`, `hunted`, `divided`). Verified zero duplicate words across the file and zero overlap with the existing 36.
+- Generated all 60 new audio files via the existing `scripts/generate-pronunciation-audio.mjs words` mode (same dynamic word-list-from-JSON approach used for the Phoneme Drill's minimal-pairs batch — no script changes needed). Checked for the known silent-5,760-byte-file bug — none found.
+- Verified via Playwright: a full 12-item "Mixed" session played every clip and produced a real (non-hardcoded) score with zero failed audio requests or console errors. (An earlier verification attempt tried to read "the first choice card" as the played word across a session, but that assumption no longer holds now that choices are randomly ordered per item — not a product bug, just a reminder that any future test script needs to account for the dynamic-choice change before assuming card position.)
+
 ---
 
 ## 13. Phase N — DET Practice Mode (IN PROGRESS)
