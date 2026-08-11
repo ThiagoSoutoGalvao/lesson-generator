@@ -75,18 +75,24 @@ function buildWordList() {
     return [...words.keys()];
 }
 
-// Noun/verb stress-pair words (record, present, object, contract, produce) need
-// a distinct audio file per part of speech since the spelling is identical but
-// the stress — and therefore the pronunciation — differs. A short context
-// sentence per form biases the TTS toward the right reading; the explicit
-// "stress falls on the Nth syllable" instruction (derived from the word's own
-// stressIndex, not hardcoded) is what actually locks it in reliably.
+// Noun/verb stress-pair words (record, present, object, contract, produce,
+// convert, export, import, permit, protest) need a distinct audio file per
+// part of speech since the spelling is identical but the stress — and
+// therefore the pronunciation — differs. A short context sentence per form
+// biases the TTS toward the right reading; the explicit "stress falls on
+// the Nth syllable" instruction (derived from the word's own stressIndex,
+// not hardcoded) is what actually locks it in reliably.
 const STRESS_PAIR_CONTEXT = {
     record:   { noun: 'I broke the world record.',        verb: 'Please record this conversation.' },
     present:  { noun: 'I have a present for you.',         verb: 'I will present the results tomorrow.' },
     object:   { noun: 'Please pass me that object.',       verb: 'I object to this plan.' },
     contract: { noun: 'We signed the contract yesterday.', verb: 'Muscles contract when you exercise.' },
     produce:  { noun: 'The market sells fresh produce.',   verb: 'Factories produce many goods.' },
+    convert:  { noun: 'She is a recent convert to vegetarianism.', verb: 'Please convert the file to PDF.' },
+    export:   { noun: "Coffee is Brazil's biggest export.",        verb: 'They export coffee to many countries.' },
+    import:   { noun: 'Cars are a major import for this country.', verb: 'We import most of our electronics.' },
+    permit:   { noun: 'You need a permit to park here.',           verb: "They won't permit smoking indoors." },
+    protest:  { noun: 'The protest lasted all afternoon.',         verb: 'Workers protest the new policy.' },
 };
 
 const ORDINALS = ['first', 'second', 'third', 'fourth'];

@@ -9,7 +9,17 @@
       { "word": "police",  "syllables": ["po", "lice"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/police.mp3" },
       { "word": "guitar",  "syllables": ["gui", "tar"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/guitar.mp3" },
       { "word": "machine", "syllables": ["ma", "chine"], "stressIndex": 1, "audio": "/audio/pronunciation/words/machine.mp3" },
-      { "word": "cartoon", "syllables": ["car", "toon"], "stressIndex": 1, "audio": "/audio/pronunciation/words/cartoon.mp3" }
+      { "word": "cartoon", "syllables": ["car", "toon"], "stressIndex": 1, "audio": "/audio/pronunciation/words/cartoon.mp3" },
+      { "word": "window",   "syllables": ["win", "dow"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/window.mp3" },
+      { "word": "children", "syllables": ["chil", "dren"],"stressIndex": 0, "audio": "/audio/pronunciation/words/children.mp3" },
+      { "word": "basket",   "syllables": ["bas", "ket"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/basket.mp3" },
+      { "word": "happen",   "syllables": ["hap", "pen"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/happen.mp3" },
+      { "word": "moment",   "syllables": ["mo", "ment"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/moment.mp3" },
+      { "word": "suggest",  "syllables": ["sug", "gest"], "stressIndex": 1, "audio": "/audio/pronunciation/words/suggest.mp3" },
+      { "word": "control",  "syllables": ["con", "trol"], "stressIndex": 1, "audio": "/audio/pronunciation/words/control.mp3" },
+      { "word": "begin",    "syllables": ["be", "gin"],   "stressIndex": 1, "audio": "/audio/pronunciation/words/begin.mp3" },
+      { "word": "arrive",   "syllables": ["ar", "rive"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/arrive.mp3" },
+      { "word": "complete", "syllables": ["com", "plete"],"stressIndex": 1, "audio": "/audio/pronunciation/words/complete.mp3" }
     ]
   },
   {
@@ -22,7 +32,17 @@
       { "word": "September",   "syllables": ["sep", "tem", "ber"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/september.mp3" },
       { "word": "tomorrow",    "syllables": ["to", "mor", "row"],   "stressIndex": 1, "audio": "/audio/pronunciation/words/tomorrow.mp3" },
       { "word": "understand",  "syllables": ["un", "der", "stand"], "stressIndex": 2, "audio": "/audio/pronunciation/words/understand.mp3" },
-      { "word": "engineer",    "syllables": ["en", "gi", "neer"],   "stressIndex": 2, "audio": "/audio/pronunciation/words/engineer.mp3" }
+      { "word": "engineer",    "syllables": ["en", "gi", "neer"],   "stressIndex": 2, "audio": "/audio/pronunciation/words/engineer.mp3" },
+      { "word": "cabinet",   "syllables": ["cab", "i", "net"],   "stressIndex": 0, "audio": "/audio/pronunciation/words/cabinet.mp3" },
+      { "word": "vitamin",   "syllables": ["vit", "a", "min"],   "stressIndex": 0, "audio": "/audio/pronunciation/words/vitamin.mp3" },
+      { "word": "animal",    "syllables": ["an", "i", "mal"],    "stressIndex": 0, "audio": "/audio/pronunciation/words/animal.mp3" },
+      { "word": "computer",  "syllables": ["com", "pu", "ter"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/computer.mp3" },
+      { "word": "potato",    "syllables": ["po", "ta", "to"],    "stressIndex": 1, "audio": "/audio/pronunciation/words/potato.mp3" },
+      { "word": "banana",    "syllables": ["ba", "na", "na"],    "stressIndex": 1, "audio": "/audio/pronunciation/words/banana.mp3" },
+      { "word": "together",  "syllables": ["to", "geth", "er"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/together.mp3" },
+      { "word": "afternoon", "syllables": ["af", "ter", "noon"], "stressIndex": 2, "audio": "/audio/pronunciation/words/afternoon.mp3" },
+      { "word": "kangaroo",  "syllables": ["kan", "ga", "roo"],  "stressIndex": 2, "audio": "/audio/pronunciation/words/kangaroo.mp3" },
+      { "word": "seventeen", "syllables": ["sev", "en", "teen"], "stressIndex": 2, "audio": "/audio/pronunciation/words/seventeen.mp3" }
     ]
   },
   {
@@ -37,7 +57,17 @@
       { "word": "contract (noun)", "syllables": ["con", "tract"],"stressIndex": 0, "audio": "/audio/pronunciation/words/contract-noun.mp3" },
       { "word": "contract (verb)", "syllables": ["con", "tract"],"stressIndex": 1, "audio": "/audio/pronunciation/words/contract-verb.mp3" },
       { "word": "produce (noun)",  "syllables": ["pro", "duce"], "stressIndex": 0, "audio": "/audio/pronunciation/words/produce-noun.mp3" },
-      { "word": "produce (verb)",  "syllables": ["pro", "duce"], "stressIndex": 1, "audio": "/audio/pronunciation/words/produce-verb.mp3" }
+      { "word": "produce (verb)",  "syllables": ["pro", "duce"], "stressIndex": 1, "audio": "/audio/pronunciation/words/produce-verb.mp3" },
+      { "word": "convert (noun)",  "syllables": ["con", "vert"], "stressIndex": 0, "audio": "/audio/pronunciation/words/convert-noun.mp3" },
+      { "word": "convert (verb)",  "syllables": ["con", "vert"], "stressIndex": 1, "audio": "/audio/pronunciation/words/convert-verb.mp3" },
+      { "word": "export (noun)",   "syllables": ["ex", "port"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/export-noun.mp3" },
+      { "word": "export (verb)",   "syllables": ["ex", "port"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/export-verb.mp3" },
+      { "word": "import (noun)",   "syllables": ["im", "port"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/import-noun.mp3" },
+      { "word": "import (verb)",   "syllables": ["im", "port"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/import-verb.mp3" },
+      { "word": "permit (noun)",   "syllables": ["per", "mit"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/permit-noun.mp3" },
+      { "word": "permit (verb)",   "syllables": ["per", "mit"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/permit-verb.mp3" },
+      { "word": "protest (noun)",  "syllables": ["pro", "test"], "stressIndex": 0, "audio": "/audio/pronunciation/words/protest-noun.mp3" },
+      { "word": "protest (verb)",  "syllables": ["pro", "test"], "stressIndex": 1, "audio": "/audio/pronunciation/words/protest-verb.mp3" }
     ]
   }
 ]
