@@ -118,7 +118,6 @@ export default function MinimalPairsDrill() {
                         items={session.items}
                         onFinish={handleFinish}
                         softCards
-                        onExit={() => setPhase('select')}
                     />
                 </div>
             )}

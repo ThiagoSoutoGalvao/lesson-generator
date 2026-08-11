@@ -14,16 +14,21 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 /**
  * Shared drill loop: progress counter, play button, choice cards with
  * correct/incorrect flash and auto-advance. Used by the phoneme (minimal
- * pairs) drill, the -ed endings drill, and the word stress drill — they
- * differ only in how many choices are passed in, what headerExtra renders,
- * and (word stress) whether the big choice label is plain text instead of
- * IPA wrapped in slashes.
+ * pairs) drill, the -ed endings drill, the word stress drill, and the
+ * homophones drill — they differ only in how many choices are passed in,
+ * what headerExtra renders, and (word stress / homophones) whether the big
+ * choice label is plain text instead of IPA wrapped in slashes.
+ *
+ * Answers are stored per item index (same pattern as QuizActivity.jsx) so a
+ * "← Previous" button can step back through already-answered items and show
+ * their outcome again, without allowing the answer to be changed — mirrors
+ * Quiz's "navigating back restores answered state" behavior. Score is
+ * derived from the stored answers rather than tracked separately, so it
+ * stays correct regardless of how much back-and-forth navigation happens.
  */
-export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, onExit, exitLabel = '← Choose Another Pair', plainBigText = false }) {
+export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, plainBigText = false }) {
     const [index, setIndex] = useState(0);
-    const [score, setScore] = useState(0);
-    const [status, setStatus] = useState(null); // null | 'correct' | 'wrong'
-    const [selectedKey, setSelectedKey] = useState(null);
+    const [answers, setAnswers] = useState({}); // { [itemIndex]: chosenKey }
     const [isPlaying, setIsPlaying] = useState(false);
     const audioRef = useRef(null);
     const timerRef = useRef(null);
@@ -35,6 +40,14 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
     // top-level `choices` prop for drills where every item shares the same
     // fixed choice set (e.g. -ed Endings' /t/, /d/, /ɪd/).
     const activeChoices = item.choices ?? choices;
+
+    const selectedKey = answers[index] ?? null;
+    const status = selectedKey === null ? null : (selectedKey === item.correctKey ? 'correct' : 'wrong');
+    const score = Object.entries(answers).filter(([idx, key]) => items[idx]?.correctKey === key).length;
+    // Progression is always sequential (answering is the only way forward), so the
+    // number of stored answers is exactly the index of the next unanswered item —
+    // i.e. how far forward "Next" is allowed to go after stepping back with "Previous".
+    const answeredCount = Object.keys(answers).length;
 
     useEffect(() => {
         return () => {
@@ -55,22 +68,34 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
     function selectChoice(key) {
         if (status !== null) return;
         const correct = key === item.correctKey;
-        setSelectedKey(key);
-        setStatus(correct ? 'correct' : 'wrong');
-        if (correct) setScore(s => s + 1);
+        setAnswers(prev => ({ ...prev, [index]: key }));
+        const finalScore = correct ? score + 1 : score;
 
-        const nextScore = correct ? score + 1 : score;
         timerRef.current = setTimeout(() => {
             audioRef.current?.pause();
             setIsPlaying(false);
             if (index + 1 >= total) {
-                onFinish(nextScore, total);
+                onFinish(finalScore, total);
             } else {
                 setIndex(i => i + 1);
-                setStatus(null);
-                setSelectedKey(null);
             }
         }, correct ? 1500 : 2000);
+    }
+
+    function goPrev() {
+        if (index === 0) return;
+        audioRef.current?.pause();
+        setIsPlaying(false);
+        clearTimeout(timerRef.current);
+        setIndex(i => i - 1);
+    }
+
+    function goNext() {
+        if (index >= answeredCount) return; // nothing reached yet beyond this item
+        audioRef.current?.pause();
+        setIsPlaying(false);
+        clearTimeout(timerRef.current);
+        setIndex(i => Math.min(i + 1, total - 1));
     }
 
     const gridCols = activeChoices.length >= 3 ? 'grid-cols-3' : 'grid-cols-2';
@@ -122,14 +147,22 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
                 })}
             </div>
 
-            {onExit && (
+            <div className="flex items-center gap-6">
                 <button
-                    onClick={onExit}
-                    className="text-white/50 hover:text-white text-sm font-semibold transition-colors cursor-pointer"
+                    onClick={goPrev}
+                    disabled={index === 0}
+                    className="text-white/50 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed text-sm font-semibold transition-colors cursor-pointer"
                 >
-                    {exitLabel}
+                    ← Previous
                 </button>
-            )}
+                <button
+                    onClick={goNext}
+                    disabled={index >= answeredCount}
+                    className="text-white/50 hover:text-white disabled:opacity-25 disabled:cursor-not-allowed text-sm font-semibold transition-colors cursor-pointer"
+                >
+                    Next →
+                </button>
+            </div>
         </div>
     );
 }

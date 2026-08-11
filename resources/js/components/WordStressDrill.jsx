@@ -141,8 +141,6 @@ export default function WordStressDrill() {
                         onFinish={handleFinish}
                         softCards
                         plainBigText
-                        onExit={() => setPhase('select')}
-                        exitLabel="← Choose Another Category"
                     />
                 </div>
             )}
