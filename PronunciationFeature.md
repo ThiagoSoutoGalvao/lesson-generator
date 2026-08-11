@@ -342,13 +342,19 @@ specifically against this feature's architecture constraints (local JSON
 content, self-hosted audio via the existing TTS/Wikimedia pipeline, no
 database, no runtime Claude API calls, teacher-run live in Zoom). Nothing
 here is approved to build — each topic still needs an explicit go-ahead and
-its own phase plan (see §10 for Word Stress's, which is ready to build).
+its own phase plan (§10 has Word Stress's, now shipped; §11 has Homophones',
+in progress).
 
 ### Tier 1 — straightforward, reuse the existing drill pattern directly
-- **Word Stress** — spec'd out in §10, next up.
-- **Homophones** (their/there/they're, know/no, write/right) — near-identical
-  mechanic to the Phoneme Drill's "hear it, pick the right one" loop; the
-  existing TTS word pipeline handles the audio with zero new tooling.
+- **Word Stress** — ✅ shipped, see `Claude.md` §12.
+- **Homophones** (their/there/they're, know/no, write/right) — spec'd out in
+  §11. Originally assumed "near-identical mechanic... zero new tooling," but
+  that was wrong: since both spellings of a homophone sound identical, an
+  isolated-word audio clip can't disambiguate anything — the drill needs
+  sentence-level audio (a full sentence that makes the meaning, and
+  therefore the correct spelling, clear from context), which the existing
+  word-level TTS pipeline doesn't produce yet. Caught before building
+  anything, not after — see §11 for the corrected design.
 - **Silent Letters** (knife, comb, listen, hour) — tap-the-silent-letter or a
   category-sort drill; content is just a curated word list, no new audio
   approach needed.
@@ -499,7 +505,157 @@ different pronunciations of the same spelling. Check for the known silent
 
 ---
 
-## 11. Working Style Reminders
+## 11. Next Up — Homophones Drill (Spec)
+
+### Why the original "zero new tooling" assumption was wrong
+Homophones sound identical by definition — "their," "there," and "they're"
+are the same audio no matter which one is meant. Playing an isolated word
+(the existing word-level TTS pipeline's whole output shape) carries zero
+information about which spelling is correct — there is nothing to
+distinguish acoustically. The only way to make the correct answer
+determinable is to play a **full sentence** that disambiguates the word
+through meaning ("They forgot **their** umbrellas" vs. "Put the box over
+**there**"), so the drill is really testing reading-comprehension-driven
+spelling recall, not sound discrimination. That means new audio content
+(sentence-level clips, not word-level) and a new generation path — caught
+during spec'ing, before any data or audio was built, per this project's
+practice of designing the interaction before writing content.
+
+### Interaction design
+Still reuses `DrillLoop` — no structural changes needed beyond what Word
+Stress already added. Per drill item: play a sentence's audio, show one
+choice card per possible spelling in that homophone group (2 or 3, matching
+`DrillLoop`'s existing adaptive grid), student picks the spelling that fits
+what they just heard. Choice cards use `plainBigText` (added in Word Stress)
+for the spelling itself, with a short meaning gloss as the caption
+(`example` field — e.g. "there" → "place", "their" → "possessive") so a
+teacher can explain a wrong answer on the spot without leaving the drill.
+
+### Data model — `resources/js/data/pronunciation/homophones.json`
+```json
+[
+  {
+    "label": "their / there / they're",
+    "words": [
+      { "spelling": "their", "hint": "possessive — belongs to them", "sentence": "They forgot their umbrellas.", "audio": "/audio/pronunciation/sentences/their-1.mp3" },
+      { "spelling": "there", "hint": "place — that location",        "sentence": "Put the box over there.",     "audio": "/audio/pronunciation/sentences/there-1.mp3" },
+      { "spelling": "they're", "hint": "they are",                   "sentence": "They're leaving tomorrow.",   "audio": "/audio/pronunciation/sentences/theyre-1.mp3" }
+    ]
+  }
+]
+```
+Same grouped shape as `minimalPairs.json` (`label` + a flat `words` array),
+`spelling` doubling as both the display text and the `correctKey` when
+building a session — no separate "word vs. correct answer" split needed
+since, unlike Minimal Pairs, the played content (the sentence) and the
+target answer (the spelling) are inherently the same concept here.
+
+### Audio — new subfolder, new generation path
+Sentence-level clips don't belong under `words/` (which the rest of the
+pipeline assumes are single words) — new folder
+`public/audio/pronunciation/sentences/`, filenames `{spelling}-{n}.mp3`
+(apostrophes stripped: `they're` → `theyre-1.mp3`) since a group can have
+multiple example sentences per spelling. `scripts/generate-pronunciation-audio.mjs`
+needs a new `buildSentenceList()` (reads `homophones.json`, same pattern as
+`buildStressPairList()`) and `generateSentences()`/`sentenceInstructions()`
+pair — natural sentence-reading TTS instructions, not the isolated-word or
+isolated-phoneme instructions the script already has. **Given the Word
+Stress `--force` incident, any regeneration must default to skip-existing
+and never touch the `words/` or `phonemes/` folders — the new sentence
+generation path should be entirely separate code, not a shared function
+that a stray `--force` could sweep across unrelated content.**
+
+### Component plan
+- `resources/js/components/HomophonesDrill.jsx` — same fullscreen
+  select→drilling→results pattern as `WordStressDrill.jsx`, `buildSession()`
+  shuffles a chosen group's (or all groups', for Mixed) sentence items,
+  each item's `choices` = every spelling in that word's group with its hint
+  as the caption.
+- `PronunciationDrillPage.jsx` gains a `type === 'homophones'` branch.
+- `UploadPage.jsx`'s `PronunciationLauncher` grid grows from 4 to 5 buttons
+  — reassess the grid layout at that point (2×2 + 1, or move to 3 columns)
+  rather than assuming the current `sm:grid-cols-2` still looks right.
+
+### Phase plan
+**Phase H1 — Data** ✅ COMPLETED
+- Wrote `homophones.json`: 8 groups (2 three-way sets — their/there/they're,
+  to/too/two — plus 6 two-way sets: your/you're, write/right, know/no,
+  hear/here, see/sea, meet/meat), 2 example sentences per spelling, 36
+  sentences total.
+- Validated via a Node script: every group has ≥2 spellings, no duplicate
+  audio paths, every sentence contains its own target spelling verbatim.
+- **Caught during validation, not after**: one sentence ("I want to come
+  too.") accidentally contained *two* spellings from its own group ("to"
+  and "too"), which would have made the correct answer genuinely ambiguous
+  since there's no fill-in-blank marker — the whole sentence's meaning is
+  what's supposed to determine the one correct spelling. Added a second
+  validation pass (tokenize each sentence, check how many of the group's
+  own spellings appear as whole words) specifically to catch this class of
+  bug; fixed the one flagged sentence ("She's coming too.") and confirmed
+  zero remaining ambiguous sentences.
+
+**Phase H2 — Audio** ✅ COMPLETED
+- Added `buildSentenceList()`/`generateSentences()`/`sentenceInstructions()`
+  to `scripts/generate-pronunciation-audio.mjs` as a new, fully isolated
+  `sentences` mode — deliberately not folded into `words`/`all` per the
+  Word Stress `--force` lesson, so a `--force` run here can only ever touch
+  `sentences/`, never `words/` or `phonemes/`.
+- Generated all 36 sentence clips into the new
+  `public/audio/pronunciation/sentences/` folder in one run (36 created, 0
+  failed).
+- Checked for the known silent-5,760-byte-file bug — none found. Spot-checked
+  4 files for valid MP3 headers. Confirmed via `git status` that only the
+  new `sentences/` folder appeared as changed — nothing in `words/` or
+  `phonemes/` was touched, confirming the isolation actually held this time.
+
+**Phase H3 — Component + wiring** ✅ COMPLETED (Phase H4 folded in)
+- Built `HomophonesDrill.jsx` — same select→drilling→results pattern as
+  `WordStressDrill.jsx`. `buildChoicesForGroup()` dedupes a group's distinct
+  spellings (2 or 3) into `DrillLoop` choice cards, each spelling paired
+  with its meaning hint as the caption; `buildSession()` pools either one
+  group's sentences or all groups' (Mixed) and tags each item with its own
+  group's choice set before shuffling, so `correctKey` (the target spelling)
+  always matches against the right group regardless of shuffle order.
+- Wired into `PronunciationDrillPage.jsx` (`type === 'homophones'`) and the
+  `PronunciationLauncher` grid — kept the existing `sm:grid-cols-2` layout
+  rather than switching to 3 columns, matching the established precedent of
+  Cambridge's launcher (7 buttons, still 2-column, uneven last row) over
+  reflowing the grid for every new button.
+- Verified via temp-QA-user + Playwright: ran a 2-way group ("know / no"),
+  a 3-way group ("their / there / they're"), and Mixed — non-hardcoded
+  scores (2/4, 2/6, 7/20) confirmed real per-item scoring; zero failed
+  requests to `/audio/pronunciation/sentences/`; confirmed no stray IPA
+  slashes around the spelling choices; screenshot-reviewed the select,
+  drilling (both 2- and 3-choice layouts), and results screens. Zero
+  console/page errors.
+
+### Follow-up — DrillLoop Previous/Next navigation ✅ COMPLETED
+
+Not part of the original phase plan — user feedback after trying Homophones
+live: the mid-drill exit link should let the teacher step back through
+*previous exercises* in the current session instead of exiting to the
+group-select screen. Since `DrillLoop` is shared by all 4 pronunciation
+drills, this was a single shared-component change rather than a
+Homophones-specific one — full details in `Claude.md` §12. Also added a
+"Next →" button (not explicitly requested) since "Previous" alone would
+have been a dead end with no way back to the frontier item.
+
+### Content batch 2 — 8 more groups, 2 → 5 sentences per spelling ✅ COMPLETED
+
+User asked to roughly double the groups and get "maybe 20" sentences per
+spelling. Flagged the actual scale first (~700 sentences at that literal
+reading) and agreed on a smaller batch instead: 16 groups total (8 new),
+5 sentences per spelling (~180 new sentences) — consistent with this
+project's established grow-in-stages content strategy. First use of
+parallel subagents for Pronunciation content (previously only used for
+DET/Cambridge) — 4 subagents, each writing to its own scratch file to
+avoid concurrent edits to the same JSON file, merged and validated
+centrally afterward. Full details in `Claude.md` §12. File now totals 16
+groups / 175 sentences, every spelling has exactly 5.
+
+---
+
+## 12. Working Style Reminders
 
 - One phase at a time. Do not start Phase N+1 until the Phase N checkpoint
   is confirmed.

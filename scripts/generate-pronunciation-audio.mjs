@@ -8,7 +8,15 @@
 //   node scripts/generate-pronunciation-audio.mjs all
 //   node scripts/generate-pronunciation-audio.mjs phonemes
 //   node scripts/generate-pronunciation-audio.mjs words
+//   node scripts/generate-pronunciation-audio.mjs sentences
 //   (add --force to regenerate files that already exist)
+//
+// IMPORTANT: `sentences` mode is intentionally its own isolated mode, not
+// folded into `words`/`all`. A past `--force` run on `words` mode silently
+// regenerated the entire word corpus (see Claude.md §12, Word Stress Drill),
+// including files unrelated to what was actually being worked on. Keeping
+// `sentences` separate means a `--force` run here can only ever touch
+// public/audio/pronunciation/sentences/, never phonemes/ or words/.
 
 import 'dotenv/config';
 import fs from 'node:fs';
@@ -104,6 +112,22 @@ function buildStressPairList() {
     });
 }
 
+// Homophones Drill sentence audio — full sentences, not single words, since
+// homophones sound identical and only sentence-level context (meaning) can
+// tell which spelling was intended. Entirely separate list-builder from
+// buildWordList()/buildStressPairList() above — see the isolation note at
+// the top of this file for why.
+function buildSentenceList() {
+    const groups = readJson('homophones.json');
+    const items = [];
+    for (const group of groups) {
+        for (const w of group.words) {
+            items.push({ sentence: w.sentence, filename: path.basename(w.audio) });
+        }
+    }
+    return items;
+}
+
 const SPOTCHECK_PHONEMES = ['ɪ', 'iː', 'θ', 'ð', 'æ', 'ʌ'];
 const SPOTCHECK_WORDS = ['ship', 'sheep', 'think', 'this', 'walked', 'wanted'];
 
@@ -127,6 +151,13 @@ function stressPairInstructions({ base, pos, context, stressOrdinal }) {
         + `sentence: "${context}". The stress must fall on the ${stressOrdinal} syllable of `
         + `"${base}". Use a clear, neutral British English (Received Pronunciation) accent. `
         + `Say only the word itself, nothing else, no extra sounds.`;
+}
+
+function sentenceInstructions() {
+    return `This audio is for a homophones teaching app. Read this full English sentence aloud `
+        + `once, naturally, in a clear neutral British English (Received Pronunciation) accent, `
+        + `at a natural speaking pace, as if reading it to a language learner so the meaning is `
+        + `easy to follow. Say only the sentence itself, nothing else, no extra sounds.`;
 }
 
 async function synthesize(input, instructions) {
@@ -222,6 +253,18 @@ async function generateStressPairs(list) {
     });
 }
 
+async function generateSentences(list) {
+    fs.mkdirSync(path.join(AUDIO_DIR, 'sentences'), { recursive: true });
+    return runPool(list, async (item) => {
+        const outPath = path.join(AUDIO_DIR, 'sentences', item.filename);
+        if (fs.existsSync(outPath) && !force) return 'skipped';
+        const buf = await synthesizeWithRetry(item.sentence, sentenceInstructions());
+        fs.writeFileSync(outPath, buf);
+        console.log(`  wrote sentences/${item.filename}`);
+        return 'created';
+    });
+}
+
 function printSummary(label, result) {
     console.log(`\n${label}: ${result.created} created, ${result.skipped} skipped, ${result.failed.length} failed`);
     if (result.failed.length) {
@@ -265,8 +308,12 @@ function printSummary(label, result) {
         const stressPairs = buildStressPairList();
         console.log(`\nGenerating ${stressPairs.length} noun/verb stress-pair words...`);
         printSummary('Stress pairs', await generateStressPairs(stressPairs));
+    } else if (mode === 'sentences') {
+        const sentences = buildSentenceList();
+        console.log(`Generating all ${sentences.length} homophone sentences...`);
+        printSummary('Sentences', await generateSentences(sentences));
     } else {
-        console.error(`Unknown mode "${mode}". Use spotcheck | phonemes | diphthongs | words | all`);
+        console.error(`Unknown mode "${mode}". Use spotcheck | phonemes | diphthongs | words | sentences | all`);
         process.exit(1);
     }
 })();
