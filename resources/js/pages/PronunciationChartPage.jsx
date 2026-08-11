@@ -24,7 +24,7 @@ function PhonemeCell({ phoneme, isPlaying, onPlay }) {
             className={`flex flex-col items-center justify-center gap-1 rounded-xl border py-3 px-2 transition-all cursor-pointer ${
                 isPlaying
                     ? 'bg-teal-500/40 border-teal-300 scale-105'
-                    : 'bg-white/8 border-white/15 hover:bg-white/15 hover:border-white/30'
+                    : 'lg-surface-soft lg-surface-soft-hover border'
             }`}
         >
             <span className="text-2xl font-semibold text-white">{phoneme.symbol}</span>
@@ -83,11 +83,16 @@ export default function PronunciationChartPage() {
     }, [toggleFullscreen, navigate]);
 
     return (
-        <div className="fixed inset-0 flex flex-col z-50 bg-[#1a1a2e]">
-            <div className="flex items-center justify-between px-8 py-4 border-b border-white/10">
+        <div
+            className="fixed inset-0 flex flex-col z-50"
+            style={{ backgroundImage: "url('/backgrounds/pronunciation.jpg')", backgroundSize: 'cover', backgroundPosition: 'center' }}
+        >
+            <div className="absolute inset-0 bg-black/70" />
+
+            <div className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/10">
                 <div>
                     <h2 className="text-xl font-bold text-white">Phonemic Chart</h2>
-                    <p className="text-white/40 text-xs">Tap a symbol to hear it — British English (RP)</p>
+                    <p className="text-white/50 text-xs">Tap a symbol to hear it — British English (RP)</p>
                 </div>
                 <div className="flex items-center gap-5">
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
@@ -97,7 +102,7 @@ export default function PronunciationChartPage() {
                 </div>
             </div>
 
-            <div className="flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-8">
+            <div className="relative z-10 flex-1 overflow-y-auto px-8 py-6 flex flex-col gap-8">
                 <div className="grid grid-cols-1 md:grid-cols-[auto_1fr] gap-8 items-start">
                     <PhonemeSection category="monophthong" playingSymbol={playingSymbol} onPlay={playPhoneme} />
                     <PhonemeSection category="diphthong" playingSymbol={playingSymbol} onPlay={playPhoneme} />

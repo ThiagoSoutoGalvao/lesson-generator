@@ -404,6 +404,13 @@ Improvements across four activity templates:
 - Verified via Playwright: a full 12-item "Mixed" session played every clip and produced a real (non-hardcoded) score with zero failed audio requests or console errors. (An earlier verification attempt tried to read "the first choice card" as the played word across a session, but that assumption no longer holds now that choices are randomly ordered per item — not a product bug, just a reminder that any future test script needs to account for the dynamic-choice change before assuming card position.)
 - **Follow-up**: growing the word *pool* to 32 per ending didn't change what a session actually shows, since `SESSION_SIZE` (how many items per session) is a separate constant from pool size — it was still hardcoded at 12. Bumped to 20, matching the Phoneme Drill's session length, safe across every mode (20 ≤ 32 for a single ending, 20 ≤ 96 for Mixed). Verified via Playwright that a session now shows "1 / 20".
 
+### Phonemic Chart: same background/glass treatment, the 4th and final pronunciation screen ✅ COMPLETED
+
+- `PronunciationChartPage.jsx` was the one pronunciation screen still on the flat navy background (flagged as a known option when the other three were done). Applied the same `pronunciation.jpg` + `bg-black/70` overlay, and switched each of the 44 phoneme cells from plain `bg-white/8` to `.lg-surface-soft`/`.lg-surface-soft-hover`.
+- Only real risk worth checking: this page has far more, far smaller cells (44, in a dense grid) than anywhere else the token had been used, so it was worth confirming the treatment still reads well at that density rather than assuming it would. Verified via screenshot — grid stays clean and legible, the teal "currently playing" highlight still stands out clearly, and the photo is visible through the grid's gaps.
+- All 4 pronunciation screens (Phonemic Chart, Phoneme Drill, -ed Endings, Sound Introduction) now share one consistent visual identity.
+- Verified via Playwright: tapped a phoneme cell and confirmed its audio still plays with no failed requests, zero console/page errors.
+
 ---
 
 ## 13. Phase N — DET Practice Mode (IN PROGRESS)
