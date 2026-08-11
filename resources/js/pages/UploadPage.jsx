@@ -771,19 +771,21 @@ export default function UploadPage() {
     ];
 
     return (
-        <div className="max-w-xl mx-auto mt-4 flex flex-col gap-6">
+        <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
             <div>
                 <h2 className="lg-shell-text text-3xl font-bold text-white">Upload Content</h2>
                 <p className="lg-shell-text text-white/70 mt-1 text-sm">Upload a PDF or audio file, create a presentation or reading text from any topic, or practice pronunciation and DET question types.</p>
             </div>
 
-            {/* Tab switcher */}
-            <div className="flex gap-2">
+            {/* Tab switcher — sized to content (not flex-1) so a 7-tab row never
+                squeezes a button narrower than its own label; wraps to a second
+                row instead of forcing the icon onto its own line. */}
+            <div className="flex flex-wrap gap-2">
                 {tabs.map(t => (
                     <button
                         key={t.id}
                         onClick={() => setTab(t.id)}
-                        className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all cursor-pointer ${
+                        className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer whitespace-nowrap ${
                             tab === t.id
                                 ? t.active
                                 : 'lg-chip lg-chip-hover text-white/60 hover:text-white/85'
