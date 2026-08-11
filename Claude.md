@@ -460,6 +460,27 @@ Improvements across four activity templates:
 - Generated all 139 new sentence audio files via the existing isolated `sentences` mode (139 created, 36 skipped — the pre-existing batch 1 files — 0 failed). Checked for the known silent-file bug — none found. Confirmed via `git status` that only `homophones.json`, `HomophonesDrill.jsx`, and the new `sentences/` files changed — nothing in `words/`/`phonemes/` touched.
 - File now totals 16 groups / 175 sentences (every spelling has exactly 5). Verified via Playwright: all 16 groups render on the select screen (scrolls cleanly), a new group ("buy / by / bye") shows the correct 15-item session size, an expanded group ("know / no") shows 10, Mixed correctly caps at 20 from the larger 175-item pool, and the new Previous/Next navigation (see above) still works correctly against the bigger pools. Zero console/page errors, zero failed audio requests.
 
+### Homophones Drill: "Reveal Sentence" button ✅ COMPLETED
+
+- User asked for a button to display the sentence that was just played — useful as a teacher-side fallback/reference, and for review after answering.
+- Fix needed first: `HomophonesDrill.jsx`'s `buildSession()` was mapping each pooled word entry into a drill item but never carrying the `sentence` field through — added `sentence: w.sentence` to that mapping.
+- `DrillLoop.jsx` gained an opt-in `showReveal` prop (default `false`) plus its own `revealed` boolean state, reset to `false` on every `index` change (via a `useEffect`) so moving to a new item — forward *or* backward via Previous — never leaks the previous item's revealed text. Rendered as a small toggle ("👁 Reveal Sentence" / "Hide Sentence") between the choice grid and the Previous/Next row, only when both `showReveal` is true and the current item actually has a `.sentence` (so nothing renders for the other 3 drills, whose items have no sentence field at all). This had to live inside `DrillLoop` itself rather than a wrapper, since only `DrillLoop` holds the current item/index state.
+- Only `HomophonesDrill.jsx` passes `showReveal` — Phoneme Drill, -ed Endings, and Word Stress are unaffected.
+- Verified via Playwright: reveal button appears and toggles correctly on Homophones; sentence text is hidden by default; resets to hidden on both forward auto-advance and backward "Previous" navigation; revealed text differs correctly per item (not stale); confirmed the reveal button does not appear at all on -ed Endings. Zero console/page errors.
+
+### Follow-up — repositioned above the choices, made bigger ✅ COMPLETED
+
+- User asked to move the reveal button between the speaker and the answer choices (it was below the choices), and make it stand out more — but without risking the choices getting cut off at the bottom.
+- Grouped the play button and the reveal toggle into their own `flex flex-col` sub-container with a tight `gap-4`, sitting where the play button alone used to be; the outer layout's `gap-10` rhythm between major sections (progress row / audio+reveal cluster / choices grid / nav row) is otherwise unchanged. This keeps the added height to roughly just the button's own size plus one small gap, rather than doubling up the large gap on both sides of it.
+- Reveal button restyled bigger and more visible: `text-sm` plain text link → `text-base font-bold` pill button with a background/border (`bg-white/10 hover:bg-white/20 border border-white/20 rounded-xl px-5 py-2.5`), matching the visual weight of other button-styled controls in the app rather than reading as a minor text link.
+- Verified via Playwright at two viewport heights (1280×800 and a tighter 1280×720) on the widest case — a 3-way group ("their / there / they're", 3 choice cards) — with the sentence revealed: `document.documentElement.scrollHeight` never exceeded `clientHeight` at either height (no page-level overflow), and the Next button's bounding box confirmed it stays fully within the 720px viewport even in the worst case. Screenshot-reviewed both viewports for visual quality. Zero console/page errors.
+
+### Follow-up — sentence now more visible than the button ✅ COMPLETED
+
+- User feedback: the button ended up more visually prominent than the sentence it reveals, backwards from what matters — the sentence is the actual content, the button is just the control to get there.
+- Flipped the hierarchy: reveal button scaled back down (`text-base font-bold px-5 py-2.5` → `text-sm font-semibold px-4 py-1.5`, dimmer `text-white/70`) so it reads as a small secondary control; the sentence scaled way up (`text-white/80 text-base` → `text-white text-2xl font-semibold`, full opacity, kept italic) so it's unambiguously the focal point once revealed.
+- Re-verified via Playwright at the same two viewport heights (1280×800 and 1280×720) with the same worst-case 3-way group — still zero page-level overflow at either height, Next button still fully within the 720px viewport. Screenshot-reviewed both — the sentence now clearly dominates the smaller button. Zero console/page errors.
+
 ---
 
 ## 13. Phase N — DET Practice Mode (IN PROGRESS)

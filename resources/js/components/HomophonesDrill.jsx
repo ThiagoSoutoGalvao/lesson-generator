@@ -34,7 +34,7 @@ function buildSession(mode) {
 
     const items = shuffle(pool)
         .slice(0, SESSION_SIZE)
-        .map((w, i) => ({ id: i, audio: w.audio, correctKey: w.spelling, word: w.spelling, choices: w.choices }));
+        .map((w, i) => ({ id: i, audio: w.audio, correctKey: w.spelling, word: w.spelling, sentence: w.sentence, choices: w.choices }));
 
     return { items };
 }
@@ -142,6 +142,7 @@ export default function HomophonesDrill() {
                         onFinish={handleFinish}
                         softCards
                         plainBigText
+                        showReveal
                     />
                 </div>
             )}

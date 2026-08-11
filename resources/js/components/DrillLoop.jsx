@@ -25,11 +25,16 @@ const LETTERS = ['A', 'B', 'C', 'D'];
  * Quiz's "navigating back restores answered state" behavior. Score is
  * derived from the stored answers rather than tracked separately, so it
  * stays correct regardless of how much back-and-forth navigation happens.
+ *
+ * `showReveal` (opt-in, only Homophones passes it) shows a toggle that
+ * reveals the current item's `sentence` text — items without a `sentence`
+ * field (every other drill) simply render nothing for it either way.
  */
-export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, plainBigText = false }) {
+export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, plainBigText = false, showReveal = false }) {
     const [index, setIndex] = useState(0);
     const [answers, setAnswers] = useState({}); // { [itemIndex]: chosenKey }
     const [isPlaying, setIsPlaying] = useState(false);
+    const [revealed, setRevealed] = useState(false);
     const audioRef = useRef(null);
     const timerRef = useRef(null);
 
@@ -55,6 +60,12 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
             clearTimeout(timerRef.current);
         };
     }, []);
+
+    // Hide the sentence again whenever the item changes, so moving to a new
+    // item never leaks its predecessor's revealed text.
+    useEffect(() => {
+        setRevealed(false);
+    }, [index]);
 
     function playAudio() {
         audioRef.current?.pause();
@@ -107,17 +118,33 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
                 {headerExtra}
             </div>
 
-            <button
-                onClick={playAudio}
-                className={`w-32 h-32 rounded-full flex items-center justify-center text-5xl border-2 transition-all cursor-pointer ${
-                    isPlaying
-                        ? 'bg-teal-500/40 border-teal-300 scale-105'
-                        : 'bg-white/10 border-white/25 hover:bg-white/20 hover:border-white/40'
-                }`}
-                title="Play word"
-            >
-                🔊
-            </button>
+            <div className="flex flex-col items-center gap-4">
+                <button
+                    onClick={playAudio}
+                    className={`w-32 h-32 rounded-full flex items-center justify-center text-5xl border-2 transition-all cursor-pointer ${
+                        isPlaying
+                            ? 'bg-teal-500/40 border-teal-300 scale-105'
+                            : 'bg-white/10 border-white/25 hover:bg-white/20 hover:border-white/40'
+                    }`}
+                    title="Play word"
+                >
+                    🔊
+                </button>
+
+                {showReveal && item.sentence && (
+                    <div className="flex flex-col items-center gap-3">
+                        <button
+                            onClick={() => setRevealed(r => !r)}
+                            className="px-4 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/15 text-white/70 hover:text-white text-sm font-semibold transition-colors cursor-pointer"
+                        >
+                            {revealed ? 'Hide Sentence' : '👁 Reveal Sentence'}
+                        </button>
+                        {revealed && (
+                            <p className="text-white text-2xl font-semibold italic text-center max-w-2xl">{item.sentence}</p>
+                        )}
+                    </div>
+                )}
+            </div>
 
             <div className={`grid ${gridCols} gap-4 w-full max-w-2xl`}>
                 {activeChoices.map((choice, i) => {
