@@ -13,11 +13,13 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 
 /**
  * Shared drill loop: progress counter, play button, choice cards with
- * correct/incorrect flash and auto-advance. Used by both the phoneme
- * (minimal pairs) drill and the -ed endings drill — they differ only in
- * how many choices are passed in and what headerExtra renders.
+ * correct/incorrect flash and auto-advance. Used by the phoneme (minimal
+ * pairs) drill, the -ed endings drill, and the word stress drill — they
+ * differ only in how many choices are passed in, what headerExtra renders,
+ * and (word stress) whether the big choice label is plain text instead of
+ * IPA wrapped in slashes.
  */
-export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, onExit, exitLabel = '← Choose Another Pair' }) {
+export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, onExit, exitLabel = '← Choose Another Pair', plainBigText = false }) {
     const [index, setIndex] = useState(0);
     const [score, setScore] = useState(0);
     const [status, setStatus] = useState(null); // null | 'correct' | 'wrong'
@@ -113,8 +115,8 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
                             className={`flex flex-col items-center gap-2 py-8 rounded-2xl border transition-all duration-150 ${cls}`}
                         >
                             <span className="text-white/50 text-sm font-bold">{LETTERS[i]}</span>
-                            <span className="text-white text-4xl font-bold">/{choice.ipa}/</span>
-                            <span className="text-white/60 text-sm">{choice.example}</span>
+                            <span className="text-white text-4xl font-bold">{plainBigText ? choice.ipa : `/${choice.ipa}/`}</span>
+                            {choice.example && <span className="text-white/60 text-sm">{choice.example}</span>}
                         </button>
                     );
                 })}

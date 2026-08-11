@@ -1,0 +1,43 @@
+[
+  {
+    "category": "2-syllable words",
+    "words": [
+      { "word": "table",   "syllables": ["ta", "ble"],   "stressIndex": 0, "audio": "/audio/pronunciation/words/table.mp3" },
+      { "word": "open",    "syllables": ["o", "pen"],    "stressIndex": 0, "audio": "/audio/pronunciation/words/open.mp3" },
+      { "word": "picture", "syllables": ["pic", "ture"], "stressIndex": 0, "audio": "/audio/pronunciation/words/picture.mp3" },
+      { "word": "hotel",   "syllables": ["ho", "tel"],   "stressIndex": 1, "audio": "/audio/pronunciation/words/hotel.mp3" },
+      { "word": "police",  "syllables": ["po", "lice"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/police.mp3" },
+      { "word": "guitar",  "syllables": ["gui", "tar"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/guitar.mp3" },
+      { "word": "machine", "syllables": ["ma", "chine"], "stressIndex": 1, "audio": "/audio/pronunciation/words/machine.mp3" },
+      { "word": "cartoon", "syllables": ["car", "toon"], "stressIndex": 1, "audio": "/audio/pronunciation/words/cartoon.mp3" }
+    ]
+  },
+  {
+    "category": "3-syllable words",
+    "words": [
+      { "word": "photograph",  "syllables": ["pho", "to", "graph"], "stressIndex": 0, "audio": "/audio/pronunciation/words/photograph.mp3" },
+      { "word": "beautiful",   "syllables": ["beau", "ti", "ful"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/beautiful.mp3" },
+      { "word": "holiday",     "syllables": ["hol", "i", "day"],    "stressIndex": 0, "audio": "/audio/pronunciation/words/holiday.mp3" },
+      { "word": "remember",    "syllables": ["re", "mem", "ber"],   "stressIndex": 1, "audio": "/audio/pronunciation/words/remember.mp3" },
+      { "word": "September",   "syllables": ["sep", "tem", "ber"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/september.mp3" },
+      { "word": "tomorrow",    "syllables": ["to", "mor", "row"],   "stressIndex": 1, "audio": "/audio/pronunciation/words/tomorrow.mp3" },
+      { "word": "understand",  "syllables": ["un", "der", "stand"], "stressIndex": 2, "audio": "/audio/pronunciation/words/understand.mp3" },
+      { "word": "engineer",    "syllables": ["en", "gi", "neer"],   "stressIndex": 2, "audio": "/audio/pronunciation/words/engineer.mp3" }
+    ]
+  },
+  {
+    "category": "noun/verb stress pairs",
+    "words": [
+      { "word": "record (noun)",   "syllables": ["re", "cord"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/record-noun.mp3" },
+      { "word": "record (verb)",   "syllables": ["re", "cord"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/record-verb.mp3" },
+      { "word": "present (noun)",  "syllables": ["pre", "sent"], "stressIndex": 0, "audio": "/audio/pronunciation/words/present-noun.mp3" },
+      { "word": "present (verb)",  "syllables": ["pre", "sent"], "stressIndex": 1, "audio": "/audio/pronunciation/words/present-verb.mp3" },
+      { "word": "object (noun)",   "syllables": ["ob", "ject"],  "stressIndex": 0, "audio": "/audio/pronunciation/words/object-noun.mp3" },
+      { "word": "object (verb)",   "syllables": ["ob", "ject"],  "stressIndex": 1, "audio": "/audio/pronunciation/words/object-verb.mp3" },
+      { "word": "contract (noun)", "syllables": ["con", "tract"],"stressIndex": 0, "audio": "/audio/pronunciation/words/contract-noun.mp3" },
+      { "word": "contract (verb)", "syllables": ["con", "tract"],"stressIndex": 1, "audio": "/audio/pronunciation/words/contract-verb.mp3" },
+      { "word": "produce (noun)",  "syllables": ["pro", "duce"], "stressIndex": 0, "audio": "/audio/pronunciation/words/produce-noun.mp3" },
+      { "word": "produce (verb)",  "syllables": ["pro", "duce"], "stressIndex": 1, "audio": "/audio/pronunciation/words/produce-verb.mp3" }
+    ]
+  }
+]

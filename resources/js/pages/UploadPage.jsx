@@ -605,7 +605,7 @@ function PronunciationLauncher() {
                 🔤 Phonemic Chart
             </button>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button onClick={() => navigate('/pronunciation/drill/phoneme')} className={drillButtonCls}>
                     Phoneme Drill
                 </button>
@@ -614,6 +614,9 @@ function PronunciationLauncher() {
                 </button>
                 <button onClick={() => navigate('/pronunciation/drill/sound-introduction')} className={drillButtonCls}>
                     Sound Introduction
+                </button>
+                <button onClick={() => navigate('/pronunciation/drill/word-stress')} className={drillButtonCls}>
+                    Word Stress
                 </button>
             </div>
         </div>

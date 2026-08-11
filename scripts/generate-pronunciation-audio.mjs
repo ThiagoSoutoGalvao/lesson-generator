@@ -56,7 +56,52 @@ function buildWordList() {
     for (const group of readJson('edEndings.json')) {
         for (const item of group.words) add(item.word);
     }
+    for (const group of readJson('wordStress.json')) {
+        for (const item of group.words) {
+            // Noun/verb stress pairs (e.g. "record (noun)") aren't plain words —
+            // same spelling, two different pronunciations — handled separately
+            // by buildStressPairList()/generateStressPairs() below.
+            if (!item.word.includes('(')) add(item.word);
+        }
+    }
     return [...words.keys()];
+}
+
+// Noun/verb stress-pair words (record, present, object, contract, produce) need
+// a distinct audio file per part of speech since the spelling is identical but
+// the stress — and therefore the pronunciation — differs. A short context
+// sentence per form biases the TTS toward the right reading; the explicit
+// "stress falls on the Nth syllable" instruction (derived from the word's own
+// stressIndex, not hardcoded) is what actually locks it in reliably.
+const STRESS_PAIR_CONTEXT = {
+    record:   { noun: 'I broke the world record.',        verb: 'Please record this conversation.' },
+    present:  { noun: 'I have a present for you.',         verb: 'I will present the results tomorrow.' },
+    object:   { noun: 'Please pass me that object.',       verb: 'I object to this plan.' },
+    contract: { noun: 'We signed the contract yesterday.', verb: 'Muscles contract when you exercise.' },
+    produce:  { noun: 'The market sells fresh produce.',   verb: 'Factories produce many goods.' },
+};
+
+const ORDINALS = ['first', 'second', 'third', 'fourth'];
+
+function buildStressPairList() {
+    const groups = readJson('wordStress.json');
+    const pairGroup = groups.find(g => g.category === 'noun/verb stress pairs');
+    if (!pairGroup) return [];
+
+    return pairGroup.words.map(item => {
+        const match = item.word.match(/^(.+?) \((noun|verb)\)$/);
+        if (!match) throw new Error(`Unexpected stress-pair word format: "${item.word}"`);
+        const [, base, pos] = match;
+        const context = STRESS_PAIR_CONTEXT[base]?.[pos];
+        if (!context) throw new Error(`No context sentence for "${base}" (${pos}) — add one to STRESS_PAIR_CONTEXT`);
+        return {
+            base,
+            pos,
+            filename: path.basename(item.audio),
+            context,
+            stressOrdinal: ORDINALS[item.stressIndex] ?? `syllable ${item.stressIndex + 1}`,
+        };
+    });
 }
 
 const SPOTCHECK_PHONEMES = ['ɪ', 'iː', 'θ', 'ð', 'æ', 'ʌ'];
@@ -74,6 +119,14 @@ function wordInstructions() {
     return `Read this single English word aloud once, clearly, in a neutral British English `
         + `(Received Pronunciation) accent, at a natural speaking pace, as if teaching a `
         + `language learner. Say only the word, nothing else, no extra sounds.`;
+}
+
+function stressPairInstructions({ base, pos, context, stressOrdinal }) {
+    return `This audio is for a word-stress teaching app. Say ONLY the single word "${base}" — `
+        + `not a full sentence — pronounced exactly as it would sound as a ${pos} in this `
+        + `sentence: "${context}". The stress must fall on the ${stressOrdinal} syllable of `
+        + `"${base}". Use a clear, neutral British English (Received Pronunciation) accent. `
+        + `Say only the word itself, nothing else, no extra sounds.`;
 }
 
 async function synthesize(input, instructions) {
@@ -157,6 +210,18 @@ async function generateWords(list) {
     });
 }
 
+async function generateStressPairs(list) {
+    fs.mkdirSync(path.join(AUDIO_DIR, 'words'), { recursive: true });
+    return runPool(list, async (item) => {
+        const outPath = path.join(AUDIO_DIR, 'words', item.filename);
+        if (fs.existsSync(outPath) && !force) return 'skipped';
+        const buf = await synthesizeWithRetry(item.base, stressPairInstructions(item));
+        fs.writeFileSync(outPath, buf);
+        console.log(`  wrote words/${item.filename}`);
+        return 'created';
+    });
+}
+
 function printSummary(label, result) {
     console.log(`\n${label}: ${result.created} created, ${result.skipped} skipped, ${result.failed.length} failed`);
     if (result.failed.length) {
@@ -186,12 +251,20 @@ function printSummary(label, result) {
         const words = buildWordList();
         console.log(`Generating all ${words.length} words...`);
         printSummary('Words', await generateWords(words));
+
+        const stressPairs = buildStressPairList();
+        console.log(`\nGenerating ${stressPairs.length} noun/verb stress-pair words...`);
+        printSummary('Stress pairs', await generateStressPairs(stressPairs));
     } else if (mode === 'all') {
         const phonemes = buildPhonemeList();
         const words = buildWordList();
         console.log(`Generating ${phonemes.length} phonemes + ${words.length} words...`);
         printSummary('Phonemes', await generatePhonemes(phonemes));
         printSummary('Words', await generateWords(words));
+
+        const stressPairs = buildStressPairList();
+        console.log(`\nGenerating ${stressPairs.length} noun/verb stress-pair words...`);
+        printSummary('Stress pairs', await generateStressPairs(stressPairs));
     } else {
         console.error(`Unknown mode "${mode}". Use spotcheck | phonemes | diphthongs | words | all`);
         process.exit(1);
