@@ -9,9 +9,9 @@ const NAV_LINKS = [
 
 const PAGE_BACKGROUNDS = {
     '/':         '/backgrounds/pic1.jpg',
-    '/upload':   '/backgrounds/pic4.jpg',
-    '/generate': '/backgrounds/pic4.jpg',
-    '/library':  '/backgrounds/pic4.jpg',
+    '/upload':   '/backgrounds/shell.jpg',
+    '/generate': '/backgrounds/shell.jpg',
+    '/library':  '/backgrounds/shell.jpg',
 };
 
 const FONT_SIZES = [

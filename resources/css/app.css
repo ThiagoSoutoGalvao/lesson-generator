@@ -399,19 +399,24 @@ body.tf-active main .text-xs {
 }
 
 /* ── Shell surface (Library / Generate / Upload) ──
-   Cards/panels sit on a full-page photo. They stay near-opaque with a heavy,
-   brightened blur behind them — enough to pick up the photo's warm color as a
-   soft tint without letting any sharp photo detail through and threatening
-   text contrast. Tuned visually via a mockup; adjust here, not per-page. */
+   Originally near-opaque (Phase P) — the teacher later found that treatment
+   too visually heavy next to Pronunciation's lighter glass cards, so this was
+   retuned to match that pattern: a much stronger dark wash on the photo itself
+   (.lg-shell-overlay below) carries most of the contrast guarantee, freeing
+   the cards to be noticeably more transparent than before. These tokens are
+   used exclusively by Layout/Library/Generate/Upload (verified via grep before
+   retuning in place) — safe to tune directly, no other page depends on them.
+   Re-verify via screenshot if the shell background photo ever changes again;
+   these exact values are tuned for shell.jpg specifically. */
 .lg-surface {
-    background: rgba(76, 60, 49, .88);
-    -webkit-backdrop-filter: blur(28px) saturate(1.25) brightness(1.22);
-    backdrop-filter: blur(28px) saturate(1.25) brightness(1.22);
-    border-color: rgba(255, 255, 255, .14);
+    background: rgba(40, 32, 26, .5);
+    -webkit-backdrop-filter: blur(22px) saturate(1.3) brightness(1.1);
+    backdrop-filter: blur(22px) saturate(1.3) brightness(1.1);
+    border-color: rgba(255, 255, 255, .18);
 }
 .lg-surface-hover:hover {
-    background: rgba(88, 70, 57, .91);
-    border-color: rgba(255, 255, 255, .2);
+    background: rgba(52, 42, 34, .62);
+    border-color: rgba(255, 255, 255, .24);
 }
 
 /* Lower-opacity variant of .lg-surface — same size/footprint, but let more of
@@ -430,10 +435,12 @@ body.tf-active main .text-xs {
     border-color: rgba(255, 255, 255, .22);
 }
 
-/* Shell background overlay — light top fade only, not a full-page wash,
-   since the surfaces above (not the overlay) carry the contrast guarantee. */
+/* Shell background overlay — was a light top-only fade (Phase P); now a
+   strong flat dark wash covering the whole viewport, same role as the
+   bg-black/70 div on Pronunciation's fullscreen pages. This is what lets the
+   cards above run much more transparent without losing text contrast. */
 .lg-shell-overlay {
-    background: linear-gradient(180deg, rgba(8, 6, 4, .4) 0%, rgba(8, 6, 4, .08) 200px, rgba(8, 6, 4, .05) 100%);
+    background: rgba(8, 6, 4, .7);
 }
 .lg-shell-text {
     text-shadow: 0 1px 2px rgba(0, 0, 0, .9), 0 2px 12px rgba(0, 0, 0, .6);
@@ -441,16 +448,16 @@ body.tf-active main .text-xs {
 
 /* Lighter-footprint variant of .lg-surface for small controls (tabs, inputs)
    that still sit directly on the photo. NOTE: must stay dark, not white —
-   a light/white-tinted glass is invisible against bright photo regions (e.g.
-   a laptop screen in the shot); only a dark, self-opaque chip guarantees
-   contrast regardless of what's behind it. Learned the hard way via screenshot. */
+   a light/white-tinted glass is invisible against bright photo regions.
+   Retuned alongside .lg-surface for the same reason (see above); lower alpha
+   than Phase P's original since the overlay now does more of the work. */
 .lg-chip {
-    background: rgba(28, 22, 18, .62);
-    -webkit-backdrop-filter: blur(18px) saturate(1.2) brightness(1.1);
-    backdrop-filter: blur(18px) saturate(1.2) brightness(1.1);
+    background: rgba(24, 19, 15, .52);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2) brightness(1.1);
+    backdrop-filter: blur(16px) saturate(1.2) brightness(1.1);
     border-color: rgba(255, 255, 255, .16);
 }
 .lg-chip-hover:hover {
-    background: rgba(40, 32, 26, .72);
+    background: rgba(36, 28, 22, .64);
     border-color: rgba(255, 255, 255, .24);
 }

@@ -555,6 +555,21 @@ A prior styling attempt had been expensive (lots of live tweak → rebuild → s
 - **Known accepted rough edge**: the small caption line under the DET Practice launcher ("no scoring, teacher-controlled pace...") is still a little weak specifically where it crosses the brightest part of `pic4.jpg`'s laptop screen — legible, not perfectly crisp. Left as-is by explicit decision rather than pushing `.lg-shell-text`'s shadow further (diminishing returns, starts looking muddy). If it needs fixing later, wrap that specific line in a thin `.lg-chip` strip rather than strengthening the shadow further.
 - Verified via the usual temp-QA-user + Playwright pattern across all three pages plus the DET sub-tab, zero console errors, screenshots confirmed every card/button/pill reads clearly against the photo.
 
+### Phase P follow-up — lighter, Pronunciation-style treatment ✅ COMPLETED
+
+- The teacher later found Phase P's ~88%-opaque cards too visually heavy compared to the lighter glass look built for the Pronunciation feature (§12), and asked for Library/Generate/Upload to be redone using that pattern as the reference — not necessarily the same photo, "something alike."
+- **New background photo**: `public/backgrounds/shell.jpg` — a warm stack of vintage leather-bound books on a wood table, soft blurred background, sourced via a new one-off script `scripts/fetch-shell-bg.mjs` (same candidates/finalize pattern as `fetch-pronunciation-bg.mjs`). Replaces `pic4.jpg` in `Layout.jsx`'s `PAGE_BACKGROUNDS` for `/upload`, `/generate`, `/library` (`pic4.jpg` itself left in place, unused, rather than deleted). `/` still uses `pic1.jpg`, untouched.
+- **Resolved the token-scoping question before touching anything**: grepped for `.lg-surface`/`.lg-chip`/`.lg-shell-overlay` usage first and confirmed they're used *exclusively* by `Layout.jsx`, `LibraryPage.jsx`, `GeneratePage.jsx`, and `UploadPage.jsx` (including its DET/Cambridge launcher sub-components, which render on the Upload page) — no fullscreen activity/drill component touches them. Safe to retune these tokens in place rather than introducing new dedicated ones.
+- **Retuned to match Pronunciation's approach**: `.lg-shell-overlay` changed from a light top-only fade to a strong flat dark wash (`rgba(8,6,4,.7)`, same role as the `bg-black/70` div on Pronunciation's fullscreen pages) — this now carries most of the contrast guarantee, which is what allows the cards to run much more transparent than Phase P's originals. `.lg-surface` dropped from ~88% opacity to `rgba(40,32,26,.5)` with `brightness(1.1)` (was `1.22`); `.lg-chip` dropped from `rgba(28,22,18,.62)` to `rgba(24,19,15,.52)`.
+- These values are tuned specifically for `shell.jpg`, per the now well-established rule (re-learned twice during the Pronunciation work) that opacity/brightness tuning doesn't transfer across photos — re-verify via screenshot if the shell background photo changes again.
+- Verified via the usual temp-QA-user + Playwright pattern: Upload (all tabs incl. the DET sub-tab's nested `.lg-surface` buttons), Generate, and Library screenshots all show legible text and clearly transparent cards with the book photo visible through them. Zero console/page errors.
+
+### Upload page tab row — padding + width fix ✅ COMPLETED
+
+- The 7-tab mode switcher (PDF/Audio/Presentation/Reading Text/Pronunciation/DET Practice/Cambridge) had no horizontal padding and used `flex-1` to force all 7 into one equal-width row — at `max-w-xl` (576px) this squeezed multi-word tabs so tight that the emoji and label wrapped onto separate lines.
+- Fixed in `UploadPage.jsx`: tabs dropped `flex-1` (now size to their own content), gained `px-4 py-2.5` and `whitespace-nowrap`; the container gained `flex-wrap` so a row that doesn't fit wraps to a second line instead of squeezing individual buttons. Outer page container widened from `max-w-xl` to `max-w-2xl`, matching `GeneratePage.jsx`'s existing width rather than picking an arbitrary new value.
+- Verified via Playwright screenshots at 1280px, 900px, and 390px (mobile) — icon and label always stay on one line together, row wraps cleanly at narrower widths, no overflow. Zero console/page errors.
+
 ---
 
 ## 16. Phase Q — Cambridge Practice Mode (IN PROGRESS)
