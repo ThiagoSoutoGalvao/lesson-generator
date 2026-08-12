@@ -4,6 +4,7 @@ import MinimalPairsDrill from '@/components/MinimalPairsDrill';
 import EdEndingsDrill from '@/components/EdEndingsDrill';
 import WordStressDrill from '@/components/WordStressDrill';
 import HomophonesDrill from '@/components/HomophonesDrill';
+import SilentLettersDrill from '@/components/SilentLettersDrill';
 
 function BackButton({ onClick }) {
     return (
@@ -44,10 +45,14 @@ export default function PronunciationDrillPage() {
         return <HomophonesDrill />;
     }
 
+    if (type === 'silent-letters') {
+        return <SilentLettersDrill />;
+    }
+
     return (
         <div className="max-w-xl mx-auto mt-4 flex flex-col gap-4">
             <h2 className="text-3xl font-bold text-white">Unknown drill type</h2>
-            <p className="text-white/60 text-sm">"{type}" isn't a recognised drill. Expected one of: phoneme, ed-endings, sound-introduction, word-stress, homophones.</p>
+            <p className="text-white/60 text-sm">"{type}" isn't a recognised drill. Expected one of: phoneme, ed-endings, sound-introduction, word-stress, homophones, silent-letters.</p>
             <BackButton onClick={backToPronunciation} />
         </div>
     );

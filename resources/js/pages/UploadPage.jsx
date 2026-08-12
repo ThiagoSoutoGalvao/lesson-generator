@@ -621,6 +621,9 @@ function PronunciationLauncher() {
                 <button onClick={() => navigate('/pronunciation/drill/homophones')} className={drillButtonCls}>
                     Homophones
                 </button>
+                <button onClick={() => navigate('/pronunciation/drill/silent-letters')} className={drillButtonCls}>
+                    Silent Letters
+                </button>
             </div>
         </div>
     );

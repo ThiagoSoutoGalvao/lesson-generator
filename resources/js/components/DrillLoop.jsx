@@ -14,10 +14,11 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 /**
  * Shared drill loop: progress counter, play button, choice cards with
  * correct/incorrect flash and auto-advance. Used by the phoneme (minimal
- * pairs) drill, the -ed endings drill, the word stress drill, and the
- * homophones drill — they differ only in how many choices are passed in,
- * what headerExtra renders, and (word stress / homophones) whether the big
- * choice label is plain text instead of IPA wrapped in slashes.
+ * pairs) drill, the -ed endings drill, the word stress drill, the
+ * homophones drill, and the silent letters drill — they differ only in how
+ * many choices are passed in, what headerExtra renders, and (word stress /
+ * homophones / silent letters) whether the big choice label is plain text
+ * instead of IPA wrapped in slashes.
  *
  * Answers are stored per item index (same pattern as QuizActivity.jsx) so a
  * "← Previous" button can step back through already-answered items and show
@@ -29,8 +30,14 @@ const LETTERS = ['A', 'B', 'C', 'D'];
  * `showReveal` (opt-in, only Homophones passes it) shows a toggle that
  * reveals the current item's `sentence` text — items without a `sentence`
  * field (every other drill) simply render nothing for it either way.
+ *
+ * `showWordLabel` (opt-in, only Silent Letters passes it) always-renders the
+ * current item's `displayWord` text (the word's spelling) between the play
+ * button and the choice grid — unlike `showReveal`, there's no toggle, since
+ * the student needs to see the spelling to reason about which letter is
+ * silent.
  */
-export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, plainBigText = false, showReveal = false }) {
+export default function DrillLoop({ items, choices, onFinish, headerExtra, softCards = false, plainBigText = false, showReveal = false, showWordLabel = false }) {
     const [index, setIndex] = useState(0);
     const [answers, setAnswers] = useState({}); // { [itemIndex]: chosenKey }
     const [isPlaying, setIsPlaying] = useState(false);
@@ -130,6 +137,10 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
                 >
                     🔊
                 </button>
+
+                {showWordLabel && item.displayWord && (
+                    <p className="text-white text-3xl font-bold tracking-widest">{item.displayWord}</p>
+                )}
 
                 {showReveal && item.sentence && (
                     <div className="flex flex-col items-center gap-3">

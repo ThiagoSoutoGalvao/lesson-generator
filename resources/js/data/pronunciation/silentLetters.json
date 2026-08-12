@@ -1,0 +1,62 @@
+[
+  {
+    "category": "Silent B",
+    "words": [
+      { "word": "comb",  "silentLetter": "b", "candidates": ["b", "m", "o"], "audio": "/audio/pronunciation/words/comb.mp3" },
+      { "word": "thumb", "silentLetter": "b", "candidates": ["b", "m", "u"], "audio": "/audio/pronunciation/words/thumb.mp3" },
+      { "word": "climb", "silentLetter": "b", "candidates": ["b", "m", "i"], "audio": "/audio/pronunciation/words/climb.mp3" },
+      { "word": "lamb",  "silentLetter": "b", "candidates": ["b", "m", "a"], "audio": "/audio/pronunciation/words/lamb.mp3" },
+      { "word": "debt",  "silentLetter": "b", "candidates": ["b", "e", "t"], "audio": "/audio/pronunciation/words/debt.mp3" }
+    ]
+  },
+  {
+    "category": "Silent K",
+    "words": [
+      { "word": "knife",  "silentLetter": "k", "candidates": ["k", "n", "i"], "audio": "/audio/pronunciation/words/knife.mp3" },
+      { "word": "know",   "silentLetter": "k", "candidates": ["k", "n", "o"], "audio": "/audio/pronunciation/words/know.mp3" },
+      { "word": "knee",   "silentLetter": "k", "candidates": ["k", "n", "e"], "audio": "/audio/pronunciation/words/knee.mp3" },
+      { "word": "knock",  "silentLetter": "k", "candidates": ["k", "n", "o"], "audio": "/audio/pronunciation/words/knock.mp3" },
+      { "word": "knight", "silentLetter": "k", "candidates": ["k", "n", "i"], "audio": "/audio/pronunciation/words/knight.mp3" }
+    ]
+  },
+  {
+    "category": "Silent T",
+    "words": [
+      { "word": "listen",  "silentLetter": "t", "candidates": ["t", "s", "e"], "audio": "/audio/pronunciation/words/listen.mp3" },
+      { "word": "castle",  "silentLetter": "t", "candidates": ["t", "s", "l"], "audio": "/audio/pronunciation/words/castle.mp3" },
+      { "word": "whistle", "silentLetter": "t", "candidates": ["t", "s", "l"], "audio": "/audio/pronunciation/words/whistle.mp3" },
+      { "word": "often",   "silentLetter": "t", "candidates": ["t", "f", "e"], "audio": "/audio/pronunciation/words/often.mp3" },
+      { "word": "fasten",  "silentLetter": "t", "candidates": ["t", "s", "e"], "audio": "/audio/pronunciation/words/fasten.mp3" }
+    ]
+  },
+  {
+    "category": "Silent H",
+    "words": [
+      { "word": "hour",    "silentLetter": "h", "candidates": ["h", "o", "r"], "audio": "/audio/pronunciation/words/hour.mp3" },
+      { "word": "honest",  "silentLetter": "h", "candidates": ["h", "o", "n"], "audio": "/audio/pronunciation/words/honest.mp3" },
+      { "word": "heir",    "silentLetter": "h", "candidates": ["h", "e", "r"], "audio": "/audio/pronunciation/words/heir.mp3" },
+      { "word": "exhibit", "silentLetter": "h", "candidates": ["h", "x", "i"], "audio": "/audio/pronunciation/words/exhibit.mp3" },
+      { "word": "vehicle", "silentLetter": "h", "candidates": ["h", "e", "i"], "audio": "/audio/pronunciation/words/vehicle.mp3" }
+    ]
+  },
+  {
+    "category": "Silent W",
+    "words": [
+      { "word": "write",  "silentLetter": "w", "candidates": ["w", "r", "i"], "audio": "/audio/pronunciation/words/write.mp3" },
+      { "word": "wrist",  "silentLetter": "w", "candidates": ["w", "r", "i"], "audio": "/audio/pronunciation/words/wrist.mp3" },
+      { "word": "wrong",  "silentLetter": "w", "candidates": ["w", "r", "o"], "audio": "/audio/pronunciation/words/wrong.mp3" },
+      { "word": "sword",  "silentLetter": "w", "candidates": ["w", "s", "o"], "audio": "/audio/pronunciation/words/sword.mp3" },
+      { "word": "answer", "silentLetter": "w", "candidates": ["w", "s", "e"], "audio": "/audio/pronunciation/words/answer.mp3" }
+    ]
+  },
+  {
+    "category": "Silent G",
+    "words": [
+      { "word": "sign",     "silentLetter": "g", "candidates": ["g", "s", "n"], "audio": "/audio/pronunciation/words/sign.mp3" },
+      { "word": "design",   "silentLetter": "g", "candidates": ["g", "s", "n"], "audio": "/audio/pronunciation/words/design.mp3" },
+      { "word": "gnome",    "silentLetter": "g", "candidates": ["g", "n", "o"], "audio": "/audio/pronunciation/words/gnome.mp3" },
+      { "word": "foreign",  "silentLetter": "g", "candidates": ["g", "r", "n"], "audio": "/audio/pronunciation/words/foreign.mp3" },
+      { "word": "campaign", "silentLetter": "g", "candidates": ["g", "p", "n"], "audio": "/audio/pronunciation/words/campaign.mp3" }
+    ]
+  }
+]

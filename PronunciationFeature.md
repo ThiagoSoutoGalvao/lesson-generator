@@ -347,17 +347,23 @@ in progress).
 
 ### Tier 1 — straightforward, reuse the existing drill pattern directly
 - **Word Stress** — ✅ shipped, see `Claude.md` §12.
-- **Homophones** (their/there/they're, know/no, write/right) — spec'd out in
-  §11. Originally assumed "near-identical mechanic... zero new tooling," but
-  that was wrong: since both spellings of a homophone sound identical, an
-  isolated-word audio clip can't disambiguate anything — the drill needs
-  sentence-level audio (a full sentence that makes the meaning, and
-  therefore the correct spelling, clear from context), which the existing
-  word-level TTS pipeline doesn't produce yet. Caught before building
-  anything, not after — see §11 for the corrected design.
-- **Silent Letters** (knife, comb, listen, hour) — tap-the-silent-letter or a
-  category-sort drill; content is just a curated word list, no new audio
-  approach needed.
+- **Homophones** (their/there/they're, know/no, write/right) — ✅ shipped,
+  see `Claude.md` §12. Originally assumed "near-identical mechanic... zero
+  new tooling," but that was wrong: since both spellings of a homophone
+  sound identical, an isolated-word audio clip can't disambiguate anything —
+  the drill needed sentence-level audio instead, which the existing
+  word-level TTS pipeline didn't produce yet. Caught before building
+  anything, not after.
+- **Silent Letters** (knife, comb, listen, hour) — spec'd out in §12, next
+  up. Original one-line assumption ("tap-the-silent-letter... no new audio
+  approach needed") was half right: content-wise, yes, just a curated word
+  list with the same plain-word TTS pipeline as everything else. But
+  "tap-the-silent-letter" as a literal free-tap-any-letter interaction would
+  have meant a brand new component — `DrillLoop`'s choice-card grid caps out
+  around 2–4 options (it maps onto the A–D letter labels), and a 6+ letter
+  word has more letters than that. Resolved by curating exactly 3 candidate
+  letters per word instead of exposing every letter — keeps this a genuine
+  Tier-1 "reuse the pattern directly" build. See §12.
 
 ### Tier 2 — good value, need a bit more design thought before spec'ing
 - **Sentence Stress** — click the stressed (content) words in a sentence vs.
@@ -655,7 +661,143 @@ groups / 175 sentences, every spelling has exactly 5.
 
 ---
 
-## 12. Working Style Reminders
+## 12. Next Up — Silent Letters Drill (Spec)
+
+### Why this one, and the interaction design decision
+Last remaining Tier-1 item from §9. Chosen over the Tier-2 options
+(Sentence Stress, Weak Forms, Consonant Clusters) since it needs no new
+audio approach — just plain single-word TTS, the same pipeline every drill
+already uses — and no sentence-level content to author.
+
+The original one-line brief ("tap-the-silent-letter") suggested a
+free-form interaction: show the word, let the student tap any letter. That
+would require an entirely new component, since `DrillLoop`'s choice-card
+grid is built around a small, bounded set of options (2–4, mapped onto
+`LETTERS = ['A','B','C','D']`) — most silent-letter words (listen, castle,
+foreign, campaign...) have more than 4 letters, so "one choice per letter
+in the word" doesn't fit.
+
+Resolved by curating exactly **3 candidate letters per word** in the data
+itself — the actual silent letter plus 2 plausible pronounced letters from
+the same word — rather than exposing every letter. The task becomes "which
+of these 3 letters (all real letters in this word) isn't pronounced,"
+which reuses `DrillLoop` completely unchanged in its choice-card mechanic,
+same as Word Stress reused it for "which syllable is stressed" and
+Homophones reused it for "which spelling fits."
+
+One new need: unlike every prior drill, the student has to *see* the
+word's spelling to reason about which letter is silent — audio alone
+doesn't convey it. `DrillLoop` doesn't currently show `item.word` visually
+anywhere (other drills' `item.word` field is set but never rendered — for
+Minimal Pairs and Homophones specifically, rendering it would leak the
+answer). So this needs a new, explicitly-named, opt-in display field
+(`displayWord`, not reusing the existing `word` field) plus a new opt-in
+`showWordLabel` prop on `DrillLoop`, rendered prominently between the play
+button and the choice grid — same slot the Reveal Sentence button/text
+occupies for Homophones, just always-visible instead of toggle-based.
+
+### Data model — `resources/js/data/pronunciation/silentLetters.json`
+```json
+[
+  {
+    "category": "Silent B",
+    "words": [
+      { "word": "comb", "silentLetter": "b", "candidates": ["b", "m", "o"], "audio": "/audio/pronunciation/words/comb.mp3" }
+    ]
+  }
+]
+```
+Same grouped shape as `wordStress.json`/`edEndings.json` (category + flat
+word array), so the select screen offers Mixed + one button per category,
+same pattern as every prior drill. `candidates` is hand-curated per word
+(not derived at runtime) — same reasoning as every other drill's explicit
+per-item metadata (`correctSound`, `stressIndex`, etc.): pedagogical
+quality of *which* distractors appear matters, so it's authored
+deliberately, not picked by a generic "grab 2 random other letters"
+algorithm that could produce a nonsensical or duplicate-feeling choice set.
+
+First-batch categories (grouped by which letter is silent, mirroring how
+Minimal Pairs groups by sound pair): Silent B (comb, thumb, climb, lamb,
+debt), Silent K (knife, know, knee, knock, knight), Silent T (listen,
+castle, whistle, often, fasten), Silent H (hour, honest, heir, exhibit,
+vehicle), Silent W (write, wrist, wrong, sword, answer), Silent G (sign,
+design, gnome, foreign, campaign) — 6 categories × 5 words = 30 words,
+matching Word Stress's first-batch scale.
+
+### Component plan
+- `resources/js/components/SilentLettersDrill.jsx` — same
+  select→drilling→results pattern as `WordStressDrill.jsx`. `buildSession()`
+  shuffles a category's (or Mixed's) word list, and per item shuffles that
+  word's 3 `candidates` into choice order (so the correct answer isn't
+  always in the same visual position), mapping each into
+  `{ key: letter, ipa: letter.toUpperCase() }` — reuses `plainBigText`
+  exactly as Word Stress/Homophones do. `correctKey` = `silentLetter`,
+  `displayWord` = the word in uppercase.
+- `DrillLoop.jsx` gains one more small opt-in prop: `showWordLabel`
+  (default `false`). When true, renders `item.displayWord` prominently
+  (large, letter-spaced, similar visual weight to the Homophones reveal
+  text) between the play button and the choice grid. Only
+  `SilentLettersDrill` passes it — the other 3 drills are unaffected, same
+  backward-compatible pattern as every prior `DrillLoop` extension.
+- `PronunciationDrillPage.jsx` gains a `type === 'silent-letters'` branch;
+  `UploadPage.jsx`'s launcher grid grows from 5 buttons to 6.
+
+### Audio
+Plain single words, no special TTS instructions needed (no sentence
+context, no stress-syllable locking) — reuses `buildWordList()` in
+`scripts/generate-pronunciation-audio.mjs` exactly like Word Stress's plain
+2-/3-syllable words did: add one more loop reading `silentLetters.json`,
+run the existing `words` mode (never `--force`, per the lesson from the
+earlier incident).
+
+### Phase plan
+**Phase S1 — Data** ✅ COMPLETED
+- Wrote `silentLetters.json`: 6 categories (Silent B/K/T/H/W/G) × 5 words
+  each, 30 words total, 3 curated candidate letters per word.
+- Validated via a Node script: every word's `silentLetter` is present in
+  its own `candidates` array, every `candidates` array has exactly 3 unique
+  letters, every candidate letter genuinely appears in the word's spelling,
+  no duplicate audio paths.
+
+**Phase S2 — Audio** ✅ COMPLETED
+- Extended `buildWordList()` to include `silentLetters.json`. Of the 30
+  words, 3 (thumb, climb, know) already had audio from earlier content
+  batches; ran `words` mode without `--force` and it correctly generated
+  only the other 27.
+- Checked for the known silent-5,760-byte-file bug — none found. Confirmed
+  via `git status` that only the 27 new audio files, the script, and this
+  doc changed — nothing existing was touched.
+
+**Phase S3 — Component + wiring** ✅ COMPLETED
+- Added `showWordLabel` to `DrillLoop.jsx` (opt-in, default `false`,
+  renders `item.displayWord` between the play button and the choice grid
+  — only `SilentLettersDrill` passes it, the other 3 drills are
+  unaffected). Built `SilentLettersDrill.jsx`, same select→drilling→results
+  pattern as `WordStressDrill.jsx` (`pronunciation.jpg` background,
+  `.lg-surface-soft` cards, `softCards`/`plainBigText` on `DrillLoop`);
+  `buildSession()` shuffles each item's 3 `candidates` into choice order
+  per item so the correct letter isn't always in the same visual position.
+  Wired into `PronunciationDrillPage.jsx` (`type === 'silent-letters'`) and
+  `UploadPage.jsx`'s launcher grid (5 → 6 buttons).
+
+**Phase S4 — Verify** ✅ COMPLETED
+- This session's environment couldn't bind a listening port for `php
+  artisan serve` (sandboxed), so verification used the Herd desktop app
+  directly (`http://lesson-generator.test`) instead of the usual bare
+  dev-server approach — same temp-QA-user + Playwright pattern otherwise,
+  script run from the project root so Playwright's install resolved.
+- Verified: Mixed mode plays a 20-item session and produces a non-hardcoded
+  score (5/20 from always clicking the first choice); a single category
+  (Silent B) correctly shows a 5-item session; `displayWord` renders
+  correctly (e.g. "CAMPAIGN", "DESIGN") and isn't clipped for longer words;
+  zero failed audio requests; zero console/page errors. Screenshot-reviewed
+  both the select screen (Mixed + 6 category buttons) and a drilling screen
+  — visual treatment matches Word Stress/Homophones exactly.
+- Updated `Claude.md` §12, committed.
+
+---
+
+## 13. Working Style Reminders
 
 - One phase at a time. Do not start Phase N+1 until the Phase N checkpoint
   is confirmed.

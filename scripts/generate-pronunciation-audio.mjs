@@ -72,6 +72,9 @@ function buildWordList() {
             if (!item.word.includes('(')) add(item.word);
         }
     }
+    for (const group of readJson('silentLetters.json')) {
+        for (const item of group.words) add(item.word);
+    }
     return [...words.keys()];
 }
 
