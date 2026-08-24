@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import SpeakingPromptDrill from '@/components/det/SpeakingPromptDrill';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
+import { groupByBatch } from '@/components/cambridge/BatchSelect';
 import interviewSets from '@/data/cambridge/b2/speakingInterview.json';
 
 // Same scenario-select-then-chain pattern as DET's InteractiveSpeakingDrill — items are
@@ -29,6 +30,8 @@ export default function InterviewDrill() {
         );
     }
 
+    const batches = groupByBatch(interviewSets);
+
     return (
         <PracticeSessionShell
             watermark={<CambridgeWatermark />}
@@ -37,17 +40,24 @@ export default function InterviewDrill() {
             onBack={backToTab}
         >
             <div className="flex-1 overflow-y-auto px-8 py-8">
-                <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
-                    <p className="text-white/60 text-sm text-center mb-2">Ask the questions one at a time, as an examiner would in a real interview.</p>
-                    {interviewSets.map(s => (
-                        <button
-                            key={s.id}
-                            onClick={() => setSet(s)}
-                            className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white font-bold transition-all cursor-pointer text-left"
-                        >
-                            <p className="text-lg">{s.title}</p>
-                            <p className="text-white/40 text-xs font-normal mt-1">{s.items.length} questions</p>
-                        </button>
+                <div className="flex flex-col gap-6 max-w-3xl w-full mx-auto">
+                    <p className="text-white/60 text-sm text-center">Ask the questions one at a time, as an examiner would in a real interview.</p>
+                    {batches.map(({ batch, items: sets }) => (
+                        <div key={batch} className="flex flex-col gap-3">
+                            <p className="text-white/40 text-xs font-semibold uppercase tracking-wide">Batch {batch}</p>
+                            <div className="flex flex-row flex-wrap gap-3">
+                                {sets.map(s => (
+                                    <button
+                                        key={s.id}
+                                        onClick={() => setSet(s)}
+                                        className="flex-1 min-w-[220px] px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white font-bold transition-all cursor-pointer text-left"
+                                    >
+                                        <p className="text-lg">{s.title}</p>
+                                        <p className="text-white/40 text-xs font-normal mt-1">{s.items.length} questions</p>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
                     ))}
                 </div>
             </div>

@@ -1,10 +1,82 @@
 [
-  { "id": "disc-b2-1", "prompt": "Some people say that gifts should always be practical, while others think the thought behind a gift matters more than how useful it is. What's your opinion?" },
-  { "id": "disc-b2-2", "prompt": "Do you think teenagers today are given too much choice, or not enough, when it comes to decisions about their education?" },
-  { "id": "disc-b2-3", "prompt": "How important do you think it is for people to reduce the amount of waste they produce? What could be done to encourage this?" },
-  { "id": "disc-b2-4", "prompt": "Do you think companies have a responsibility to make their employees happy, or is that not really their job?" },
-  { "id": "disc-b2-5", "prompt": "Some people think technology has made it easier to stay in touch with friends and family, while others think it has made relationships less personal. What do you think?" },
-  { "id": "disc-b2-6", "prompt": "Is it better to work for a large company or a small one? What are the advantages of each?" },
-  { "id": "disc-b2-7", "prompt": "Do you think people rely too much on online reviews and recommendations when making decisions?" },
-  { "id": "disc-b2-8", "prompt": "As people get older, do you think their priorities in life usually change? In what way?" }
+  {
+    "id": "disc-b2-1",
+    "prompt": "Some people say that gifts should always be practical, while others think the thought behind a gift matters more than how useful it is. What's your opinion?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-2",
+    "prompt": "Do you think teenagers today are given too much choice, or not enough, when it comes to decisions about their education?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-3",
+    "prompt": "How important do you think it is for people to reduce the amount of waste they produce? What could be done to encourage this?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-4",
+    "prompt": "Do you think companies have a responsibility to make their employees happy, or is that not really their job?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-5",
+    "prompt": "Some people think technology has made it easier to stay in touch with friends and family, while others think it has made relationships less personal. What do you think?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-6",
+    "prompt": "Is it better to work for a large company or a small one? What are the advantages of each?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-7",
+    "prompt": "Do you think people rely too much on online reviews and recommendations when making decisions?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-8",
+    "prompt": "As people get older, do you think their priorities in life usually change? In what way?",
+    "batch": 1
+  },
+  {
+    "id": "disc-b2-9",
+    "prompt": "Some people think social media has made friendships stronger, while others think it has made them more shallow. What's your opinion?",
+    "batch": 2
+  },
+  {
+    "id": "disc-b2-10",
+    "prompt": "Do you think it's better to live in a big city or in the countryside? What are the main advantages of each?",
+    "batch": 2
+  },
+  {
+    "id": "disc-b2-11",
+    "prompt": "Some people prefer working from home, while others think being in an office is better for teamwork. What do you think?",
+    "batch": 2
+  },
+  {
+    "id": "disc-b2-12",
+    "prompt": "How important do you think it is for people to learn a foreign language? Why?",
+    "batch": 2
+  },
+  {
+    "id": "disc-b2-13",
+    "prompt": "Do you think people buy too many new clothes nowadays instead of looking after the ones they already have?",
+    "batch": 2
+  },
+  {
+    "id": "disc-b2-14",
+    "prompt": "Some people think traditional festivals and celebrations are becoming less important, while others believe they are as valuable as ever. What's your opinion?",
+    "batch": 2
+  },
+  {
+    "id": "disc-b2-15",
+    "prompt": "Do you think people today feel too much pressure to always be busy or productive?",
+    "batch": 2
+  },
+  {
+    "id": "disc-b2-16",
+    "prompt": "Some people think governments should invest more in public transport rather than building new roads for cars. What do you think?",
+    "batch": 2
+  }
 ]

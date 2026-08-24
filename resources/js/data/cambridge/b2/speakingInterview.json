@@ -1,6 +1,7 @@
 [
   {
     "id": "interview-b2-1",
+    "batch": 1,
     "level": "B2 First",
     "title": "Work and Study",
     "items": [
@@ -13,6 +14,7 @@
   },
   {
     "id": "interview-b2-2",
+    "batch": 1,
     "level": "B2 First",
     "title": "Free Time and Hobbies",
     "items": [
@@ -25,6 +27,7 @@
   },
   {
     "id": "interview-b2-3",
+    "batch": 1,
     "level": "B2 First",
     "title": "Hometown and Future Plans",
     "items": [
@@ -33,6 +36,45 @@
       { "prompt": "Has the area changed much since you were younger?" },
       { "prompt": "Would you like to live somewhere else one day? Where, and why?" },
       { "prompt": "What are you most looking forward to in the next year or two?" }
+    ]
+  },
+  {
+    "id": "interview-b2-4",
+    "batch": 2,
+    "level": "B2 First",
+    "title": "Food and Cooking",
+    "items": [
+      { "prompt": "Do you enjoy cooking, or do you prefer someone else to cook for you?" },
+      { "prompt": "What's a typical meal you eat during a normal week?" },
+      { "prompt": "Has the way you eat changed at all in the last few years?" },
+      { "prompt": "Is there a food you disliked as a child but enjoy now, or the other way round?" },
+      { "prompt": "If you could learn to cook one new dish really well, what would it be?" }
+    ]
+  },
+  {
+    "id": "interview-b2-5",
+    "batch": 2,
+    "level": "B2 First",
+    "title": "Technology and Daily Life",
+    "items": [
+      { "prompt": "How much do you rely on your phone or computer during a normal day?" },
+      { "prompt": "What's an app or piece of technology you find really useful?" },
+      { "prompt": "Do you think people spend too much time online these days?" },
+      { "prompt": "Was there a piece of technology you found hard to get used to at first?" },
+      { "prompt": "How do you think everyday technology might change over the next ten years?" }
+    ]
+  },
+  {
+    "id": "interview-b2-6",
+    "batch": 2,
+    "level": "B2 First",
+    "title": "Shopping and Money",
+    "items": [
+      { "prompt": "Do you enjoy shopping, or is it just something you have to do?" },
+      { "prompt": "Do you prefer shopping in actual shops or online? Why?" },
+      { "prompt": "Are you someone who plans purchases carefully, or do you buy things on impulse?" },
+      { "prompt": "What was the last thing you bought that you were really pleased with?" },
+      { "prompt": "Do you think it's important to save money regularly? Why or why not?" }
     ]
   }
 ]

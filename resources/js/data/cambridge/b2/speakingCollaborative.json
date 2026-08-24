@@ -12,7 +12,8 @@
         "A donation to a charity she cares about"
       ]
     },
-    "prompt": "Now decide together which idea would be the best leaving gift."
+    "prompt": "Now decide together which idea would be the best leaving gift.",
+    "batch": 1
   },
   {
     "id": "collab-b2-2",
@@ -27,7 +28,8 @@
         "An art gallery with a workshop"
       ]
     },
-    "prompt": "Now decide together which destination would be the best choice for the class trip."
+    "prompt": "Now decide together which destination would be the best choice for the class trip.",
+    "batch": 1
   },
   {
     "id": "collab-b2-3",
@@ -42,7 +44,8 @@
         "Choosing second-hand items instead of new ones"
       ]
     },
-    "prompt": "Now decide together which change would make the biggest difference for this family."
+    "prompt": "Now decide together which change would make the biggest difference for this family.",
+    "batch": 1
   },
   {
     "id": "collab-b2-4",
@@ -57,7 +60,8 @@
         "Creating a shared playlist and letting guests choose songs"
       ]
     },
-    "prompt": "Now decide together which form of entertainment would work best for the party."
+    "prompt": "Now decide together which form of entertainment would work best for the party.",
+    "batch": 1
   },
   {
     "id": "collab-b2-5",
@@ -72,6 +76,87 @@
         "Better coffee and snacks in the office"
       ]
     },
-    "prompt": "Now decide together which option would benefit the team the most."
+    "prompt": "Now decide together which option would benefit the team the most.",
+    "batch": 1
+  },
+  {
+    "id": "collab-b2-6",
+    "prep": {
+      "type": "list",
+      "intro": "A group of friends is planning a birthday party for a friend turning thirty and is considering these venues. Talk together about the advantages and disadvantages of each one.",
+      "content": [
+        "A private room at a restaurant",
+        "A rented cabin in the countryside",
+        "A friend's back garden",
+        "A rooftop bar in the city centre",
+        "A community hall with a DJ"
+      ]
+    },
+    "prompt": "Now decide together which venue would be the best choice for the party.",
+    "batch": 2
+  },
+  {
+    "id": "collab-b2-7",
+    "prep": {
+      "type": "list",
+      "intro": "A small office wants to help a new employee feel welcome in her first week and is considering these ideas. Talk together about the advantages and disadvantages of each one.",
+      "content": [
+        "Assigning her a mentor from the team",
+        "Organising a welcome lunch with colleagues",
+        "Giving her a printed guide to office routines",
+        "Scheduling short meetings with each department",
+        "Leaving a small welcome gift on her desk"
+      ]
+    },
+    "prompt": "Now decide together which idea would help the new employee settle in best.",
+    "batch": 2
+  },
+  {
+    "id": "collab-b2-8",
+    "prep": {
+      "type": "list",
+      "intro": "A neighbourhood association is organising a community festival and is considering these activities for the day. Talk together about the advantages and disadvantages of each one.",
+      "content": [
+        "A live music stage",
+        "A food market with local vendors",
+        "Face painting and games for children",
+        "A sports tournament in the park",
+        "A craft fair for local artists"
+      ]
+    },
+    "prompt": "Now decide together which activity should be the main attraction at the festival.",
+    "batch": 2
+  },
+  {
+    "id": "collab-b2-9",
+    "prep": {
+      "type": "list",
+      "intro": "Several residents in an apartment building are frustrated by constant noise and are considering these solutions. Talk together about how effective each one would be.",
+      "content": [
+        "Setting agreed quiet hours in the evening",
+        "Installing thicker carpets in shared hallways",
+        "Holding a residents' meeting to discuss the issue",
+        "Asking the building manager to send a formal notice",
+        "Fitting extra soundproofing in the walls"
+      ]
+    },
+    "prompt": "Now decide together which solution would work best for reducing the noise.",
+    "batch": 2
+  },
+  {
+    "id": "collab-b2-10",
+    "prep": {
+      "type": "list",
+      "intro": "A local council has a small budget to improve a neighbourhood and is considering these projects. Talk together about the advantages and disadvantages of each one.",
+      "content": [
+        "Planting trees along the main street",
+        "Repairing the cracked pavements",
+        "Installing benches in the local park",
+        "Adding better lighting near the bus stop",
+        "Building a small playground for children"
+      ]
+    },
+    "prompt": "Now decide together which project would benefit the neighbourhood the most.",
+    "batch": 2
   }
 ]
