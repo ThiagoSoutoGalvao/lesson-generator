@@ -1,5 +1,8 @@
+- [Authentication Architecture (Phase 9+)](auth_architecture.md) — Session-based auth, Breeze, API route StartSession middleware
 - [Phase 2 Architecture](architecture_phase2.md) — Document upload flow, database schema, key patterns
 - [React Component Hierarchy](component_hierarchy.md) — Page structure and future component plan
 - [Phase 3 Claude Integration](phase3_claude_integration.md) — ClaudeService, ActivityController, GeneratePage flow
 - [Phase 5 Architecture](phase5_architecture.md) — Activity type routing, JSON schema, flashcard patterns
 - [Phase 6 Documentation](phase6_documentation.md) — Unjumble activity component and backend integration documented
+- [Phase 10 Word Categorisation Activity](architecture_phase10.md) — Drag-and-drop word sorting, dual interaction model, schema & integration
+- [Phase D & E new features](phase_d_e_features.md) — Flashcard question mode toggle, browser-side file size check with tool links
