@@ -112,4 +112,25 @@ class ActivityController extends Controller
 
         return response()->json($activity);
     }
+
+    public function generateEssayFeedback(Request $request, ClaudeService $claude)
+    {
+        $request->validate([
+            'essay_text'   => ['required', 'string', 'max:8000'],
+            'student_name' => ['nullable', 'string', 'max:100'],
+            'extra'        => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        try {
+            $activity = $claude->generateEssayFeedback(
+                $request->essay_text,
+                $request->input('student_name', ''),
+                $request->input('extra', '')
+            );
+        } catch (\RuntimeException $e) {
+            return response()->json(['message' => $e->getMessage()], 502);
+        }
+
+        return response()->json($activity);
+    }
 }

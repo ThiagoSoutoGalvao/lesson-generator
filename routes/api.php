@@ -14,6 +14,7 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/generate', [ActivityController::class, 'generate']);
     Route::post('/presentation/generate', [ActivityController::class, 'generatePresentation']);
     Route::post('/reading/generate', [ActivityController::class, 'generateReadingText']);
+    Route::post('/essay-feedback/generate', [ActivityController::class, 'generateEssayFeedback']);
     Route::post('/detect-sections', [SectionController::class, 'detect']);
     Route::get('/background', [BackgroundController::class, 'fetch']);
 

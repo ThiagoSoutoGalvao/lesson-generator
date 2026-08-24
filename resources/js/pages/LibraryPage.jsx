@@ -15,6 +15,7 @@ import SentenceTransformationActivity from '@/components/SentenceTransformationA
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
+import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
 
 const TYPE_LABELS = {
@@ -34,6 +35,7 @@ const TYPE_LABELS = {
     grammar_explainer:        'Grammar',
     presentation:             'Presentation',
     reading_text:             'Reading Text',
+    essay_feedback:           'Essay Feedback',
 };
 const TYPE_COLORS = {
     quiz:                    'bg-blue-500/80 text-white',
@@ -52,12 +54,13 @@ const TYPE_COLORS = {
     grammar_explainer:       'bg-emerald-500/80 text-white',
     presentation:            'bg-indigo-500/80 text-white',
     reading_text:            'bg-green-600/80 text-white',
+    essay_feedback:          'bg-fuchsia-500/80 text-white',
 };
 const TYPE_FILTERS = [
     'all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill',
     'word_categorisation', 'true_false', 'image_vocab_match',
     'word_formation', 'odd_one_out', 'cloze', 'discussion_questions',
-    'sentence_transformation', 'error_correction', 'grammar_explainer', 'presentation', 'reading_text',
+    'sentence_transformation', 'error_correction', 'grammar_explainer', 'presentation', 'reading_text', 'essay_feedback',
 ];
 
 const filterBtnCls = (active) =>
@@ -114,6 +117,7 @@ export default function LibraryPage() {
         if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'presentation')            return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'reading_text')            return <ReadingTextActivity {...props} />;
+        if (launched.type === 'essay_feedback')           return <EssayFeedbackActivity {...props} />;
     }
 
     const filtered = activities.filter(a => {

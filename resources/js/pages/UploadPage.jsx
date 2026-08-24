@@ -229,6 +229,105 @@ function ReadingTextGenerator() {
     );
 }
 
+// ─── Essay Feedback Tab ────────────────────────────────────────────────────────
+
+function EssayFeedbackGenerator() {
+    const navigate = useNavigate();
+    const [essayText, setEssayText]   = useState('');
+    const [studentName, setStudentName] = useState('');
+    const [extra, setExtra]           = useState('');
+    const [status, setStatus]         = useState('idle');
+    const [errorMsg, setErrorMsg]     = useState('');
+
+    async function generate() {
+        if (!essayText.trim()) return;
+        setStatus('loading');
+        setErrorMsg('');
+        try {
+            const { data } = await axios.post('/api/essay-feedback/generate', {
+                essay_text:   essayText.trim(),
+                student_name: studentName.trim() || undefined,
+                extra:        extra.trim() || undefined,
+            });
+            navigate('/generate', { state: { activity: data } });
+        } catch (err) {
+            setErrorMsg(err.response?.data?.message ?? 'Something went wrong. Please try again.');
+            setStatus('error');
+        }
+    }
+
+    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/45 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition-colors';
+
+    return (
+        <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">
+                    Student's essay
+                    <span className="text-white/35 font-normal ml-1">— paste the full text</span>
+                </label>
+                <textarea
+                    value={essayText}
+                    onChange={e => setEssayText(e.target.value)}
+                    placeholder="Paste the essay here…"
+                    rows={10}
+                    className={`${inputCls} resize-y`}
+                    disabled={status === 'loading'}
+                />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">
+                    Student's name
+                    <span className="text-white/35 font-normal ml-1">— optional</span>
+                </label>
+                <input
+                    type="text"
+                    value={studentName}
+                    onChange={e => setStudentName(e.target.value)}
+                    placeholder="e.g. João"
+                    className={inputCls}
+                    disabled={status === 'loading'}
+                />
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-medium text-white/80">
+                    Extra instructions
+                    <span className="text-white/35 font-normal ml-1">— optional</span>
+                </label>
+                <textarea
+                    value={extra}
+                    onChange={e => setExtra(e.target.value)}
+                    placeholder="e.g. Focus on articles and word choice, keep it very encouraging…"
+                    rows={3}
+                    className={`${inputCls} resize-y`}
+                    disabled={status === 'loading'}
+                />
+            </div>
+
+            <button
+                onClick={generate}
+                disabled={!essayText.trim() || status === 'loading'}
+                className="self-start bg-fuchsia-500 hover:bg-fuchsia-600 disabled:bg-fuchsia-500/40 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+            >
+                Generate Feedback
+            </button>
+
+            {status === 'loading' && (
+                <div className="flex justify-center py-6">
+                    <Spinner message="Reading the essay and preparing feedback… this takes about 20 seconds" color="text-fuchsia-400" textColor="text-white/60" />
+                </div>
+            )}
+
+            {status === 'error' && (
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                    {errorMsg}
+                </div>
+            )}
+        </div>
+    );
+}
+
 // ─── PDF Tab ────────────────────────────────────────────────────────────────
 
 function PdfUploader() {
@@ -774,6 +873,7 @@ export default function UploadPage() {
         { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/30 border-purple-400/50 text-purple-200' },
         { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/30 border-indigo-400/50 text-indigo-200' },
         { id: 'reading',       label: '📖 Reading Text',  active: 'bg-emerald-500/30 border-emerald-400/50 text-emerald-200' },
+        { id: 'essay',         label: '✍️ Essay Feedback', active: 'bg-fuchsia-500/30 border-fuchsia-400/50 text-fuchsia-200' },
         { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/30 border-teal-400/50 text-teal-200' },
         { id: 'det',           label: '🎯 DET Practice',  active: 'bg-amber-500/30 border-amber-400/50 text-amber-200' },
         { id: 'cambridge',     label: '🎓 Cambridge',     active: 'bg-rose-500/30 border-rose-400/50 text-rose-200' },
@@ -809,6 +909,7 @@ export default function UploadPage() {
             {tab === 'audio'        && <AudioUploader />}
             {tab === 'presentation' && <PresentationGenerator />}
             {tab === 'reading'       && <ReadingTextGenerator />}
+            {tab === 'essay'         && <EssayFeedbackGenerator />}
             {tab === 'pronunciation' && <PronunciationLauncher />}
             {tab === 'det'           && <DetPracticeLauncher />}
             {tab === 'cambridge'     && <CambridgePracticeLauncher />}

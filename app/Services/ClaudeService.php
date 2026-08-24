@@ -759,6 +759,22 @@ EOT;
             throw new RuntimeException('Claude returned invalid JSON: ' . $text);
         }
 
+        $data['items'] = array_values(array_filter($data['items'] ?? [], function ($item) {
+            $sentence   = $item['sentence']   ?? '';
+            $error      = $item['error']      ?? '';
+            $correction = $item['correction'] ?? '';
+
+            return $sentence !== ''
+                && $error !== ''
+                && $correction !== ''
+                && $error !== $correction
+                && str_contains($sentence, $error);
+        }));
+
+        if (empty($data['items'])) {
+            throw new RuntimeException('Claude did not return any valid error-correction items — please try generating again.');
+        }
+
         return $data;
     }
 
@@ -791,10 +807,12 @@ Rules:
 - Generate the number of items requested in the task — typically 6–12
 - Each sentence must contain EXACTLY one error — no more, no less
 - Errors must be realistic mistakes that B1-B2 learners commonly make: wrong tense, subject-verb agreement, wrong preposition, incorrect article, wrong word form, or vocabulary confusion
-- The "error" field must match the incorrect text exactly as it appears in the sentence
+- The "error" field must be copied character-for-character from the sentence — same spelling, spacing, and capitalization — since it is matched against the sentence text verbatim
 - The "correction" replaces only the erroneous part — the rest of the sentence stays the same
 - Each item must test a different type of error — do not repeat error categories
 - Sentences should feel natural and relate to topics from the text
+- Before writing each item, first think of the fully correct sentence, then change exactly one word or phrase to create the error — never submit a sentence that is already grammatically correct with no real mistake in it
+- After writing each item, verify: (1) the "error" text appears in the "sentence" text exactly as written, (2) "error" and "correction" are different, (3) replacing "error" with "correction" in the sentence produces a natural, fully correct sentence — discard and rewrite any item that fails this check
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
@@ -925,6 +943,116 @@ Rules:
 - Each slide should have 4 to 6 examples
 - Assign a different color to each slide — cycle through blue, purple, green, orange, teal, rose
 - Keep content concise and student-friendly — suitable for classroom display
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateEssayFeedback(string $essayText, string $studentName = '', string $extra = ''): array
+    {
+        $essayText = $this->sanitizeUtf8($essayText);
+
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 6000,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                [
+                    'role'    => 'user',
+                    'content' => $this->buildEssayFeedbackPrompt($essayText, $studentName, $extra),
+                ],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        $data['mistakes'] = array_values(array_filter($data['mistakes'] ?? [], function ($item) use ($essayText) {
+            $original   = $item['original']   ?? '';
+            $suggestion = $item['suggestion'] ?? '';
+
+            return $original !== ''
+                && $suggestion !== ''
+                && $suggestion !== $original
+                && str_contains($essayText, $original);
+        }));
+
+        $data['grammar_drills'] = array_values(array_filter($data['grammar_drills'] ?? [], function ($item) {
+            $sentence   = $item['sentence']   ?? '';
+            $error      = $item['error']      ?? '';
+            $correction = $item['correction'] ?? '';
+
+            return $sentence !== ''
+                && $error !== ''
+                && $correction !== ''
+                && $error !== $correction
+                && str_contains($sentence, $error);
+        }));
+
+        $data['essay_text'] = $essayText;
+
+        return $data;
+    }
+
+    private function buildEssayFeedbackPrompt(string $essayText, string $studentName, string $extra): string
+    {
+        $nameSection  = $studentName ? "\nThe student's name is {$studentName}." : '';
+        $extraSection = $extra ? "\nExtra instructions from the teacher: {$extra}" : '';
+
+        return <<<EOT
+Here is a student's essay:
+
+{$essayText}
+{$nameSection}{$extraSection}
+
+Your task: prepare feedback content for a teacher to go through live, one point at a time, in a one-on-one lesson with this student. Keep the tone plain, warm, and non-technical overall — avoid grammar terminology (don't say "gerund", "subject-verb agreement", "article", "preposition", etc.). However, explanations for language mistakes must be strictly about the language itself: describe how English works or what sounds natural, and never address or refer to the student (no "you", "your", or mentioning what they wrote).
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "essay_feedback",
+  "topic": "<a short 3-6 word description of what the essay is about>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image fitting a quiet writing/reflection mood, e.g. 'notebook pen desk sunlight'>",
+  "mistakes": [
+    {
+      "original": "<the exact original sentence from the essay that could sound more natural, copied verbatim>",
+      "suggestion": "<a complete rewrite of that same sentence that sounds natural and correct, keeping as close to the original meaning and wording as possible>",
+      "explanation": "<one or two short sentences explaining, strictly about the language itself, why the suggested version sounds more natural — no grammar jargon, and never say 'you', 'your', or refer to the student>"
+    }
+  ],
+  "grammar_drills": [
+    {
+      "sentence": "<a brand-new practice sentence, NOT copied from the essay, containing exactly one deliberate grammar mistake>",
+      "error": "<the exact incorrect word or phrase, copied character-for-character from the sentence>",
+      "correction": "<the corrected word or phrase>",
+      "explanation": "<one short sentence explaining, strictly about the language itself, why the correction is right — no grammar jargon, and never say 'you', 'your', or refer to the student>"
+    }
+  ],
+  "improvements": [
+    {
+      "suggestion": "<one concrete, actionable suggestion to strengthen the essay's content, structure, or argument>",
+      "explanation": "<one plain sentence on why this would make the essay stronger>"
+    }
+  ]
+}
+
+Rules:
+- Base "mistakes" ONLY on what is actually written in the essay above — never invent content that isn't there
+- Find every sentence genuinely worth revising (grammar, word choice, false friends from other languages, awkward phrasing) — typically 5 to 10 — but never rewrite a sentence that is already natural and correct
+- The "original" field must be copied character-for-character from the essay, since it is matched against the essay text verbatim
+- The "suggestion" must be a complete, natural-sounding rewrite of the whole sentence — not just one swapped word — and must differ from "original"
+- For "grammar_drills": first look at the grammar patterns (not vocabulary or false-friend confusions) behind the mistakes found above — things like verb form, word order, tense, or sentence structure — then write exactly 8 brand-new practice sentences, unrelated in wording to the essay itself, that drill those same grammar patterns so the student gets extra repetition on exactly what tripped them up. Each sentence contains exactly one deliberate grammar error, focused strictly on grammar, not vocabulary or spelling
+- The "error" field in "grammar_drills" must be copied character-for-character from its "sentence" field, since it is matched against the sentence text verbatim
+- Before writing each "grammar_drills" item, first think of the fully correct sentence, then change exactly one part to create the error — verify the "error" text appears in the sentence exactly as written and that "correction" is different from "error"
+- Explanations for "mistakes" and "grammar_drills" describe only the language (e.g. "This is usually followed by..." or "In English, this idea is normally expressed as...") — never "you", "your", or any reference to the student or what they wrote
+- Provide 2 to 4 "improvements" focused on argument, structure, or content — not grammar (grammar goes in "mistakes"/"grammar_drills")
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

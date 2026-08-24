@@ -14,6 +14,7 @@ import SentenceTransformationActivity from '@/components/SentenceTransformationA
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
+import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
 
 const ACTIVITY_TYPES = [
@@ -122,6 +123,7 @@ export default function GeneratePage() {
     if (activity?.type === 'grammar_explainer')       return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'presentation')            return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'reading_text')            return <ReadingTextActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'essay_feedback')          return <EssayFeedbackActivity activity={activity} onClose={handleClose} />;
 
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
