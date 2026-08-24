@@ -354,6 +354,96 @@
     }
 }
 
+/* ── Essay Feedback print / PDF export — light theme, natural page flow (a takeaway for the student) ── */
+@media print {
+    @page { margin: 1.5cm 2cm; size: A4; }
+
+    .essay-print-root {
+        display: block !important;
+        visibility: visible;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        background: #fff !important;
+        color: #111;
+    }
+
+    .essay-print-root * { visibility: visible; }
+
+    .essay-print-meta {
+        color: #777;
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        margin-bottom: 1.3rem;
+    }
+
+    .essay-print-section {
+        margin-top: 1.6rem;
+        padding-top: 1.1rem;
+        border-top: 1px solid #ccc;
+        break-inside: avoid-page;
+    }
+
+    .essay-print-section:first-of-type {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: none;
+    }
+
+    .essay-print-section-label {
+        font-size: 0.7rem;
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        color: #777;
+        margin-bottom: 0.8rem;
+    }
+
+    .essay-print-paragraph {
+        color: #111;
+        font-size: 1.05rem;
+        line-height: 1.75;
+        margin-bottom: 1rem;
+    }
+
+    .essay-print-item {
+        margin-bottom: 1rem;
+        break-inside: avoid-page;
+    }
+
+    .essay-print-original {
+        font-size: 0.95rem;
+        color: #333;
+        line-height: 1.6;
+    }
+
+    .essay-print-suggestion {
+        font-size: 0.95rem;
+        color: #15803d;
+        font-weight: 600;
+        line-height: 1.6;
+        margin-top: 0.2rem;
+    }
+
+    .essay-print-error {
+        color: #b91c1c;
+        text-decoration: line-through;
+    }
+
+    .essay-print-correction {
+        color: #15803d;
+        font-weight: 700;
+    }
+
+    .essay-print-explanation {
+        font-size: 0.85rem;
+        color: #555;
+        line-height: 1.5;
+        margin-top: 0.25rem;
+    }
+}
+
 /* ── Accessibility font control (Aa button in navbar) ── */
 body.tf-active {
   font-family: var(--tf-family) !important;
