@@ -354,16 +354,21 @@ in progress).
   the drill needed sentence-level audio instead, which the existing
   word-level TTS pipeline didn't produce yet. Caught before building
   anything, not after.
-- **Silent Letters** (knife, comb, listen, hour) — spec'd out in §12, next
-  up. Original one-line assumption ("tap-the-silent-letter... no new audio
+- **Silent Letters** (knife, comb, listen, hour) — ✅ shipped, see `Claude.md`
+  §12. Original one-line assumption ("tap-the-silent-letter... no new audio
   approach needed") was half right: content-wise, yes, just a curated word
   list with the same plain-word TTS pipeline as everything else. But
   "tap-the-silent-letter" as a literal free-tap-any-letter interaction would
   have meant a brand new component — `DrillLoop`'s choice-card grid caps out
   around 2–4 options (it maps onto the A–D letter labels), and a 6+ letter
   word has more letters than that. Resolved by curating exactly 3 candidate
-  letters per word instead of exposing every letter — keeps this a genuine
+  letters per word instead of exposing every letter — kept this a genuine
   Tier-1 "reuse the pattern directly" build. See §12.
+
+**All Tier 1 topics are now shipped.** Nothing is pre-approved to build next
+— pick one of the Tier 2 topics below (each needs a short design pass before
+it gets its own spec section, same as Word Stress/Homophones/Silent Letters
+did) or flag a new one.
 
 ### Tier 2 — good value, need a bit more design thought before spec'ing
 - **Sentence Stress** — click the stressed (content) words in a sentence vs.

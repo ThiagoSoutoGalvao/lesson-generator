@@ -112,7 +112,7 @@ Teachers on platforms like Wordwall spend significant time manually creating exe
 - Migrations are idempotent (`Schema::hasColumn` guard) — safe to re-run
 - Records with `null` user_id are orphaned (pre-scoping data, invisible to all users)
 
-**Registration:** CLOSED — register routes removed from `routes/auth.php`. 4 beta users: Fernando, Sapulha, Daniel, Hianna.
+**Registration:** CLOSED — register routes removed from `routes/auth.php`. 5 beta users: Fernando, Sapulha, Daniel, Hianna, Sérgio.
 
 **Railway env vars:**
 - `APP_ENV=production`, `APP_DEBUG=false`, `APP_URL=https://...` (must be `https` — mixed-content errors otherwise)

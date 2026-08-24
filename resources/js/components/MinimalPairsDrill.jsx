@@ -11,7 +11,13 @@ const SESSION_SIZE = 20;
 // minimal-pair partner — the word lists weren't built as 1:1 pairs — but a
 // real, valid contrasting word from the same group each time, rather than
 // one fixed anchor word shown for the whole session regardless of what plays.
+//
+// Card position (A vs B) is bound to group.sounds[0]/[1] for the whole
+// session — sound X always lands in the same slot every item — rather than
+// randomized per item, since swapping which slot a sound appears in was
+// confusing students who were tracking "A = this sound" across the drill.
 function buildSession(group) {
+    const [soundA, soundB] = group.sounds;
     const items = shuffle(group.words)
         .slice(0, SESSION_SIZE)
         .map((w, i) => {
@@ -19,7 +25,7 @@ function buildSession(group) {
             const contrast = otherWords[Math.floor(Math.random() * otherWords.length)];
             const target = { key: w.word, ipa: w.correctSound, example: w.word };
             const foil = { key: contrast.word, ipa: contrast.correctSound, example: contrast.word };
-            const choices = Math.random() < 0.5 ? [target, foil] : [foil, target];
+            const choices = w.correctSound === soundA ? [target, foil] : [foil, target];
             return { id: i, audio: w.audio, correctKey: w.word, word: w.word, choices };
         });
 
