@@ -34,10 +34,13 @@ class SavedActivityController extends Controller
             'folder'  => ['nullable', 'string', 'max:255'],
             'book'    => ['nullable', 'string', 'max:255'],
             'lesson'  => ['nullable', 'string', 'max:255'],
+            'trilha'        => ['nullable', 'string', 'in:Lights,Glow,Radiant'],
+            'trilha_lesson' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'built_by'      => ['nullable', 'string', 'max:100'],
         ]);
 
         $activity = Activity::create(array_merge(
-            $request->only('name', 'type', 'content', 'tags', 'folder', 'book', 'lesson'),
+            $request->only('name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'built_by'),
             ['user_id' => auth()->id()]
         ));
 
