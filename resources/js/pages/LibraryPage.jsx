@@ -17,6 +17,7 @@ import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
+import { TRILHAS, TRILHA_NAMES, LESSON_SLOTS } from '@/lib/trilhas';
 
 const TYPE_LABELS = {
     quiz:                     'Quiz',
@@ -68,11 +69,82 @@ const filterBtnCls = (active) =>
         active ? 'bg-blue-500 border-blue-400 text-white shadow-lg shadow-blue-500/25' : 'lg-chip lg-chip-hover text-white/75 hover:text-white'
     }`;
 
+// Lessons × the 5 baseline slots for one trilha — which slots already have a saved activity.
+function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLesson }) {
+    const meta = TRILHAS[trilhaName];
+    const lessons = Array.from({ length: meta.lessons }, (_, i) => i + 1);
+    const trilhaActivities = activities.filter(a => a.trilha === trilhaName);
+
+    const isFilled = (lessonNum, slot) =>
+        trilhaActivities.some(a => a.trilha_lesson === lessonNum && slot.types.includes(a.type));
+
+    const totalSlots = lessons.length * LESSON_SLOTS.length;
+    const filledSlots = lessons.reduce(
+        (sum, n) => sum + LESSON_SLOTS.filter(s => isFilled(n, s)).length,
+        0,
+    );
+
+    return (
+        <div className="lg-surface border rounded-2xl p-4 overflow-x-auto">
+            <div className="flex items-center justify-between mb-3 gap-3">
+                <h3 className="text-white font-bold text-sm">{meta.label} coverage</h3>
+                <span className="text-white/60 text-xs shrink-0">{filledSlots} / {totalSlots} slots filled</span>
+            </div>
+            <table className="w-full text-xs border-separate border-spacing-1 min-w-[480px]">
+                <thead>
+                    <tr>
+                        <th className="text-left text-white/50 font-medium pr-2">Lesson</th>
+                        {LESSON_SLOTS.map(s => (
+                            <th key={s.key} className="text-white/50 font-medium px-1 py-1">{s.label}</th>
+                        ))}
+                    </tr>
+                </thead>
+                <tbody>
+                    {lessons.map(n => {
+                        const active = String(n) === lessonFilter;
+                        return (
+                            <tr key={n}>
+                                <td>
+                                    <button
+                                        onClick={() => onSelectLesson(active ? 'all' : String(n))}
+                                        className={`text-left font-semibold px-2 py-1 rounded-lg cursor-pointer transition-colors whitespace-nowrap ${
+                                            active ? 'bg-blue-500 text-white' : 'text-white/80 hover:bg-white/10'
+                                        }`}
+                                    >
+                                        L{String(n).padStart(2, '0')}
+                                    </button>
+                                </td>
+                                {LESSON_SLOTS.map(s => {
+                                    const filled = isFilled(n, s);
+                                    return (
+                                        <td key={s.key} className="text-center">
+                                            <span
+                                                title={s.label}
+                                                className={`inline-flex items-center justify-center w-7 h-7 rounded-md text-sm ${
+                                                    filled ? `${meta.accent} text-white` : 'bg-white/5 text-white/20 border border-white/10'
+                                                }`}
+                                            >
+                                                {filled ? '✓' : '·'}
+                                            </span>
+                                        </td>
+                                    );
+                                })}
+                            </tr>
+                        );
+                    })}
+                </tbody>
+            </table>
+        </div>
+    );
+}
+
 export default function LibraryPage() {
     const [activities, setActivities] = useState([]);
     const [folders, setFolders]       = useState([]);
     const [typeFilter, setTypeFilter] = useState('all');
     const [folderFilter, setFolderFilter] = useState('all');
+    const [trilhaFilter, setTrilhaFilter] = useState('all'); // 'all' | 'Lights' | 'Glow' | 'Radiant' | '__none__'
+    const [lessonFilter, setLessonFilter] = useState('all'); // lesson number as string, or 'all'
     const [launched, setLaunched]     = useState(null);
     const [loading, setLoading]       = useState(true);
     const [error, setError]           = useState(null);
@@ -120,11 +192,26 @@ export default function LibraryPage() {
         if (launched.type === 'essay_feedback')           return <EssayFeedbackActivity {...props} />;
     }
 
+    const hasTrilhaActivities = activities.some(a => a.trilha);
+
+    function selectTrilha(t) {
+        setTrilhaFilter(t);
+        setLessonFilter('all');
+    }
+
     const filtered = activities.filter(a => {
         if (typeFilter !== 'all' && a.type !== typeFilter) return false;
         if (folderFilter !== 'all') {
             if (folderFilter === '__none__') return !a.folder;
             if (a.folder !== folderFilter) return false;
+        }
+        if (trilhaFilter !== 'all') {
+            if (trilhaFilter === '__none__') {
+                if (a.trilha) return false;
+            } else {
+                if (a.trilha !== trilhaFilter) return false;
+                if (lessonFilter !== 'all' && String(a.trilha_lesson) !== lessonFilter) return false;
+            }
         }
         return true;
     });
@@ -144,6 +231,34 @@ export default function LibraryPage() {
                     </button>
                 ))}
             </div>
+
+            {/* Trilha filter — only shown once at least one trilha activity has been saved */}
+            {hasTrilhaActivities && (
+                <div className="flex flex-wrap gap-2 border-t border-white/10 pt-4">
+                    <span className="text-white/35 text-xs self-center mr-1">Trilha:</span>
+                    <button onClick={() => selectTrilha('all')} className={filterBtnCls(trilhaFilter === 'all')}>
+                        All
+                    </button>
+                    {TRILHA_NAMES.map(t => (
+                        <button key={t} onClick={() => selectTrilha(t)} className={filterBtnCls(trilhaFilter === t)}>
+                            {TRILHAS[t].label}
+                        </button>
+                    ))}
+                    <button onClick={() => selectTrilha('__none__')} className={filterBtnCls(trilhaFilter === '__none__')}>
+                        One-off
+                    </button>
+                </div>
+            )}
+
+            {/* Coverage grid — which of the trilha's lessons already have each of the 5 baseline activities */}
+            {trilhaFilter !== 'all' && trilhaFilter !== '__none__' && (
+                <TrilhaCoverageGrid
+                    trilhaName={trilhaFilter}
+                    activities={activities}
+                    lessonFilter={lessonFilter}
+                    onSelectLesson={setLessonFilter}
+                />
+            )}
 
             {/* Folder filter — only shown if there are any folders */}
             {folders.length > 0 && (
@@ -195,8 +310,13 @@ export default function LibraryPage() {
                             </span>
                         </div>
 
-                        {(a.book || a.lesson) && (
+                        {(a.trilha || a.book || a.lesson) && (
                             <div className="flex gap-2 flex-wrap">
+                                {a.trilha && (
+                                    <span className={`text-xs font-semibold text-white px-2.5 py-1 rounded-full ${TRILHAS[a.trilha]?.accent ?? 'bg-white/10'}`}>
+                                        {TRILHAS[a.trilha]?.label ?? a.trilha}{a.trilha_lesson ? ` · L${String(a.trilha_lesson).padStart(2, '0')}` : ''}
+                                    </span>
+                                )}
                                 {a.book && (
                                     <span className="text-xs bg-white/10 text-white/90 px-2.5 py-1 rounded-full border border-white/10">
                                         {a.book}
@@ -212,6 +332,10 @@ export default function LibraryPage() {
 
                         {a.folder && (
                             <p className="text-xs text-white/80">📁 {a.folder}</p>
+                        )}
+
+                        {a.built_by && (
+                            <p className="text-xs text-white/60">👤 Built by {a.built_by}</p>
                         )}
 
                         <p className="text-xs text-white/70 mt-auto">
