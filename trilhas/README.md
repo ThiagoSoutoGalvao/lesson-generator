@@ -21,25 +21,37 @@ for conventions, ownership and progress.
 ```
 trilhas/
 ├── README.md                     ← this file
-├── _lesson-brief-template.md      ← copy this for each new lesson
-├── lights/
-│   ├── Lights - table of contents.pdf
-│   ├── lesson-01/ brief.md
-│   ├── lesson-02/ brief.md
-│   └── …
-├── glow/
-│   └── …
-└── radiant/
-    └── …
+├── lights/Lights - table of contents.pdf
+├── glow/Glow - table of contents.pdf
+└── radiant/Radiant - table of contents.pdf
 ```
 
-- Folders lowercase. Lessons zero-padded: `lesson-01`, never `Lesson 1`.
-- Files starting with `_` are not lessons (template, notes).
-- Coursebook page exports / images for a lesson go in that lesson's folder.
+Just the three table-of-contents PDFs now — that's the raw source material.
+Everything else (the lesson-by-lesson plan and progress tracking) lives in the
+app, not in files. See §6 below.
 
-**Before building activities for a lesson**, its owner writes `brief.md` by
-copying `_lesson-brief-template.md` and expanding the one-line entry from the
-table of contents into target language, vocabulary and the activity checklist.
+---
+
+## 2b. Planning a lesson — do it in the app
+
+Each lesson's brief (target language, vocabulary, level notes, source) is
+filled in **inside the app**, not as a separate file:
+
+1. Log in with the Aurora account, go to **Library**.
+2. Click the **Trilha** filter (Lights / Glow / Radiant) — a coverage grid
+   appears: lessons × the 5 baseline activity types, with a ✓ for each one
+   already saved.
+3. Click the **📝** button on a lesson's row to expand its brief — write it
+   before you build, or fill it in as you go, whichever fits how you work.
+   It saves per lesson and everyone sees the same thing.
+4. The ✓ checkmarks are the "is this lesson done" checklist — once all 5
+   columns are ✓ for a lesson, it's done. No separate status field to update.
+
+We tried a git/Drive-file version of this first (a `brief.md` per lesson,
+cutting coursebook PDFs into per-lesson folders) — it didn't stick, mainly
+because cutting PDFs into folders was slow and the files lived somewhere
+separate from where the activities actually get built. The in-app version
+replaces that entirely.
 
 ---
 
@@ -106,47 +118,49 @@ Radiant 9–12 are currently unassigned (previously Sérgio, who isn't on the te
 
 ## 6. Status board
 
-`todo` → `brief` (brief written) → `building` → `done` (all 5 activities saved)
+Live build progress (which activities are saved) is the **Library coverage
+grid in the app** — see §2b. This table is just the static reference: each
+lesson's ToC topic and current owner.
 
 ### Lights
-| # | Topic (from ToC)                                                          | Owner    | Status |
-|---|-------------------------------------------------------------------------|----------|--------|
-| 1 | to be / there be (past); adjectives for places; dates & years; in/on   | Fernando | todo   |
-| 2 | past continuous; past time expressions; adverbs of manner              | Fernando | todo   |
-| 3 | present continuous vs base-form everyday verbs; clothes & accessories  | Fernando | todo   |
-| 4 | routine verbs; days; time; food & drink; simple present (no 3rd p.); frequency | Fernando | todo |
-| 5 | simple present 3rd person; object pronouns; personality adjectives     | Fernando | todo   |
-| 6 | can (all forms); verb vocabulary; adverbs of manner; rules & regulations | Fernando | todo |
-| 7 | there be (all forms); parts of a house; places in a city + prepositions | Sapulha | todo  |
-| 8 | future time expressions; free-time activities; be going to; will        | Sapulha | todo  |
+| # | Topic (from ToC)                                                          | Owner    |
+|---|-------------------------------------------------------------------------|----------|
+| 1 | to be / there be (past); adjectives for places; dates & years; in/on   | Fernando |
+| 2 | past continuous; past time expressions; adverbs of manner              | Fernando |
+| 3 | present continuous vs base-form everyday verbs; clothes & accessories  | Fernando |
+| 4 | routine verbs; days; time; food & drink; simple present (no 3rd p.); frequency | Fernando |
+| 5 | simple present 3rd person; object pronouns; personality adjectives     | Fernando |
+| 6 | can (all forms); verb vocabulary; adverbs of manner; rules & regulations | Fernando |
+| 7 | there be (all forms); parts of a house; places in a city + prepositions | Sapulha |
+| 8 | future time expressions; free-time activities; be going to; will        | Sapulha |
 
 > Note: the Lights ToC lists 8 content lessons + lesson 9 (assessment / project). The rows
 > above condense it to the 8 buildable lessons.
 
 ### Glow
-| # | Topic (from ToC)                                                          | Owner    | Status |
-|---|-------------------------------------------------------------------------|----------|--------|
-| 1 | to be / there be (past); adjectives for places & events; dates & years; in/on | Sapulha | todo |
-| 2 | past continuous; past time expressions; adverbs of manner              | Sapulha  | todo   |
-| 3 | simple past: regular & irregular                                       | Sapulha  | todo   |
-| 4 | simple past: negatives & questions; sequencers & connectors; prepositions of movement | Sapulha | todo |
-| 5 | seasons & weather; animals; comparative sentences                      | Daniel   | todo   |
-| 6 | superlative adjectives; kitchen vocabulary                             | Daniel   | todo   |
-| 7 | modals of obligation / permission: can, have to, must, should; parts of the body | Daniel | todo |
-| 8 | passive voice: present & past (work on participles)                    | Daniel   | todo   |
+| # | Topic (from ToC)                                                          | Owner    |
+|---|-------------------------------------------------------------------------|----------|
+| 1 | to be / there be (past); adjectives for places & events; dates & years; in/on | Sapulha |
+| 2 | past continuous; past time expressions; adverbs of manner              | Sapulha  |
+| 3 | simple past: regular & irregular                                       | Sapulha  |
+| 4 | simple past: negatives & questions; sequencers & connectors; prepositions of movement | Sapulha |
+| 5 | seasons & weather; animals; comparative sentences                      | Daniel   |
+| 6 | superlative adjectives; kitchen vocabulary                             | Daniel   |
+| 7 | modals of obligation / permission: can, have to, must, should; parts of the body | Daniel |
+| 8 | passive voice: present & past (work on participles)                    | Daniel   |
 
 ### Radiant
-| #  | Topic (from ToC)                                                         | Owner  | Status |
-|----|-----------------------------------------------------------------------|--------|--------|
-| 1  | present perfect (ever / never)                                        | Daniel | todo   |
-| 2  | present perfect (for / since) + yet / just / already; contrast with past | Daniel | todo |
-| 3  | uses of -ing: gerund, present participle, verb patterns               | Hianna | todo   |
-| 4  | conditionals: zero, first, second                                     | Hianna | todo   |
-| 5  | word building: prefixes, suffixes, compound words                     | Hianna | todo   |
-| 6  | narrative tenses + adverbs of manner                                  | Hianna | todo   |
-| 7  | collocations: commonly confused verbs; verb + preposition             | Hianna | todo   |
-| 8  | reported speech                                                       | Hianna | todo   |
-| 9  | indefinite pronouns (something, everywhere…) + one more topic         | TBD    | todo   |
-| 10 | phrasal verbs (separable & non-separable)                             | TBD    | todo   |
-| 11 | minimal pairs (phonetics & spelling)                                  | TBD    | todo   |
-| 12 | project management: analyse material, gather info, deliver a presentation | TBD    | todo |
+| #  | Topic (from ToC)                                                         | Owner  |
+|----|-----------------------------------------------------------------------|--------|
+| 1  | present perfect (ever / never)                                        | Daniel |
+| 2  | present perfect (for / since) + yet / just / already; contrast with past | Daniel |
+| 3  | uses of -ing: gerund, present participle, verb patterns               | Hianna |
+| 4  | conditionals: zero, first, second                                     | Hianna |
+| 5  | word building: prefixes, suffixes, compound words                     | Hianna |
+| 6  | narrative tenses + adverbs of manner                                  | Hianna |
+| 7  | collocations: commonly confused verbs; verb + preposition             | Hianna |
+| 8  | reported speech                                                       | Hianna |
+| 9  | indefinite pronouns (something, everywhere…) + one more topic         | TBD    |
+| 10 | phrasal verbs (separable & non-separable)                             | TBD    |
+| 11 | minimal pairs (phonetics & spelling)                                  | TBD    |
+| 12 | project management: analyse material, gather info, deliver a presentation | TBD |
