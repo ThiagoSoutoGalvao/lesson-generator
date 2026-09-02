@@ -6,6 +6,7 @@ use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\SavedActivityController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\TrilhaLessonBriefController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:web')->group(function () {
@@ -22,6 +23,9 @@ Route::middleware('auth:web')->group(function () {
     Route::post('/activities', [SavedActivityController::class, 'store']);
     Route::delete('/activities/{activity}', [SavedActivityController::class, 'destroy']);
     Route::get('/folders', [SavedActivityController::class, 'folders']);
+
+    Route::get('/trilha-briefs', [TrilhaLessonBriefController::class, 'index']);
+    Route::put('/trilha-briefs', [TrilhaLessonBriefController::class, 'upsert']);
 
     Route::post('/audio/upload', [AudioUploadController::class, 'store']);
     Route::get('/audio/status/{id}', [AudioUploadController::class, 'status']);

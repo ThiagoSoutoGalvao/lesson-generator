@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
@@ -17,7 +17,7 @@ import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
-import { TRILHAS, TRILHA_NAMES, LESSON_SLOTS } from '@/lib/trilhas';
+import { TRILHAS, TRILHA_NAMES, LESSON_SLOTS, TEACHERS } from '@/lib/trilhas';
 
 const TYPE_LABELS = {
     quiz:                     'Quiz',
@@ -69,14 +69,96 @@ const filterBtnCls = (active) =>
         active ? 'bg-blue-500 border-blue-400 text-white shadow-lg shadow-blue-500/25' : 'lg-chip lg-chip-hover text-white/75 hover:text-white'
     }`;
 
-// Lessons × the 5 baseline slots for one trilha — which slots already have a saved activity.
-function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLesson }) {
+const briefFieldCls = 'bg-white/10 border border-white/15 text-white placeholder:text-white/30 rounded-lg px-3 py-2 text-xs w-full resize-y focus:outline-none focus:ring-2 focus:ring-blue-500';
+
+const BRIEF_FIELDS = [
+    ['target_language', 'Target language', 'e.g. Present continuous — form + one model sentence'],
+    ['vocabulary',      'Vocabulary',      '8–15 words/phrases the lesson introduces or recycles'],
+    ['level_notes',     'Level notes',     "What students already know; common Portuguese-speaker errors to watch for"],
+    ['source',          'Source',          'Coursebook + page range, or "topic prompt only"'],
+];
+
+function hasBriefContent(brief) {
+    return !!brief && BRIEF_FIELDS.some(([key]) => (brief[key] ?? '').trim() !== '');
+}
+
+// Inline editable form for one lesson's brief — expands below its row in the coverage grid.
+function LessonBriefEditor({ trilhaName, lessonNum, brief, onSave, onCancel }) {
+    const [fields, setFields] = useState(() =>
+        Object.fromEntries(BRIEF_FIELDS.map(([key]) => [key, brief?.[key] ?? ''])),
+    );
+    const [updatedBy, setUpdatedBy] = useState(brief?.updated_by ?? '');
+    const [saving, setSaving] = useState(false);
+
+    async function handleSave() {
+        setSaving(true);
+        try {
+            await onSave({ trilha: trilhaName, trilha_lesson: lessonNum, updated_by: updatedBy || null, ...fields });
+        } finally {
+            setSaving(false);
+        }
+    }
+
+    return (
+        <div className="flex flex-col gap-3 bg-black/20 rounded-xl p-3 mt-1">
+            <div className="grid sm:grid-cols-2 gap-3">
+                {BRIEF_FIELDS.map(([key, label, placeholder]) => (
+                    <div key={key} className="flex flex-col gap-1">
+                        <label className="text-white/50 text-[11px] font-medium">{label}</label>
+                        <textarea
+                            value={fields[key]}
+                            onChange={e => setFields(f => ({ ...f, [key]: e.target.value }))}
+                            placeholder={placeholder}
+                            rows={key === 'source' ? 2 : 3}
+                            className={briefFieldCls}
+                        />
+                    </div>
+                ))}
+            </div>
+            <div className="flex items-center gap-2 flex-wrap">
+                <label className="text-white/50 text-[11px] font-medium">Updated by</label>
+                <select
+                    value={updatedBy}
+                    onChange={e => setUpdatedBy(e.target.value)}
+                    className="bg-white/10 border border-white/15 text-white text-xs rounded-lg px-2 py-1.5 cursor-pointer"
+                >
+                    <option value="" className="bg-gray-900">—</option>
+                    {TEACHERS.map(t => (
+                        <option key={t} value={t} className="bg-gray-900">{t}</option>
+                    ))}
+                </select>
+                <div className="flex-1" />
+                <button
+                    onClick={onCancel}
+                    className="text-white/60 hover:text-white text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                >
+                    Close
+                </button>
+                <button
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400/30 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
+                >
+                    {saving ? 'Saving…' : 'Save brief'}
+                </button>
+            </div>
+        </div>
+    );
+}
+
+// Lessons × the 5 baseline slots for one trilha — which slots already have a saved activity,
+// plus an inline-editable pedagogical brief per lesson (target language, vocabulary, etc.)
+function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLesson, briefs, onSaveBrief }) {
     const meta = TRILHAS[trilhaName];
     const lessons = Array.from({ length: meta.lessons }, (_, i) => i + 1);
     const trilhaActivities = activities.filter(a => a.trilha === trilhaName);
+    const [expandedLesson, setExpandedLesson] = useState(null);
 
     const isFilled = (lessonNum, slot) =>
         trilhaActivities.some(a => a.trilha_lesson === lessonNum && slot.types.includes(a.type));
+
+    const briefFor = (lessonNum) =>
+        briefs.find(b => b.trilha === trilhaName && b.trilha_lesson === lessonNum);
 
     const totalSlots = lessons.length * LESSON_SLOTS.length;
     const filledSlots = lessons.reduce(
@@ -97,39 +179,71 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
                         {LESSON_SLOTS.map(s => (
                             <th key={s.key} className="text-white/50 font-medium px-1 py-1">{s.label}</th>
                         ))}
+                        <th className="text-white/50 font-medium px-1 py-1">Brief</th>
                     </tr>
                 </thead>
                 <tbody>
                     {lessons.map(n => {
                         const active = String(n) === lessonFilter;
+                        const expanded = expandedLesson === n;
+                        const brief = briefFor(n);
                         return (
-                            <tr key={n}>
-                                <td>
-                                    <button
-                                        onClick={() => onSelectLesson(active ? 'all' : String(n))}
-                                        className={`text-left font-semibold px-2 py-1 rounded-lg cursor-pointer transition-colors whitespace-nowrap ${
-                                            active ? 'bg-blue-500 text-white' : 'text-white/80 hover:bg-white/10'
-                                        }`}
-                                    >
-                                        L{String(n).padStart(2, '0')}
-                                    </button>
-                                </td>
-                                {LESSON_SLOTS.map(s => {
-                                    const filled = isFilled(n, s);
-                                    return (
-                                        <td key={s.key} className="text-center">
-                                            <span
-                                                title={s.label}
-                                                className={`inline-flex items-center justify-center w-7 h-7 rounded-md text-sm ${
-                                                    filled ? `${meta.accent} text-white` : 'bg-white/5 text-white/20 border border-white/10'
-                                                }`}
-                                            >
-                                                {filled ? '✓' : '·'}
-                                            </span>
+                            <Fragment key={n}>
+                                <tr>
+                                    <td>
+                                        <button
+                                            onClick={() => onSelectLesson(active ? 'all' : String(n))}
+                                            className={`text-left font-semibold px-2 py-1 rounded-lg cursor-pointer transition-colors whitespace-nowrap ${
+                                                active ? 'bg-blue-500 text-white' : 'text-white/80 hover:bg-white/10'
+                                            }`}
+                                        >
+                                            L{String(n).padStart(2, '0')}
+                                        </button>
+                                    </td>
+                                    {LESSON_SLOTS.map(s => {
+                                        const filled = isFilled(n, s);
+                                        return (
+                                            <td key={s.key} className="text-center">
+                                                <span
+                                                    title={s.label}
+                                                    className={`inline-flex items-center justify-center w-7 h-7 rounded-md text-sm ${
+                                                        filled ? `${meta.accent} text-white` : 'bg-white/5 text-white/20 border border-white/10'
+                                                    }`}
+                                                >
+                                                    {filled ? '✓' : '·'}
+                                                </span>
+                                            </td>
+                                        );
+                                    })}
+                                    <td className="text-center">
+                                        <button
+                                            onClick={() => setExpandedLesson(expanded ? null : n)}
+                                            title={hasBriefContent(brief) ? 'Brief started' : 'No brief yet'}
+                                            className={`relative inline-flex items-center justify-center w-7 h-7 rounded-md text-sm cursor-pointer transition-colors ${
+                                                expanded ? 'bg-blue-500 text-white' : 'bg-white/5 text-white/70 hover:bg-white/15 border border-white/10'
+                                            }`}
+                                        >
+                                            📝
+                                            {hasBriefContent(brief) && !expanded && (
+                                                <span className="absolute -top-1 -right-1 w-2 h-2 rounded-full bg-emerald-400" />
+                                            )}
+                                        </button>
+                                    </td>
+                                </tr>
+                                {expanded && (
+                                    <tr>
+                                        <td colSpan={LESSON_SLOTS.length + 2}>
+                                            <LessonBriefEditor
+                                                trilhaName={trilhaName}
+                                                lessonNum={n}
+                                                brief={brief}
+                                                onCancel={() => setExpandedLesson(null)}
+                                                onSave={onSaveBrief}
+                                            />
                                         </td>
-                                    );
-                                })}
-                            </tr>
+                                    </tr>
+                                )}
+                            </Fragment>
                         );
                     })}
                 </tbody>
@@ -141,6 +255,7 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
 export default function LibraryPage() {
     const [activities, setActivities] = useState([]);
     const [folders, setFolders]       = useState([]);
+    const [briefs, setBriefs]         = useState([]);
     const [typeFilter, setTypeFilter] = useState('all');
     const [folderFilter, setFolderFilter] = useState('all');
     const [trilhaFilter, setTrilhaFilter] = useState('all'); // 'all' | 'Lights' | 'Glow' | 'Radiant' | '__none__'
@@ -153,16 +268,26 @@ export default function LibraryPage() {
         Promise.all([
             axios.get('/api/activities'),
             axios.get('/api/folders'),
+            axios.get('/api/trilha-briefs'),
         ])
-            .then(([acts, fols]) => {
+            .then(([acts, fols, briefsRes]) => {
                 setActivities(acts.data);
                 setFolders(fols.data);
+                setBriefs(briefsRes.data);
             })
             .catch(err => {
                 setError(err.response?.data?.message ?? err.message ?? 'Failed to load activities');
             })
             .finally(() => setLoading(false));
     }, []);
+
+    async function handleSaveBrief(payload) {
+        const { data } = await axios.put('/api/trilha-briefs', payload);
+        setBriefs(prev => {
+            const rest = prev.filter(b => !(b.trilha === data.trilha && b.trilha_lesson === data.trilha_lesson));
+            return [...rest, data];
+        });
+    }
 
     function handleDelete(id) {
         if (!confirm('Delete this activity?')) return;
@@ -257,6 +382,8 @@ export default function LibraryPage() {
                     activities={activities}
                     lessonFilter={lessonFilter}
                     onSelectLesson={setLessonFilter}
+                    briefs={briefs}
+                    onSaveBrief={handleSaveBrief}
                 />
             )}
 
