@@ -1,6 +1,6 @@
 # RADIANT — Lesson 11: {short title}
 
-**Owner:** Sérgio
+**Owner:** TBD
 **Status:** todo
 **ToC line:** minimal pairs (phonetics & spelling)
 

@@ -9,7 +9,7 @@ export const TRILHAS = {
 export const TRILHA_NAMES = Object.keys(TRILHAS);
 
 // Aurora teachers — used for the "Built by" field on a shared login.
-export const TEACHERS = ['Fernando', 'Sapulha', 'Daniel', 'Hianna', 'Sérgio', 'Thiago'];
+export const TEACHERS = ['Fernando', 'Sapulha', 'Daniel', 'Hianna', 'Thiago'];
 
 // Friendly activity-type labels (kept in sync with LibraryPage's own list).
 export const TYPE_LABELS = {

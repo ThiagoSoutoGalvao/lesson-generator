@@ -91,7 +91,8 @@ them). Same backbone every lesson = a methodology, not a pile of activities.
 
 ## 5. Ownership
 
-28 teaching lessons. Starting split — adjust to match who teaches which level.
+28 teaching lessons. **This split is being reworked — treat it as provisional.**
+Radiant 9–12 are currently unassigned (previously Sérgio, who isn't on the team).
 
 | Teacher   | Owns                     | Lessons                          |
 |-----------|--------------------------|----------------------------------|
@@ -99,7 +100,7 @@ them). Same backbone every lesson = a methodology, not a pile of activities.
 | Sapulha   | LIGHTS · GLOW            | Lights 7–8 · Glow 1–4            |
 | Daniel    | GLOW · RADIANT           | Glow 5–8 · Radiant 1–2           |
 | Hianna    | RADIANT                  | 3 – 8                            |
-| Sérgio    | RADIANT                  | 9 – 12 · + consistency review    |
+| TBD       | RADIANT                  | 9 – 12                           |
 
 ---
 
@@ -145,7 +146,7 @@ them). Same backbone every lesson = a methodology, not a pile of activities.
 | 6  | narrative tenses + adverbs of manner                                  | Hianna | todo   |
 | 7  | collocations: commonly confused verbs; verb + preposition             | Hianna | todo   |
 | 8  | reported speech                                                       | Hianna | todo   |
-| 9  | indefinite pronouns (something, everywhere…) + one more topic         | Sérgio | todo   |
-| 10 | phrasal verbs (separable & non-separable)                             | Sérgio | todo   |
-| 11 | minimal pairs (phonetics & spelling)                                  | Sérgio | todo   |
-| 12 | project management: analyse material, gather info, deliver a presentation | Sérgio | todo |
+| 9  | indefinite pronouns (something, everywhere…) + one more topic         | TBD    | todo   |
+| 10 | phrasal verbs (separable & non-separable)                             | TBD    | todo   |
+| 11 | minimal pairs (phonetics & spelling)                                  | TBD    | todo   |
+| 12 | project management: analyse material, gather info, deliver a presentation | TBD    | todo |

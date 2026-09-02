@@ -1,6 +1,6 @@
 # RADIANT — Lesson 12: {short title}
 
-**Owner:** Sérgio
+**Owner:** TBD
 **Status:** todo
 **ToC line:** project management: analyse material, gather info, deliver a presentation
 

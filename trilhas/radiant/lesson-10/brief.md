@@ -1,6 +1,6 @@
 # RADIANT — Lesson 10: {short title}
 
-**Owner:** Sérgio
+**Owner:** TBD
 **Status:** todo
 **ToC line:** phrasal verbs (separable & non-separable)
 

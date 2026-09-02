@@ -1,6 +1,6 @@
 # RADIANT — Lesson 09: {short title}
 
-**Owner:** Sérgio
+**Owner:** TBD
 **Status:** todo
 **ToC line:** indefinite pronouns (something, everywhere…) + one more topic
 
