@@ -524,11 +524,12 @@ grouping is the highest-impact single piece.
 
 ## 13. What to do next
 
-1. Review the Phase T plan (§12) — adjust the goal→template mapping, sizing,
-   ordering.
-2. Confirm start order (suggest: T-1 → T-3 in parallel → T-2 → T-4 → T-5 → T-6).
-3. Then build T-step by T-step (each build → verify → commit).
-4. Student app (Phase S1+) starts after Phase T.
+**Phase T progress (2026-09-04):**
+- ✅ T-0d — trilha ToC panel — committed `da811ce`, pushed
+- ✅ T-1 — `/api/generate` topic/source_text — committed `fff0d9d`
+- ✅ T-3 — Error Correction passage mode — committed `fefa113`
+- ✅ T-2 — goal-first `/generate` page — committed `a2f9f62`
+- ⏭️ **T-4 next** — "Make an exercise from this" on a generated Reading Text
+- then T-5a (KWT + Open Cloze), T-5b (MC Reading + Read and Complete), T-6 (polish)
 
-**Also pending:** commit T-0d (trilha ToC panel) — done + verified, not yet
-committed. _(Update: committed `da811ce`, pushed 2026-09-04.)_
+Then the student app (Phase S1+).
