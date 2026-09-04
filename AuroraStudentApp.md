@@ -534,7 +534,37 @@ Complete (T-5b).
   answers); screenshots show good phrasal-verb distractors. Zero console errors.
   `npm run build` + PHP lint clean.
 
-### T-5b — MC Reading + Read and Complete  ⏭️ NEXT
+### T-5b — MC Reading + Read and Complete ✅ DONE (2026-09-04)
+
+**Shipped:**
+- `ClaudeService` — `generateMcReading` / `generateReadComplete` + prompt builders.
+  MC Reading filters questions to those with a valid 4-option list containing the
+  answer + a non-empty passage. Read and Complete keeps only gaps whose `given`
+  is a real shorter prefix of `answer`, and re-inserts a separating space wherever
+  a text part butts a gap letter-to-letter (Claude sometimes drops it).
+- `mc_reading` schema: `{ passage, questions: [{ text, options[4], answer, explanation }] }`.
+  `read_complete` schema: `parts: [{text} | {given, answer}]`.
+- `McReadingActivity.jsx` — TrueFalseActivity's split-panel model (passage stays
+  visible, one question at a time) with generic 4-option questions + a results
+  screen.
+- `ReadCompleteActivity.jsx` — OpenCloze's reveal model; each gap shows `given`
+  then underscores, click to reveal the whole word. Gap span is `inline-block
+  mx-1` so words stay separated.
+- Wired through both controllers, `GeneratePage` (`TEMPLATES`: MC Reading →
+  Reading; Read and Complete → Reading + Vocabulary), `LibraryPage`.
+- **Root-cause fix — `bootstrap/app.php`**: Laravel's global `TrimStrings`
+  middleware was stripping the edge spaces from `content.parts[*].text` on save,
+  which corrupted saved cloze/open-cloze/mc-cloze/read-complete passages
+  ("gets" + gap → "getsdre___"). Added
+  `trimStrings(except: ['content', 'content.*', 'source_text'])`. Verified the
+  trailing space now survives a save round-trip.
+- **Verified** (`qa_t5b_reading.mjs` + `qa_t5a_clozes.mjs` regression): MC Reading
+  → 6 valid 4-option questions over a ~1800-char passage, split-panel renders,
+  scoring works; Read and Complete → 10–12 valid prefix gaps, passage reads
+  cleanly with proper word spacing after the middleware fix, reveal works. Zero
+  console errors. PHP lint + `npm run build` clean.
+
+**Phase T-5 complete** (Open Cloze, MC Cloze, MC Reading, Read and Complete).
 
 ### (original) T-5 — Four new DET/Cambridge formats as generatable templates
 Each = a `ClaudeService` generator + prompt builder + JSON schema + a component
@@ -583,8 +613,8 @@ grouping is the highest-impact single piece.
 - ✅ T-3 — Error Correction passage mode — committed `fefa113`
 - ✅ T-2 — goal-first `/generate` page — committed `a2f9f62`
 - ✅ T-4 — "Make an exercise from this" on a Reading Text — committed `eb1349a`
-- ✅ T-5a — Open Cloze + MC Cloze generators (KWT dropped as redundant) — see git log
-- ⏭️ **T-5b next** — MC Reading + Read and Complete
-- then T-6 (polish + CLAUDE.md)
+- ✅ T-5a — Open Cloze + MC Cloze generators (KWT dropped as redundant) — committed `bf5547c`
+- ✅ T-5b — MC Reading + Read and Complete + TrimStrings fix — see git log
+- ⏭️ **T-6 next** — consistency pass (blurbs, placeholders, mobile sweep) + CLAUDE.md
 
 Then the student app (Phase S1+).

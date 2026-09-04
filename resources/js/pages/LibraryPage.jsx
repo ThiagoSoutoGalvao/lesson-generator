@@ -6,6 +6,8 @@ import UnjumbleActivity from '@/components/UnjumbleActivity';
 import DialogGapFillActivity from '@/components/DialogGapFillActivity';
 import WordCategorisationActivity from '@/components/WordCategorisationActivity';
 import TrueFalseActivity from '@/components/TrueFalseActivity';
+import McReadingActivity from '@/components/McReadingActivity';
+import ReadCompleteActivity from '@/components/ReadCompleteActivity';
 import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
 import WordFormationActivity from '@/components/WordFormationActivity';
 import OddOneOutActivity from '@/components/OddOneOutActivity';
@@ -28,6 +30,8 @@ const TYPE_LABELS = {
     dialog_gap_fill:          'Dialog',
     word_categorisation:      'Categorise',
     true_false:               'True / False',
+    mc_reading:               'Reading (MC)',
+    read_complete:            'Read & Complete',
     image_vocab_match:        'Image Match',
     word_formation:           'Word Formation',
     odd_one_out:              'Odd One Out',
@@ -49,6 +53,8 @@ const TYPE_COLORS = {
     dialog_gap_fill:         'bg-teal-500/80 text-white',
     word_categorisation:     'bg-pink-500/80 text-white',
     true_false:              'bg-indigo-500/80 text-white',
+    mc_reading:              'bg-indigo-600/80 text-white',
+    read_complete:           'bg-teal-600/80 text-white',
     image_vocab_match:       'bg-cyan-500/80 text-white',
     word_formation:          'bg-lime-500/80 text-white',
     odd_one_out:             'bg-rose-500/80 text-white',
@@ -65,7 +71,7 @@ const TYPE_COLORS = {
 };
 const TYPE_FILTERS = [
     'all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill',
-    'word_categorisation', 'true_false', 'image_vocab_match',
+    'word_categorisation', 'true_false', 'mc_reading', 'read_complete', 'image_vocab_match',
     'word_formation', 'odd_one_out', 'cloze', 'open_cloze', 'mc_cloze', 'discussion_questions',
     'sentence_transformation', 'error_correction', 'grammar_explainer', 'presentation', 'reading_text', 'essay_feedback',
 ];
@@ -324,6 +330,8 @@ export default function LibraryPage() {
         if (launched.type === 'dialog_gap_fill')         return <DialogGapFillActivity {...props} />;
         if (launched.type === 'word_categorisation')     return <WordCategorisationActivity {...props} />;
         if (launched.type === 'true_false')              return <TrueFalseActivity {...props} />;
+        if (launched.type === 'mc_reading')              return <McReadingActivity {...props} />;
+        if (launched.type === 'read_complete')           return <ReadCompleteActivity {...props} />;
         if (launched.type === 'image_vocab_match')       return <ImageVocabMatchActivity {...props} />;
         if (launched.type === 'word_formation')          return <WordFormationActivity {...props} />;
         if (launched.type === 'odd_one_out')             return <OddOneOutActivity {...props} />;

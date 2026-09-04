@@ -7,6 +7,8 @@ import UnjumbleActivity from '@/components/UnjumbleActivity';
 import DialogGapFillActivity from '@/components/DialogGapFillActivity';
 import WordFormationActivity from '@/components/WordFormationActivity';
 import TrueFalseActivity from '@/components/TrueFalseActivity';
+import McReadingActivity from '@/components/McReadingActivity';
+import ReadCompleteActivity from '@/components/ReadCompleteActivity';
 import OddOneOutActivity from '@/components/OddOneOutActivity';
 import ClozeActivity from '@/components/ClozeActivity';
 import OpenClozeActivity from '@/components/OpenClozeActivity';
@@ -96,6 +98,16 @@ const TEMPLATES = [
         id: 'true_false', label: 'True / False / Not Given', goals: ['reading'],
         blurb: 'A reading passage and 6 statements to judge. Trains close reading and inference.',
         defaultPrompt: 'Write a reading passage of 90–130 words and 6 statements — 2 True, 2 False, 2 Not Given. Vary the order.',
+    },
+    {
+        id: 'mc_reading', label: 'Reading Comprehension (MC)', goals: ['reading'],
+        blurb: 'A longer passage that stays on screen while students answer 6 multiple-choice questions.',
+        defaultPrompt: 'Write a 220–380 word passage and 6 multiple-choice comprehension questions (4 options each): mix main idea, detail, vocabulary in context, inference and purpose.',
+    },
+    {
+        id: 'read_complete', label: 'Read and Complete', goals: ['reading', 'vocabulary'],
+        blurb: 'A short passage where each gapped word shows its first few letters. Recognition & spelling.',
+        defaultPrompt: 'Write a connected passage of 60–120 words and gap 10–14 content words, showing roughly the first half of each word.',
     },
     {
         id: 'discussion_questions', label: 'Discussion Questions', goals: ['speaking'],
@@ -189,6 +201,8 @@ export default function GeneratePage() {
     if (activity?.type === 'dialog_gap_fill')    return <DialogGapFillActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'word_formation')       return <WordFormationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'true_false')         return <TrueFalseActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'mc_reading')          return <McReadingActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'read_complete')       return <ReadCompleteActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'odd_one_out')          return <OddOneOutActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'cloze')                return <ClozeActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'open_cloze')           return <OpenClozeActivity activity={activity} onClose={handleClose} />;

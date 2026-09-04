@@ -951,8 +951,152 @@ EOT;
 
     private function hasBlank(array $parts): bool
     {
+        return $this->hasBlankKey($parts, 'blank');
+    }
+
+    public function generateMcReading(string $source, string $prompt): array
+    {
+        $data = $this->requestJson($this->buildMcReadingPrompt($this->sanitizeUtf8($source), $prompt));
+
+        $data['questions'] = array_values(array_filter($data['questions'] ?? [], function ($q) {
+            $text    = $q['text']    ?? '';
+            $answer  = $q['answer']  ?? '';
+            $options = array_values(array_filter($q['options'] ?? [], fn ($o) => is_string($o) && trim($o) !== ''));
+
+            return is_string($text) && trim($text) !== ''
+                && is_string($answer) && trim($answer) !== ''
+                && count($options) >= 2
+                && in_array($answer, $options, true);
+        }));
+
+        if (empty($data['questions']) || empty(trim($data['passage'] ?? ''))) {
+            throw new RuntimeException('Claude did not return a valid reading passage with questions — please try again.');
+        }
+
+        return $data;
+    }
+
+    private function buildMcReadingPrompt(string $source, string $prompt): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "mc_reading",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the passage topic>",
+  "passage": "<the reading passage — 220 to 380 words, written for B1-B2 learners>",
+  "questions": [
+    {
+      "text": "<a comprehension question about the passage>",
+      "options": ["<option A>", "<option B>", "<option C>", "<option D>"],
+      "answer": "<the correct option, copied verbatim from this question's options>",
+      "explanation": "<one sentence explaining why, referencing the passage>"
+    }
+  ]
+}
+
+Rules:
+- Generate exactly 6 questions
+- Each question has EXACTLY 4 options; exactly one is correct and is repeated verbatim as "answer"
+- Mix question types: main idea, specific detail, vocabulary in context, inference, and the writer's purpose or opinion
+- Wrong options must be plausible and drawn from the passage's topic — not obviously silly
+- The passage must actually contain (or clearly imply, for inference questions) the information each question tests
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateReadComplete(string $source, string $prompt): array
+    {
+        $data = $this->requestJson($this->buildReadCompletePrompt($this->sanitizeUtf8($source), $prompt));
+
+        $clean = [];
+        foreach ($data['parts'] ?? [] as $part) {
+            if (isset($part['text']) && is_string($part['text'])) {
+                $clean[] = ['text' => $part['text']];
+                continue;
+            }
+            $given  = isset($part['given'])  && is_string($part['given'])  ? trim($part['given'])  : '';
+            $answer = isset($part['answer']) && is_string($part['answer']) ? trim($part['answer']) : '';
+            // keep only well-formed gaps: a real prefix that's shorter than the whole word
+            if ($given === '' || $answer === '' || mb_strlen($given) >= mb_strlen($answer)
+                || mb_strtolower(mb_substr($answer, 0, mb_strlen($given))) !== mb_strtolower($given)) {
+                continue;
+            }
+            $clean[] = ['given' => $given, 'answer' => $answer];
+        }
+
+        // Claude sometimes drops the space between a word and an adjacent gap
+        // ("gets" + "dressed" -> "getsdressed"). Re-insert a separating space
+        // wherever a plain-text part butts a gap letter-to-letter.
+        $count = count($clean);
+        foreach ($clean as $i => $part) {
+            if (! isset($part['answer'])) {
+                continue;
+            }
+            if ($i > 0 && isset($clean[$i - 1]['text'])) {
+                $prev = $clean[$i - 1]['text'];
+                if ($prev !== '' && ctype_alnum(mb_substr($prev, -1))) {
+                    $clean[$i - 1]['text'] = $prev . ' ';
+                }
+            }
+            if ($i + 1 < $count && isset($clean[$i + 1]['text'])) {
+                $next = $clean[$i + 1]['text'];
+                if ($next !== '' && ctype_alnum(mb_substr($next, 0, 1))) {
+                    $clean[$i + 1]['text'] = ' ' . $next;
+                }
+            }
+        }
+
+        $data['parts'] = array_values($clean);
+
+        if (! $this->hasBlankKey($data['parts'], 'answer')) {
+            throw new RuntimeException('Claude did not return any valid gapped words — please try generating again.');
+        }
+
+        return $data;
+    }
+
+    private function buildReadCompletePrompt(string $source, string $prompt): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "read_complete",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "Complete each missing word. The first letters are given.",
+  "parts": [
+    { "text": "Every morning she quickly gets " },
+    { "given": "dre", "answer": "dressed" },
+    { "text": " and leaves the " },
+    { "given": "hou", "answer": "house" },
+    { "text": " by eight o'clock." }
+  ]
+}
+
+Rules:
+- Concatenating, in order, every "text" value and each gap's full "answer" with NOTHING added between them must reproduce the passage exactly — so each "text" part MUST include the spaces and punctuation that surround the gap (note the leading/trailing spaces in the example above)
+- The passage must be one natural, connected passage of 60-120 words
+- Gap 10 to 14 words across the passage
+- "given" must be the exact first letters of "answer" (same spelling), and must be strictly shorter than "answer" — about half the letters, rounded up (e.g. "disc" for "discovery", "im" for "important", "wea" for "weather")
+- Gap content words a B1-B2 student can recover from context — nouns, verbs, adjectives, adverbs — not tiny function words
+- Never gap two words in a row with no plain text between them
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    private function hasBlankKey(array $parts, string $key): bool
+    {
         foreach ($parts as $part) {
-            if (isset($part['blank'])) {
+            if (isset($part[$key])) {
                 return true;
             }
         }

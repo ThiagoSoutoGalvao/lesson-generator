@@ -28,7 +28,7 @@ class SavedActivityController extends Controller
     {
         $request->validate([
             'name'    => ['required', 'string', 'max:255'],
-            'type'    => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,image_vocab_match,odd_one_out,cloze,open_cloze,mc_cloze,discussion_questions,sentence_transformation,error_correction,word_formation,presentation,reading_text,essay_feedback'],
+            'type'    => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,mc_reading,image_vocab_match,odd_one_out,cloze,open_cloze,mc_cloze,read_complete,discussion_questions,sentence_transformation,error_correction,word_formation,presentation,reading_text,essay_feedback'],
             'content' => ['required', 'array'],
             'tags'    => ['nullable', 'string', 'max:255'],
             'folder'  => ['nullable', 'string', 'max:255'],
