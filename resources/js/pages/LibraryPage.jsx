@@ -17,7 +17,7 @@ import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
-import { TRILHAS, TRILHA_NAMES, LESSON_SLOTS, TEACHERS } from '@/lib/trilhas';
+import { TRILHAS, TRILHA_NAMES, TRILHA_TOC, LESSON_SLOTS, TEACHERS } from '@/lib/trilhas';
 
 const TYPE_LABELS = {
     quiz:                     'Quiz',
@@ -89,6 +89,7 @@ function LessonBriefEditor({ trilhaName, lessonNum, brief, onSave, onCancel }) {
     );
     const [updatedBy, setUpdatedBy] = useState(brief?.updated_by ?? '');
     const [saving, setSaving] = useState(false);
+    const toc = TRILHA_TOC[trilhaName]?.[lessonNum] ?? [];
 
     async function handleSave() {
         setSaving(true);
@@ -101,6 +102,19 @@ function LessonBriefEditor({ trilhaName, lessonNum, brief, onSave, onCancel }) {
 
     return (
         <div className="flex flex-col gap-3 bg-black/20 rounded-xl p-3 mt-1">
+            {toc.length > 0 && (
+                <div className="bg-white/5 border border-white/10 rounded-lg p-3">
+                    <div className="text-white/40 text-[11px] font-semibold uppercase tracking-wide mb-1.5">
+                        From the trilha ToC — {trilhaName} · Lesson {lessonNum}
+                    </div>
+                    <ul className="list-disc list-inside space-y-1 text-white/80 text-xs leading-snug">
+                        {toc.map((item, i) => <li key={i}>{item}</li>)}
+                    </ul>
+                    <p className="text-white/30 text-[10px] mt-2">
+                        Reference only — fill in the target language and vocabulary below.
+                    </p>
+                </div>
+            )}
             <div className="grid sm:grid-cols-2 gap-3">
                 {BRIEF_FIELDS.map(([key, label, placeholder]) => (
                     <div key={key} className="flex flex-col gap-1">
