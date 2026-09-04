@@ -46,7 +46,7 @@ const TEMPLATES = [
     },
     {
         id: 'word_formation', label: 'Word Formation', goals: ['vocabulary', 'grammar'],
-        blurb: 'Given a root word in capitals, form the right word to fill the gap.',
+        blurb: 'Form the right word from a root in capitals to fill the gap. Prefixes, suffixes, word class.',
         defaultPrompt: 'Create a word formation activity with 8 items. For each, give a root word in capitals and a sentence with a gap; the student forms the correct derivative. Mix nouns, verbs, adjectives and adverbs.',
     },
     {
@@ -56,17 +56,17 @@ const TEMPLATES = [
     },
     {
         id: 'cloze', label: 'Cloze (gap-fill + word bank)', goals: ['grammar', 'vocabulary'],
-        blurb: 'A short passage with words removed and a word bank to choose from.',
+        blurb: 'A short passage with words removed and a word bank to choose from. Target vocabulary or a set structure.',
         defaultPrompt: 'Create a gap-fill activity: a short passage with 6–8 key words removed, provided as a word bank. Make sure the context gives enough clues for each gap.',
     },
     {
         id: 'open_cloze', label: 'Open Cloze (no word bank)', goals: ['grammar'],
-        blurb: 'A passage with single-word gaps and no options — tests grammar & function words (prepositions, articles, auxiliaries).',
+        blurb: 'A passage with single-word gaps and no word bank. Grammar and function words — prepositions, articles, auxiliaries.',
         defaultPrompt: 'Create an Open Cloze passage of 80–140 words with 8 single-word gaps, no word bank. Each gap should be a grammar or function word the student works out from context.',
     },
     {
         id: 'mc_cloze', label: 'Multiple Choice Cloze', goals: ['grammar', 'vocabulary'],
-        blurb: 'A passage with 4 options per gap — tests collocation, phrasal verbs, easily-confused words.',
+        blurb: 'A passage with 4 options per gap. Collocation, phrasal verbs, easily-confused words.',
         defaultPrompt: 'Create a Multiple Choice Cloze passage of 90–150 words with 8 gaps, each with 4 options. Test collocation, phrasal verbs, linking words and easily-confused words.',
     },
     {
@@ -101,7 +101,7 @@ const TEMPLATES = [
     },
     {
         id: 'mc_reading', label: 'Reading Comprehension (MC)', goals: ['reading'],
-        blurb: 'A longer passage that stays on screen while students answer 6 multiple-choice questions.',
+        blurb: 'A longer passage stays on screen while students answer 6 multiple-choice questions. Main idea, detail, inference.',
         defaultPrompt: 'Write a 220–380 word passage and 6 multiple-choice comprehension questions (4 options each): mix main idea, detail, vocabulary in context, inference and purpose.',
     },
     {

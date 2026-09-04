@@ -760,8 +760,28 @@ A prior styling attempt had been expensive (lots of live tweak → rebuild → s
 - `generateErrorCorrection` — reads `passage`, filters items whose `error` isn't also in the passage, drops the field when empty.
 - `ErrorCorrectionActivity.jsx` — if `activity.passage` is set: renders it in a scrollable panel (`max-h-[44vh]`, bottom fade); `buildSegments()` locates each error by sequential search. Stepping Prev/Reveal/Next walks the passage — errors already passed show struck-through + green correction inline, the active one gets a yellow ring (then its correction on Reveal), upcoming ones stay unmarked; active error auto-scrolls into view. Header reads "Mistake X / N". No `passage` → the original sentence-by-sentence UI, untouched.
 
-### T-4 — Reading Text → make an exercise from it  ⏭️ NEXT
-### T-5 — new generatable formats: Key Word Transformation, Open Cloze, MC Reading, Read and Complete (built on `PracticeSessionShell`)
-### T-6 — consistency pass (blurbs, placeholders, mobile sweep) + this doc
+### T-4 — Reading Text → make an exercise from it ✅ COMPLETED (commit `eb1349a`)
+- `ReadingTextActivity.jsx` — a "Make an exercise from this text:" bar (Comprehension Quiz · True / False · Cloze · Error Correction). Each POSTs `/api/generate` with `source_text` = the passage + a tailored prompt (the Error Correction one asks for a connected passage → T-3 mode).
+- New optional prop `onDerive(activity)` — the parent swaps in the result. `GeneratePage` → `setActivity`; `LibraryPage` → `setLaunched`. Bar only renders when `onDerive` is passed and there are paragraphs.
 
-Then the student app itself (Phase S1+ in `AuroraStudentApp.md`).
+### T-5 — four new generatable formats ✅ COMPLETED (T-5a `bf5547c`, T-5b `95991df`)
+- **Key Word Transformation was dropped** — it's the existing `sentence_transformation` under a Cambridge name. **MC Cloze** took its place. The Cambridge `PracticeSessionShell`-based drills turned out not to fit the `/generate` activity contract (SavePanel / background / fullscreen chrome); the new templates instead reuse the existing activity-template patterns (`ClozeActivity`, `TrueFalseActivity`, `OpenClozeActivity`).
+- **`open_cloze`** (`OpenClozeActivity`) — passage, single-word gaps, no word bank; click to reveal. Grammar / function words.
+- **`mc_cloze`** (`McClozeActivity`) — passage, 4 options per gap; quiz-style answer + score. Collocation, phrasal verbs, confusables.
+- **`mc_reading`** (`McReadingActivity`) — TrueFalse's split-panel model (passage stays visible), one 4-option comprehension question at a time, results screen.
+- **`read_complete`** (`ReadCompleteActivity`) — passage where each gapped word shows its first letters (`{given, answer}` parts); click to reveal. Gap span is `inline-block mx-1`.
+- `open_cloze` / `mc_cloze` reuse the `cloze` `parts: [{text}|{blank}]` shape. `ClaudeService` shared helpers: `requestJson()`, `cleanClozeParts($parts, $mc)`, `hasBlank()` / `hasBlankKey()`. All four wired through `ActivityController::generate` + `SavedActivityController` `in:` lists, `GeneratePage` `TEMPLATES` (Grammar / Reading / Vocabulary goals) and `LibraryPage` labels/colours/filters/launch.
+- **Root-cause bug fixed in `bootstrap/app.php`**: Laravel's global `TrimStrings` middleware was stripping the edge spaces that cloze-family `parts` text carries against each gap on save (`"gets"` + gap → `"getsdre___"`) — corrupting every saved cloze/open-cloze/mc-cloze/read-complete passage. Added `$middleware->trimStrings(except: ['content', 'content.*', 'source_text'])`. The `content.*` wildcard covers nested strings.
+
+### T-6 — consistency pass ✅ COMPLETED
+- `TEMPLATES` blurbs normalised to one voice ("what it is. when to use it."), a few tightened.
+- Full mobile sweep of the `/generate` 3-step flow at 390px — zero horizontal overflow at every step (goals → each goal's templates → source + prompt, both source modes), zero console errors.
+- This section.
+
+**Phase T is complete.** Next: the student app (Phase S1+ in `AuroraStudentApp.md`).
+
+### `/generate` page after Phase T — quick reference
+- 3 steps: **goal** (Vocabulary / Grammar / Reading / Speaking) → **format** (that goal's templates, each with a blurb) → **source** (a topic by default; or an uploaded document + page range behind a toggle).
+- `GOALS` + `TEMPLATES` config live at the top of `resources/js/pages/GeneratePage.jsx`. A template's `id` is the picker key; `type` (defaults to `id`) is what the API/renderer sees — that's how "Error Correction — sentences" and "— passage" are two cards on one `error_correction` type.
+- 15 generatable types now: quiz, flashcards, unjumble, dialog_gap_fill, word_formation, true_false, mc_reading, odd_one_out, cloze, open_cloze, mc_cloze, read_complete, discussion_questions, sentence_transformation, error_correction. (`image_vocab_match` / `word_categorisation` still have no backend generator.)
+- Presentation / Reading Text keep their own `/upload` tabs + endpoints; a line on `/generate` points there.

@@ -581,7 +581,16 @@ app) + an entry in the T-2 goal map + a `match` arm + validation in
 - **Verify:** each generates from a topic, renders, scores; saved + relaunched
   from Library; mobile check at 390px.
 
-### T-6 — Consistency pass for the demo
+### T-6 — Consistency pass ✅ DONE (2026-09-04)
+- `TEMPLATES` blurbs normalised to one voice; word_formation / cloze / open_cloze
+  / mc_cloze / mc_reading tightened.
+- Full mobile sweep of the 3-step `/generate` flow at 390px (`qa_t6_mobile.mjs`) —
+  **zero horizontal overflow** at every step and in both source modes, zero
+  console errors.
+- `Claude.md` Phase T section brought up to date (T-4, T-5, T-6 + the `/generate`
+  quick reference).
+
+**Original plan (for reference):**
 - Every template blurb in one voice; topic-field placeholder gives real examples
   ("second conditional", "daily routines vocabulary", "a text about recycling").
 - `/generate` empty/loading/error states reviewed.
@@ -614,7 +623,9 @@ grouping is the highest-impact single piece.
 - ✅ T-2 — goal-first `/generate` page — committed `a2f9f62`
 - ✅ T-4 — "Make an exercise from this" on a Reading Text — committed `eb1349a`
 - ✅ T-5a — Open Cloze + MC Cloze generators (KWT dropped as redundant) — committed `bf5547c`
-- ✅ T-5b — MC Reading + Read and Complete + TrimStrings fix — see git log
-- ⏭️ **T-6 next** — consistency pass (blurbs, placeholders, mobile sweep) + CLAUDE.md
+- ✅ T-5b — MC Reading + Read and Complete + TrimStrings fix — committed `95991df`
+- ✅ T-6 — blurb pass + `/generate` mobile sweep (0 overflow at 390px) + CLAUDE.md
+
+**Phase T complete.** Next: the student app — **Phase S1** (roles + student accounts).
 
 Then the student app (Phase S1+).
