@@ -1,9 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
 const FONT_SIZES         = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
+const PASSAGE_SIZES      = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const EXPLANATION_SIZES  = ['text-lg', 'text-xl',  'text-2xl', 'text-3xl', 'text-4xl'];
 const TEXT_COLORS = [
     { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
@@ -12,6 +13,33 @@ const TEXT_COLORS = [
     { label: 'Red',    cls: 'text-red-400',    bg: '#f87171' },
     { label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' },
 ];
+
+// Split a passage into text/error segments. Each item's error is matched to the
+// next unclaimed occurrence in reading order, so repeated error strings still
+// map to distinct positions. Unmatched errors (shouldn't happen — the backend
+// filters them — but be safe) are simply left un-highlighted.
+function buildSegments(passage, items) {
+    const marks = [];
+    let searchFrom = 0;
+    items.forEach((item, i) => {
+        if (!item.error) return;
+        const at = passage.indexOf(item.error, searchFrom);
+        if (at === -1) return;
+        marks.push({ start: at, end: at + item.error.length, itemIndex: i });
+        searchFrom = at + item.error.length;
+    });
+    marks.sort((a, b) => a.start - b.start);
+
+    const segments = [];
+    let cursor = 0;
+    for (const m of marks) {
+        if (m.start > cursor) segments.push({ text: passage.slice(cursor, m.start), itemIndex: null });
+        segments.push({ text: passage.slice(m.start, m.end), itemIndex: m.itemIndex });
+        cursor = m.end;
+    }
+    if (cursor < passage.length) segments.push({ text: passage.slice(cursor), itemIndex: null });
+    return segments;
+}
 
 export default function ErrorCorrectionActivity({ activity, onClose }) {
     const [index, setIndex]             = useState(0);
@@ -26,6 +54,10 @@ export default function ErrorCorrectionActivity({ activity, onClose }) {
     const item  = items[index];
     const total = items.length;
 
+    const isPassage = typeof activity.passage === 'string' && activity.passage.trim() !== '';
+    const segments  = isPassage ? buildSegments(activity.passage, items) : null;
+    const activeRef = useRef(null);
+
     useEffect(() => {
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
             .then(({ data }) => setBgUrl(data.url))
@@ -39,6 +71,11 @@ export default function ErrorCorrectionActivity({ activity, onClose }) {
         }
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
+    }, [index, revealed]);
+
+    // keep the active error visible in the scrollable passage
+    useEffect(() => {
+        activeRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
     }, [index, revealed]);
 
     function handleNext() {
@@ -68,6 +105,36 @@ export default function ErrorCorrectionActivity({ activity, onClose }) {
         );
     }
 
+    // Passage mode — render each segment, styled by how far the student has got.
+    function renderPassage() {
+        return segments.map((seg, i) => {
+            if (seg.itemIndex === null) return <span key={i}>{seg.text}</span>;
+
+            const done   = seg.itemIndex < index;
+            const active = seg.itemIndex === index;
+            const it     = items[seg.itemIndex];
+
+            if (done || (active && revealed)) {
+                return (
+                    <span key={i} ref={active ? activeRef : null}>
+                        <span className="line-through text-red-400 mx-0.5">{seg.text}</span>
+                        <span className="text-green-300 font-bold mx-0.5">{it.correction}</span>
+                    </span>
+                );
+            }
+            if (active) {
+                return (
+                    <span key={i} ref={activeRef}
+                        className="rounded-md bg-white/20 ring-2 ring-yellow-300/80 px-1 mx-0.5 text-white">
+                        {seg.text}
+                    </span>
+                );
+            }
+            // upcoming error — leave it in the text, unmarked
+            return <span key={i}>{seg.text}</span>;
+        });
+    }
+
     const bgStyle = bgUrl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' };
@@ -80,7 +147,9 @@ export default function ErrorCorrectionActivity({ activity, onClose }) {
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
-                <span className="text-white/70 text-sm font-medium">Sentence {index + 1} / {total}</span>
+                <span className="text-white/70 text-sm font-medium">
+                    {isPassage ? 'Mistake' : 'Sentence'} {index + 1} / {total}
+                </span>
                 <div className="flex items-center gap-5">
                     <div className="flex items-center gap-1">
                         <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
@@ -118,11 +187,22 @@ export default function ErrorCorrectionActivity({ activity, onClose }) {
 
                     <div className="flex flex-col rounded-2xl bg-black/30 backdrop-blur-sm border border-white/15 overflow-hidden">
 
-                        <div className="px-8 py-10 flex items-center justify-center">
-                            <p className={`${FONT_SIZES[fontSizeIdx]} leading-relaxed text-center ${textColor}`}>
-                                {renderSentence(item.sentence, item.error, item.correction, revealed)}
-                            </p>
-                        </div>
+                        {isPassage ? (
+                            <div className="relative">
+                                <div className="px-8 py-8 max-h-[44vh] overflow-y-auto">
+                                    <p className={`${PASSAGE_SIZES[fontSizeIdx]} leading-loose whitespace-pre-line ${textColor}`}>
+                                        {renderPassage()}
+                                    </p>
+                                </div>
+                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/40 to-transparent" />
+                            </div>
+                        ) : (
+                            <div className="px-8 py-10 flex items-center justify-center">
+                                <p className={`${FONT_SIZES[fontSizeIdx]} leading-relaxed text-center ${textColor}`}>
+                                    {renderSentence(item.sentence, item.error, item.correction, revealed)}
+                                </p>
+                            </div>
+                        )}
 
                         {revealed && (
                             <div className="px-8 pt-8 pb-8 border-t border-white/10 bg-white/5">

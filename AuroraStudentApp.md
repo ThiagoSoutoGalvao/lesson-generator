@@ -406,8 +406,34 @@ UI-only, on top of T-1.
   end-to-end from the UI; PDF path still reachable and working; mobile layout of
   the two-step picker is usable at 390px.
 
-### T-3 — Error Correction: passage mode + scroll
-Keep the template and its reveal styling; add a longer-text option.
+### T-3 — Error Correction: passage mode + scroll ✅ DONE (2026-09-04)
+
+**Shipped:**
+- `buildErrorCorrectionPrompt` — two explicit modes. SENTENCE MODE (default,
+  unchanged): standalone sentences, no `passage`. PASSAGE MODE (task asks for a
+  text/paragraph/story): Claude returns a connected `passage` (1–3 short
+  paragraphs) with one error per item embedded; each `items[].sentence` is the
+  verbatim sentence from the passage; every `error` appears verbatim in `passage`.
+- `generateErrorCorrection` — reads `passage`, filters items to those whose
+  `error` is also a substring of `passage`, drops the field entirely when empty.
+- `ErrorCorrectionActivity.jsx` — if `activity.passage` is set: renders the
+  passage in a scrollable panel (`max-h-[44vh]`, bottom fade), `buildSegments()`
+  maps each error to its position by sequential search. Stepping through
+  Prev/Reveal/Next walks the passage — errors already passed show
+  struck-through + green correction inline, the active one gets a yellow ring
+  (then its correction on Reveal), upcoming ones stay unmarked. Active error
+  auto-scrolls into view. Header reads "Mistake X / N". No `passage` → the
+  original sentence-by-sentence UI, untouched.
+- **Verified** (`qa_t3_errorcorrection.mjs`): passage-mode generate returns a
+  passage with every error verbatim inside it; sentence-mode generate has no
+  `passage` (regression); saved + relaunched from Library; stepped through with
+  Reveal/Next; zero console errors. `npm run build` clean. Screenshots confirm
+  the progressive-walk styling and scroll/fade.
+- **Not yet wired into a UI trigger** — passage mode is opt-in via a prompt that
+  asks for a text ("write a short text… with 6 mistakes"). T-2's goal-first page
+  gets a proper "Error Correction (passage)" option with its own default prompt.
+
+**Original plan (for reference):**
 - Prompt: allow an optional `passage` (string, 1–3 short paragraphs) in the JSON.
   When present, every `items[].error` must be a verbatim substring of `passage`.
 - Component: if `activity.passage` is set, render it in a **scrollable panel**

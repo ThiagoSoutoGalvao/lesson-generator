@@ -741,7 +741,9 @@ EOT;
             throw new RuntimeException('Claude returned invalid JSON: ' . $text);
         }
 
-        $data['items'] = array_values(array_filter($data['items'] ?? [], function ($item) {
+        $passage = is_string($data['passage'] ?? null) ? trim($data['passage']) : '';
+
+        $data['items'] = array_values(array_filter($data['items'] ?? [], function ($item) use ($passage) {
             $sentence   = $item['sentence']   ?? '';
             $error      = $item['error']      ?? '';
             $correction = $item['correction'] ?? '';
@@ -750,11 +752,20 @@ EOT;
                 && $error !== ''
                 && $correction !== ''
                 && $error !== $correction
-                && str_contains($sentence, $error);
+                && str_contains($sentence, $error)
+                // passage mode: the error must also be locatable in the passage itself,
+                // since the frontend highlights it there
+                && ($passage === '' || str_contains($passage, $error));
         }));
 
         if (empty($data['items'])) {
             throw new RuntimeException('Claude did not return any valid error-correction items — please try generating again.');
+        }
+
+        if ($passage === '') {
+            unset($data['passage']);
+        } else {
+            $data['passage'] = $passage;
         }
 
         return $data;
@@ -772,10 +783,11 @@ Return a JSON object with EXACTLY this structure:
   "type": "error_correction",
   "topic": "<short topic description>",
   "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
-  "instruction": "Each sentence contains one mistake. Find and correct it.",
+  "instruction": "<task instruction for students — see the two modes below>",
+  "passage": "<OPTIONAL. Include this field ONLY in passage mode. Omit it entirely in sentence mode.>",
   "items": [
     {
-      "sentence": "<a sentence containing exactly one deliberate grammar or vocabulary error>",
+      "sentence": "<the sentence containing exactly one deliberate error — in passage mode, the exact sentence from the passage>",
       "error": "<the incorrect word or phrase as it appears in the sentence>",
       "correction": "<the correct word or phrase that replaces it>",
       "explanation": "<one clear sentence explaining the grammar rule or reason for the correction>"
@@ -783,16 +795,28 @@ Return a JSON object with EXACTLY this structure:
   ]
 }
 
+Two modes — choose based on the task:
+- SENTENCE MODE (default): the task asks for separate sentences. OMIT the "passage"
+  field. Each item is a standalone sentence. instruction: "Each sentence contains
+  one mistake. Find and correct it."
+- PASSAGE MODE: the task asks for a text, paragraph, story, or connected passage.
+  Write a natural connected "passage" of 1 to 3 short paragraphs. Embed exactly one
+  error per item into it. Each item's "sentence" must be the exact sentence from
+  "passage" that contains that error (copied verbatim). Every "error" string must
+  appear verbatim in "passage". instruction: e.g. "This text contains N mistakes.
+  Find and correct each one." (use the real number).
+
 Rules:
-- Generate the number of items requested in the task — typically 6–12
+- Generate the number of items requested in the task — typically 6–12 (in passage mode, 5–8)
 - Each sentence must contain EXACTLY one error — no more, no less
 - Errors must be realistic mistakes that B1-B2 learners commonly make: wrong tense, subject-verb agreement, wrong preposition, incorrect article, wrong word form, or vocabulary confusion
-- The "error" field must be copied character-for-character from the sentence — same spelling, spacing, and capitalization — since it is matched against the sentence text verbatim
+- The "error" field must be copied character-for-character from the sentence — same spelling, spacing, and capitalization — since it is matched verbatim against the sentence text (and, in passage mode, against the passage text)
 - The "correction" replaces only the erroneous part — the rest of the sentence stays the same
 - Each item must test a different type of error — do not repeat error categories
-- Sentences should feel natural and relate to topics from the text
+- Sentences should feel natural and relate to the topic
+- In passage mode, keep the passage coherent and readable — a real short text, not a list of unrelated sentences
 - Before writing each item, first think of the fully correct sentence, then change exactly one word or phrase to create the error — never submit a sentence that is already grammatically correct with no real mistake in it
-- After writing each item, verify: (1) the "error" text appears in the "sentence" text exactly as written, (2) "error" and "correction" are different, (3) replacing "error" with "correction" in the sentence produces a natural, fully correct sentence — discard and rewrite any item that fails this check
+- After writing each item, verify: (1) the "error" text appears in the "sentence" text exactly as written (and in "passage" in passage mode), (2) "error" and "correction" are different, (3) replacing "error" with "correction" produces a natural, fully correct sentence — discard and rewrite any item that fails this check
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
