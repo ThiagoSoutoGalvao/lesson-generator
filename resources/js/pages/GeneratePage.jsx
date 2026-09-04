@@ -9,6 +9,8 @@ import WordFormationActivity from '@/components/WordFormationActivity';
 import TrueFalseActivity from '@/components/TrueFalseActivity';
 import OddOneOutActivity from '@/components/OddOneOutActivity';
 import ClozeActivity from '@/components/ClozeActivity';
+import OpenClozeActivity from '@/components/OpenClozeActivity';
+import McClozeActivity from '@/components/McClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
 import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
@@ -54,6 +56,16 @@ const TEMPLATES = [
         id: 'cloze', label: 'Cloze (gap-fill + word bank)', goals: ['grammar', 'vocabulary'],
         blurb: 'A short passage with words removed and a word bank to choose from.',
         defaultPrompt: 'Create a gap-fill activity: a short passage with 6–8 key words removed, provided as a word bank. Make sure the context gives enough clues for each gap.',
+    },
+    {
+        id: 'open_cloze', label: 'Open Cloze (no word bank)', goals: ['grammar'],
+        blurb: 'A passage with single-word gaps and no options — tests grammar & function words (prepositions, articles, auxiliaries).',
+        defaultPrompt: 'Create an Open Cloze passage of 80–140 words with 8 single-word gaps, no word bank. Each gap should be a grammar or function word the student works out from context.',
+    },
+    {
+        id: 'mc_cloze', label: 'Multiple Choice Cloze', goals: ['grammar', 'vocabulary'],
+        blurb: 'A passage with 4 options per gap — tests collocation, phrasal verbs, easily-confused words.',
+        defaultPrompt: 'Create a Multiple Choice Cloze passage of 90–150 words with 8 gaps, each with 4 options. Test collocation, phrasal verbs, linking words and easily-confused words.',
     },
     {
         id: 'sentence_transformation', label: 'Sentence Transformation', goals: ['grammar'],
@@ -179,6 +191,8 @@ export default function GeneratePage() {
     if (activity?.type === 'true_false')         return <TrueFalseActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'odd_one_out')          return <OddOneOutActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'cloze')                return <ClozeActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'open_cloze')           return <OpenClozeActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'mc_cloze')             return <McClozeActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'discussion_questions')   return <DiscussionQuestionsActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'sentence_transformation') return <SentenceTransformationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'error_correction')        return <ErrorCorrectionActivity activity={activity} onClose={handleClose} />;

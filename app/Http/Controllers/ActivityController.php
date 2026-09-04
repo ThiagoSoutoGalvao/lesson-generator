@@ -15,7 +15,7 @@ class ActivityController extends Controller
             'topic'       => ['nullable', 'string', 'max:200'],
             'source_text' => ['nullable', 'string', 'max:8000'],
             'prompt'      => ['required', 'string', 'max:1000'],
-            'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,odd_one_out,cloze,discussion_questions,sentence_transformation,error_correction'],
+            'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,odd_one_out,cloze,open_cloze,mc_cloze,discussion_questions,sentence_transformation,error_correction'],
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
         ]);
@@ -73,6 +73,8 @@ class ActivityController extends Controller
                 'true_false'              => $claude->generateTrueFalse($source, $prompt),
                 'odd_one_out'             => $claude->generateOddOneOut($source, $prompt),
                 'cloze'                   => $claude->generateCloze($source, $prompt),
+                'open_cloze'              => $claude->generateOpenCloze($source, $prompt),
+                'mc_cloze'                => $claude->generateMcCloze($source, $prompt),
                 'discussion_questions'    => $claude->generateDiscussionQuestions($source, $prompt),
                 'sentence_transformation' => $claude->generateSentenceTransformation($source, $prompt),
                 'error_correction'        => $claude->generateErrorCorrection($source, $prompt),

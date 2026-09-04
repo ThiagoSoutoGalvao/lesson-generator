@@ -502,7 +502,41 @@ The foundation everything else needs. No UI change in this step.
 - **Verify:** generate a Reading Text, make each of the four exercise types from
   it, confirm the exercise content actually reflects the passage; save works.
 
-### T-5 — Four new DET/Cambridge formats as generatable templates
+### T-5a — Open Cloze + Multiple Choice Cloze ✅ DONE (2026-09-04)
+
+Scope confirmed with the user: **Key Word Transformation dropped** — it's the
+existing `sentence_transformation` under a Cambridge name. Replaced with
+**MC Cloze**. So T-5 = Open Cloze, MC Cloze (T-5a) + MC Reading, Read and
+Complete (T-5b).
+
+**Shipped:**
+- `ClaudeService` — `generateOpenCloze` / `generateMcCloze` + their prompt
+  builders. New shared helpers: `requestJson()` (the standard Claude JSON call),
+  `cleanClozeParts($parts, $mc)` (keeps well-formed `{text}` / `{blank}` parts;
+  for MC, ensures each blank's `options` list contains the answer, dedupes, caps
+  at 4), `hasBlank()`.
+- Schema — both reuse the `parts: [{text}|{blank}]` shape from `cloze`.
+  `open_cloze`: blanks are bare single words, no word bank. `mc_cloze`: each
+  blank also carries `options: [4]` with `blank` repeated verbatim among them.
+- `ActivityController::generate` + `SavedActivityController` — `open_cloze` /
+  `mc_cloze` added to the `in:` lists and the match arm.
+- `OpenClozeActivity.jsx` — ClozeActivity's passage render minus the word bank;
+  click a numbered gap to reveal the word, "Reveal All", A-/A+.
+- `McClozeActivity.jsx` — passage on top (answered gaps fill in green/red), an
+  options panel below with one A–D row per gap; click to answer, quiz-style
+  feedback, "X / N correct" header. Scrolls for long passages.
+- `GeneratePage` / `LibraryPage` — imports, render branches, `TEMPLATES` entries
+  (Open Cloze → Grammar; MC Cloze → Grammar + Vocabulary), `TYPE_LABELS` /
+  `TYPE_COLORS` / `TYPE_FILTERS`.
+- **Verified** (`qa_t5a_clozes.mjs`): open_cloze → 8 bare blanks, no options;
+  mc_cloze → 8 blanks each with valid 4-option lists containing the answer;
+  both save + relaunch from Library; MC scoring tracks correctly (2/8 after 2
+  answers); screenshots show good phrasal-verb distractors. Zero console errors.
+  `npm run build` + PHP lint clean.
+
+### T-5b — MC Reading + Read and Complete  ⏭️ NEXT
+
+### (original) T-5 — Four new DET/Cambridge formats as generatable templates
 Each = a `ClaudeService` generator + prompt builder + JSON schema + a component
 on `PracticeSessionShell` (tap-only → mobile-ready → reusable in the student
 app) + an entry in the T-2 goal map + a `match` arm + validation in
@@ -548,8 +582,9 @@ grouping is the highest-impact single piece.
 - ✅ T-1 — `/api/generate` topic/source_text — committed `fff0d9d`
 - ✅ T-3 — Error Correction passage mode — committed `fefa113`
 - ✅ T-2 — goal-first `/generate` page — committed `a2f9f62`
-- ✅ T-4 — "Make an exercise from this" on a Reading Text — committed (see git log)
-- ⏭️ **T-5a next** — Key Word Transformation + Open Cloze generators
-- then T-5b (MC Reading + Read and Complete), T-6 (polish)
+- ✅ T-4 — "Make an exercise from this" on a Reading Text — committed `eb1349a`
+- ✅ T-5a — Open Cloze + MC Cloze generators (KWT dropped as redundant) — see git log
+- ⏭️ **T-5b next** — MC Reading + Read and Complete
+- then T-6 (polish + CLAUDE.md)
 
 Then the student app (Phase S1+).

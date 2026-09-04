@@ -10,6 +10,8 @@ import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
 import WordFormationActivity from '@/components/WordFormationActivity';
 import OddOneOutActivity from '@/components/OddOneOutActivity';
 import ClozeActivity from '@/components/ClozeActivity';
+import OpenClozeActivity from '@/components/OpenClozeActivity';
+import McClozeActivity from '@/components/McClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
 import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
@@ -30,6 +32,8 @@ const TYPE_LABELS = {
     word_formation:           'Word Formation',
     odd_one_out:              'Odd One Out',
     cloze:                    'Cloze',
+    open_cloze:               'Open Cloze',
+    mc_cloze:                 'MC Cloze',
     discussion_questions:     'Discussion',
     sentence_transformation:  'Transform',
     error_correction:         'Error Correction',
@@ -49,6 +53,8 @@ const TYPE_COLORS = {
     word_formation:          'bg-lime-500/80 text-white',
     odd_one_out:             'bg-rose-500/80 text-white',
     cloze:                   'bg-amber-500/80 text-white',
+    open_cloze:              'bg-amber-600/80 text-white',
+    mc_cloze:                'bg-yellow-600/80 text-white',
     discussion_questions:    'bg-sky-500/80 text-white',
     sentence_transformation: 'bg-violet-500/80 text-white',
     error_correction:        'bg-red-500/80 text-white',
@@ -60,7 +66,7 @@ const TYPE_COLORS = {
 const TYPE_FILTERS = [
     'all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill',
     'word_categorisation', 'true_false', 'image_vocab_match',
-    'word_formation', 'odd_one_out', 'cloze', 'discussion_questions',
+    'word_formation', 'odd_one_out', 'cloze', 'open_cloze', 'mc_cloze', 'discussion_questions',
     'sentence_transformation', 'error_correction', 'grammar_explainer', 'presentation', 'reading_text', 'essay_feedback',
 ];
 
@@ -322,6 +328,8 @@ export default function LibraryPage() {
         if (launched.type === 'word_formation')          return <WordFormationActivity {...props} />;
         if (launched.type === 'odd_one_out')             return <OddOneOutActivity {...props} />;
         if (launched.type === 'cloze')                   return <ClozeActivity {...props} />;
+        if (launched.type === 'open_cloze')              return <OpenClozeActivity {...props} />;
+        if (launched.type === 'mc_cloze')                return <McClozeActivity {...props} />;
         if (launched.type === 'discussion_questions')    return <DiscussionQuestionsActivity {...props} />;
         if (launched.type === 'sentence_transformation') return <SentenceTransformationActivity {...props} />;
         if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;

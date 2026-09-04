@@ -821,6 +821,172 @@ Rules:
 EOT;
     }
 
+    public function generateOpenCloze(string $source, string $prompt): array
+    {
+        $data = $this->requestJson($this->buildOpenClozePrompt($this->sanitizeUtf8($source), $prompt));
+
+        $data['parts'] = $this->cleanClozeParts($data['parts'] ?? [], false);
+        if (! $this->hasBlank($data['parts'])) {
+            throw new RuntimeException('Claude did not return any valid gaps — please try generating again.');
+        }
+
+        return $data;
+    }
+
+    private function buildOpenClozePrompt(string $source, string $prompt): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "open_cloze",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "Read the text and think of the word that best fits each gap. Use only ONE word in each gap.",
+  "parts": [
+    { "text": "<text before the first gap>" },
+    { "blank": "<the single word that fills this gap>" },
+    { "text": "<text between gaps>" },
+    { "blank": "<the single word>" },
+    { "text": "<text after the last gap>" }
+  ]
+}
+
+Rules:
+- The "parts" array alternates text and gaps: every { "blank": ... } must sit between two { "text": ... } parts
+- Joining all the text values and blank values in order must read as one natural, connected passage of 80-140 words
+- Generate 6 to 10 gaps
+- Each gap must be ONE common grammatical or functional word — articles, prepositions, auxiliary or modal verbs, pronouns, relative pronouns, conjunctions, quantifiers, or words in fixed phrases. NOT topic vocabulary (that would need a word bank)
+- Each gap must have exactly one clearly correct answer a B1-B2 student can find from the surrounding context — never a gap where several different words work equally well
+- Never put two gaps next to each other with no words between them
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateMcCloze(string $source, string $prompt): array
+    {
+        $data = $this->requestJson($this->buildMcClozePrompt($this->sanitizeUtf8($source), $prompt));
+
+        $data['parts'] = $this->cleanClozeParts($data['parts'] ?? [], true);
+        if (! $this->hasBlank($data['parts'])) {
+            throw new RuntimeException('Claude did not return any valid gaps — please try generating again.');
+        }
+
+        return $data;
+    }
+
+    private function buildMcClozePrompt(string $source, string $prompt): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "mc_cloze",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "instruction": "For each gap, choose the word or phrase (A, B, C or D) that fits best.",
+  "parts": [
+    { "text": "<text before the first gap>" },
+    { "blank": "<the correct option, copied verbatim from this gap's options>", "options": ["<option>", "<option>", "<option>", "<option>"] },
+    { "text": "<text between gaps>" },
+    { "blank": "...", "options": ["...", "...", "...", "..."] },
+    { "text": "<text after the last gap>" }
+  ]
+}
+
+Rules:
+- The "parts" array alternates text and gaps: every gap object must sit between two { "text": ... } parts
+- Joining all the text values and each gap's "blank" value in order must read as one natural, connected passage of 90-150 words
+- Generate 6 to 10 gaps
+- Each gap has EXACTLY 4 options; exactly one is correct and is repeated verbatim as "blank"
+- The three wrong options must be the same part of speech and look plausible on a quick read — the gap should test collocation, phrasal verbs, easily-confused words, linking words, or fixed expressions, NOT basic meaning
+- Options are single words or very short phrases (2 words maximum)
+- Never put two gaps next to each other with no words between them
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    /**
+     * Keep only well-formed cloze parts: { "text": string } or { "blank": string }.
+     * When $mc, a blank also needs a non-trivial "options" list that contains the
+     * answer (added if Claude left it out); options are de-duped and capped at 4.
+     */
+    private function cleanClozeParts(array $parts, bool $mc): array
+    {
+        $clean = [];
+        foreach ($parts as $part) {
+            if (isset($part['text']) && is_string($part['text'])) {
+                $clean[] = ['text' => $part['text']];
+                continue;
+            }
+            $blank = isset($part['blank']) && is_string($part['blank']) ? trim($part['blank']) : '';
+            if ($blank === '') {
+                continue;
+            }
+            if (! $mc) {
+                $clean[] = ['blank' => $blank];
+                continue;
+            }
+            $options = array_values(array_unique(array_filter(
+                array_map(fn ($o) => is_string($o) ? trim($o) : '', $part['options'] ?? []),
+                fn ($o) => $o !== '',
+            )));
+            if (! in_array($blank, $options, true)) {
+                array_unshift($options, $blank);
+            }
+            if (count($options) < 2) {
+                continue;
+            }
+            $clean[] = ['blank' => $blank, 'options' => array_slice($options, 0, 4)];
+        }
+
+        return array_values($clean);
+    }
+
+    private function hasBlank(array $parts): bool
+    {
+        foreach ($parts as $part) {
+            if (isset($part['blank'])) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** Shared Claude JSON request used by the newer generators. */
+    private function requestJson(string $content): array
+    {
+        $response = Http::withHeaders([
+            'x-api-key'         => config('services.anthropic.key'),
+            'anthropic-version' => '2023-06-01',
+        ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
+            'model'      => 'claude-sonnet-4-6',
+            'max_tokens' => 4096,
+            'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
+            'messages'   => [
+                ['role' => 'user', 'content' => $content],
+            ],
+        ]);
+
+        $this->throwIfFailed($response);
+
+        $text = $response->json('content.0.text');
+        $data = json_decode($text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
     public function generateReadingText(string $topic, string $vocabulary = '', int $paragraphs = 3, string $extra = ''): array
     {
         $response = Http::withHeaders([
