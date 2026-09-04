@@ -382,8 +382,34 @@ The foundation everything else needs. No UI change in this step.
   tune that builder's `$sourceBlock` wording. Low risk — the builders already
   tolerate arbitrary input text.
 
-### T-2 — `/generate` page: goal-first, topic-first
-UI-only, on top of T-1.
+### T-2 — `/generate` page: goal-first, topic-first ✅ DONE (2026-09-04)
+
+**Shipped** (`GeneratePage.jsx` rewritten, no backend change):
+- Three numbered steps: **1. What do you want to practise?** (Vocabulary /
+  Grammar / Reading / Speaking) → **2. Choose a format** (only that goal's
+  templates, each a card with a one-line blurb) → **3. Where should the content
+  come from?** (a small "A topic" / "An uploaded document" toggle; topic is the
+  default, a plain text field; document mode shows the old select + page range).
+- `GOALS` + `TEMPLATES` config objects at module scope. A template can sit under
+  several goals (Quiz → grammar/vocab/reading; Cloze → grammar/vocab; Word
+  Formation → vocab/grammar; Dialogue Gap-Fill → grammar/speaking).
+- **Error Correction split into two cards** — "sentences" and "passage" — same
+  `type: error_correction`, different default prompt (passage one asks for a
+  connected text, triggering T-3's passage mode).
+- `section_focus` pills gone. `pageFrom`/`pageTo` kept (document mode only).
+- The 11 generatable types (`image_vocab_match` / `word_categorisation` have no
+  backend generator — left out; can be restored later like a T-5 item).
+- A line points teachers to the Upload page for Presentation / Reading Text
+  (those keep their own tabs + endpoints for now — full unification is a
+  possible T-7).
+- `location.state.activity` fast-path (arriving from a Presentation/Reading Text
+  generate) still renders the activity directly.
+- **Verified** (`qa_t2_generatepage.mjs`): goal → templates → source steps
+  reveal in order; default prompt loads per template; document toggle shows the
+  select; generate-from-topic renders a passage Error Correction; **zero
+  horizontal overflow at 390px**; zero console errors. `npm run build` clean.
+
+**Original plan (for reference):**
 - **Step 1 — pick a goal:** Vocabulary · Grammar · Reading · Speaking (Listening
   later, needs audio). Big, obvious buttons.
 - **Step 2 — pick a template** from that goal's set, each showing a one-line
