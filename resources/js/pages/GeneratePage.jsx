@@ -184,7 +184,7 @@ export default function GeneratePage() {
     if (activity?.type === 'error_correction')        return <ErrorCorrectionActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'grammar_explainer')       return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'presentation')            return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
-    if (activity?.type === 'reading_text')            return <ReadingTextActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'reading_text')            return <ReadingTextActivity activity={activity} onClose={handleClose} onDerive={(a) => { setActivity(a); setStatus('success'); }} />;
     if (activity?.type === 'essay_feedback')          return <EssayFeedbackActivity activity={activity} onClose={handleClose} />;
 
     return (

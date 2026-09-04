@@ -1,7 +1,29 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import Spinner from '@/components/Spinner';
 import { useFullscreen } from '@/hooks/useFullscreen';
+
+// "Make an exercise from this text" — each turns the reading passage into a
+// different activity via /api/generate with the passage as `source_text`.
+const DERIVE_OPTIONS = [
+    {
+        label: 'Comprehension Quiz', type: 'quiz',
+        prompt: 'Create 6 multiple choice comprehension questions about the text above — a mix of main idea, specific detail, and inference. Each with 4 options.',
+    },
+    {
+        label: 'True / False', type: 'true_false',
+        prompt: 'Create a True / False / Not Given activity based on the text above. Use the text (lightly adapted if needed) as the passage, and write 6 statements — 2 True, 2 False, 2 Not Given.',
+    },
+    {
+        label: 'Cloze', type: 'cloze',
+        prompt: 'Create a gap-fill activity from the text above: take a passage of 60–120 words, remove 6–8 key vocabulary or grammar words, and provide them as a word bank.',
+    },
+    {
+        label: 'Error Correction', type: 'error_correction',
+        prompt: 'Rewrite the text above as a connected passage with 6 mistakes embedded in it for students to find and correct. Keep it a passage, not separate sentences.',
+    },
+];
 
 const PARAGRAPH_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const GLOSSARY_SIZES   = ['text-sm',  'text-base', 'text-lg', 'text-xl', 'text-2xl'];
@@ -32,17 +54,36 @@ function highlightVocab(text, words) {
     });
 }
 
-export default function ReadingTextActivity({ activity, onClose }) {
+export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const [bgUrl, setBgUrl]             = useState(null);
     const [showSave, setShowSave]       = useState(false);
     const [showVocab, setShowVocab]     = useState(true);
     const [fontSizeIdx, setFontSizeIdx] = useState(2);
     const [textColor, setTextColor]     = useState('text-white');
+    const [deriving, setDeriving]       = useState(null);   // label being generated
+    const [deriveError, setDeriveError] = useState('');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const paragraphs = activity.paragraphs ?? [];
     const vocabulary = activity.vocabulary ?? [];
     const vocabWords  = vocabulary.map(v => v.word);
+    const canDerive   = typeof onDerive === 'function' && paragraphs.length > 0;
+
+    async function handleDerive(opt) {
+        setDeriving(opt.label);
+        setDeriveError('');
+        try {
+            const { data } = await axios.post('/api/generate', {
+                type: opt.type,
+                prompt: opt.prompt,
+                source_text: paragraphs.join('\n\n'),
+            });
+            onDerive(data);
+        } catch (err) {
+            setDeriveError(err.response?.data?.message ?? 'Could not generate that exercise. Please try again.');
+            setDeriving(null);
+        }
+    }
 
     useEffect(() => {
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
@@ -109,6 +150,30 @@ export default function ReadingTextActivity({ activity, onClose }) {
                     <button onClick={onClose} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer">✕</button>
                 </div>
             </div>
+
+            {/* Make an exercise from this text */}
+            {canDerive && (
+                <div className="relative z-10 px-8 pb-3 shrink-0 flex items-center gap-2 flex-wrap">
+                    <span className="text-white/40 text-xs uppercase tracking-wider mr-1">Make an exercise from this text:</span>
+                    {DERIVE_OPTIONS.map(opt => (
+                        <button
+                            key={opt.type + opt.label}
+                            onClick={() => handleDerive(opt)}
+                            disabled={deriving !== null}
+                            className="text-xs font-semibold text-white bg-white/10 hover:bg-white/20 disabled:opacity-40 disabled:cursor-default border border-white/20 rounded-lg px-3 py-1.5 transition-colors cursor-pointer"
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                    {deriveError && <span className="text-red-300 text-xs">{deriveError}</span>}
+                </div>
+            )}
+
+            {deriving && (
+                <div className="absolute inset-0 z-30 bg-black/70 backdrop-blur-sm flex items-center justify-center">
+                    <Spinner message={`Building your ${deriving}… this can take up to 20 seconds`} color="text-blue-400" textColor="text-white/70" />
+                </div>
+            )}
 
             {/* Reading passage + vocabulary */}
             <div className="relative z-10 flex-1 overflow-y-auto px-8 py-6">

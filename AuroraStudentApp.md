@@ -472,8 +472,27 @@ The foundation everything else needs. No UI change in this step.
 - **Verify:** a passage-mode generation renders, scrolls, steps through all
   errors; a legacy sentence-only activity still works; save/relaunch of both.
 
-### T-4 — Reading Text → make an exercise from it
-Depends on T-1 (`source_text`).
+### T-4 — Reading Text → make an exercise from it ✅ DONE (2026-09-04)
+
+**Shipped:**
+- `ReadingTextActivity.jsx` — a "Make an exercise from this text:" bar under the
+  header with 4 buttons: **Comprehension Quiz · True / False · Cloze · Error
+  Correction**. Each POSTs `/api/generate` with `source_text` = the passage
+  (paragraphs joined) + a tailored default prompt; the Error Correction one asks
+  for a connected passage (→ T-3 passage mode). A full-screen spinner overlays
+  while it generates; errors show inline in the bar.
+- New optional prop `onDerive(activity)` — the parent swaps in the new activity.
+  `GeneratePage` passes `(a) => { setActivity(a); setStatus('success'); }`;
+  `LibraryPage` passes `setLaunched`. Both parents already render every activity
+  type, so the derived activity just appears. Bar only renders when `onDerive`
+  is supplied and there are paragraphs.
+- **Verified** (`qa_t4_readingderive.mjs`): generate a Reading Text → save →
+  launch from Library → "Comprehension Quiz" renders a Quiz; relaunch → "Error
+  Correction" renders a passage-mode Error Correction whose text is clearly the
+  reading passage rewritten with errors. Zero console errors. `npm run build`
+  clean.
+
+**Original plan (for reference):**
 - On `ReadingTextActivity`, add a row of buttons: **Make Error Correction ·
   Make Cloze · Make Comprehension Quiz · Make True/False**.
 - Each POSTs `/api/generate` with `source_text` = the passage (joined
@@ -529,7 +548,8 @@ grouping is the highest-impact single piece.
 - ✅ T-1 — `/api/generate` topic/source_text — committed `fff0d9d`
 - ✅ T-3 — Error Correction passage mode — committed `fefa113`
 - ✅ T-2 — goal-first `/generate` page — committed `a2f9f62`
-- ⏭️ **T-4 next** — "Make an exercise from this" on a generated Reading Text
-- then T-5a (KWT + Open Cloze), T-5b (MC Reading + Read and Complete), T-6 (polish)
+- ✅ T-4 — "Make an exercise from this" on a Reading Text — committed (see git log)
+- ⏭️ **T-5a next** — Key Word Transformation + Open Cloze generators
+- then T-5b (MC Reading + Read and Complete), T-6 (polish)
 
 Then the student app (Phase S1+).

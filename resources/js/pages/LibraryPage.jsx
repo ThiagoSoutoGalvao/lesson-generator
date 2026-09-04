@@ -327,7 +327,7 @@ export default function LibraryPage() {
         if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;
         if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'presentation')            return <GrammarExplainerActivity {...props} />;
-        if (launched.type === 'reading_text')            return <ReadingTextActivity {...props} />;
+        if (launched.type === 'reading_text')            return <ReadingTextActivity {...props} onDerive={setLaunched} />;
         if (launched.type === 'essay_feedback')           return <EssayFeedbackActivity {...props} />;
     }
 
