@@ -728,3 +728,40 @@ A prior styling attempt had been expensive (lots of live tweak → rebuild → s
 - Launcher gained a third sub-section, "Writing — the student writes on paper or their own doc, no capture, no auto-checking," inserted between Reading & Use of English and Speaking (matching the real exam's paper order).
 - Verified via Playwright: both parts reachable, essay content points and word-count guidance render correctly, confirmed **no reveal button and no score/fraction pattern appears anywhere** (this phase has nothing to reveal or grade — an explicit negative check, not just a happy-path click-through), genre-select shows all 4 genres, and Back from a genre's prompt browser correctly returns to genre-select rather than exiting the tab. Zero console/page errors.
 - **Cross-Text Multiple Matching (C1 Advanced Part 6 only) remains deferred** — it's C1-only, and C1 content hasn't been started yet per the batch-1 decision to validate B2 First first.
+
+---
+
+## 17. Phase T — Templates & Generate-Page Overhaul (IN PROGRESS)
+
+**Context:** groundwork for a planned **student-facing app** (Aurora students practise their trilha's activities from home, mobile-first). Full plan + the student-app roadmap live in **`AuroraStudentApp.md`** at the repo root (§12 is Phase T; §1–11 the student app; §3a the mobile-first principle). Phase T is whole-app teacher-side work done first: make `/generate` self-explanatory and separate *content* (what the text is about) from *format* (what exercise it becomes).
+
+### T-0d — Trilha ToC reference in the lesson brief panel ✅ COMPLETED (commit `da811ce`)
+- `TRILHA_TOC` added to `resources/js/lib/trilhas.js` — the verbatim table-of-contents per lesson, taken straight from the three PDFs in `trilhas/` (Lights 1–8, Glow 1–8, Radiant 1–12; wording unchanged, only split into bullets + OCR artefacts cleaned).
+- `LessonBriefEditor` in `LibraryPage.jsx` renders that lesson's ToC read-only above the existing editable brief fields ("From the trilha ToC — {trilha} · Lesson {n}"). Teachers still fill target language / vocabulary / notes themselves; the ToC is just reference so they don't open the PDF in another tab.
+- Decided against a `trilha_lesson_content` table + subagent-drafted grammar breakdowns — the teachers define target language as a group; they only wanted the ToC visible in-app.
+- **Note found:** `trilhas/README.md`'s Lights status-board topics are wrong (copy-pasted from Glow) — the PDFs are the source of truth; README worth fixing separately.
+
+### T-1 — `/api/generate` accepts a topic or source text, not just a document ✅ COMPLETED (commit `fff0d9d`)
+- `ActivityController::generate` — `document_id` now nullable; added `topic` (max 200) and `source_text` (max 8000). Rejects (422) unless **exactly one** source is provided. Controller builds a `$source` framing block per type (`"Here is the course book text:\n\n…"` / `"The activity should be about this topic: …"` / `"Here is the text to base the activity on:\n\n…"`).
+- **`section_focus` removed entirely** (the Vocabulary/Grammar/Listening/Reading pills from Phase C only prepended a sentence — superseded by T-2's goal-first page). Param, validation rule, and prepend logic all gone. `detectSections` / `SectionController` / `/api/detect-sections` are separate and untouched (and unused by the frontend).
+- `ClaudeService` — the 11 activity generators + their `buildXPrompt()` helpers: param `$documentText` → `$source`; the hard-coded `"Here is the course book text:\n\n…"` opener removed from every builder (controller supplies framing now). `detectSections()` / plain `generate()` renamed for consistency, their own framing text unchanged.
+- **`image_vocab_match` and `word_categorisation` have no backend generator** — discovered during this work. Their components + `SavedActivityController` validation + `LibraryPage` launch branches still exist (saved ones relaunch fine), but `ClaudeService::generateImageVocabMatch` / `generateWordCategorisation` and the `ActivityController` match arms for them were removed at some earlier point. The `.md` doc files that still mention them are stale. Not restored — a later item if wanted.
+
+### T-2 — goal-first, topic-first `/generate` page ✅ COMPLETED (commit `a2f9f62`)
+- `GeneratePage.jsx` rewritten (no backend change) into a 3-step flow: **1.** pick a goal (Vocabulary / Grammar / Reading / Speaking) → **2.** pick a format from that goal's templates (each a card with a one-line "use this when…" blurb) → **3.** choose a source (a topic by default — a plain text field; or an uploaded document — the old select + page range, behind a small toggle).
+- `GOALS` + `TEMPLATES` config at module scope. A template can appear under several goals (`quiz` → grammar/vocab/reading; `cloze` → grammar/vocab; `word_formation` → vocab/grammar; `dialog_gap_fill` → grammar/speaking).
+- **Error Correction is two cards** — "sentences" and "passage" — both `type: error_correction`, different default prompt. The "passage" card's prompt asks for a connected text, which triggers T-3's passage mode.
+- Replaces the flat 11-button `ACTIVITY_TYPES` row + `DEFAULT_PROMPTS` + the `section_focus` pills. `location.state.activity` fast-path (arriving from a Presentation/Reading Text generate) still renders directly.
+- Presentation / Reading Text stay on the Upload page (own tabs + endpoints); a line on `/generate` points there. Full unification is a possible later step (T-7).
+- Verified: step flow, per-template default prompts, document toggle, generate-from-topic, **zero horizontal overflow at 390px**, zero console errors.
+
+### T-3 — Error Correction passage mode ✅ COMPLETED (commit `fefa113`)
+- `buildErrorCorrectionPrompt` — two explicit modes. SENTENCE MODE (default, unchanged): standalone sentences, no `passage`. PASSAGE MODE (task asks for a text/paragraph): Claude returns a connected `passage` (1–3 short paragraphs) with one error per item embedded; each `items[].sentence` is the verbatim sentence from the passage; every `error` appears verbatim in `passage`.
+- `generateErrorCorrection` — reads `passage`, filters items whose `error` isn't also in the passage, drops the field when empty.
+- `ErrorCorrectionActivity.jsx` — if `activity.passage` is set: renders it in a scrollable panel (`max-h-[44vh]`, bottom fade); `buildSegments()` locates each error by sequential search. Stepping Prev/Reveal/Next walks the passage — errors already passed show struck-through + green correction inline, the active one gets a yellow ring (then its correction on Reveal), upcoming ones stay unmarked; active error auto-scrolls into view. Header reads "Mistake X / N". No `passage` → the original sentence-by-sentence UI, untouched.
+
+### T-4 — Reading Text → make an exercise from it  ⏭️ NEXT
+### T-5 — new generatable formats: Key Word Transformation, Open Cloze, MC Reading, Read and Complete (built on `PracticeSessionShell`)
+### T-6 — consistency pass (blurbs, placeholders, mobile sweep) + this doc
+
+Then the student app itself (Phase S1+ in `AuroraStudentApp.md`).
