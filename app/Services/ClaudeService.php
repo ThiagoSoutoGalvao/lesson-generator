@@ -7,9 +7,9 @@ use RuntimeException;
 
 class ClaudeService
 {
-    public function detectSections(string $documentText): array
+    public function detectSections(string $source): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -21,7 +21,7 @@ class ClaudeService
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildDetectSectionsPrompt($documentText),
+                    'content' => $this->buildDetectSectionsPrompt($source),
                 ],
             ],
         ]);
@@ -38,12 +38,12 @@ class ClaudeService
         return $data;
     }
 
-    private function buildDetectSectionsPrompt(string $documentText): string
+    private function buildDetectSectionsPrompt(string $source): string
     {
         return <<<EOT
 Here is the text from a course book page range:
 
-{$documentText}
+{$source}
 
 Identify the distinct content sections in this text. Course books typically contain sections such as: Vocabulary, Grammar, Reading, Listening, Speaking, Pronunciation, Dialogue/Conversation, Writing, or topic-based activities.
 
@@ -64,7 +64,7 @@ Rules:
 EOT;
     }
 
-    public function generate(string $documentText, string $prompt): string
+    public function generate(string $source, string $prompt): string
     {
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -75,7 +75,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => "Here is the course book text:\n\n{$documentText}\n\n{$prompt}",
+                    'content' => "Here is the course book text:\n\n{$source}\n\n{$prompt}",
                 ],
             ],
         ]);
@@ -85,9 +85,9 @@ EOT;
         return $response->json('content.0.text');
     }
 
-    public function generateQuiz(string $documentText, string $prompt): array
+    public function generateQuiz(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -99,7 +99,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildQuizPrompt($documentText, $prompt),
+                    'content' => $this->buildQuizPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -116,9 +116,9 @@ EOT;
         return $data;
     }
 
-    public function generateFlashcards(string $documentText, string $prompt): array
+    public function generateFlashcards(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -130,7 +130,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildFlashcardsPrompt($documentText, $prompt),
+                    'content' => $this->buildFlashcardsPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -147,12 +147,10 @@ EOT;
         return $data;
     }
 
-    private function buildFlashcardsPrompt(string $documentText, string $prompt): string
+    private function buildFlashcardsPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -181,9 +179,9 @@ Rules:
 EOT;
     }
 
-    public function generateUnjumble(string $documentText, string $prompt): array
+    public function generateUnjumble(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -195,7 +193,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildUnjumblePrompt($documentText, $prompt),
+                    'content' => $this->buildUnjumblePrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -212,12 +210,10 @@ EOT;
         return $data;
     }
 
-    private function buildUnjumblePrompt(string $documentText, string $prompt): string
+    private function buildUnjumblePrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -245,9 +241,9 @@ Rules:
 EOT;
     }
 
-    public function generateTrueFalse(string $documentText, string $prompt): array
+    public function generateTrueFalse(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -259,7 +255,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildTrueFalsePrompt($documentText, $prompt),
+                    'content' => $this->buildTrueFalsePrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -276,12 +272,10 @@ EOT;
         return $data;
     }
 
-    private function buildTrueFalsePrompt(string $documentText, string $prompt): string
+    private function buildTrueFalsePrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -323,9 +317,9 @@ Rules:
 EOT;
     }
 
-    public function generateWordFormation(string $documentText, string $prompt): array
+    public function generateWordFormation(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -337,7 +331,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildWordFormationPrompt($documentText, $prompt),
+                    'content' => $this->buildWordFormationPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -354,12 +348,10 @@ EOT;
         return $data;
     }
 
-    private function buildWordFormationPrompt(string $documentText, string $prompt): string
+    private function buildWordFormationPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -391,9 +383,9 @@ Rules:
 EOT;
     }
 
-    public function generateOddOneOut(string $documentText, string $prompt): array
+    public function generateOddOneOut(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -405,7 +397,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildOddOneOutPrompt($documentText, $prompt),
+                    'content' => $this->buildOddOneOutPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -422,12 +414,10 @@ EOT;
         return $data;
     }
 
-    private function buildOddOneOutPrompt(string $documentText, string $prompt): string
+    private function buildOddOneOutPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -456,9 +446,9 @@ Rules:
 EOT;
     }
 
-    public function generateCloze(string $documentText, string $prompt): array
+    public function generateCloze(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -470,7 +460,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildClozePrompt($documentText, $prompt),
+                    'content' => $this->buildClozePrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -487,12 +477,10 @@ EOT;
         return $data;
     }
 
-    private function buildClozePrompt(string $documentText, string $prompt): string
+    private function buildClozePrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -523,9 +511,9 @@ Rules:
 EOT;
     }
 
-    public function generateDialogGapFill(string $documentText, string $prompt): array
+    public function generateDialogGapFill(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -537,7 +525,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildDialogGapFillPrompt($documentText, $prompt),
+                    'content' => $this->buildDialogGapFillPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -554,12 +542,10 @@ EOT;
         return $data;
     }
 
-    private function buildDialogGapFillPrompt(string $documentText, string $prompt): string
+    private function buildDialogGapFillPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -600,9 +586,9 @@ Rules:
 EOT;
     }
 
-    public function generateDiscussionQuestions(string $documentText, string $prompt): array
+    public function generateDiscussionQuestions(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -614,7 +600,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildDiscussionQuestionsPrompt($documentText, $prompt),
+                    'content' => $this->buildDiscussionQuestionsPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -631,12 +617,10 @@ EOT;
         return $data;
     }
 
-    private function buildDiscussionQuestionsPrompt(string $documentText, string $prompt): string
+    private function buildDiscussionQuestionsPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -664,9 +648,9 @@ Rules:
 EOT;
     }
 
-    public function generateSentenceTransformation(string $documentText, string $prompt): array
+    public function generateSentenceTransformation(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -678,7 +662,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildSentenceTransformationPrompt($documentText, $prompt),
+                    'content' => $this->buildSentenceTransformationPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -695,12 +679,10 @@ EOT;
         return $data;
     }
 
-    private function buildSentenceTransformationPrompt(string $documentText, string $prompt): string
+    private function buildSentenceTransformationPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -731,9 +713,9 @@ Rules:
 EOT;
     }
 
-    public function generateErrorCorrection(string $documentText, string $prompt): array
+    public function generateErrorCorrection(string $source, string $prompt): array
     {
-        $documentText = $this->sanitizeUtf8($documentText);
+        $source = $this->sanitizeUtf8($source);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -745,7 +727,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildErrorCorrectionPrompt($documentText, $prompt),
+                    'content' => $this->buildErrorCorrectionPrompt($source, $prompt),
                 ],
             ],
         ]);
@@ -778,12 +760,10 @@ EOT;
         return $data;
     }
 
-    private function buildErrorCorrectionPrompt(string $documentText, string $prompt): string
+    private function buildErrorCorrectionPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 
@@ -1080,12 +1060,10 @@ EOT;
         return $clean !== false ? $clean : '';
     }
 
-    private function buildQuizPrompt(string $documentText, string $prompt): string
+    private function buildQuizPrompt(string $source, string $prompt): string
     {
         return <<<EOT
-Here is the course book text:
-
-{$documentText}
+{$source}
 
 Task: {$prompt}
 

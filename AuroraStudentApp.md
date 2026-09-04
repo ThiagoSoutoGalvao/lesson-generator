@@ -232,26 +232,11 @@ Not built in v1. When usage justifies it:
 Each phase: build → verify with a temp QA user + Playwright (same pattern as
 DET / Cambridge / Pronunciation) → commit → checkpoint before the next.
 
-### Phase S0 — Template work (pre-work, teacher app first)
-Done against the current teacher app, before the student shell. Each item is its
-own build → verify → commit. Three strands:
-
-**S0a — Changes to existing templates** _(list to be filled in — user has specific
-changes in mind)_
-- [ ] _(tbd)_
-
-**S0b — New activity types ported from DET / Cambridge** — bring the DET / Cambridge
-drill *models* into the `/generate` flow as new Claude-generatable templates, so
-teachers can produce them per trilha topic. Each is: a `ClaudeService` prompt
-builder + JSON schema + a React component (built on `PracticeSessionShell` /
-`DrillLoop`, already tap-friendly, so they're mobile-ready for the student app by
-construction). Candidate list _(to be chosen)_:
-- [ ] _(tbd — see the question posed alongside this doc)_
-
-**S0c — Mobile scale for the reused teacher templates** — a mobile type scale +
-tap targets for the tap-friendly subset (§3a). Can also land inside S3/S4 when
-each template is wired for progress; kept here as a reminder.
-- [ ] _(tbd)_
+### Phase T — Templates & Generate-Page Overhaul  (see §12 for the full plan)
+Whole-app pre-work, before the student shell. Makes `/generate` intuitive enough
+that a teacher gets it without a walkthrough, and separates *content* from
+*exercise format*. Six sub-phases, each build → verify → commit. **T-0d (trilha
+ToC panel) already done** — it was the first slice of this workstream.
 
 ### Phase S0d — Trilha ToC reference in the brief panel
 See §7b (scoped down: verbatim ToC text, static data, no table, no subagents).
@@ -329,14 +314,169 @@ See §7b (scoped down: verbatim ToC text, static data, no table, no subagents).
    with extras shown but not counted, (c) teacher marks specific activities as
    "required". Leaning (a).
 
-## 11. What to do next
+## 12. Phase T — Templates & Generate-Page Overhaul  (PLAN — nothing built yet except T-0d)
 
-Not in a hurry to start building — this stays in planning until the S0 scope is
-nailed down.
+**Decisions (2026-09-04):** keep PDF upload but make `/generate` topic-first;
+apply to the **whole app** (not trilha-only); bring in **all four** DET/Cambridge
+formats (Key Word Transformation, Open Cloze, MC Reading, Read and Complete).
+Driver: the shared Aurora login is being shown to the other teachers, and the
+current `/generate` page (flat row of 11 templates + an optional "section focus"
+that just prepends a sentence) isn't self-explanatory.
 
-1. **S0a** — list the specific changes to existing templates in §9.
-2. **S0b** — choose which DET / Cambridge models become new `/generate` templates.
-3. **S0d** — choose the trilha-content storage option (§7b: A / B / C).
-4. (Optional) settle Open Questions 5–7 — not blocking.
-5. Then work S0 item by item (each build → verify → commit), and only after that
-   start **Phase S1** in plan mode.
+**Through-line:** separate *content* (what the text is about) from *format* (what
+exercise it becomes), and let the teacher pick a **goal** before a template.
+
+### Current state (for reference)
+- `/generate` → `POST /api/generate` — **requires** `document_id`; 11 templates;
+  `section_focus` pills (Vocabulary/Grammar/Listening/Reading) prepend
+  `"Focus specifically on the {X} section…"` to the prompt.
+- `presentation` & `reading_text` have their **own** endpoints
+  (`/api/presentation/generate`, `/api/reading/generate`), topic-based, no
+  document — and live as tabs on `/upload`, not on `/generate`.
+- Each `ClaudeService::buildXPrompt()` hard-codes `"Here is the course book
+  text:\n\n{$documentText}"` as its opening.
+- `ErrorCorrectionActivity` is **one sentence at a time** (Prev / Reveal / Next),
+  each item a single sentence with one embedded error. No passage concept.
+
+---
+
+### T-1 — Backend: `/api/generate` accepts a topic or source text, not just a document ✅ DONE (2026-09-04)
+The foundation everything else needs. No UI change in this step.
+
+**Shipped:**
+- `ActivityController::generate` — `document_id` now nullable; added `topic`
+  (max 200) and `source_text` (max 8000); rejects (422) unless **exactly one**
+  source is given. Builds a `$source` framing block per source type
+  (`"Here is the course book text:\n\n…"` / `"The activity should be about this
+  topic: …"` / `"Here is the text to base the activity on:\n\n…"`).
+- `section_focus` removed entirely (param, validation, the prepend logic).
+- `ClaudeService` — the 11 activity generators + their `buildXPrompt()` helpers:
+  param `$documentText` → `$source`; the hard-coded `"Here is the course book
+  text:\n\n…"` opener removed from every builder (the controller supplies framing
+  now). `detectSections()` / plain `generate()` renamed for consistency, framing
+  unchanged (not in the `/generate` path).
+- **Verified** (Playwright + `qa_t1_generate.mjs`, aurora@aurora.test): no-source
+  and two-source both 422; `topic` → quiz + error_correction valid; `source_text`
+  → cloze valid; document path (throwaway doc) → quiz with 4 questions
+  (regression OK). PHP lint clean. GeneratePage UI untouched — still sends
+  `document_id`; the now-unknown `section_focus` key it also sends is ignored.
+
+**Original plan (for reference):**
+- `ActivityController::generate` validation: `document_id` becomes **nullable**;
+  add `topic` (string, max 200) and `source_text` (string, max ~8000). Require
+  **exactly one** of the three (`document_id` | `topic` | `source_text`).
+- Build a `$sourceBlock` string in the controller:
+  - document → `"Here is the course book text:\n\n{$text}"` (current behaviour)
+  - topic → `"The activity is about this topic: {$topic}\n\nInvent suitable
+    example content about it as the basis for the activity."`
+  - source_text → `"Here is the text to base the activity on:\n\n{$source_text}"`
+- Mechanical refactor: every `buildXPrompt(string $documentText, …)` →
+  `buildXPrompt(string $sourceBlock, …)`, interpolating `$sourceBlock` where the
+  hard-coded "Here is the course book text:" line is now (~11 builders).
+- **Remove `section_focus`** — the param, the validation rule, the prepend logic.
+- Keep `page_from` / `page_to` (only meaningful with `document_id`).
+- **Verify:** existing document-based generation still works unchanged (regression);
+  a `topic`-only call to each of the 11 types returns a sensible activity;
+  a `source_text` call works. No UI yet — drive via the current form + a script.
+- **Risk:** topic-only output quality per template. If any type comes out weak,
+  tune that builder's `$sourceBlock` wording. Low risk — the builders already
+  tolerate arbitrary input text.
+
+### T-2 — `/generate` page: goal-first, topic-first
+UI-only, on top of T-1.
+- **Step 1 — pick a goal:** Vocabulary · Grammar · Reading · Speaking (Listening
+  later, needs audio). Big, obvious buttons.
+- **Step 2 — pick a template** from that goal's set, each showing a one-line
+  "use this when…" blurb. Draft mapping (a template may appear under two goals):
+
+  | Goal | Templates |
+  |------|-----------|
+  | Vocabulary | Flashcards · Image Match · Odd One Out · Word Formation |
+  | Grammar | Quiz · Sentence Transformation · Error Correction · Cloze · Unjumble · Dialog Gap-Fill · **Key Word Transformation** · **Open Cloze** |
+  | Reading | True/False/Not Given · **MC Reading** · **Read and Complete** · passage-mode Error Correction |
+  | Speaking | Discussion Questions |
+
+- **Step 3 — source:** a "What's the topic?" text field is the **primary** input.
+  "or use an uploaded document ▸" is a collapsed secondary section (keeps PDF +
+  page range for teachers who still want it).
+- Template metadata moves to one config object (like `trilhas.js`):
+  `{ id, label, goals:[], blurb, defaultPrompt, source:'topic'|'text'|'either' }`.
+- Remove the `section_focus` pills from the form.
+- **Verify:** each goal shows the right templates; topic-only generate works
+  end-to-end from the UI; PDF path still reachable and working; mobile layout of
+  the two-step picker is usable at 390px.
+
+### T-3 — Error Correction: passage mode + scroll
+Keep the template and its reveal styling; add a longer-text option.
+- Prompt: allow an optional `passage` (string, 1–3 short paragraphs) in the JSON.
+  When present, every `items[].error` must be a verbatim substring of `passage`.
+- Component: if `activity.passage` is set, render it in a **scrollable panel**
+  (`overflow-y-auto`, capped height) with each error underlined inline; stepping
+  Prev/Reveal/Next moves through the errors, highlighting the active one in the
+  passage and showing its correction + explanation below. If no `passage`, the
+  current sentence-by-sentence UI is unchanged.
+- Categorised under **Grammar** (accuracy), not Reading — it can also be offered
+  from the Reading Text screen (T-4).
+- **Verify:** a passage-mode generation renders, scrolls, steps through all
+  errors; a legacy sentence-only activity still works; save/relaunch of both.
+
+### T-4 — Reading Text → make an exercise from it
+Depends on T-1 (`source_text`).
+- On `ReadingTextActivity`, add a row of buttons: **Make Error Correction ·
+  Make Cloze · Make Comprehension Quiz · Make True/False**.
+- Each POSTs `/api/generate` with `source_text` = the passage (joined
+  paragraphs), `type` = the chosen format, a sensible default prompt, and
+  carries over `topic` for the background image.
+- On success, navigate to the generated activity (same as `/generate` does).
+- **Verify:** generate a Reading Text, make each of the four exercise types from
+  it, confirm the exercise content actually reflects the passage; save works.
+
+### T-5 — Four new DET/Cambridge formats as generatable templates
+Each = a `ClaudeService` generator + prompt builder + JSON schema + a component
+on `PracticeSessionShell` (tap-only → mobile-ready → reusable in the student
+app) + an entry in the T-2 goal map + a `match` arm + validation in
+`ActivityController::generate` + the `SavedActivityController` `in:` list +
+`LibraryPage` labels/colours/filters. Split into two commits:
+- **T-5a — Grammar:** Key Word Transformation, Open Cloze
+- **T-5b — Reading:** MC Reading, Read and Complete
+- Adapt the existing DET/Cambridge components (`McReadingDrill`,
+  `ReadCompleteDrill` / `McClozeDrill`, `KeyWordTransformationDrill`,
+  `OpenClozeDrill`) — they already exist for hand-authored JSON; the work is
+  wiring them to a Claude-generated payload and the `/generate` flow.
+- **Verify:** each generates from a topic, renders, scores; saved + relaunched
+  from Library; mobile check at 390px.
+
+### T-6 — Consistency pass for the demo
+- Every template blurb in one voice; topic-field placeholder gives real examples
+  ("second conditional", "daily routines vocabulary", "a text about recycling").
+- `/generate` empty/loading/error states reviewed.
+- One mobile-width sweep of the whole `/generate` flow.
+- Update `CLAUDE.md` with a "Phase T" section.
+
+---
+
+### Sequencing & rough size
+| Step | Depends on | Size |
+|------|-----------|------|
+| T-1 backend source flexibility | — | M |
+| T-2 goal-first page | T-1 | M |
+| T-3 Error Correction passage mode | — (parallel-ok) | S |
+| T-4 Reading Text → exercise | T-1 | S–M |
+| T-5a KWT + Open Cloze | T-1, T-2 | M |
+| T-5b MC Reading + Read and Complete | T-1, T-2 | M |
+| T-6 consistency pass | all | S |
+
+**Today's teacher demo runs on the current app** — none of this is rushed in
+before it. If a quick visible win is wanted before a *later* demo, T-2's goal
+grouping is the highest-impact single piece.
+
+## 13. What to do next
+
+1. Review the Phase T plan (§12) — adjust the goal→template mapping, sizing,
+   ordering.
+2. Confirm start order (suggest: T-1 → T-3 in parallel → T-2 → T-4 → T-5 → T-6).
+3. Then build T-step by T-step (each build → verify → commit).
+4. Student app (Phase S1+) starts after Phase T.
+
+**Also pending:** commit T-0d (trilha ToC panel) — done + verified, not yet
+committed. _(Update: committed `da811ce`, pushed 2026-09-04.)_

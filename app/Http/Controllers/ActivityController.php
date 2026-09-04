@@ -11,56 +11,71 @@ class ActivityController extends Controller
     public function generate(Request $request, ClaudeService $claude)
     {
         $request->validate([
-            'document_id'  => ['required', 'exists:documents,id'],
-            'prompt'       => ['required', 'string', 'max:1000'],
-            'type'         => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,odd_one_out,cloze,discussion_questions,sentence_transformation,error_correction'],
-            'page_from'    => ['nullable', 'integer', 'min:1'],
-            'page_to'      => ['nullable', 'integer', 'min:1'],
-            'section_focus' => ['nullable', 'string', 'in:Vocabulary,Grammar,Listening,Reading'],
+            'document_id' => ['nullable', 'exists:documents,id'],
+            'topic'       => ['nullable', 'string', 'max:200'],
+            'source_text' => ['nullable', 'string', 'max:8000'],
+            'prompt'      => ['required', 'string', 'max:1000'],
+            'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,odd_one_out,cloze,discussion_questions,sentence_transformation,error_correction'],
+            'page_from'   => ['nullable', 'integer', 'min:1'],
+            'page_to'     => ['nullable', 'integer', 'min:1'],
         ]);
 
-        $document = Document::where('id', $request->document_id)
-            ->where('user_id', auth()->id())
-            ->firstOrFail();
+        $provided = collect(['document_id', 'topic', 'source_text'])
+            ->filter(fn ($key) => filled($request->input($key)))
+            ->values();
 
-        $from = $request->input('page_from');
-        $to   = $request->input('page_to');
-
-        if ($from && $to && $document->pages_text) {
-            $pages = array_slice(
-                $document->pages_text,
-                $from - 1,
-                $to - $from + 1
-            );
-            $text = implode("\n\n", $pages);
-        } else {
-            $text = $document->extracted_text;
-        }
-
-        $sectionFocus = $request->input('section_focus');
-        $prompt = $sectionFocus
-            ? "Focus specifically on the {$sectionFocus} section of this text. " . $request->prompt
-            : $request->prompt;
-
-        if (empty(trim($text))) {
+        if ($provided->count() !== 1) {
             return response()->json([
-                'message' => 'No text could be extracted from the selected pages. This PDF may be image-based or scanned. Try a different page range or upload a text-based PDF.',
+                'message' => 'Provide exactly one source: a document, a topic, or a block of text.',
             ], 422);
         }
 
+        if ($request->filled('document_id')) {
+            $document = Document::where('id', $request->document_id)
+                ->where('user_id', auth()->id())
+                ->firstOrFail();
+
+            $from = $request->input('page_from');
+            $to   = $request->input('page_to');
+
+            if ($from && $to && $document->pages_text) {
+                $pages = array_slice($document->pages_text, $from - 1, $to - $from + 1);
+                $text = implode("\n\n", $pages);
+            } else {
+                $text = $document->extracted_text;
+            }
+
+            if (empty(trim((string) $text))) {
+                return response()->json([
+                    'message' => 'No text could be extracted from the selected pages. This PDF may be image-based or scanned. Try a different page range or upload a text-based PDF.',
+                ], 422);
+            }
+
+            $source = "Here is the course book text:\n\n{$text}";
+        } elseif ($request->filled('topic')) {
+            $topic  = trim($request->input('topic'));
+            $source = "The activity should be about this topic: {$topic}\n\n"
+                . "Invent suitable, level-appropriate example content about this topic to base the activity on.";
+        } else {
+            $sourceText = trim($request->input('source_text'));
+            $source = "Here is the text to base the activity on:\n\n{$sourceText}";
+        }
+
+        $prompt = $request->prompt;
+
         try {
             $activity = match ($request->type) {
-                'quiz'                => $claude->generateQuiz($text, $prompt),
-                'flashcards'          => $claude->generateFlashcards($text, $prompt),
-                'unjumble'            => $claude->generateUnjumble($text, $prompt),
-                'dialog_gap_fill'     => $claude->generateDialogGapFill($text, $prompt),
-                'word_formation'       => $claude->generateWordFormation($text, $prompt),
-                'true_false'          => $claude->generateTrueFalse($text, $prompt),
-                'odd_one_out'             => $claude->generateOddOneOut($text, $prompt),
-                'cloze'                   => $claude->generateCloze($text, $prompt),
-                'discussion_questions'     => $claude->generateDiscussionQuestions($text, $prompt),
-                'sentence_transformation' => $claude->generateSentenceTransformation($text, $prompt),
-                'error_correction'        => $claude->generateErrorCorrection($text, $prompt),
+                'quiz'                    => $claude->generateQuiz($source, $prompt),
+                'flashcards'              => $claude->generateFlashcards($source, $prompt),
+                'unjumble'                => $claude->generateUnjumble($source, $prompt),
+                'dialog_gap_fill'         => $claude->generateDialogGapFill($source, $prompt),
+                'word_formation'          => $claude->generateWordFormation($source, $prompt),
+                'true_false'              => $claude->generateTrueFalse($source, $prompt),
+                'odd_one_out'             => $claude->generateOddOneOut($source, $prompt),
+                'cloze'                   => $claude->generateCloze($source, $prompt),
+                'discussion_questions'    => $claude->generateDiscussionQuestions($source, $prompt),
+                'sentence_transformation' => $claude->generateSentenceTransformation($source, $prompt),
+                'error_correction'        => $claude->generateErrorCorrection($source, $prompt),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
