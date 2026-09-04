@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import { useFullscreen } from '@/hooks/useFullscreen';
@@ -35,6 +36,7 @@ function parseText(text, accentClass) {
 }
 
 export default function GrammarExplainerActivity({ activity, onClose }) {
+    const navigate = useNavigate();
     const [slideIdx, setSlideIdx]         = useState(0);
     const [direction, setDirection]       = useState('next');
     const [bgUrl, setBgUrl]               = useState(null);
@@ -122,6 +124,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                         ))}
                     </div>
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    <button onClick={() => navigate('/generate')} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Generate another activity">+ Add activity</button>
                     <button onClick={() => window.print()} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Download as PDF">⬇ PDF</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}

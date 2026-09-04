@@ -20,6 +20,8 @@ import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
+import { TRILHAS } from '@/lib/trilhas';
+import { getLessonSession, clearLessonSession } from '@/lib/lessonSession';
 
 // What a teacher is trying to get students to practise. This is the first choice
 // on the page — templates are shown grouped under whichever goal is picked.
@@ -133,6 +135,7 @@ export default function GeneratePage() {
     const [status, setStatus]         = useState(location.state?.activity ? 'success' : 'idle');
     const [activity, setActivity]     = useState(location.state?.activity ?? null);
     const [errorMsg, setErrorMsg]     = useState('');
+    const [lessonSession, setLessonSessionState] = useState(() => getLessonSession());
 
     useEffect(() => {
         axios.get('/api/documents')
@@ -143,6 +146,19 @@ export default function GeneratePage() {
             })
             .catch(() => setErrorMsg('Could not load your documents. Please refresh the page.'));
     }, []);
+
+    // A "+ Add activity" button (Presentation / Reading Text) navigates back to
+    // this same /generate route to start a fresh one. Since the route doesn't
+    // change, the component doesn't remount — without this, the activity
+    // already on screen (set from location.state on the first visit) would
+    // just stay there. Reset whenever we land here with no activity in state.
+    useEffect(() => {
+        if (!location.state?.activity) {
+            setActivity(null);
+            setStatus('idle');
+        }
+        setLessonSessionState(getLessonSession());
+    }, [location.key]);
 
     const template     = TEMPLATES.find(t => t.id === templateId) ?? null;
     const goalTemplates = goal ? TEMPLATES.filter(t => t.goals.includes(goal)) : [];
@@ -195,6 +211,11 @@ export default function GeneratePage() {
         setStatus('idle');
     }
 
+    function handleClearSession() {
+        clearLessonSession();
+        setLessonSessionState(null);
+    }
+
     if (activity?.type === 'quiz')               return <QuizActivity quiz={activity} onClose={handleClose} />;
     if (activity?.type === 'flashcards')         return <FlashcardActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'unjumble')           return <UnjumbleActivity activity={activity} onClose={handleClose} />;
@@ -223,6 +244,19 @@ export default function GeneratePage() {
                     Pick what you want students to practise, choose a format, and give it a topic.
                 </p>
             </div>
+
+            {lessonSession && (
+                <div className="flex items-center gap-2 text-sm bg-blue-500/15 border border-blue-400/30 rounded-xl px-4 py-2.5">
+                    <span className="text-blue-200">
+                        Adding to: <span className="font-semibold text-white">
+                            {TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha} · Lesson {lessonSession.lesson}
+                        </span>
+                    </span>
+                    <button type="button" onClick={handleClearSession} className="ml-auto text-blue-200/70 hover:text-white text-xs underline cursor-pointer">
+                        Change
+                    </button>
+                </div>
+            )}
 
             <div className="lg-surface border rounded-2xl p-6">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">

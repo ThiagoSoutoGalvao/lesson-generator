@@ -3,6 +3,7 @@ import axios from 'axios';
 import {
     TRILHAS, TRILHA_NAMES, TEACHERS, TYPE_LABELS, composeActivityName,
 } from '@/lib/trilhas';
+import { getLessonSession, setLessonSession } from '@/lib/lessonSession';
 
 const fieldCls = 'bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full';
 const selectCls = `${fieldCls} appearance-none cursor-pointer`;
@@ -22,9 +23,12 @@ export default function SavePanel({ activity, onDone }) {
     const [mode, setMode] = useState('trilha'); // 'trilha' | 'freeform'
     const [status, setStatus] = useState('idle');
 
-    // Trilha mode
-    const [trilha, setTrilha]     = useState(() => lsGet(LS_TRILHA));
-    const [lesson, setLesson]     = useState('');
+    // Trilha mode — pre-filled from the active lesson session if there is one
+    // (the teacher is mid-way through building a lesson), else just the last
+    // trilha used.
+    const session = getLessonSession();
+    const [trilha, setTrilha]     = useState(() => session?.trilha ?? lsGet(LS_TRILHA));
+    const [lesson, setLesson]     = useState(() => (session ? String(session.lesson) : ''));
     const [focus, setFocus]       = useState('');
     const [builtBy, setBuiltBy]   = useState(() => lsGet(LS_BUILT_BY));
 
@@ -76,6 +80,7 @@ export default function SavePanel({ activity, onDone }) {
             if (mode === 'trilha') {
                 lsSet(LS_TRILHA, trilha);
                 lsSet(LS_BUILT_BY, builtBy);
+                setLessonSession(trilha, Number(lesson));
             }
             setStatus('saved');
             setTimeout(onDone, 1200);

@@ -628,4 +628,37 @@ grouping is the highest-impact single piece.
 
 **Phase T complete.** Next: the student app — **Phase S1** (roles + student accounts).
 
+### Post-Phase-T fix — "lesson session" ✅ DONE (2026-09-05)
+
+**Problem noticed while dogfooding**: nothing remembered which trilha lesson you
+were building. After saving one activity, building the next meant re-picking
+Trilha + Lesson from scratch, and there was no way back into "building mode"
+from the Presentation / Reading Text screens after checking Library.
+
+**Shipped:**
+- `resources/js/lib/lessonSession.js` — `get/set/clearLessonSession()`, a small
+  localStorage-backed `{ trilha, lesson }` pair.
+- `SavePanel.jsx` — pre-fills Trilha *and* Lesson from the session (previously
+  only remembered the trilha); updates the session on every successful
+  trilha-mode save.
+- `GeneratePage.jsx` — a chip above the form when a session is active:
+  **"Adding to: LIGHTS · Lesson 7 — Change"** (Change clears it).
+- **`+ Add activity`** button added to `GrammarExplainerActivity.jsx`
+  (Presentation) and `ReadingTextActivity.jsx` (Reading Text) headers, next to
+  Save — navigates to `/generate` to start the next activity.
+- **Bug caught before shipping**: since Presentation/Reading Text are always
+  displayed *at* `/generate` (arrived via `location.state` from the Upload
+  tabs), clicking "+ Add activity" navigated to the same route — no remount, so
+  the same activity just stayed on screen. Fixed with a `useEffect` keyed on
+  `location.key` that resets `activity`/`status` whenever `/generate` is
+  reached with no `location.state.activity`.
+- Scoped to Presentation and Reading Text only (what was asked) — the other
+  ~14 activity components don't have the button. Cheap to extend later if
+  wanted, since the session mechanism is already in place.
+- **Verified** (`qa_lesson_session.mjs`, `qa_lesson_session_rt.mjs`): saving a
+  Presentation to Lights L07 sets the session; "+ Add activity" lands on
+  `/generate` showing the chip; generating + opening Save shows Trilha/Lesson
+  pre-filled; "Change" clears the chip; Reading Text's button also navigates
+  correctly. Zero console errors.
+
 Then the student app (Phase S1+).
