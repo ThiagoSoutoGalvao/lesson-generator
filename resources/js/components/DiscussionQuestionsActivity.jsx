@@ -1,24 +1,18 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const FONT_SIZES   = ['text-4xl', 'text-5xl', 'text-6xl'];
-const FOLLOW_SIZES = ['text-lg',  'text-xl',  'text-2xl'];
-const TEXT_COLORS  = [
-    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
-    { label: 'Cream',  cls: 'text-amber-50',   bg: '#fffbeb' },
-    { label: 'Yellow', cls: 'text-yellow-300',  bg: '#fde047' },
-    { label: 'Sky',    cls: 'text-sky-300',     bg: '#7dd3fc' },
-    { label: 'Green',  cls: 'text-green-300',   bg: '#86efac' },
-];
+const FONT_SIZES = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
+const FOLLOW_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
 export default function DiscussionQuestionsActivity({ activity, onClose }) {
     const [index, setIndex]           = useState(0);
     const [bgUrl, setBgUrl]           = useState(null);
     const [showSave, setShowSave]     = useState(false);
-    const [fontSizeIdx, setFontSizeIdx]     = useState(1);
-    const [textColor, setTextColor]         = useState('text-white');
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const [displayQuestion, setDisplayQuestion] = useState(activity.questions[0]?.question ?? '');
     const [followUps, setFollowUps]         = useState(activity.questions[0]?.follow_ups ?? []);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
@@ -70,19 +64,7 @@ export default function DiscussionQuestionsActivity({ activity, onClose }) {
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">Question {index + 1} / {total}</span>
                 <div className="flex items-center gap-5">
-                    <div className="flex items-center gap-1">
-                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        {TEXT_COLORS.map(({ label, cls, bg }) => (
-                            <button key={cls} onClick={() => setTextColor(cls)} title={label}
-                                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
-                                style={{ backgroundColor: bg }} />
-                        ))}
-                    </div>
+                    <DisplayControls />
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}

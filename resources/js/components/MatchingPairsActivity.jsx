@@ -1,16 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const CARD_SIZES  = ['text-sm', 'text-base', 'text-lg'];
-const TEXT_COLORS = [
-    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
-    { label: 'Cream',  cls: 'text-amber-50',   bg: '#fffbeb' },
-    { label: 'Yellow', cls: 'text-yellow-300',  bg: '#fde047' },
-    { label: 'Sky',    cls: 'text-sky-300',     bg: '#7dd3fc' },
-    { label: 'Green',  cls: 'text-green-300',   bg: '#86efac' },
-];
+const CARD_SIZES = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'];
 
 function shuffle(arr) {
     const a = arr.map((item, i) => ({ item, i }));
@@ -33,8 +28,7 @@ export default function MatchingPairsActivity({ activity, onClose }) {
     const [finished, setFinished]         = useState(false);
     const [bgUrl, setBgUrl]               = useState(null);
     const [showSave, setShowSave]         = useState(false);
-    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
-    const [textColor, setTextColor]       = useState('text-white');
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const wrongTimer = useRef(null);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
@@ -107,19 +101,7 @@ export default function MatchingPairsActivity({ activity, onClose }) {
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">{matched.size} / {pairs.length} matched</span>
                 <div className="flex items-center gap-5">
-                    <div className="flex items-center gap-1">
-                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        {TEXT_COLORS.map(({ label, cls, bg }) => (
-                            <button key={cls} onClick={() => setTextColor(cls)} title={label}
-                                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
-                                style={{ backgroundColor: bg }} />
-                        ))}
-                    </div>
+                    <DisplayControls />
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}

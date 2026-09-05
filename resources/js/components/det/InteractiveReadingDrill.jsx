@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from './PracticeSessionShell';
+import { useDisplay } from '@/hooks/useDisplay';
 import interactiveReadingSets from '@/data/det/interactiveReading.json';
 
 const PASSAGE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
@@ -129,8 +130,7 @@ export default function InteractiveReadingDrill() {
     const [taskIndex, setTaskIndex] = useState(0);
     const [answers, setAnswers] = useState([]);
     const [sessionKey, setSessionKey] = useState(0);
-    const [fontSizeIdx, setFontSizeIdx] = useState(2);
-    const [textColor, setTextColor] = useState('text-white');
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
     function backToDetTab() {
         navigate('/upload', { state: { tab: 'det' } });
@@ -189,12 +189,6 @@ export default function InteractiveReadingDrill() {
             progressLabel={phase === 'drilling' ? `Task ${taskIndex + 1} of ${set.tasks.length}` : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToDetTab : () => setPhase('select')}
-            fontSizeIdx={fontSizeIdx}
-            fontSizeMax={FONT_SIZE_MAX}
-            onFontDecrease={() => setFontSizeIdx(i => Math.max(0, i - 1))}
-            onFontIncrease={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))}
-            textColor={textColor}
-            onTextColorChange={setTextColor}
         >
             {phase === 'select' && (
                 <div className="flex-1 overflow-y-auto px-8 py-8">

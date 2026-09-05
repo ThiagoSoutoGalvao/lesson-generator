@@ -4,7 +4,7 @@ import { useDisplay, TEXT_COLORS, SIZE_STEPS } from '@/hooks/useDisplay';
 // (`variant="nav"`), one in every activity/drill header (`variant="activity"`,
 // the default). All instances read and write the same persisted DisplayProvider
 // state, so a change in one place is reflected everywhere.
-export default function DisplayControls({ variant = 'activity', className = '' }) {
+export default function DisplayControls({ variant = 'activity', colors = true, className = '' }) {
     const { sizeIdx, textColor, isCustom, decSize, incSize, setTextColor, reset } = useDisplay();
     const nav = variant === 'nav';
 
@@ -29,9 +29,9 @@ export default function DisplayControls({ variant = 'activity', className = '' }
                 <button onClick={incSize} disabled={sizeIdx === SIZE_STEPS - 1} className={stepBtn} title="Larger text">A+</button>
             </div>
 
-            {nav && <span className="w-px h-3 bg-white/20 mx-0.5" />}
+            {nav && colors && <span className="w-px h-3 bg-white/20 mx-0.5" />}
 
-            <div className="flex items-center gap-1.5">
+            {colors && <div className="flex items-center gap-1.5">
                 {TEXT_COLORS.map(({ label, cls, hex }) => (
                     <button
                         key={cls}
@@ -45,7 +45,7 @@ export default function DisplayControls({ variant = 'activity', className = '' }
                         style={{ backgroundColor: hex }}
                     />
                 ))}
-            </div>
+            </div>}
 
             {nav && isCustom && (
                 <>

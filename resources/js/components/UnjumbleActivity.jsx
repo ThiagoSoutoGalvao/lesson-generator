@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl'];
+const FONT_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
 function shuffle(arr) {
     const a = [...arr];
@@ -27,7 +29,7 @@ export default function UnjumbleActivity({ activity, onClose }) {
     const [finished, setFinished] = useState(false);
     const [backgrounds, setBackgrounds] = useState([]);
     const [showSave, setShowSave] = useState(false);
-    const [fontSizeIdx, setFontSizeIdx] = useState(1);
+    const { sizeIdx: fontSizeIdx } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const dragRef = useRef(null);
@@ -174,12 +176,7 @@ export default function UnjumbleActivity({ activity, onClose }) {
                 <span className="text-white/70 text-sm font-medium">Sentence {currentIndex + 1} / {total}</span>
                 <div className="flex items-center gap-5">
                     <span className="text-white/70 text-sm">Score: <span className="text-yellow-400 font-semibold">{score}</span></span>
-                    <div className="flex items-center gap-1">
-                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(2, i + 1))} disabled={fontSizeIdx === 2}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
-                    </div>
+                    <DisplayControls colors={false} />
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}

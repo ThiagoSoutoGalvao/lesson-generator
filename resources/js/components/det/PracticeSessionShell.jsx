@@ -1,15 +1,7 @@
+import DisplayControls from '@/components/DisplayControls';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
 const chromeBtnCls = 'px-3 py-1.5 rounded-lg bg-white/10 hover:bg-white/20 border border-white/20 text-white text-xs font-semibold transition-colors cursor-pointer';
-
-// Standard palette used across every activity template in the app.
-export const TEXT_COLORS = [
-    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
-    { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
-    { label: 'Orange', cls: 'text-orange-400', bg: '#fb923c' },
-    { label: 'Red',    cls: 'text-red-400',    bg: '#f87171' },
-    { label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' },
-];
 
 const SHELL_BG = '#1a1a2e';
 
@@ -51,8 +43,7 @@ function OwlWatermark() {
 
 export default function PracticeSessionShell({
     title, subtitle, progressLabel, paused, onTogglePause, onRedo, onBack, children,
-    fontSizeIdx, fontSizeMax, onFontDecrease, onFontIncrease,
-    textColor, onTextColorChange,
+    displayControls = true,
     watermark,
 }) {
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
@@ -69,28 +60,7 @@ export default function PracticeSessionShell({
                 <div className="flex items-center gap-4">
                     {progressLabel && <span className="text-white/50 text-xs font-semibold tabular-nums">{progressLabel}</span>}
 
-                    {onFontIncrease && (
-                        <div className="flex items-center gap-1">
-                            <button onClick={onFontDecrease} disabled={fontSizeIdx === 0}
-                                className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer">
-                                A-
-                            </button>
-                            <button onClick={onFontIncrease} disabled={fontSizeIdx === fontSizeMax}
-                                className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer">
-                                A+
-                            </button>
-                        </div>
-                    )}
-
-                    {onTextColorChange && (
-                        <div className="flex items-center gap-1.5">
-                            {TEXT_COLORS.map(({ label, cls, bg }) => (
-                                <button key={cls} onClick={() => onTextColorChange(cls)} title={label}
-                                    className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
-                                    style={{ backgroundColor: bg }} />
-                            ))}
-                        </div>
-                    )}
+                    {displayControls && <DisplayControls />}
 
                     {onRedo && <button onClick={onRedo} className={chromeBtnCls}>↻ Redo</button>}
                     {onTogglePause && (

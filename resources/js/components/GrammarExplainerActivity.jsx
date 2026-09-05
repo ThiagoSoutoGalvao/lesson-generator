@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
 const TITLE_SIZES   = ['text-3xl',  'text-4xl',  'text-5xl',  'text-6xl',  'text-7xl'];
@@ -10,13 +12,6 @@ const FORM_SIZES    = ['text-sm',   'text-base', 'text-lg',   'text-xl',   'text
 const EXAMPLE_SIZES = ['text-sm',   'text-base', 'text-lg',   'text-xl',   'text-2xl'];
 const FONT_SIZE_MAX = TITLE_SIZES.length - 1;
 
-const TEXT_COLORS = [
-    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
-    { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
-    { label: 'Orange', cls: 'text-orange-400', bg: '#fb923c' },
-    { label: 'Red',    cls: 'text-red-400',    bg: '#f87171' },
-    { label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' },
-];
 
 const ACCENT = {
     blue:   { text: 'text-blue-300',   bg: 'bg-blue-500/15',   border: 'border-blue-400/25',   dot: 'bg-blue-400',   bar: 'bg-blue-400',   btn: 'bg-blue-600 hover:bg-blue-700'   },
@@ -41,8 +36,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
     const [direction, setDirection]       = useState('next');
     const [bgUrl, setBgUrl]               = useState(null);
     const [showSave, setShowSave]         = useState(false);
-    const [fontSizeIdx, setFontSizeIdx]   = useState(1);
-    const [textColor, setTextColor]       = useState('text-white');
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const slides = activity.slides;
@@ -110,19 +104,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                     </div>
                 </div>
                 <div className="flex items-center gap-5">
-                    <div className="flex items-center gap-1">
-                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))} disabled={fontSizeIdx === FONT_SIZE_MAX}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer">A+</button>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        {TEXT_COLORS.map(({ label, cls, bg }) => (
-                            <button key={cls} onClick={() => setTextColor(cls)} title={label}
-                                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
-                                style={{ backgroundColor: bg }} />
-                        ))}
-                    </div>
+                    <DisplayControls />
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={() => navigate('/generate')} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Generate another activity">+ Add activity</button>
                     <button onClick={() => window.print()} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Download as PDF">⬇ PDF</button>

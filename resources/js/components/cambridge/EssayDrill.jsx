@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import essayItems from '@/data/cambridge/b2/writingEssay.json';
 
@@ -17,8 +18,7 @@ const navBtnCls = 'px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover
 export default function EssayDrill() {
     const navigate = useNavigate();
     const [index, setIndex] = useState(0);
-    const [fontSizeIdx, setFontSizeIdx] = useState(1);
-    const [textColor, setTextColor] = useState('text-white');
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
     function backToTab() {
         navigate('/upload', { state: { tab: 'cambridge' } });
@@ -34,12 +34,6 @@ export default function EssayDrill() {
             subtitle="Writing, Part 1 — compulsory question"
             progressLabel={`Prompt ${index + 1} of ${total}`}
             onBack={backToTab}
-            fontSizeIdx={fontSizeIdx}
-            fontSizeMax={FONT_SIZE_MAX}
-            onFontDecrease={() => setFontSizeIdx(i => Math.max(0, i - 1))}
-            onFontIncrease={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))}
-            textColor={textColor}
-            onTextColorChange={setTextColor}
         >
             <div key={index} className="flex-1 flex flex-col items-center justify-center gap-8 px-8 overflow-y-auto py-8">
                 <div className="max-w-3xl w-full flex flex-col gap-6 items-center text-center">

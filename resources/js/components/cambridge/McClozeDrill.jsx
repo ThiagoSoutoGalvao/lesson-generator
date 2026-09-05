@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
+import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
 import mcClozeSets from '@/data/cambridge/b2/mcCloze.json';
 
@@ -48,8 +49,7 @@ export default function McClozeDrill() {
     const [answers, setAnswers] = useState({});
     const [revealed, setRevealed] = useState(false);
     const [sessionKey, setSessionKey] = useState(0);
-    const [fontSizeIdx, setFontSizeIdx] = useState(2);
-    const [textColor, setTextColor] = useState('text-white');
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
     function backToTab() {
         navigate('/upload', { state: { tab: 'cambridge' } });
@@ -88,12 +88,6 @@ export default function McClozeDrill() {
             subtitle={phase === 'drilling' ? set.title : 'Choose a text to practice — Reading & Use of English, Part 1'}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}
-            fontSizeIdx={fontSizeIdx}
-            fontSizeMax={FONT_SIZE_MAX}
-            onFontDecrease={() => setFontSizeIdx(i => Math.max(0, i - 1))}
-            onFontIncrease={() => setFontSizeIdx(i => Math.min(FONT_SIZE_MAX, i + 1))}
-            textColor={textColor}
-            onTextColorChange={setTextColor}
         >
             {phase === 'select' && (
                 <div className="flex-1 overflow-y-auto px-8 py-8">

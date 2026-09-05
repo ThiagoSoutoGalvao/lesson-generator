@@ -1,18 +1,13 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
 const FONT_SIZES        = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
 const EXPLANATION_SIZES = ['text-lg', 'text-xl',  'text-2xl', 'text-3xl', 'text-4xl'];
 const PARAGRAPH_SIZES   = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
-const TEXT_COLORS = [
-    { label: 'White',  cls: 'text-white',      bg: '#ffffff' },
-    { label: 'Yellow', cls: 'text-yellow-300', bg: '#fde047' },
-    { label: 'Orange', cls: 'text-orange-400', bg: '#fb923c' },
-    { label: 'Red',    cls: 'text-red-400',    bg: '#f87171' },
-    { label: 'Cyan',   cls: 'text-cyan-300',   bg: '#67e8f9' },
-];
 
 function buildSteps(activity) {
     const steps = [];
@@ -50,8 +45,7 @@ export default function EssayFeedbackActivity({ activity, onClose }) {
     const [revealed, setRevealed]       = useState(false);
     const [bgUrl, setBgUrl]             = useState(null);
     const [showSave, setShowSave]       = useState(false);
-    const [fontSizeIdx, setFontSizeIdx] = useState(2);
-    const [textColor, setTextColor]     = useState('text-white');
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const steps = buildSteps(activity);
@@ -124,19 +118,7 @@ export default function EssayFeedbackActivity({ activity, onClose }) {
                     <span className="text-white/40 text-sm ml-3">{index + 1} / {total}</span>
                 </div>
                 <div className="flex items-center gap-5">
-                    <div className="flex items-center gap-1">
-                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(FONT_SIZES.length - 1, i + 1))} disabled={fontSizeIdx === FONT_SIZES.length - 1}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                        {TEXT_COLORS.map(({ label, cls, bg }) => (
-                            <button key={cls} onClick={() => setTextColor(cls)} title={label}
-                                className={`w-4 h-4 rounded-full transition-all cursor-pointer ${textColor === cls ? 'ring-2 ring-white ring-offset-1 ring-offset-black/60 scale-110' : 'opacity-50 hover:opacity-90'}`}
-                                style={{ backgroundColor: bg }} />
-                        ))}
-                    </div>
+                    <DisplayControls />
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={() => window.print()} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Download as PDF">⬇ PDF</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>

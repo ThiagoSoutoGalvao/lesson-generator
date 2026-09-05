@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
-const FONT_SIZES = ['text-base', 'text-lg', 'text-xl'];
+const FONT_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
 const LETTERS = ['A', 'B', 'C', 'D'];
 
 // Cambridge-style Multiple Choice Cloze: a connected passage with gaps, four
@@ -13,7 +15,7 @@ export default function McClozeActivity({ activity, onClose }) {
     const [answers, setAnswers]        = useState({});   // blankIndex -> chosen option string
     const [bgUrl, setBgUrl]            = useState(null);
     const [showSave, setShowSave]      = useState(false);
-    const [fontSizeIdx, setFontSizeIdx] = useState(1);
+    const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const processedParts = useMemo(() => {
@@ -58,12 +60,7 @@ export default function McClozeActivity({ activity, onClose }) {
             <div className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
                 <span className="text-white/70 text-sm font-medium">{score} / {totalBlanks} correct · {answeredCount} answered</span>
                 <div className="flex items-center gap-5">
-                    <div className="flex items-center gap-1">
-                        <button onClick={() => setFontSizeIdx(i => Math.max(0, i - 1))} disabled={fontSizeIdx === 0}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-xs font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Smaller text">A-</button>
-                        <button onClick={() => setFontSizeIdx(i => Math.min(FONT_SIZES.length - 1, i + 1))} disabled={fontSizeIdx === FONT_SIZES.length - 1}
-                            className="text-white/50 hover:text-white disabled:opacity-25 text-sm font-bold px-1.5 py-0.5 rounded transition-colors cursor-pointer" title="Larger text">A+</button>
-                    </div>
+                    <DisplayControls />
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
@@ -82,7 +79,7 @@ export default function McClozeActivity({ activity, onClose }) {
                 {/* Passage panel */}
                 <div className="md:w-[44%] shrink-0 bg-white/8 border border-white/15 rounded-2xl p-6 overflow-y-auto">
                     <p className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-3">Passage</p>
-                    <p className={`text-white ${FONT_SIZES[fontSizeIdx]} leading-loose`}>
+                    <p className={`${textColor} ${FONT_SIZES[fontSizeIdx]} leading-loose`}>
                         {processedParts.map((part, i) => {
                             if (part.text !== undefined) return <span key={i}>{part.text}</span>;
                             const chosen = answers[part.blankIndex];
