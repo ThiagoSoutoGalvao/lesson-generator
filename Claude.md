@@ -785,3 +785,54 @@ A prior styling attempt had been expensive (lots of live tweak → rebuild → s
 - `GOALS` + `TEMPLATES` config live at the top of `resources/js/pages/GeneratePage.jsx`. A template's `id` is the picker key; `type` (defaults to `id`) is what the API/renderer sees — that's how "Error Correction — sentences" and "— passage" are two cards on one `error_correction` type.
 - 15 generatable types now: quiz, flashcards, unjumble, dialog_gap_fill, word_formation, true_false, mc_reading, odd_one_out, cloze, open_cloze, mc_cloze, read_complete, discussion_questions, sentence_transformation, error_correction. (`image_vocab_match` / `word_categorisation` still have no backend generator.)
 - Presentation / Reading Text keep their own `/upload` tabs + endpoints; a line on `/generate` points there.
+
+---
+
+## 18. Phase B — Aurora "Sunrise" branding ✅ COMPLETED
+
+Full spec: `AuroraBranding.md`. Shell pages only (`/`, `/upload`, `/generate`, `/library` via
+`Layout.jsx`, plus the Breeze login). No fullscreen activity/drill/practice screen was touched —
+they keep their dark `#1a1a2e` + photo look.
+
+- **Ground:** the three shell photos (`shell.jpg` etc.) are replaced by one warm Aurora gradient
+  — `AURORA_GRADIENT` in `Layout.jsx` (`linear-gradient(150deg, #F8C63D, #FA9C3E, #FC6840, #A01789)`),
+  `backgroundAttachment: fixed`. `PAGE_BACKGROUNDS` map is gone. (Note: `background-attachment: fixed`
+  breaks in Playwright **fullPage** screenshots — white band below the first viewport — this is a
+  screenshot artifact only, the live page is continuous.)
+- **Shell tokens retuned in `app.css`** (still used *only* by Layout/Library/Generate/Upload —
+  `.lg-surface-soft` is a separate Pronunciation-only dark token, untouched):
+  - `.lg-surface` → `rgba(255,255,255,.82)` frosted white, `blur(20px) saturate(1.15)`
+  - `.lg-chip` → `rgba(255,255,255,.7)`
+  - `.lg-shell-overlay` → `rgba(26,19,64,.10)` (faint — gradient must stay visible)
+  - `.lg-shell-text` → light halo (titles/captions on the gradient are dark indigo now)
+  - new `.font-display` utility → Poppins (loaded via `<link>` in `welcome.blade.php` + `guest.blade.php`)
+- **Dark-text sweep** across `LibraryPage`/`GeneratePage`/`UploadPage` (~150 classes): `text-white*`
+  → `text-[#271d62]` (indigo) / `text-[#5a1b73]` (violet, softer); `bg-white/*` insets →
+  `bg-[#271d62]/[0.0x]`; `border-white/*` → `border-[#271d62]/1x`. Done with two throwaway node
+  scripts + ~25 targeted edits. **`LibraryPage`'s `TYPE_COLORS` map was protected** — badge text
+  stays white on the coloured badges (`TRILHA` accents and `meta.accent` slot ticks too).
+- **Accent:** blue → Aurora. Filled primary buttons (Generate, Launch, Save brief, Log-in, the
+  audio "Generate Activity", sourceMode toggle) = **magenta `#a01789`** bg + white text (coral
+  `#fc6840` fails white-text contrast — magenta is the safe branded fill). Selected goal/format
+  cards in `GeneratePage` = **light** treatment (`bg-[#a01789]/12 border-[#a01789] ring-2
+  ring-[#a01789]/30`, text stays dark) rather than a filled dark state, which sidesteps the
+  text-colour conflict. `focus:ring` → `#a01789`; small accents/dots → coral `#fc6840`.
+- **Navbar** (`Layout.jsx`): darker frosted strip (`bg-[#271d62]/35`), keeps **white** text;
+  wordmark replaced with `<img src="/brand/aurora-logo-horizontal-white.png" className="h-7">`.
+  Active nav pill left as `bg-white/20`.
+- **Per-tab theme colours in `UploadPage`** kept as feature identity but made readable on the
+  white chip bar: `bg-{hue}-500/25 border-{hue}-500/60 text-{hue}-800`. PDF tab → coral.
+- **Result/error panels** (upload success, errors) had their light `-300` text darkened to
+  `-700`/`-800` (they were tuned for a dark photo bg).
+- **Login** (`guest.blade.php`): rewritten — gradient ground, white Aurora logo, frosted-white
+  card; `primary-button.blade.php` → magenta.
+- **`Home` (`App.jsx`)**: logo image + Poppins tagline on the gradient.
+- `favicon` → `/brand/aurora-symbol.png` in both blade heads.
+- **`DrillLoop.jsx`**: its dead `softCards ? … : 'lg-surface …'` fallback branch (every caller
+  passes `softCards`) was pointed at `.lg-surface-soft` so no non-shell component references the
+  retuned `.lg-surface` token.
+- Verified: `npm run build` clean; Playwright across login + all shell routes + all 8 upload tabs
+  at 1280 and 390 — zero console errors, zero horizontal overflow.
+
+**Next:** Display Panel D1 (unified persistent font-size/colour control across nav + all ~20
+activities), then D2 (brightness slider + font choice), then the student app (`AuroraStudentApp.md`).

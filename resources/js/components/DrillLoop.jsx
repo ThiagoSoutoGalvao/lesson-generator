@@ -162,7 +162,7 @@ export default function DrillLoop({ items, choices, onFinish, headerExtra, softC
                     const isSelected = selectedKey === choice.key;
                     const isCorrectChoice = choice.key === item.correctKey;
 
-                    let cls = softCards ? 'lg-surface-soft lg-surface-soft-hover border cursor-pointer' : 'lg-surface lg-surface-hover border cursor-pointer';
+                    let cls = softCards ? 'lg-surface-soft lg-surface-soft-hover border cursor-pointer' : 'lg-surface-soft lg-surface-soft-hover border cursor-pointer';
                     if (status !== null) {
                         if (isSelected && status === 'correct') cls = 'bg-green-500/30 border-green-400 scale-[1.03]';
                         else if (isSelected && status === 'wrong') cls = 'bg-red-500/30 border-red-400';

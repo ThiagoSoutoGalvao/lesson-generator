@@ -15,8 +15,8 @@ import CambridgePracticePage from '@/pages/CambridgePracticePage';
 function Home() {
     return (
         <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
-            <h1 className="text-6xl font-bold text-white">Lesson Generator</h1>
-            <p className="text-2xl text-white/80">AI-powered activities for English teachers</p>
+            <img src="/brand/aurora-logo-horizontal.png" alt="Aurora" className="h-16 w-auto lg-shell-text" />
+            <p className="font-display text-2xl font-semibold text-[#271d62] lg-shell-text">AI-powered activities for English teachers</p>
         </div>
     );
 }

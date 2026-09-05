@@ -78,10 +78,10 @@ const TYPE_FILTERS = [
 
 const filterBtnCls = (active) =>
     `px-4 py-1.5 rounded-lg text-sm font-medium transition-colors cursor-pointer border ${
-        active ? 'bg-blue-500 border-blue-400 text-white shadow-lg shadow-blue-500/25' : 'lg-chip lg-chip-hover text-white/75 hover:text-white'
+        active ? 'bg-[#a01789] border-[#a01789] text-white shadow-lg shadow-[#a01789]/25' : 'lg-chip lg-chip-hover text-[#5a1b73] hover:text-[#271d62]'
     }`;
 
-const briefFieldCls = 'bg-white/10 border border-white/15 text-white placeholder:text-white/30 rounded-lg px-3 py-2 text-xs w-full resize-y focus:outline-none focus:ring-2 focus:ring-blue-500';
+const briefFieldCls = 'bg-[#271d62]/[0.06] border border-[#271d62]/12 text-[#271d62] placeholder:text-[#271d62]/40 rounded-lg px-3 py-2 text-xs w-full resize-y focus:outline-none focus:ring-2 focus:ring-[#a01789]';
 
 const BRIEF_FIELDS = [
     ['target_language', 'Target language', 'e.g. Present continuous — form + one model sentence'],
@@ -113,16 +113,16 @@ function LessonBriefEditor({ trilhaName, lessonNum, brief, onSave, onCancel }) {
     }
 
     return (
-        <div className="flex flex-col gap-3 bg-black/20 rounded-xl p-3 mt-1">
+        <div className="flex flex-col gap-3 bg-[#271d62]/[0.05] rounded-xl p-3 mt-1">
             {toc.length > 0 && (
-                <div className="bg-white/5 border border-white/10 rounded-lg p-3">
-                    <div className="text-white/40 text-[11px] font-semibold uppercase tracking-wide mb-1.5">
+                <div className="bg-[#271d62]/[0.04] border border-[#271d62]/10 rounded-lg p-3">
+                    <div className="text-[#271d62]/45 text-[11px] font-semibold uppercase tracking-wide mb-1.5">
                         From the trilha ToC — {trilhaName} · Lesson {lessonNum}
                     </div>
-                    <ul className="list-disc list-inside space-y-1 text-white/80 text-xs leading-snug">
+                    <ul className="list-disc list-inside space-y-1 text-[#271d62]/85 text-xs leading-snug">
                         {toc.map((item, i) => <li key={i}>{item}</li>)}
                     </ul>
-                    <p className="text-white/30 text-[10px] mt-2">
+                    <p className="text-[#271d62]/40 text-[10px] mt-2">
                         Reference only — fill in the target language and vocabulary below.
                     </p>
                 </div>
@@ -130,7 +130,7 @@ function LessonBriefEditor({ trilhaName, lessonNum, brief, onSave, onCancel }) {
             <div className="grid sm:grid-cols-2 gap-3">
                 {BRIEF_FIELDS.map(([key, label, placeholder]) => (
                     <div key={key} className="flex flex-col gap-1">
-                        <label className="text-white/50 text-[11px] font-medium">{label}</label>
+                        <label className="text-[#271d62]/55 text-[11px] font-medium">{label}</label>
                         <textarea
                             value={fields[key]}
                             onChange={e => setFields(f => ({ ...f, [key]: e.target.value }))}
@@ -142,11 +142,11 @@ function LessonBriefEditor({ trilhaName, lessonNum, brief, onSave, onCancel }) {
                 ))}
             </div>
             <div className="flex items-center gap-2 flex-wrap">
-                <label className="text-white/50 text-[11px] font-medium">Updated by</label>
+                <label className="text-[#271d62]/55 text-[11px] font-medium">Updated by</label>
                 <select
                     value={updatedBy}
                     onChange={e => setUpdatedBy(e.target.value)}
-                    className="bg-white/10 border border-white/15 text-white text-xs rounded-lg px-2 py-1.5 cursor-pointer"
+                    className="bg-[#271d62]/[0.06] border border-[#271d62]/12 text-[#271d62] text-xs rounded-lg px-2 py-1.5 cursor-pointer"
                 >
                     <option value="" className="bg-gray-900">—</option>
                     {TEACHERS.map(t => (
@@ -156,14 +156,14 @@ function LessonBriefEditor({ trilhaName, lessonNum, brief, onSave, onCancel }) {
                 <div className="flex-1" />
                 <button
                     onClick={onCancel}
-                    className="text-white/60 hover:text-white text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
+                    className="text-[#271d62]/60 hover:text-[#271d62] text-xs px-3 py-1.5 rounded-lg transition-colors cursor-pointer"
                 >
                     Close
                 </button>
                 <button
                     onClick={handleSave}
                     disabled={saving}
-                    className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400/30 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
+                    className="bg-[#a01789] hover:bg-[#8a1475] disabled:bg-[#a01789]/30 text-white text-xs font-semibold px-4 py-1.5 rounded-lg transition-colors cursor-pointer"
                 >
                     {saving ? 'Saving…' : 'Save brief'}
                 </button>
@@ -195,17 +195,17 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
     return (
         <div className="lg-surface border rounded-2xl p-4 overflow-x-auto">
             <div className="flex items-center justify-between mb-3 gap-3">
-                <h3 className="text-white font-bold text-sm">{meta.label} coverage</h3>
-                <span className="text-white/60 text-xs shrink-0">{filledSlots} / {totalSlots} slots filled</span>
+                <h3 className="font-display text-[#271d62] font-bold text-sm">{meta.label} coverage</h3>
+                <span className="text-[#271d62]/60 text-xs shrink-0">{filledSlots} / {totalSlots} slots filled</span>
             </div>
             <table className="w-full text-xs border-separate border-spacing-1 min-w-[480px]">
                 <thead>
                     <tr>
-                        <th className="text-left text-white/50 font-medium pr-2">Lesson</th>
+                        <th className="text-left text-[#271d62]/55 font-medium pr-2">Lesson</th>
                         {LESSON_SLOTS.map(s => (
-                            <th key={s.key} className="text-white/50 font-medium px-1 py-1">{s.label}</th>
+                            <th key={s.key} className="text-[#271d62]/55 font-medium px-1 py-1">{s.label}</th>
                         ))}
-                        <th className="text-white/50 font-medium px-1 py-1">Brief</th>
+                        <th className="text-[#271d62]/55 font-medium px-1 py-1">Brief</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -220,7 +220,7 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
                                         <button
                                             onClick={() => onSelectLesson(active ? 'all' : String(n))}
                                             className={`text-left font-semibold px-2 py-1 rounded-lg cursor-pointer transition-colors whitespace-nowrap ${
-                                                active ? 'bg-blue-500 text-white' : 'text-white/80 hover:bg-white/10'
+                                                active ? 'bg-[#a01789] text-white' : 'text-[#271d62]/85 hover:bg-[#271d62]/[0.06]'
                                             }`}
                                         >
                                             L{String(n).padStart(2, '0')}
@@ -233,7 +233,7 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
                                                 <span
                                                     title={s.label}
                                                     className={`inline-flex items-center justify-center w-7 h-7 rounded-md text-sm ${
-                                                        filled ? `${meta.accent} text-white` : 'bg-white/5 text-white/20 border border-white/10'
+                                                        filled ? `${meta.accent} text-white` : 'bg-[#271d62]/[0.04] text-[#271d62]/35 border border-[#271d62]/10'
                                                     }`}
                                                 >
                                                     {filled ? '✓' : '·'}
@@ -246,7 +246,7 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
                                             onClick={() => setExpandedLesson(expanded ? null : n)}
                                             title={hasBriefContent(brief) ? 'Brief started' : 'No brief yet'}
                                             className={`relative inline-flex items-center justify-center w-7 h-7 rounded-md text-sm cursor-pointer transition-colors ${
-                                                expanded ? 'bg-blue-500 text-white' : 'bg-white/5 text-white/70 hover:bg-white/15 border border-white/10'
+                                                expanded ? 'bg-[#a01789] text-white' : 'bg-[#271d62]/[0.04] text-[#5a1b73] hover:bg-[#271d62]/10 border border-[#271d62]/10'
                                             }`}
                                         >
                                             📝
@@ -374,8 +374,8 @@ export default function LibraryPage() {
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h2 className="lg-shell-text text-3xl font-bold text-white">Activity Library</h2>
-                <p className="lg-shell-text text-white/70 mt-1 text-sm">Your saved activities — relaunch them any time.</p>
+                <h2 className="font-display lg-shell-text text-3xl font-bold text-[#271d62]">Activity Library</h2>
+                <p className="lg-shell-text text-[#271d62]/80 mt-1 text-sm">Your saved activities — relaunch them any time.</p>
             </div>
 
             {/* Type filter */}
@@ -389,8 +389,8 @@ export default function LibraryPage() {
 
             {/* Trilha filter — only shown once at least one trilha activity has been saved */}
             {hasTrilhaActivities && (
-                <div className="flex flex-wrap gap-2 border-t border-white/10 pt-4">
-                    <span className="text-white/35 text-xs self-center mr-1">Trilha:</span>
+                <div className="flex flex-wrap gap-2 border-t border-[#271d62]/10 pt-4">
+                    <span className="text-[#271d62]/45 text-xs self-center mr-1">Trilha:</span>
                     <button onClick={() => selectTrilha('all')} className={filterBtnCls(trilhaFilter === 'all')}>
                         All
                     </button>
@@ -419,8 +419,8 @@ export default function LibraryPage() {
 
             {/* Folder filter — only shown if there are any folders */}
             {folders.length > 0 && (
-                <div className="flex flex-wrap gap-2 border-t border-white/10 pt-4">
-                    <span className="text-white/35 text-xs self-center mr-1">Folder:</span>
+                <div className="flex flex-wrap gap-2 border-t border-[#271d62]/10 pt-4">
+                    <span className="text-[#271d62]/45 text-xs self-center mr-1">Folder:</span>
                     <button onClick={() => setFolderFilter('all')} className={filterBtnCls(folderFilter === 'all')}>
                         All
                     </button>
@@ -437,18 +437,18 @@ export default function LibraryPage() {
 
             {loading && (
                 <div className="flex justify-center py-12">
-                    <Spinner message="Loading activities…" color="text-white/70" textColor="text-white/50" />
+                    <Spinner message="Loading activities…" color="text-[#5a1b73]" textColor="text-[#271d62]/55" />
                 </div>
             )}
 
             {error && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-700">
                     {error}
                 </div>
             )}
 
             {!loading && !error && filtered.length === 0 && (
-                <div className="lg-shell-text text-center py-20 text-white/70">
+                <div className="lg-shell-text text-center py-20 text-[#271d62]/80">
                     <p className="text-lg">No saved activities yet.</p>
                     <p className="text-sm mt-1">Generate an activity and click Save to add it here.</p>
                 </div>
@@ -461,7 +461,7 @@ export default function LibraryPage() {
                         className="lg-surface lg-surface-hover border rounded-2xl p-5 flex flex-col gap-3 transition-colors"
                     >
                         <div className="flex items-start justify-between gap-2">
-                            <h3 className="text-xl font-bold text-white leading-snug min-w-0 break-words">{a.name}</h3>
+                            <h3 className="font-display text-xl font-bold text-[#271d62] leading-snug min-w-0 break-words">{a.name}</h3>
                             <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${TYPE_COLORS[a.type]}`}>
                                 {TYPE_LABELS[a.type]}
                             </span>
@@ -470,17 +470,17 @@ export default function LibraryPage() {
                         {(a.trilha || a.book || a.lesson) && (
                             <div className="flex gap-2 flex-wrap">
                                 {a.trilha && (
-                                    <span className={`text-xs font-semibold text-white px-2.5 py-1 rounded-full ${TRILHAS[a.trilha]?.accent ?? 'bg-white/10'}`}>
+                                    <span className={`text-xs font-semibold text-white px-2.5 py-1 rounded-full ${TRILHAS[a.trilha]?.accent ?? 'bg-[#271d62]/[0.06]'}`}>
                                         {TRILHAS[a.trilha]?.label ?? a.trilha}{a.trilha_lesson ? ` · L${String(a.trilha_lesson).padStart(2, '0')}` : ''}
                                     </span>
                                 )}
                                 {a.book && (
-                                    <span className="text-xs bg-white/10 text-white/90 px-2.5 py-1 rounded-full border border-white/10">
+                                    <span className="text-xs bg-[#271d62]/[0.06] text-[#271d62]/90 px-2.5 py-1 rounded-full border border-[#271d62]/10">
                                         {a.book}
                                     </span>
                                 )}
                                 {a.lesson && (
-                                    <span className="text-xs bg-white/10 text-white/90 px-2.5 py-1 rounded-full border border-white/10">
+                                    <span className="text-xs bg-[#271d62]/[0.06] text-[#271d62]/90 px-2.5 py-1 rounded-full border border-[#271d62]/10">
                                         {a.lesson}
                                     </span>
                                 )}
@@ -488,14 +488,14 @@ export default function LibraryPage() {
                         )}
 
                         {a.folder && (
-                            <p className="text-xs text-white/80">📁 {a.folder}</p>
+                            <p className="text-xs text-[#271d62]/85">📁 {a.folder}</p>
                         )}
 
                         {a.built_by && (
-                            <p className="text-xs text-white/60">👤 Built by {a.built_by}</p>
+                            <p className="text-xs text-[#271d62]/60">👤 Built by {a.built_by}</p>
                         )}
 
-                        <p className="text-xs text-white/70 mt-auto">
+                        <p className="text-xs text-[#5a1b73] mt-auto">
                             {new Date(a.created_at).toLocaleDateString('en-GB', {
                                 day: 'numeric', month: 'short', year: 'numeric',
                             })}
@@ -504,13 +504,13 @@ export default function LibraryPage() {
                         <div className="flex gap-2 pt-1">
                             <button
                                 onClick={() => setLaunched(a.content)}
-                                className="flex-1 bg-white/15 hover:bg-white/25 text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer border border-white/15"
+                                className="flex-1 bg-[#a01789] hover:bg-[#8a1475] text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer border border-[#a01789]"
                             >
                                 Launch
                             </button>
                             <button
                                 onClick={() => handleDelete(a.id)}
-                                className="bg-white/8 hover:bg-red-500/50 text-white/60 hover:text-white text-sm px-3 py-2.5 rounded-xl transition-colors cursor-pointer border border-white/10"
+                                className="bg-[#271d62]/[0.06] hover:bg-red-500 text-[#271d62]/60 hover:text-white text-sm px-3 py-2.5 rounded-xl transition-colors cursor-pointer border border-[#271d62]/12"
                             >
                                 Delete
                             </button>

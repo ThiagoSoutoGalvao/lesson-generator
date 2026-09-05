@@ -7,12 +7,9 @@ const NAV_LINKS = [
     { to: '/library',  label: 'Library' },
 ];
 
-const PAGE_BACKGROUNDS = {
-    '/':         '/backgrounds/pic1.jpg',
-    '/upload':   '/backgrounds/shell.jpg',
-    '/generate': '/backgrounds/shell.jpg',
-    '/library':  '/backgrounds/shell.jpg',
-};
+// Aurora "Sunrise" — a warm gradient ground for every shell page, replacing
+// the old per-route photos. (Fullscreen activities keep their own dark look.)
+const AURORA_GRADIENT = 'linear-gradient(150deg, #F8C63D 0%, #FA9C3E 30%, #FC6840 62%, #A01789 115%)';
 
 const FONT_SIZES = [
     { value: '1rem'     },
@@ -37,8 +34,7 @@ export default function Layout({ children }) {
     const [activeColor, setActiveColor] = useState(null);
 
     const isActive = sizeIdx !== null || activeColor !== null;
-    const bgUrl    = PAGE_BACKGROUNDS[location.pathname] ?? '/backgrounds/pic5.jpg';
-    const bgStyle  = { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' };
+    const bgStyle  = { backgroundImage: AURORA_GRADIENT, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' };
 
     useEffect(() => {
         const r = document.documentElement;
@@ -62,10 +58,10 @@ export default function Layout({ children }) {
         <div className="min-h-screen relative" style={bgStyle}>
             <div className="fixed inset-0 lg-shell-overlay pointer-events-none z-0" />
 
-            <header className="relative z-10 bg-black/15 backdrop-blur-xl border-b border-white/8 px-6 py-4 sticky top-0">
+            <header className="relative z-10 bg-[#271d62]/35 backdrop-blur-xl border-b border-white/15 px-6 py-4 sticky top-0">
                 <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
-                    <Link to="/" className="text-xl font-semibold text-white hover:text-white/80 transition-colors">
-                        Lesson Generator
+                    <Link to="/" className="flex items-center transition-opacity hover:opacity-80">
+                        <img src="/brand/aurora-logo-horizontal-white.png" alt="Aurora" className="h-7 w-auto" />
                     </Link>
                     <nav className="flex flex-wrap items-center justify-end gap-1 text-sm">
                         {NAV_LINKS.map(({ to, label }) => {

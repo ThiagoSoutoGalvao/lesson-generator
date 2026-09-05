@@ -1,8 +1,8 @@
 # Aurora Branding — Direction B ("Sunrise") + Display Panel
 
-**Status:** Decision made 2026-09-06. Ship **Direction B**. Not started. This doc
-is the build spec — written as a pre-compaction handoff so the next session can
-execute without re-deriving anything.
+**Status:** Phase B ✅ SHIPPED 2026-09-06 (see `Claude.md` §18 for what actually
+landed and the notes worth keeping). Display Panel D1/D2 below are still to do.
+This doc is the original build spec, kept for reference.
 
 Reference artifact (3 directions + Display panel mock):
 https://claude.ai/code/artifact/748ae1b7-f07f-4328-9b5c-bd22eedfb77d
