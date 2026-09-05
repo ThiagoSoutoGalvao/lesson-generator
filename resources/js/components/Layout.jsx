@@ -66,10 +66,12 @@ export default function Layout({ children }) {
                 className="fixed -bottom-10 -right-10 w-72 h-72 object-contain opacity-[0.06] pointer-events-none z-0 select-none"
             />
 
-            <header className="relative z-10 bg-[#160c33]/55 backdrop-blur-xl border-b border-white/10 px-6 py-3.5 sticky top-0">
+            <header className="relative z-10 bg-[#160c33]/55 backdrop-blur-xl border-b border-white/10 px-6 py-3 sticky top-0">
                 <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
                     <Link to="/" className="flex items-center transition-opacity hover:opacity-80">
-                        <img src="/brand/aurora-logo-horizontal-white.png" alt="Aurora" className="h-10 sm:h-11 w-auto" />
+                        <span className="inline-flex bg-white rounded-lg px-3 py-1.5 shadow-sm shadow-black/20">
+                            <img src="/brand/aurora-logo-horizontal.png" alt="Aurora" className="h-9 w-auto" />
+                        </span>
                     </Link>
                     <nav className="flex flex-wrap items-center justify-end gap-1 text-sm">
                         {NAV_LINKS.map(({ to, label }) => {
