@@ -32,12 +32,12 @@ function PresentationGenerator() {
         }
     }
 
-    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-[#271d62] placeholder-[#271d62]/40 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-colors';
+    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-colors';
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">Topic</label>
+                <label className="text-sm font-medium text-white/80">Topic</label>
                 <input
                     type="text"
                     value={topic}
@@ -50,9 +50,9 @@ function PresentationGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">
+                <label className="text-sm font-medium text-white/80">
                     Extra instructions
-                    <span className="text-[#271d62]/45 font-normal ml-1">— optional</span>
+                    <span className="text-white/40 font-normal ml-1">— optional</span>
                 </label>
                 <textarea
                     value={extra}
@@ -65,7 +65,7 @@ function PresentationGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">Number of slides</label>
+                <label className="text-sm font-medium text-white/80">Number of slides</label>
                 <div className="flex gap-2 flex-wrap">
                     {SLIDE_OPTIONS.map(n => (
                         <button
@@ -75,7 +75,7 @@ function PresentationGenerator() {
                             className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
                                 slides === n
                                     ? 'bg-indigo-500 border-indigo-400 text-white'
-                                    : 'lg-chip lg-chip-hover border text-[#5a1b73] hover:text-[#271d62]'
+                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
                             }`}
                         >
                             {n}
@@ -94,12 +94,12 @@ function PresentationGenerator() {
 
             {status === 'loading' && (
                 <div className="flex justify-center py-6">
-                    <Spinner message="Building your presentation… this takes about 20 seconds" color="text-indigo-400" textColor="text-[#271d62]/60" />
+                    <Spinner message="Building your presentation… this takes about 20 seconds" color="text-indigo-400" textColor="text-white/60" />
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-700">
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
                     {errorMsg}
                 </div>
             )}
@@ -138,12 +138,12 @@ function ReadingTextGenerator() {
         }
     }
 
-    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-[#271d62] placeholder-[#271d62]/40 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-colors';
+    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-colors';
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">Topic</label>
+                <label className="text-sm font-medium text-white/80">Topic</label>
                 <input
                     type="text"
                     value={topic}
@@ -156,9 +156,9 @@ function ReadingTextGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">
+                <label className="text-sm font-medium text-white/80">
                     Target vocabulary
-                    <span className="text-[#271d62]/45 font-normal ml-1">— optional, comma-separated</span>
+                    <span className="text-white/40 font-normal ml-1">— optional, comma-separated</span>
                 </label>
                 <input
                     type="text"
@@ -168,11 +168,11 @@ function ReadingTextGenerator() {
                     className={inputCls}
                     disabled={status === 'loading'}
                 />
-                <p className="text-[#271d62]/45 text-xs">Leave blank and Claude will pick useful vocabulary from the text itself.</p>
+                <p className="text-white/40 text-xs">Leave blank and Claude will pick useful vocabulary from the text itself.</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">Number of paragraphs</label>
+                <label className="text-sm font-medium text-white/80">Number of paragraphs</label>
                 <div className="flex gap-2 flex-wrap">
                     {PARAGRAPH_OPTIONS.map(n => (
                         <button
@@ -182,7 +182,7 @@ function ReadingTextGenerator() {
                             className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
                                 paragraphs === n
                                     ? 'bg-emerald-500 border-emerald-400 text-white'
-                                    : 'lg-chip lg-chip-hover border text-[#5a1b73] hover:text-[#271d62]'
+                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
                             }`}
                         >
                             {n}
@@ -192,9 +192,9 @@ function ReadingTextGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">
+                <label className="text-sm font-medium text-white/80">
                     Extra instructions
-                    <span className="text-[#271d62]/45 font-normal ml-1">— optional</span>
+                    <span className="text-white/40 font-normal ml-1">— optional</span>
                 </label>
                 <textarea
                     value={extra}
@@ -216,12 +216,12 @@ function ReadingTextGenerator() {
 
             {status === 'loading' && (
                 <div className="flex justify-center py-6">
-                    <Spinner message="Writing your reading text… this takes about 20 seconds" color="text-emerald-400" textColor="text-[#271d62]/60" />
+                    <Spinner message="Writing your reading text… this takes about 20 seconds" color="text-emerald-400" textColor="text-white/60" />
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-700">
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
                     {errorMsg}
                 </div>
             )}
@@ -256,14 +256,14 @@ function EssayFeedbackGenerator() {
         }
     }
 
-    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-[#271d62] placeholder-[#271d62]/40 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition-colors';
+    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-fuchsia-400 focus:border-transparent transition-colors';
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">
+                <label className="text-sm font-medium text-white/80">
                     Student's essay
-                    <span className="text-[#271d62]/45 font-normal ml-1">— paste the full text</span>
+                    <span className="text-white/40 font-normal ml-1">— paste the full text</span>
                 </label>
                 <textarea
                     value={essayText}
@@ -276,9 +276,9 @@ function EssayFeedbackGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">
+                <label className="text-sm font-medium text-white/80">
                     Student's name
-                    <span className="text-[#271d62]/45 font-normal ml-1">— optional</span>
+                    <span className="text-white/40 font-normal ml-1">— optional</span>
                 </label>
                 <input
                     type="text"
@@ -291,9 +291,9 @@ function EssayFeedbackGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-[#271d62]/85">
+                <label className="text-sm font-medium text-white/80">
                     Extra instructions
-                    <span className="text-[#271d62]/45 font-normal ml-1">— optional</span>
+                    <span className="text-white/40 font-normal ml-1">— optional</span>
                 </label>
                 <textarea
                     value={extra}
@@ -315,12 +315,12 @@ function EssayFeedbackGenerator() {
 
             {status === 'loading' && (
                 <div className="flex justify-center py-6">
-                    <Spinner message="Reading the essay and preparing feedback… this takes about 20 seconds" color="text-fuchsia-400" textColor="text-[#271d62]/60" />
+                    <Spinner message="Reading the essay and preparing feedback… this takes about 20 seconds" color="text-fuchsia-400" textColor="text-white/60" />
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-700">
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
                     {errorMsg}
                 </div>
             )}
@@ -401,20 +401,20 @@ function PdfUploader() {
                     className={[
                         'border-2 border-dashed rounded-2xl p-14 flex flex-col items-center gap-3 cursor-pointer transition-all duration-200',
                         dragging
-                            ? 'border-[#c93aa0] bg-[#fc6840]/15 backdrop-blur-md'
+                            ? 'border-[#fc6840] bg-[#fc6840]/15 backdrop-blur-md'
                             : 'lg-surface lg-surface-hover border',
                     ].join(' ')}
                 >
-                    <svg className={`w-12 h-12 transition-colors ${dragging ? 'text-[#fc6840]' : 'text-[#271d62]/45'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <svg className={`w-12 h-12 transition-colors ${dragging ? 'text-[#fc6840]' : 'text-white/40'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                             d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                     {status === 'uploading' ? (
-                        <Spinner message="Uploading and extracting text…" color="text-[#fc6840]" textColor="text-[#271d62]/60" />
+                        <Spinner message="Uploading and extracting text…" color="text-[#fc6840]" textColor="text-white/60" />
                     ) : (
                         <>
-                            <p className="text-sm text-[#271d62]/85 font-medium">Drop your PDF here or click to browse</p>
-                            <p className="text-xs text-[#271d62]/45">PDF only · max 500 MB</p>
+                            <p className="text-sm text-white/80 font-medium">Drop your PDF here or click to browse</p>
+                            <p className="text-xs text-white/40">PDF only · max 500 MB</p>
                         </>
                     )}
                     <input ref={inputRef} type="file" accept="application/pdf" className="hidden" onChange={onFileChange} />
@@ -423,15 +423,15 @@ function PdfUploader() {
 
             {status === 'error' && tooLarge && (
                 <div className="rounded-xl bg-amber-500/15 border border-amber-400/30 backdrop-blur-md px-4 py-4 flex flex-col gap-2">
-                    <p className="text-sm font-semibold text-amber-800">File too large (max {MAX_MB} MB)</p>
-                    <p className="text-xs text-amber-800">Split your PDF into smaller parts first, then upload each part separately:</p>
+                    <p className="text-sm font-semibold text-amber-300">File too large (max {MAX_MB} MB)</p>
+                    <p className="text-xs text-amber-300">Split your PDF into smaller parts first, then upload each part separately:</p>
                     <div className="flex gap-3 mt-1">
                         <a href="https://www.ilovepdf.com/split_pdf" target="_blank" rel="noreferrer"
-                            className="text-xs font-semibold text-[#271d62] bg-amber-500/40 hover:bg-amber-500/60 border border-amber-400/40 px-3 py-1.5 rounded-lg transition-colors">
+                            className="text-xs font-semibold text-white bg-amber-500/40 hover:bg-amber-500/60 border border-amber-400/40 px-3 py-1.5 rounded-lg transition-colors">
                             ilovepdf.com →
                         </a>
                         <a href="https://smallpdf.com/split-pdf" target="_blank" rel="noreferrer"
-                            className="text-xs font-semibold text-[#271d62] bg-amber-500/40 hover:bg-amber-500/60 border border-amber-400/40 px-3 py-1.5 rounded-lg transition-colors">
+                            className="text-xs font-semibold text-white bg-amber-500/40 hover:bg-amber-500/60 border border-amber-400/40 px-3 py-1.5 rounded-lg transition-colors">
                             smallpdf.com →
                         </a>
                     </div>
@@ -439,25 +439,25 @@ function PdfUploader() {
             )}
 
             {status === 'error' && !tooLarge && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-700">
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
                     {errorMsg}
                 </div>
             )}
 
             {status === 'success' && result && (
-                <div className="rounded-2xl border border-green-400/30 bg-green-500/15 backdrop-blur-md p-6 flex flex-col gap-4">
+                <div className="rounded-2xl border border-green-400/30 bg-green-500/10 backdrop-blur-md p-6 flex flex-col gap-4">
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="font-semibold text-green-800">{result.original_name}</p>
-                            <p className="text-xs text-green-700 mt-0.5">{result.char_count.toLocaleString()} characters extracted</p>
+                            <p className="font-semibold text-green-300">{result.original_name}</p>
+                            <p className="text-xs text-green-400 mt-0.5">{result.char_count.toLocaleString()} characters extracted</p>
                         </div>
-                        <button onClick={reset} className="text-xs text-green-700 underline hover:text-green-900 transition-colors cursor-pointer">
+                        <button onClick={reset} className="text-xs text-green-400 underline hover:text-green-200 transition-colors cursor-pointer">
                             Upload another
                         </button>
                     </div>
                     <div>
-                        <p className="text-xs font-medium text-green-700 mb-2">Text preview</p>
-                        <pre className="text-xs text-[#5a1b73] bg-[#271d62]/[0.05] border border-[#271d62]/10 rounded-xl p-3 whitespace-pre-wrap max-h-48 overflow-y-auto font-sans">
+                        <p className="text-xs font-medium text-green-400 mb-2">Text preview</p>
+                        <pre className="text-xs text-white/70 bg-white/5 border border-white/10 rounded-xl p-3 whitespace-pre-wrap max-h-48 overflow-y-auto font-sans">
                             {result.preview}…
                         </pre>
                     </div>
@@ -583,23 +583,23 @@ function AudioUploader() {
     if (status === 'ready') {
         const wordCount = transcription.trim().split(/\s+/).length;
         return (
-            <div className="rounded-2xl border border-green-400/30 bg-green-500/15 backdrop-blur-md p-6 flex flex-col gap-4">
+            <div className="rounded-2xl border border-green-400/30 bg-green-500/10 backdrop-blur-md p-6 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <div>
-                        <p className="font-semibold text-green-800">🎧 {fileName}</p>
-                        <p className="text-xs text-green-700 mt-0.5">{wordCount.toLocaleString()} words transcribed</p>
+                        <p className="font-semibold text-green-300">🎧 {fileName}</p>
+                        <p className="text-xs text-green-400 mt-0.5">{wordCount.toLocaleString()} words transcribed</p>
                     </div>
-                    <button onClick={reset} className="text-xs text-green-700 underline hover:text-green-900 transition-colors cursor-pointer">
+                    <button onClick={reset} className="text-xs text-green-400 underline hover:text-green-200 transition-colors cursor-pointer">
                         Upload another
                     </button>
                 </div>
 
                 <div>
                     <div className="flex items-center justify-between mb-2">
-                        <p className="text-xs font-medium text-green-700">Transcription</p>
+                        <p className="text-xs font-medium text-green-400">Transcription</p>
                         <button
                             onClick={() => { setEditing(e => !e); setEditText(transcription); }}
-                            className="text-xs text-[#271d62]/45 hover:text-[#5a1b73] transition-colors cursor-pointer"
+                            className="text-xs text-white/40 hover:text-white/70 transition-colors cursor-pointer"
                         >
                             {editing ? 'Cancel' : 'Edit'}
                         </button>
@@ -610,7 +610,7 @@ function AudioUploader() {
                                 value={editText}
                                 onChange={e => setEditText(e.target.value)}
                                 rows={8}
-                                className="w-full text-xs text-[#271d62]/85 bg-[#271d62]/[0.06] border border-[#271d62]/15 rounded-xl p-3 font-sans resize-y focus:outline-none focus:ring-2 focus:ring-green-400"
+                                className="w-full text-xs text-white/80 bg-white/8 border border-white/15 rounded-xl p-3 font-sans resize-y focus:outline-none focus:ring-2 focus:ring-green-400"
                             />
                             <button
                                 onClick={saveEdit}
@@ -621,7 +621,7 @@ function AudioUploader() {
                             </button>
                         </div>
                     ) : (
-                        <pre className="text-xs text-[#5a1b73] bg-[#271d62]/[0.05] border border-[#271d62]/10 rounded-xl p-3 whitespace-pre-wrap max-h-48 overflow-y-auto font-sans">
+                        <pre className="text-xs text-white/70 bg-white/5 border border-white/10 rounded-xl p-3 whitespace-pre-wrap max-h-48 overflow-y-auto font-sans">
                             {transcription}
                         </pre>
                     )}
@@ -629,7 +629,7 @@ function AudioUploader() {
 
                 <button
                     onClick={() => navigate(`/generate?doc=${documentId}`)}
-                    className="w-full py-3 rounded-xl bg-[#a01789] hover:bg-[#8a1475] border border-[#a01789] text-white font-semibold text-sm transition-colors cursor-pointer"
+                    className="w-full py-3 rounded-xl bg-[#e0521f] hover:bg-[#c9461a] border border-[#e0521f] text-white font-semibold text-sm transition-colors cursor-pointer"
                 >
                     Generate Activity →
                 </button>
@@ -657,19 +657,19 @@ function AudioUploader() {
                     {status === 'processing' ? (
                         <>
                             <Spinner message="" color="text-purple-400" />
-                            <p className="text-sm text-[#271d62]/85 font-medium">Transcribing audio…</p>
-                            <p className="text-xs text-[#271d62]/45">This takes about 20–30 seconds · {fileName}</p>
+                            <p className="text-sm text-white/80 font-medium">Transcribing audio…</p>
+                            <p className="text-xs text-white/40">This takes about 20–30 seconds · {fileName}</p>
                         </>
                     ) : status === 'uploading' ? (
-                        <Spinner message="Uploading…" color="text-purple-400" textColor="text-[#271d62]/60" />
+                        <Spinner message="Uploading…" color="text-purple-400" textColor="text-white/60" />
                     ) : (
                         <>
-                            <svg className={`w-12 h-12 transition-colors ${dragging ? 'text-purple-300' : 'text-[#271d62]/45'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg className={`w-12 h-12 transition-colors ${dragging ? 'text-purple-300' : 'text-white/40'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
                                     d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
                             </svg>
-                            <p className="text-sm text-[#271d62]/85 font-medium">Drop your audio file here or click to browse</p>
-                            <p className="text-xs text-[#271d62]/45">mp3, mp4, m4a, wav · max 25 MB</p>
+                            <p className="text-sm text-white/80 font-medium">Drop your audio file here or click to browse</p>
+                            <p className="text-xs text-white/40">mp3, mp4, m4a, wav · max 25 MB</p>
                         </>
                     )}
                     <input ref={inputRef} type="file" accept="audio/*" className="hidden" onChange={onFileChange} />
@@ -678,8 +678,8 @@ function AudioUploader() {
 
             {status === 'failed' && (
                 <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-4 flex flex-col gap-3">
-                    <p className="text-sm text-red-700">{errorMsg}</p>
-                    <button onClick={reset} className="self-start text-xs font-semibold text-[#271d62] bg-red-500/30 hover:bg-red-500/50 border border-red-400/40 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
+                    <p className="text-sm text-red-300">{errorMsg}</p>
+                    <button onClick={reset} className="self-start text-xs font-semibold text-white bg-red-500/30 hover:bg-red-500/50 border border-red-400/40 px-3 py-1.5 rounded-lg transition-colors cursor-pointer">
                         Try again
                     </button>
                 </div>
@@ -693,7 +693,7 @@ function AudioUploader() {
 function PronunciationLauncher() {
     const navigate = useNavigate();
 
-    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-[#271d62] text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
+    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
 
     return (
         <div className="flex flex-col gap-4">
@@ -733,12 +733,12 @@ function PronunciationLauncher() {
 function DetPracticeLauncher() {
     const navigate = useNavigate();
 
-    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-[#271d62] text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
+    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
 
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
-                <p className="lg-shell-text text-[#271d62]/80 text-xs font-medium">
+                <p className="lg-shell-text text-white/75 text-xs font-medium">
                     DET-format reading and vocabulary practice — no scoring, teacher-controlled pace.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -758,7 +758,7 @@ function DetPracticeLauncher() {
             </div>
 
             <div className="flex flex-col gap-4">
-                <p className="lg-shell-text text-[#271d62]/80 text-xs font-medium">
+                <p className="lg-shell-text text-white/75 text-xs font-medium">
                     Speaking practice — no timer, no recording, you run it live — plus a quick vocabulary check-in.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -785,17 +785,17 @@ function DetPracticeLauncher() {
 function CambridgePracticeLauncher() {
     const navigate = useNavigate();
 
-    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-[#271d62] text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
+    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
 
     return (
         <div className="flex flex-col gap-6">
             <div className="flex flex-col gap-4">
-                <p className="font-display lg-shell-text text-[#271d62] text-2xl font-bold">B2 First</p>
-                <p className="lg-shell-text text-[#271d62]/80 text-xs font-medium -mt-2">
+                <p className="font-display lg-shell-text text-white text-2xl font-bold">B2 First</p>
+                <p className="lg-shell-text text-white/75 text-xs font-medium -mt-2">
                     Cambridge-style practice. Original content, not real exam material; no official score, no recording.
                 </p>
 
-                <p className="lg-shell-text text-[#271d62]/80 text-xs font-semibold uppercase tracking-wide mt-2">Reading &amp; Use of English</p>
+                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Reading &amp; Use of English</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button onClick={() => navigate('/cambridge/practice/word-formation')} className={drillButtonCls}>
                         Word Formation
@@ -820,7 +820,7 @@ function CambridgePracticeLauncher() {
                     </button>
                 </div>
 
-                <p className="lg-shell-text text-[#271d62]/80 text-xs font-semibold uppercase tracking-wide mt-2">Writing — the student writes on paper or their own doc, no capture, no auto-checking</p>
+                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Writing — the student writes on paper or their own doc, no capture, no auto-checking</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button onClick={() => navigate('/cambridge/practice/essay')} className={drillButtonCls}>
                         Essay
@@ -830,7 +830,7 @@ function CambridgePracticeLauncher() {
                     </button>
                 </div>
 
-                <p className="lg-shell-text text-[#271d62]/80 text-xs font-semibold uppercase tracking-wide mt-2">Speaking — no timer, no recording, you run it live</p>
+                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Speaking — no timer, no recording, you run it live</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <button onClick={() => navigate('/cambridge/practice/interview')} className={drillButtonCls}>
                         Interview
@@ -847,9 +847,9 @@ function CambridgePracticeLauncher() {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-4 border-t border-[#271d62]/10 pt-6">
-                <p className="font-display lg-shell-text text-[#271d62] text-2xl font-bold">C1 Advanced</p>
-                <p className="lg-shell-text text-[#271d62]/80 text-xs font-medium -mt-2">
+            <div className="flex flex-col gap-4 border-t border-white/10 pt-6">
+                <p className="font-display lg-shell-text text-white text-2xl font-bold">C1 Advanced</p>
+                <p className="lg-shell-text text-white/75 text-xs font-medium -mt-2">
                     Harder, C1-level practice — currently just one part while B2 First is being validated with real students.
                 </p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -869,21 +869,21 @@ export default function UploadPage() {
     const [tab, setTab] = useState(location.state?.tab ?? 'pdf');
 
     const tabs = [
-        { id: 'pdf',          label: '📄 PDF',          active: 'bg-[#fc6840]/25 border-[#fc6840]/60 text-[#9a3412]' },
-        { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/25 border-purple-500/60 text-purple-800' },
-        { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/25 border-indigo-500/60 text-indigo-800' },
-        { id: 'reading',       label: '📖 Reading Text',  active: 'bg-emerald-500/25 border-emerald-500/60 text-emerald-800' },
-        { id: 'essay',         label: '✍️ Essay Feedback', active: 'bg-fuchsia-500/25 border-fuchsia-500/60 text-fuchsia-800' },
-        { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/25 border-teal-500/60 text-teal-800' },
-        { id: 'det',           label: '🎯 DET Practice',  active: 'bg-amber-500/30 border-amber-500/60 text-amber-900' },
-        { id: 'cambridge',     label: '🎓 Cambridge',     active: 'bg-rose-500/25 border-rose-500/60 text-rose-800' },
+        { id: 'pdf',          label: '📄 PDF',          active: 'bg-[#fc6840]/30 border-[#fc6840]/60 text-[#ffd9c4]' },
+        { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/30 border-purple-400/60 text-purple-100' },
+        { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/30 border-indigo-400/60 text-indigo-100' },
+        { id: 'reading',       label: '📖 Reading Text',  active: 'bg-emerald-500/30 border-emerald-400/60 text-emerald-100' },
+        { id: 'essay',         label: '✍️ Essay Feedback', active: 'bg-fuchsia-500/30 border-fuchsia-400/60 text-fuchsia-100' },
+        { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/30 border-teal-400/60 text-teal-100' },
+        { id: 'det',           label: '🎯 DET Practice',  active: 'bg-amber-500/30 border-amber-400/60 text-amber-100' },
+        { id: 'cambridge',     label: '🎓 Cambridge',     active: 'bg-rose-500/30 border-rose-400/60 text-rose-100' },
     ];
 
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
             <div>
-                <h2 className="font-display lg-shell-text text-3xl font-bold text-[#271d62]">Upload Content</h2>
-                <p className="lg-shell-text text-[#5a1b73] mt-1 text-sm">Upload a PDF or audio file, create a presentation or reading text from any topic, or practice pronunciation and DET question types.</p>
+                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Upload Content</h2>
+                <p className="lg-shell-text text-white/70 mt-1 text-sm">Upload a PDF or audio file, create a presentation or reading text from any topic, or practice pronunciation and DET question types.</p>
             </div>
 
             {/* Tab switcher — sized to content (not flex-1) so a 7-tab row never
@@ -897,7 +897,7 @@ export default function UploadPage() {
                         className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer whitespace-nowrap ${
                             tab === t.id
                                 ? t.active
-                                : 'lg-chip lg-chip-hover text-[#271d62]/60 hover:text-[#271d62]/90'
+                                : 'lg-chip lg-chip-hover text-white/60 hover:text-white/90'
                         }`}
                     >
                         {t.label}

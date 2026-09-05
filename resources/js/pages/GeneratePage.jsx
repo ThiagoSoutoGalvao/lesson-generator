@@ -118,7 +118,7 @@ const TEMPLATES = [
     },
 ];
 
-const inputCls = 'w-full bg-[#271d62]/[0.06] border border-[#271d62]/15 rounded-xl px-4 py-2.5 text-sm text-[#271d62] placeholder-[#271d62]/40 focus:outline-none focus:ring-2 focus:ring-[#a01789] focus:border-transparent backdrop-blur-sm transition-colors';
+const inputCls = 'w-full bg-white/8 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840] focus:border-transparent backdrop-blur-sm transition-colors';
 
 export default function GeneratePage() {
     const [searchParams] = useSearchParams();
@@ -239,20 +239,20 @@ export default function GeneratePage() {
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
             <div>
-                <h2 className="font-display lg-shell-text text-3xl font-bold text-[#271d62]">Generate an Activity</h2>
-                <p className="lg-shell-text text-[#271d62]/80 mt-1 text-sm">
+                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Generate an Activity</h2>
+                <p className="lg-shell-text text-white/75 mt-1 text-sm">
                     Pick what you want students to practise, choose a format, and give it a topic.
                 </p>
             </div>
 
             {lessonSession && (
-                <div className="flex items-center gap-2 text-sm bg-[#fc6840]/12 border border-[#fc6840]/30 rounded-xl px-4 py-2.5">
-                    <span className="text-[#a01789]">
-                        Adding to: <span className="font-semibold text-[#271d62]">
+                <div className="flex items-center gap-2 text-sm bg-[#fc6840]/15 border border-[#fc6840]/35 rounded-xl px-4 py-2.5">
+                    <span className="text-[#fdb08a]">
+                        Adding to: <span className="font-semibold text-white">
                             {TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha} · Lesson {lessonSession.lesson}
                         </span>
                     </span>
-                    <button type="button" onClick={handleClearSession} className="ml-auto text-[#a01789]/70 hover:text-[#271d62] text-xs underline cursor-pointer">
+                    <button type="button" onClick={handleClearSession} className="ml-auto text-[#fdb08a]/80 hover:text-white text-xs underline cursor-pointer">
                         Change
                     </button>
                 </div>
@@ -263,7 +263,7 @@ export default function GeneratePage() {
 
                     {/* Step 1 — goal */}
                     <div className="flex flex-col gap-2">
-                        <label className="text-sm font-medium text-[#271d62]/85">1. What do you want to practise?</label>
+                        <label className="text-sm font-medium text-white/80">1. What do you want to practise?</label>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             {GOALS.map(g => (
                                 <button
@@ -272,12 +272,12 @@ export default function GeneratePage() {
                                     onClick={() => pickGoal(g.id)}
                                     className={`flex flex-col items-center gap-0.5 px-3 py-3 rounded-xl text-center transition-all cursor-pointer border ${
                                         goal === g.id
-                                            ? 'bg-[#a01789]/12 border-[#a01789] text-[#271d62] ring-2 ring-[#a01789]/30'
-                                            : 'bg-[#271d62]/[0.05] border-[#271d62]/12 text-[#5a1b73] hover:bg-[#271d62]/10 hover:text-[#271d62]'
+                                            ? 'bg-[#fc6840]/15 border-[#fc6840] text-white ring-2 ring-[#fc6840]/40'
+                                            : 'bg-white/5 border-white/12 text-white/70 hover:bg-white/10 hover:text-white'
                                     }`}
                                 >
                                     <span className="text-sm font-semibold">{g.label}</span>
-                                    <span className={`text-[10px] leading-tight ${goal === g.id ? 'text-[#271d62]/85' : 'text-[#271d62]/45'}`}>{g.hint}</span>
+                                    <span className={`text-[10px] leading-tight ${goal === g.id ? 'text-white/80' : 'text-white/40'}`}>{g.hint}</span>
                                 </button>
                             ))}
                         </div>
@@ -286,7 +286,7 @@ export default function GeneratePage() {
                     {/* Step 2 — template */}
                     {goal && (
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-[#271d62]/85">2. Choose a format</label>
+                            <label className="text-sm font-medium text-white/80">2. Choose a format</label>
                             <div className="grid sm:grid-cols-2 gap-2">
                                 {goalTemplates.map(t => (
                                     <button
@@ -295,12 +295,12 @@ export default function GeneratePage() {
                                         onClick={() => pickTemplate(t)}
                                         className={`flex flex-col gap-1 text-left px-3.5 py-3 rounded-xl transition-all cursor-pointer border ${
                                             templateId === t.id
-                                                ? 'bg-[#a01789]/12 border-[#a01789] ring-2 ring-[#a01789]/30'
-                                                : 'bg-[#271d62]/[0.05] border-[#271d62]/12 hover:bg-[#271d62]/10'
+                                                ? 'bg-[#fc6840]/15 border-[#fc6840] ring-2 ring-[#fc6840]/40'
+                                                : 'bg-white/5 border-white/12 hover:bg-white/10'
                                         }`}
                                     >
-                                        <span className="text-sm font-semibold text-[#271d62]">{t.label}</span>
-                                        <span className={`text-xs leading-snug ${templateId === t.id ? 'text-[#271d62]/90' : 'text-[#271d62]/50'}`}>{t.blurb}</span>
+                                        <span className="text-sm font-semibold text-white">{t.label}</span>
+                                        <span className={`text-xs leading-snug ${templateId === t.id ? 'text-white/90' : 'text-white/45'}`}>{t.blurb}</span>
                                     </button>
                                 ))}
                             </div>
@@ -311,7 +311,7 @@ export default function GeneratePage() {
                     {template && (
                         <>
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-[#271d62]/85">3. Where should the content come from?</label>
+                                <label className="text-sm font-medium text-white/80">3. Where should the content come from?</label>
                                 <div className="flex gap-2">
                                     {[['topic', 'A topic'], ['document', 'An uploaded document']].map(([mode, lbl]) => (
                                         <button
@@ -320,8 +320,8 @@ export default function GeneratePage() {
                                             onClick={() => setSourceMode(mode)}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
                                                 sourceMode === mode
-                                                    ? 'bg-[#a01789] border-[#a01789] text-white'
-                                                    : 'bg-[#271d62]/[0.04] border-[#271d62]/10 text-[#271d62]/55 hover:text-[#271d62]/85'
+                                                    ? 'bg-[#e0521f] border-[#e0521f] text-white'
+                                                    : 'bg-white/5 border-white/10 text-white/55 hover:text-white/80'
                                             }`}
                                         >
                                             {lbl}
@@ -345,25 +345,25 @@ export default function GeneratePage() {
                                                 onChange={e => { setDocumentId(e.target.value); setPageFrom(''); setPageTo(''); }}
                                                 className={`${inputCls} appearance-none pr-10 cursor-pointer`}
                                             >
-                                                <option value="" className="bg-white text-[#271d62]">Select a document…</option>
+                                                <option value="" className="bg-gray-900 text-white">Select a document…</option>
                                                 {documents.map((doc) => (
-                                                    <option key={doc.id} value={doc.id} className="bg-white text-[#271d62]">
+                                                    <option key={doc.id} value={doc.id} className="bg-gray-900 text-white">
                                                         {doc.source_type === 'audio' ? '🎧 ' : ''}{doc.original_name}{doc.page_count ? ` (${doc.page_count} pages)` : ''}
                                                     </option>
                                                 ))}
                                             </select>
-                                            <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#271d62]/45" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                             </svg>
                                         </div>
                                         {pageCount && (
                                             <div className="flex items-center gap-3">
                                                 <input type="number" value={pageFrom} onChange={e => setPageFrom(e.target.value)} placeholder="From"
-                                                    className="w-24 bg-[#271d62]/[0.06] border border-[#271d62]/15 rounded-xl px-3 py-2 text-sm text-[#271d62] placeholder-[#271d62]/40 focus:outline-none focus:ring-2 focus:ring-[#a01789]" />
-                                                <span className="text-[#271d62]/45 text-sm">to</span>
+                                                    className="w-24 bg-white/8 border border-white/15 rounded-xl px-3 py-2 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]" />
+                                                <span className="text-white/40 text-sm">to</span>
                                                 <input type="number" value={pageTo} onChange={e => setPageTo(e.target.value)} placeholder="To"
-                                                    className="w-24 bg-[#271d62]/[0.06] border border-[#271d62]/15 rounded-xl px-3 py-2 text-sm text-[#271d62] placeholder-[#271d62]/40 focus:outline-none focus:ring-2 focus:ring-[#a01789]" />
-                                                <span className="text-[#271d62]/45 text-sm">of {pageCount} — blank = whole document</span>
+                                                    className="w-24 bg-white/8 border border-white/15 rounded-xl px-3 py-2 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]" />
+                                                <span className="text-white/40 text-sm">of {pageCount} — blank = whole document</span>
                                             </div>
                                         )}
                                     </div>
@@ -371,8 +371,8 @@ export default function GeneratePage() {
                             </div>
 
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-sm font-medium text-[#271d62]/85">
-                                    Instructions <span className="text-[#271d62]/45 font-normal ml-1">— edit if you want something specific</span>
+                                <label className="text-sm font-medium text-white/80">
+                                    Instructions <span className="text-white/40 font-normal ml-1">— edit if you want something specific</span>
                                 </label>
                                 <textarea
                                     value={prompt}
@@ -386,7 +386,7 @@ export default function GeneratePage() {
                             <button
                                 type="submit"
                                 disabled={!canSubmit}
-                                className="self-start bg-[#a01789] hover:bg-[#8a1475] disabled:bg-[#a01789]/30 disabled:cursor-default text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+                                className="self-start bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-[#e0521f]/30 disabled:cursor-default text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
                             >
                                 Generate
                             </button>
@@ -395,18 +395,18 @@ export default function GeneratePage() {
                 </form>
             </div>
 
-            <p className="lg-shell-text text-[#271d62]/75 text-xs">
+            <p className="lg-shell-text text-white/70 text-xs">
                 Looking for a Presentation or a Reading Text? Those are on the Upload page.
             </p>
 
             {status === 'loading' && (
                 <div className="flex justify-center py-8">
-                    <Spinner message="Generating your activity… this can take up to 20 seconds" color="text-[#fc6840]" textColor="text-[#271d62]/60" />
+                    <Spinner message="Generating your activity… this can take up to 20 seconds" color="text-[#fc6840]" textColor="text-white/60" />
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-700">
+                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
                     {errorMsg}
                 </div>
             )}

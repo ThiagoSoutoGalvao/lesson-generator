@@ -788,7 +788,7 @@ A prior styling attempt had been expensive (lots of live tweak → rebuild → s
 
 ---
 
-## 18. Phase B — Aurora "Sunrise" branding ✅ COMPLETED
+## 18. Phase B — Aurora branding ✅ COMPLETED (shipped as "Aurora Night", Direction A)
 
 Full spec: `AuroraBranding.md`. Shell pages only (`/`, `/upload`, `/generate`, `/library` via
 `Layout.jsx`, plus the Breeze login). No fullscreen activity/drill/practice screen was touched —
@@ -836,3 +836,31 @@ they keep their dark `#1a1a2e` + photo look.
 
 **Next:** Display Panel D1 (unified persistent font-size/colour control across nav + all ~20
 activities), then D2 (brightness slider + font choice), then the student app (`AuroraStudentApp.md`).
+
+### Phase B follow-up — switched Sunrise → "Aurora Night" (Direction A)
+
+The teacher didn't warm to the light "Sunrise" look once it was live and asked to try
+Direction A instead. Swapped in one pass (Sunrise stays recoverable in git history at `41818df`):
+
+- **Ground** (`Layout.jsx` `AURORA_GRADIENT`): the *deep* half of the brand gradient —
+  `linear-gradient(150deg, #1A0F3D, #2A1560, #5A1B73, #8E2160, #B8433A)`. The shell now
+  reads the same as the fullscreen activity screens (which were always dark).
+- **Shell tokens** (`app.css`): `.lg-surface` → `rgba(39,29,98,.5)` indigo dark glass;
+  `.lg-chip` → `rgba(30,22,74,.5)`; `.lg-shell-overlay` → a soft dark radial veil toward
+  the indigo corner; `.lg-shell-text` → dark halo again. `.font-display` (Poppins) kept.
+- **Text** swept back light — a reverse of the Sunrise sweep (`text-[#271d62]` → `text-white`
+  etc.). `TYPE_COLORS` still untouched.
+- **Accent:** filled actions → deeper coral `#e0521f` (`hover #c9461a`) + white text —
+  `#fc6840` itself fails white-text contrast, `#e0521f` is ~3.9:1 which holds for bold
+  button labels. Coral `#fc6840` used for rings / selected-card glow / focus.
+- **Navbar:** darker strip (`bg-[#160c33]/55`), logo bumped `h-7` → `h-10 sm:h-11`
+  (teacher asked for a bigger logo mid-build).
+- **Watermark:** `aurora-symbol.png` faint (opacity 0.06) fixed bottom-right of the shell,
+  `aria-hidden`, `pointer-events-none`.
+- **Login** (`guest.blade.php`): dark gradient + dark glass card; scoped `<style>` re-tints
+  the light-themed Breeze form (`.aurora-card label / input / a / .text-gray-*`) rather than
+  touching the shared `x-input-label` / `x-text-input` components (still used by the
+  authenticated profile pages). `primary-button.blade.php` → coral `#e0521f`.
+- **Per-tab theme colours** in `UploadPage` → light `text-{hue}-100` on `/30` tint (dark ctx).
+- Verified: build clean, Playwright all shell surfaces + 8 upload tabs at 1280 + 390, zero
+  console errors, zero overflow.
