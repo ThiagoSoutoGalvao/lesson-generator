@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import { DisplayProvider } from '@/hooks/useDisplay';
 import UploadPage from '@/pages/UploadPage';
 import GeneratePage from '@/pages/GeneratePage';
 import LibraryPage from '@/pages/LibraryPage';
@@ -24,6 +25,7 @@ function Home() {
 function App() {
     return (
         <BrowserRouter>
+          <DisplayProvider>
             <ErrorBoundary>
                 <Layout>
                     <Routes>
@@ -38,6 +40,7 @@ function App() {
                     </Routes>
                 </Layout>
             </ErrorBoundary>
+          </DisplayProvider>
         </BrowserRouter>
     );
 }
