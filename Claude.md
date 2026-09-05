@@ -864,3 +864,51 @@ Direction A instead. Swapped in one pass (Sunrise stays recoverable in git histo
 - **Per-tab theme colours** in `UploadPage` → light `text-{hue}-100` on `/30` tint (dark ctx).
 - Verified: build clean, Playwright all shell surfaces + 8 upload tabs at 1280 + 390, zero
   console errors, zero overflow.
+
+---
+
+## 19. Phase D — Display Panel
+
+### Phase D1 — one shared, persisted text-size + text-colour control ✅ COMPLETED
+
+- **`resources/js/hooks/useDisplay.jsx`** — `DisplayProvider` (wraps `<App>` inside
+  `<BrowserRouter>`) + `useDisplay()`. Shared state: `sizeIdx` (0–4, default 2) +
+  `textColor` (a Tailwind class, default `text-white`), persisted to `localStorage`
+  (`aurora.display`). Exports the standard 5-colour `TEXT_COLORS` palette
+  (`{label, cls, hex}`) — the single source of truth now; components stopped
+  redefining it. The provider also drives the shell-page `--tf-*` CSS vars +
+  `body.tf-active` (the Phase I mechanism), so the navbar control still scales
+  `/upload` `/generate` `/library` text.
+- **`resources/js/components/DisplayControls.jsx`** — the shared A−/A+ + swatch row.
+  `variant="nav"` (the navbar pill, with "Aa" label + reset ✕ when customised) vs
+  `variant="activity"` (default, the plain row in an activity header). `colors={false}`
+  hides the swatches (used by the two tile games).
+- **`Layout.jsx`** — the bespoke navbar "Aa" control is gone; it's now
+  `<DisplayControls variant="nav" />`. The old 7-colour navbar palette
+  (White/Cream/Yellow/Orange/Green/Sky/Purple) is replaced by the standard 5
+  (White/Yellow/Orange/Red/Cyan).
+- **~20 standalone activities + `det/PracticeSessionShell.jsx`** (which feeds the ~15
+  DET/Cambridge drills): dropped local `useState` for size/colour, now
+  `const { sizeIdx: fontSizeIdx, textColor } = useDisplay()` + `<DisplayControls />`.
+  Each keeps its own per-layout `*_SIZES` arrays indexed by the shared `sizeIdx`;
+  3-step arrays were mechanically expanded to 5 (one Tailwind rung down at the low
+  end, one up at the high end) to match the 0–4 scale.
+  - `PracticeSessionShell` lost its `fontSizeIdx`/`onFontIncrease`/`onTextColorChange`
+    props — it renders `<DisplayControls />` itself (opt out with `displayControls={false}`).
+  - The 7 size-only activities (Cloze / MC Cloze / Open Cloze / Read Complete /
+    Sentence Transformation) **gained text colour** (threaded `${textColor}` into
+    their passage `<p>`). Odd One Out + Unjumble stay size-only
+    (`<DisplayControls colors={false} />`).
+- **Verification gotcha:** the `aurora@aurora.test` QA user's saved *library*
+  activities have malformed `content` (missing `slides` / `questions`) and crash on
+  launch **on `main` too** — a pre-existing data issue, not D1. QA D1 by generating a
+  fresh activity (mock `/api/generate`) rather than launching a saved one. With a
+  valid payload: quiz + cloze + DET + Cambridge all render `<DisplayControls>`, size
+  4 / cyan set in one activity carries to the next and survives reload, zero console
+  errors.
+
+### Phase D2 — brightness slider + font choice — NOT STARTED
+
+Per `AuroraBranding.md` / `docs/Aurora-Identity-directions.pdf` p.6: a screen-brightness
+dimming overlay, and a System / Poppins / Lexend font toggle. Both fold into the same
+`useDisplay` context + `<DisplayControls>` panel.
