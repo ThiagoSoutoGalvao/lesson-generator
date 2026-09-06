@@ -907,8 +907,29 @@ Direction A instead. Swapped in one pass (Sunrise stays recoverable in git histo
   4 / cyan set in one activity carries to the next and survives reload, zero console
   errors.
 
-### Phase D2 — brightness slider + font choice — NOT STARTED
+### Phase D2 — brightness slider + font choice ✅ COMPLETED
 
-Per `AuroraBranding.md` / `docs/Aurora-Identity-directions.pdf` p.6: a screen-brightness
-dimming overlay, and a System / Poppins / Lexend font toggle. Both fold into the same
-`useDisplay` context + `<DisplayControls>` panel.
+- **`DisplayControls` is now a popover**, not an inline row: a compact "Aa" trigger
+  (coral dot when settings are non-default) opens **one panel** — Text size (5 "A"
+  buttons), Text colour (5 swatches), Screen brightness (slider), Font (Default /
+  System / Poppins / Lexend, each rendered in its own face). Same panel from the
+  navbar (`variant="nav"`) and every activity/drill header. The panel is
+  `createPortal`-ed to `document.body` at `z-2100` so it stays crisp above the dim
+  overlay and above activity overlays (`z-50`). Closes on Escape / outside-click.
+- **`useDisplay()` gains `brightness`** (50–100, default 100) — the `DisplayProvider`
+  renders a `position:fixed; inset:0; background:#000; pointer-events:none; z-index:2000`
+  veil at `opacity: (100 - brightness) / 100`. Covers the whole viewport (chrome
+  included) — it's a "take the edge off a harsh screen" dimmer.
+- **`useDisplay()` gains `font`** (`default` | `system` | `poppins` | `lexend`,
+  default `default` = Inter). Applied as `data-app-font` on `<html>`; `app.css` has
+  `:root[data-app-font="…"] body { font-family: … }` rules that cascade to activity
+  overlays too. `.font-display` headings keep Poppins regardless. **Lexend** added to
+  the Google Fonts `<link>` in `welcome.blade.php` + `guest.blade.php`.
+- The Phase I `--tf-family` CSS var + `body.tf-active { font-family }` rule is **gone**
+  — font is `data-app-font` now. `--tf-size` / `--tf-color` shell scaling stays.
+- Both new settings persist in `localStorage` `aurora.display` alongside size + colour;
+  `reset()` clears all four. Verified: set from navbar, carries into an activity and
+  survives reload; panel opens in both contexts; dim overlay + Lexend both apply;
+  zero console errors.
+
+**Phase D is complete.** Next: the student app (`AuroraStudentApp.md` Phase S1+).
