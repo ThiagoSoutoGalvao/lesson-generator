@@ -176,7 +176,7 @@ export default function UnjumbleActivity({ activity, onClose }) {
                 <span className="text-white/70 text-sm font-medium">Sentence {currentIndex + 1} / {total}</span>
                 <div className="flex items-center gap-5">
                     <span className="text-white/70 text-sm">Score: <span className="text-yellow-400 font-semibold">{score}</span></span>
-                    <DisplayControls colors={false} />
+                    <DisplayControls />
                     <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}

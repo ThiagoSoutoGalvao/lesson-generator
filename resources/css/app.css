@@ -444,10 +444,7 @@
     }
 }
 
-/* ── Accessibility font control (Aa button in navbar) ── */
-body.tf-active {
-  font-family: var(--tf-family) !important;
-}
+/* ── Display panel: shell-page text scaling (Aa button in navbar) ── */
 
 /* Headings — scoped to `main` only: fullscreen activity overlays (.fixed.inset-0)
    each own their own per-activity font/color controls, and this global !important
@@ -552,4 +549,18 @@ body.tf-active main .text-xs {
 .font-display {
     font-family: 'Poppins', 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
     letter-spacing: -0.01em;
+}
+
+/* ── Display panel: font choice (data-app-font on <html>) ──
+   Default (no attribute) keeps the app's Inter. The override targets `body` so
+   it cascades to everything that doesn't set its own family — activity overlays
+   included — while `.font-display` headings keep Poppins. */
+:root[data-app-font="system"] body {
+    font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+:root[data-app-font="poppins"] body {
+    font-family: 'Poppins', ui-sans-serif, system-ui, sans-serif;
+}
+:root[data-app-font="lexend"] body {
+    font-family: 'Lexend', ui-sans-serif, system-ui, sans-serif;
 }
