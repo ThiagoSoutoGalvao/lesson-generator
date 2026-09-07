@@ -258,15 +258,51 @@ converge, build once" approach used for the branding pass.
 Shared with the Aurora teachers for feedback on look + flow. Lock the design
 here, then start S1.
 
-### Phase S1 — Roles + student accounts
-- `role` on users; `trilha` / `teacher_id` / `is_active` for students.
-- `App.jsx` top-level role branch; a minimal student shell (nav, "My Trilha"
-  showing the lesson list for their trilha, all empty — no activities yet).
-- Teacher **Students** page: create (name / email / trilha / password) / list /
-  deactivate / change trilha.
-- CLI: extend `user:upsert` (or a new `student:create`) for a fallback.
-- **Checkpoint:** a teacher can create a student; the student logs in and sees
-  their trilha's lesson list.
+### Phase S1 — Roles + student accounts ✅ DONE (2026-09-07)
+
+**Shipped:**
+- Migration `2026_09_07_000001_add_role_and_student_fields_to_users_table` —
+  `role` (default `'teacher'`, so every existing account becomes a teacher),
+  `trilha` (nullable), `teacher_id` (FK → users, nullOnDelete), `is_active`
+  (default true). Idempotent `Schema::hasColumn` guards, same as every migration here.
+- `User` model — `is_active` bool cast; `isStudent()` / `isTeacher()` helpers;
+  `students()` (hasMany where role=student) / `teacher()` (belongsTo) relations.
+  `#[Fillable]` left minimal — the controller sets `role`/`trilha`/`teacher_id`
+  explicitly, never mass-assigned from a request.
+- **Current user reaches the SPA** via `welcome.blade.php`:
+  `@php($auroraUser = auth()->user()?->only([...]))` then
+  `<script>window.__AURORA_USER__ = @json($auroraUser)</script>`. (The `@json()`
+  directive chokes on a nested `only([...])` call — compute into a variable first.)
+  `App.jsx` reads `window.__AURORA_USER__` once at module scope and branches:
+  `role === 'student'` → `<StudentShell>`, else the existing `<TeacherApp>`.
+- `GET /api/me` also returns it (for later client refreshes).
+- **`StudentController`** (`/api/students` GET/POST, `/api/students/{student}` PATCH)
+  — `guardTeacher()` (`abort_unless(isTeacher(), 403)`) on every action; `store`
+  validates name/email/trilha/password and creates the student linked to
+  `auth()->id()`; `update` changes trilha / `is_active` / password, guarded to
+  the owning teacher.
+- **`StudentsPage.jsx`** (`/students`, new nav link in `Layout.jsx`) — create
+  form + list with a per-row trilha `<select>` and Deactivate/Reactivate.
+- **Student shell** (`resources/js/student/`): `StudentShell.jsx` (own dark
+  Aurora-gradient layout, fixed-layer background for mobile, bottom nav My Trilha
+  / Progress, own logout); `MyTrilhaPage` (greeting + the trilha's lesson list
+  from `TRILHAS`, each row previewing its `TRILHA_TOC`); `LessonPage`
+  (`/s/lesson/:n` — the verbatim ToC + a "activities coming soon" placeholder —
+  S2 fills this); `ProgressPage` (stub until S3). `*` route → `/s`, so a student
+  poking a teacher URL just lands back on their trilha.
+- CLI fallback: `php artisan student:create` (`--name --email --trilha --teacher
+  --password`), validates the teacher exists and is a teacher.
+- **Verified** (`qa_s1.mjs`, temp QA student on Glow, deleted after): teacher
+  creates a student via the page → row appears; student logs in → lands on `/s`
+  → "Your GLOW trilha" + 8 lesson links → opens Lesson 2 → 3 real ToC bullets →
+  Progress tab reachable → `/students` redirects them to `/s`. Zero console
+  errors. `npm run build` + PHP lint clean. Migration ran locally.
+
+**Deferred to S2:** hardening the teacher-only API routes (`/api/generate` etc.)
+against a `role=student` caller — for the 5-teacher test the student shell simply
+never calls them, and `/api/students` is already 403-guarded. Also: blocking
+login for a deactivated student server-side (today the shell shows a "paused"
+notice client-side).
 
 ### Phase S2 — Trilha browse (read-only, no progress)
 - `student_visible` on activities (default true, escape hatch — no toggle UI yet).

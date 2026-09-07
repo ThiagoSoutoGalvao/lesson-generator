@@ -6,10 +6,19 @@ use App\Http\Controllers\BackgroundController;
 use App\Http\Controllers\DocumentController;
 use App\Http\Controllers\SavedActivityController;
 use App\Http\Controllers\SectionController;
+use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TrilhaLessonBriefController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('auth:web')->group(function () {
+    // Current user — the SPA branches on `role` at the top of App.jsx.
+    Route::get('/me', fn () => auth()->user()->only(['id', 'name', 'role', 'trilha', 'is_active']));
+
+    // Teacher-facing student management (StudentController enforces role=teacher).
+    Route::get('/students', [StudentController::class, 'index']);
+    Route::post('/students', [StudentController::class, 'store']);
+    Route::patch('/students/{student}', [StudentController::class, 'update']);
+
     Route::get('/documents', [DocumentController::class, 'index']);
     Route::post('/documents', [DocumentController::class, 'store']);
     Route::post('/generate', [ActivityController::class, 'generate']);

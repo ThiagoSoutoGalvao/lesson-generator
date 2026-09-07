@@ -5,6 +5,7 @@ const NAV_LINKS = [
     { to: '/upload',   label: 'Upload' },
     { to: '/generate', label: 'Generate' },
     { to: '/library',  label: 'Library' },
+    { to: '/students', label: 'Students' },
 ];
 
 // "Aurora Night" — the deep half of the brand gradient as the ground for every

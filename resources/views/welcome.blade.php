@@ -9,6 +9,8 @@
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
         <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;600&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet">
+        @php($auroraUser = auth()->user()?->only(['id', 'name', 'role', 'trilha', 'is_active']))
+        <script>window.__AURORA_USER__ = @json($auroraUser);</script>
         @viteReactRefresh
         @vite(['resources/css/app.css', 'resources/js/App.jsx'])
     </head>

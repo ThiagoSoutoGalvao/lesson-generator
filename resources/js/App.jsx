@@ -12,6 +12,11 @@ import PronunciationChartPage from '@/pages/PronunciationChartPage';
 import PronunciationDrillPage from '@/pages/PronunciationDrillPage';
 import DetPracticePage from '@/pages/DetPracticePage';
 import CambridgePracticePage from '@/pages/CambridgePracticePage';
+import StudentsPage from '@/pages/StudentsPage';
+import StudentShell from '@/student/StudentShell';
+
+// Injected by welcome.blade.php: { id, name, role, trilha, is_active } | null
+const USER = typeof window !== 'undefined' ? window.__AURORA_USER__ : null;
 
 function Home() {
     return (
@@ -22,23 +27,31 @@ function Home() {
     );
 }
 
+function TeacherApp() {
+    return (
+        <Layout>
+            <Routes>
+                <Route path="/" element={<Home />} />
+                <Route path="/upload" element={<UploadPage />} />
+                <Route path="/generate" element={<GeneratePage />} />
+                <Route path="/library" element={<LibraryPage />} />
+                <Route path="/students" element={<StudentsPage />} />
+                <Route path="/pronunciation" element={<PronunciationChartPage />} />
+                <Route path="/pronunciation/drill/:type" element={<PronunciationDrillPage />} />
+                <Route path="/det/practice/:type" element={<DetPracticePage />} />
+                <Route path="/cambridge/practice/:type" element={<CambridgePracticePage />} />
+            </Routes>
+        </Layout>
+    );
+}
+
 function App() {
+    const isStudent = USER?.role === 'student';
     return (
         <BrowserRouter>
           <DisplayProvider>
             <ErrorBoundary>
-                <Layout>
-                    <Routes>
-                        <Route path="/" element={<Home />} />
-                        <Route path="/upload" element={<UploadPage />} />
-                        <Route path="/generate" element={<GeneratePage />} />
-                        <Route path="/library" element={<LibraryPage />} />
-                        <Route path="/pronunciation" element={<PronunciationChartPage />} />
-                        <Route path="/pronunciation/drill/:type" element={<PronunciationDrillPage />} />
-                        <Route path="/det/practice/:type" element={<DetPracticePage />} />
-                        <Route path="/cambridge/practice/:type" element={<CambridgePracticePage />} />
-                    </Routes>
-                </Layout>
+                {isStudent ? <StudentShell user={USER} /> : <TeacherApp />}
             </ErrorBoundary>
           </DisplayProvider>
         </BrowserRouter>

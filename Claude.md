@@ -933,3 +933,33 @@ Direction A instead. Swapped in one pass (Sunrise stays recoverable in git histo
   zero console errors.
 
 **Phase D is complete.** Next: the student app (`AuroraStudentApp.md` Phase S1+).
+
+---
+
+## 20. Aurora Student App — Phase S1 ✅ COMPLETED (2026-09-07)
+
+Full roadmap: `AuroraStudentApp.md`. Interactive mockup (design approved by the
+teachers): https://claude.ai/code/artifact/cd0f5d1f-b11b-4416-a5d4-4db03a3a6293
+
+**S1 — roles + student accounts:**
+- Migration adds `role` (default `teacher`), `trilha`, `teacher_id` (FK), `is_active`
+  to `users`. Existing accounts all become teachers via the column default.
+- `User`: `isStudent()`/`isTeacher()`, `students()`/`teacher()` relations, `is_active` cast.
+- Current user reaches the SPA through `welcome.blade.php`
+  (`window.__AURORA_USER__ = @json($auroraUser)` — compute the `only([...])` into a
+  `@php` variable first, `@json()` can't parse the nested call). Also `GET /api/me`.
+- `App.jsx` branches at module scope: `role==='student'` → `<StudentShell>`, else `<TeacherApp>`.
+- `StudentController` — `/api/students` (GET/POST) + `/api/students/{student}` (PATCH),
+  every action `abort_unless(isTeacher(), 403)`, `update` guarded to the owning teacher.
+- `StudentsPage.jsx` at `/students` (new nav link) — create form + list with trilha
+  select + Deactivate/Reactivate.
+- `resources/js/student/` — `StudentShell` (own mobile-first dark shell, bottom nav,
+  own logout), `MyTrilhaPage` (lesson list from `TRILHAS` + `TRILHA_TOC` previews),
+  `LessonPage` (`/s/lesson/:n` — verbatim ToC + "activities coming soon"), `ProgressPage` (stub).
+- `php artisan student:create` CLI fallback.
+- Verified with a temp QA student (deleted after) + Playwright — full teacher-creates
+  → student-logs-in → sees trilha → opens lesson flow, zero console errors.
+
+**Next: S2** — `student_visible` on activities, the student content API (trilha
+activities grouped by lesson, teacher-only types excluded), `StudentActivityPlayer`
+so a student can actually open and play a lesson's activities (no scoring yet).
