@@ -248,6 +248,16 @@ See §7b (scoped down: verbatim ToC text, static data, no table, no subagents).
       above the editable fields; zero console errors. `npm run build` clean.
       Not committed yet.
 
+### Phase S0e — Interactive mockup (design review, before S1)
+
+Clickable mobile mockup of the five student screens (login → my trilha → lesson
+view → activity → progress), phone-framed, built with the real trilha structure
+and the verbatim lesson ToC (student "Marina" on Glow). Same "mock first,
+converge, build once" approach used for the branding pass.
+**Artifact:** https://claude.ai/code/artifact/cd0f5d1f-b11b-4416-a5d4-4db03a3a6293
+Shared with the Aurora teachers for feedback on look + flow. Lock the design
+here, then start S1.
+
 ### Phase S1 — Roles + student accounts
 - `role` on users; `trilha` / `teacher_id` / `is_active` for students.
 - `App.jsx` top-level role branch; a minimal student shell (nav, "My Trilha"
