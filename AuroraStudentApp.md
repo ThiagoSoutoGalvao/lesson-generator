@@ -298,20 +298,62 @@ here, then start S1.
   Progress tab reachable → `/students` redirects them to `/s`. Zero console
   errors. `npm run build` + PHP lint clean. Migration ran locally.
 
-**Deferred to S2:** hardening the teacher-only API routes (`/api/generate` etc.)
-against a `role=student` caller — for the 5-teacher test the student shell simply
-never calls them, and `/api/students` is already 403-guarded. Also: blocking
-login for a deactivated student server-side (today the shell shows a "paused"
-notice client-side).
+**Deferred to S2 — both done in S2:** hardening the teacher-only API routes
+against a `role=student` caller (now behind `EnsureTeacher`), and blocking a
+deactivated student from the content API (`EnsureStudent` checks `is_active`).
+Blocking a deactivated student at *login* is still client-side only (the shell's
+"paused" notice) — server-side login block is a small later add if wanted.
 
-### Phase S2 — Trilha browse (read-only, no progress)
-- `student_visible` on activities (default true, escape hatch — no toggle UI yet).
-- Student content API: all activities for the student's trilha, grouped by
-  `trilha_lesson`, not owner-scoped; teacher-only types excluded.
-- Lesson view: activities per lesson, launchable via `StudentActivityPlayer`
-  (renders the real component, no `onComplete` yet).
-- **Checkpoint:** a student can open and play every activity for their trilha.
-  Nothing is saved.
+### Phase S2 — Trilha browse (read-only, no progress) ✅ DONE (2026-09-09)
+
+**Shipped:**
+- Migration `2026_09_09_000001_add_student_visible_to_activities_table` —
+  `student_visible` (bool, default true) on `activities`. Idempotent guard. No
+  toggle UI — settable directly / via a later teacher control. `Activity` model:
+  added to `$fillable`, cast to bool, plus `Activity::TEACHER_ONLY_TYPES` const
+  (`presentation`, `reading_text`, `essay_feedback`, `grammar_explainer`).
+- **`StudentContentController`** (`/api/student/*`):
+  - `GET /api/student/lessons` — `{ lessons: { "<n>": [{ id, name, type }] } }`.
+    `Activity::where('trilha', $student->trilha)->where('student_visible', true)
+    ->whereNotIn('type', TEACHER_ONLY_TYPES)->whereNotNull('trilha_lesson')`,
+    grouped by `trilha_lesson`. **Not owner-scoped** — the whole point.
+  - `GET /api/student/activities/{activity}` — `{ id, name, trilha_lesson,
+    content }`. Same trilha + visibility + type guard; 404 otherwise.
+- **API hardening** — new `EnsureTeacher` / `EnsureStudent` middleware.
+  `routes/api.php` restructured: `/me` open to both; `/api/student/*` behind
+  `EnsureStudent` (also blocks a deactivated student); **everything else** behind
+  `EnsureTeacher`. `/api/background` moved out to the shared area (activity
+  components on both sides call it, no user data). A `role=student` caller now
+  gets 403 from `/api/generate`, `/api/activities`, `/api/students`, etc.
+- **Frontend** (`resources/js/student/`):
+  - `lib/activityMeta.js` — label + emoji per student-visible type.
+  - `lib/useStudentLessons.js` — module-cached fetch of `/api/student/lessons`,
+    shared by My Trilha + Lesson view (S3 will add `reload()`).
+  - `StudentActivityPlayer.jsx` (route `/s/activity/:id`) — fetches the activity,
+    maps `content.type` → the real component (same 17-type map as the teacher
+    Library, minus teacher-only), renders it fullscreen with `onClose` →
+    `/s/lesson/:trilha_lesson`. **No `onComplete` yet** (S3).
+  - `pages/LessonPage.jsx` — the "activities coming soon" placeholder replaced
+    with the real tappable activity list (icon + name + type); loading / empty /
+    error states.
+  - `pages/MyTrilhaPage.jsx` — a coral count pill per lesson row (hidden at 0).
+- **Verified** (`scratchpad/qa_s2.mjs`, temp Glow activities seeded + deleted):
+  student → `/s` → count pills → Lesson 3 lists quiz + flashcards → opens & plays
+  each, close returns to the lesson → Lesson 1's presentation is correctly hidden
+  (empty state) → API guards: teacher-only activity 404, `/api/generate` 403,
+  `/api/activities` 403, `/api/students` 403, own `/api/student/lessons` 200;
+  teacher still gets 200 on their routes and 403 on `/api/student/*`. Zero
+  console/page errors. `vite build` + PHP lint clean. Migration ran locally
+  (auto-runs on Railway deploy).
+
+**Known S5 (mobile polish) item surfaced:** the split-screen activities
+(`TrueFalseActivity`, `McReadingActivity`) render their ✕ close button
+off-viewport at 390px — they open and play but are hard to exit on a phone.
+Deferred to S5 per §3a (these need a stacked mobile layout anyway). Also still
+open: `word_categorisation` / `unjumble` HTML5 drag-and-drop on touch.
+
+**Checkpoint met:** a student can open and play every (tap-friendly) activity for
+their trilha. Nothing is saved.
 
 ### Phase S3 — Progress layer (auto-scored templates)
 - `activity_attempts` table + `/api/student/attempts`.
@@ -349,16 +391,16 @@ notice client-side).
 4. **Invite delivery** → **teacher sets the password** and hands it over, for the
    test phase. Email set-password link is a later additive enhancement.
 
-### Still open (resolve during S1–S2, not blocking)
+### Still open
 
 5. **Trilha completion / advancement** — automatic when all lessons are done, or
    teacher manually moves the student to the next trilha? Leaning manual for v1.
-6. **`built_by` attribution** — hidden from students (assumed yes — confirm).
-7. **Progress denominator** — what counts toward a lesson's `n / N`? (a) every
-   student-visible activity saved for that lesson (simple, N drifts as teachers
-   add activities), (b) a fixed 3-slot baseline (Vocabulary, Grammar, Speaking)
-   with extras shown but not counted, (c) teacher marks specific activities as
-   "required". Leaning (a).
+   (Resolve during S5.)
+6. **`built_by` attribution** — **resolved in S2: hidden from students.** The
+   student content API never returns `built_by` / `user_id`.
+7. **Progress denominator** — what counts toward a lesson's `n / N`? Leaning (a)
+   every student-visible activity saved for that lesson. S2's count pill already
+   uses (a). Confirm when building S3's badges.
 
 ## 12. Phase T — Templates & Generate-Page Overhaul  (PLAN — nothing built yet except T-0d)
 
@@ -672,7 +714,16 @@ grouping is the highest-impact single piece.
 - ✅ T-5b — MC Reading + Read and Complete + TrimStrings fix — committed `95991df`
 - ✅ T-6 — blurb pass + `/generate` mobile sweep (0 overflow at 390px) + CLAUDE.md
 
-**Phase T complete.** Next: the student app — **Phase S1** (roles + student accounts).
+**Phase T complete.**
+
+**Student app progress:**
+- ✅ S0d/S0e — trilha ToC panel + interactive mockup
+- ✅ S1 — roles + student accounts — committed `300f0c9`, pushed
+- ✅ S2 — trilha browse + play (read-only) + API hardening — 2026-09-09
+- ⬜ **S3 next** — progress layer: `activity_attempts` table + `/api/student/attempts`;
+  `onComplete({ score, maxScore, answers })` threaded through the ~11 auto-scored
+  components; `StudentActivityPlayer` captures & POSTs it; done-badges + last
+  score on the lesson view; `n / N` on My Trilha (the count pill becomes a ratio).
 
 ### Post-Phase-T fix — "lesson session" ✅ DONE (2026-09-05)
 

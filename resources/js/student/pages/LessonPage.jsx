@@ -1,5 +1,61 @@
 import { useParams, Link } from 'react-router-dom';
 import { TRILHAS, TRILHA_TOC } from '@/lib/trilhas';
+import { useStudentLessons } from '@/student/lib/useStudentLessons';
+import { activityMeta } from '@/student/lib/activityMeta';
+
+const cardBase = 'rounded-2xl border border-white/10 bg-[#291f66]/55 backdrop-blur-md';
+
+function ActivityRow({ item }) {
+    const meta = activityMeta(item.type);
+    return (
+        <Link
+            to={`/s/activity/${item.id}`}
+            className={`flex items-center gap-3.5 ${cardBase} p-3.5 transition-colors hover:border-white/20 hover:bg-[#342874]/70`}
+        >
+            <span className="shrink-0 w-9 h-9 rounded-xl bg-[#f8c63d]/12 text-[17px] grid place-items-center">
+                {meta.icon}
+            </span>
+            <span className="flex-1 min-w-0">
+                <span className="block font-display font-semibold text-[14.5px] text-white truncate">{item.name}</span>
+                <span className="block text-[12px] text-[#9384bd] mt-0.5">{meta.label}</span>
+            </span>
+            <svg className="w-4 h-4 text-white/30 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 5l7 7-7 7" /></svg>
+        </Link>
+    );
+}
+
+function Practice({ n }) {
+    const { loading, error, lessons } = useStudentLessons();
+    const items = lessons?.[n] ?? [];
+
+    if (loading) {
+        return (
+            <div className={`${cardBase} p-6 text-center`}>
+                <p className="text-white/50 text-sm">Loading activities…</p>
+            </div>
+        );
+    }
+    if (error) {
+        return (
+            <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-6 text-center">
+                <p className="text-white/70 text-sm">{error}</p>
+            </div>
+        );
+    }
+    if (items.length === 0) {
+        return (
+            <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-6 text-center">
+                <p className="text-white/70 text-sm">No activities for this lesson yet.</p>
+                <p className="text-white/40 text-xs mt-1.5">Your teacher is still building them — check back soon.</p>
+            </div>
+        );
+    }
+    return (
+        <div className="flex flex-col gap-2.5">
+            {items.map(item => <ActivityRow key={item.id} item={item} />)}
+        </div>
+    );
+}
 
 export default function LessonPage({ user }) {
     const n = Number(useParams().n);
@@ -30,7 +86,7 @@ export default function LessonPage({ user }) {
                             <p className="font-display font-semibold text-[11px] tracking-[0.13em] uppercase text-[#9384bd] mt-7 mb-3">
                                 What this lesson covers
                             </p>
-                            <div className="rounded-2xl border border-white/10 bg-[#291f66]/55 backdrop-blur-md p-4">
+                            <div className={`${cardBase} p-4`}>
                                 <ul className="flex flex-col">
                                     {toc.map((item, i) => (
                                         <li key={i} className="relative pl-5 py-2 text-[13.5px] text-white leading-snug border-b border-white/[0.06] last:border-b-0">
@@ -46,10 +102,7 @@ export default function LessonPage({ user }) {
                     <p className="font-display font-semibold text-[11px] tracking-[0.13em] uppercase text-[#9384bd] mt-8 mb-3">
                         Practice
                     </p>
-                    <div className="rounded-2xl border border-dashed border-white/15 bg-white/[0.03] p-6 text-center">
-                        <p className="text-white/70 text-sm">Activities for this lesson will appear here soon.</p>
-                        <p className="text-white/40 text-xs mt-1.5">Your teacher is still building them.</p>
-                    </div>
+                    <Practice n={n} />
                 </>
             )}
         </div>

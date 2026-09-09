@@ -960,6 +960,52 @@ teachers): https://claude.ai/code/artifact/cd0f5d1f-b11b-4416-a5d4-4db03a3a6293
 - Verified with a temp QA student (deleted after) + Playwright — full teacher-creates
   → student-logs-in → sees trilha → opens lesson flow, zero console errors.
 
-**Next: S2** — `student_visible` on activities, the student content API (trilha
-activities grouped by lesson, teacher-only types excluded), `StudentActivityPlayer`
-so a student can actually open and play a lesson's activities (no scoring yet).
+---
+
+## 21. Aurora Student App — Phase S2 ✅ COMPLETED (2026-09-09)
+
+**S2 — trilha browse + play (read-only, nothing saved):**
+- Migration `2026_09_09_000001` adds `student_visible` (bool, default true) to
+  `activities` — an escape hatch, no toggle UI. `Activity` model: `$fillable` +
+  bool cast + `Activity::TEACHER_ONLY_TYPES` const (`presentation`,
+  `reading_text`, `essay_feedback`, `grammar_explainer`).
+- **`StudentContentController`** (`app/Http/Controllers/`):
+  - `GET /api/student/lessons` → `{ lessons: { "<n>": [{ id, name, type }] } }`.
+    `where('trilha', $student->trilha)->where('student_visible', true)
+    ->whereNotIn('type', TEACHER_ONLY_TYPES)->whereNotNull('trilha_lesson')`,
+    grouped by lesson. **Not owner-scoped** — students see the shared Aurora
+    login's trilha library.
+  - `GET /api/student/activities/{activity}` → `{ id, name, trilha_lesson,
+    content }`; 404 if not the student's trilha / not visible / teacher-only.
+    Never returns `built_by` or `user_id` (open question 6 resolved: hidden).
+- **API hardening** — new `EnsureTeacher` + `EnsureStudent` middleware
+  (`app/Http/Middleware/`). `routes/api.php` restructured: `/me` open to both;
+  `/api/student/*` behind `EnsureStudent` (also 403s a deactivated student);
+  **all other routes** behind `EnsureTeacher`. `/api/background` moved to the
+  shared area (activity components on both sides need it). A `role=student`
+  caller now 403s on `/api/generate`, `/api/activities`, `/api/students`, etc.
+- **Frontend** (`resources/js/student/`):
+  - `lib/activityMeta.js` — `{ label, icon }` per student-visible type.
+  - `lib/useStudentLessons.js` — module-cached `/api/student/lessons` fetch,
+    shared by My Trilha + Lesson view. S3 adds `reload()`.
+  - `StudentActivityPlayer.jsx` (route `/s/activity/:id`) — fetches the activity,
+    maps `content.type` → the real component (same 17-type map as the teacher
+    Library minus teacher-only), fullscreen, `onClose` → `/s/lesson/:trilha_lesson`.
+    No `onComplete` yet (S3). `quiz` gets the `quiz=` prop, all others `activity=`
+    — matches the Library launch contract exactly.
+  - `pages/LessonPage.jsx` — "activities coming soon" placeholder replaced with
+    the real tappable list (icon + name + type label); loading/empty/error states.
+  - `pages/MyTrilhaPage.jsx` — coral count pill per lesson row (hidden at 0).
+- **Known S5 item surfaced:** `TrueFalseActivity` / `McReadingActivity` render
+  their ✕ off-viewport at 390px — they open and play but are hard to exit on a
+  phone (split-screen layouts need a stacked mobile rework per §3a). Also still
+  open: `word_categorisation` / `unjumble` HTML5 drag-and-drop on touch.
+- Verified (`scratchpad/qa_s2.mjs`, temp Glow activities seeded + deleted):
+  student count pills → Lesson 3 lists + plays quiz & flashcards, close returns
+  to lesson → Lesson 1's presentation correctly hidden → all API guards
+  (student: teacher routes 403, own routes 200; teacher: `/api/student/*` 403).
+  Zero console/page errors. `vite build` + PHP lint clean. Migration ran locally
+  (auto-runs on Railway deploy).
+
+**Next: S3** — `activity_attempts` table, `onComplete` on the auto-scored
+templates, done-badges + last score on the lesson view, `n / N` on My Trilha.

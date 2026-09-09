@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TRILHAS, TRILHA_TOC } from '@/lib/trilhas';
+import { useStudentLessons, lessonCount } from '@/student/lib/useStudentLessons';
 
 // A one-line preview of what a lesson covers, from its ToC.
 function preview(trilha, n) {
@@ -12,6 +13,7 @@ export default function MyTrilhaPage({ user }) {
     const meta = TRILHAS[user.trilha];
     const lessons = Array.from({ length: meta?.lessons ?? 0 }, (_, i) => i + 1);
     const firstName = (user.name || '').trim().split(/\s+/)[0] || 'there';
+    const { lessons: byLesson } = useStudentLessons();
 
     return (
         <div className="px-5 pt-8">
@@ -30,22 +32,30 @@ export default function MyTrilhaPage({ user }) {
             </p>
 
             <div className="flex flex-col gap-2.5">
-                {lessons.map(n => (
-                    <Link
-                        key={n}
-                        to={`/s/lesson/${n}`}
-                        className="flex items-center gap-3.5 rounded-2xl border border-white/10 bg-[#291f66]/55 backdrop-blur-md p-3.5 transition-colors hover:border-white/20 hover:bg-[#342874]/70"
-                    >
-                        <span className="shrink-0 w-9 h-9 rounded-xl bg-[#f8c63d]/12 text-[#f8c63d] font-display font-extrabold text-[15px] grid place-items-center">
-                            {n}
-                        </span>
-                        <span className="flex-1 min-w-0">
-                            <span className="block font-display font-semibold text-[14.5px] text-white">Lesson {n}</span>
-                            <span className="block text-[12px] text-[#9384bd] truncate mt-0.5">{preview(user.trilha, n)}</span>
-                        </span>
-                        <svg className="w-4 h-4 text-white/30 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 5l7 7-7 7" /></svg>
-                    </Link>
-                ))}
+                {lessons.map(n => {
+                    const count = lessonCount(byLesson, n);
+                    return (
+                        <Link
+                            key={n}
+                            to={`/s/lesson/${n}`}
+                            className="flex items-center gap-3.5 rounded-2xl border border-white/10 bg-[#291f66]/55 backdrop-blur-md p-3.5 transition-colors hover:border-white/20 hover:bg-[#342874]/70"
+                        >
+                            <span className="shrink-0 w-9 h-9 rounded-xl bg-[#f8c63d]/12 text-[#f8c63d] font-display font-extrabold text-[15px] grid place-items-center">
+                                {n}
+                            </span>
+                            <span className="flex-1 min-w-0">
+                                <span className="block font-display font-semibold text-[14.5px] text-white">Lesson {n}</span>
+                                <span className="block text-[12px] text-[#9384bd] truncate mt-0.5">{preview(user.trilha, n)}</span>
+                            </span>
+                            {count > 0 && (
+                                <span className="shrink-0 text-[11px] font-display font-bold text-[#fc6840] bg-[#fc6840]/12 rounded-full px-2 py-0.5">
+                                    {count}
+                                </span>
+                            )}
+                            <svg className="w-4 h-4 text-white/30 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 5l7 7-7 7" /></svg>
+                        </Link>
+                    );
+                })}
             </div>
         </div>
     );
