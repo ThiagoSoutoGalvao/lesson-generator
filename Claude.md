@@ -146,10 +146,22 @@ branches at module scope on `window.__AURORA_USER__.role` (injected by
   `reading_text`, `essay_feedback`, `grammar_explainer`); `EnsureTeacher` /
   `EnsureStudent` middleware — **every non-`/me` API route is now role-gated**;
   `StudentActivityPlayer` at `/s/activity/:id`. No scoring yet.
-- ⬜ **S3 (next)** — `activity_attempts` table + `/api/student/attempts` +
-  `onComplete({score,maxScore,answers})` on the ~11 auto-scored templates +
-  done-badges / last score on the lesson view / `n/N` on My Trilha.
-- ⬜ **S4** completion for non-scored templates. ⬜ **S5** dashboards + mobile polish.
+- ✅ **S3** — `activity_attempts` table (student_id, activity_id, nullable
+  score/max_score, answers, completed_at) + `POST /api/student/attempts`
+  (EnsureStudent + trilha gate); `/api/student/lessons` now returns per-activity
+  `done`/`last_score`/`last_max`/`attempts`. `onComplete({score,maxScore})` on
+  **8** components — **6 emit a score** (Quiz, True/False, MC Reading, Dialog
+  Gap-Fill, MC Cloze, Word Categorisation), **2 record completion only** (Odd One
+  Out, Image Vocab Match — no score tracked in those components). Fired once at
+  the terminal state; re-fires on replay = new attempt (unlimited retakes, latest
+  drives the badge). `StudentActivityPlayer` POSTs + calls
+  `reloadStudentLessons()`. Badges on `LessonPage`, `done/total` pill on
+  `MyTrilhaPage`. Teacher Library launch never passes `onComplete` — untouched.
+- ⬜ **S4** — completion for the **reveal-only** templates (Cloze, Open Cloze,
+  Read Complete, Word Formation, Sentence Transformation, Error Correction — they
+  take no student input, so no score) plus Flashcards / Discussion / Unjumble.
+  The roadmap's "~11 auto-scored" was optimistic; only 6 genuinely score.
+- ⬜ **S5** dashboards (`/s/progress`, teacher per-student view) + mobile polish.
 - **For a student to see an activity:** `trilha` matches exactly · `trilha_lesson`
   **not null** · type not teacher-only · `student_visible` true · student
   `is_active` and same `trilha`.
@@ -260,7 +272,8 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ## 6. Next after Phase 11
 
-Aurora Student App **S3** (see §4 and `AuroraStudentApp.md`).
+Aurora Student App **S4** (completion for the reveal-only + no-score templates) —
+see §4 and `AuroraStudentApp.md`.
 
 ---
 

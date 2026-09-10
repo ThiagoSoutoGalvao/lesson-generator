@@ -355,18 +355,36 @@ open: `word_categorisation` / `unjumble` HTML5 drag-and-drop on touch.
 **Checkpoint met:** a student can open and play every (tap-friendly) activity for
 their trilha. Nothing is saved.
 
-### Phase S3 — Progress layer (auto-scored templates)
-- `activity_attempts` table + `/api/student/attempts`.
-- `onComplete` threaded through the ~11 auto-scored components; `StudentActivityPlayer`
-  captures and POSTs it.
-- Done-badges + last score on the lesson view; `n / N` on My Trilha.
-- **Checkpoint:** a student completes a Quiz, sees the score saved, and the badge
-  appears on the lesson view and updates the trilha progress count.
+### Phase S3 — Progress layer ✅ DONE (2026-09-11, commit `4e973bf`)
+- `activity_attempts` table (`student_id`, `activity_id`, nullable `score` /
+  `max_score`, `answers`, `completed_at`) + `POST /api/student/attempts` behind
+  `EnsureStudent` and the shared `assertVisible()` trilha gate. Unlimited retakes
+  — one row per attempt, latest per (student, activity) drives the UI.
+- `GET /api/student/lessons` now annotates each activity with `done` /
+  `last_score` / `last_max` / `attempts` (one extra query for the whole trilha).
+- **`onComplete({ score, maxScore })` on 8 components, not ~11.** The reveal-only
+  templates (Cloze, Open Cloze, Read Complete, Word Formation, Sentence
+  Transformation, Error Correction) take no student input — nothing to score.
+  **6 emit a real score**: Quiz, True/False, MC Reading, Dialog Gap-Fill, MC
+  Cloze, Word Categorisation. **2 record completion only** (score null): Odd One
+  Out, Image Vocab Match. Fired once via a `useEffect` on the terminal flag;
+  re-fires on replay = a new attempt row.
+- `StudentActivityPlayer` holds `RECORDS_ATTEMPT` (the 8 types), passes
+  `onComplete`, POSTs, then `reloadStudentLessons()` (new — `useStudentLessons`
+  gained a module-cache bust + subscriber so mounted consumers refresh).
+- `LessonPage` — green check / `7/10` badge per done row. `MyTrilhaPage` — the
+  count pill is now `done / total`, green at all-done.
+- **Verified** (`scratchpad/qa_s3.mjs`, temp Glow activities): quiz 2/3 → retake
+  3/3, mc-cloze 2/2, word-cat 3/6, odd-one-out completion (null score), My Trilha
+  3/4, teacher `POST /api/student/attempts` → 403, zero console errors; attempt
+  rows confirmed in the DB.
 
 ### Phase S4 — Remaining templates + completion semantics
-- `onComplete` for the non-scored student templates (Discussion, Flashcards,
-  Unjumble) — "reached the end" / explicit "Mark done".
-- Consistent badge treatment (checkmark vs percentage).
+- `onComplete` (score null → checkmark badge) for the **reveal-only** templates
+  (Cloze, Open Cloze, Read Complete, Word Formation, Sentence Transformation,
+  Error Correction) and the no-score ones (Discussion, Flashcards, Unjumble).
+  These need a terminal affordance added — the reveal-only ones end on
+  "all revealed", the others on "reached the end" / an explicit "Mark done".
 - **Checkpoint:** every student-facing template records a completion.
 
 ### Phase S5 — Progress dashboards + polish
@@ -398,9 +416,8 @@ their trilha. Nothing is saved.
    (Resolve during S5.)
 6. **`built_by` attribution** — **resolved in S2: hidden from students.** The
    student content API never returns `built_by` / `user_id`.
-7. **Progress denominator** — what counts toward a lesson's `n / N`? Leaning (a)
-   every student-visible activity saved for that lesson. S2's count pill already
-   uses (a). Confirm when building S3's badges.
+7. **Progress denominator** — **RESOLVED S3**: (a) every student-visible activity
+   saved for that lesson. `lessonDone()` / `lessonCount()` in `useStudentLessons`.
 
 ## 12. Phase T — Templates & Generate-Page Overhaul  (PLAN — nothing built yet except T-0d)
 
@@ -720,10 +737,12 @@ grouping is the highest-impact single piece.
 - ✅ S0d/S0e — trilha ToC panel + interactive mockup
 - ✅ S1 — roles + student accounts — committed `300f0c9`, pushed
 - ✅ S2 — trilha browse + play (read-only) + API hardening — 2026-09-09
-- ⬜ **S3 next** — progress layer: `activity_attempts` table + `/api/student/attempts`;
-  `onComplete({ score, maxScore, answers })` threaded through the ~11 auto-scored
-  components; `StudentActivityPlayer` captures & POSTs it; done-badges + last
-  score on the lesson view; `n / N` on My Trilha (the count pill becomes a ratio).
+- ✅ S3 — progress layer: `activity_attempts` + `POST /api/student/attempts`;
+  `onComplete({ score, maxScore })` on 8 components (6 scored, 2 completion-only);
+  done-badges on the lesson view; `done / total` pill on My Trilha — 2026-09-11,
+  commit `4e973bf`.
+- ⬜ **S4 next** — completion for the reveal-only templates + Flashcards /
+  Discussion / Unjumble (no score → checkmark badge).
 
 ### Post-Phase-T fix — "lesson session" ✅ DONE (2026-09-05)
 
