@@ -291,11 +291,20 @@ Aurora Student App **S3** (see §4 and `AuroraStudentApp.md`).
   scoped to trilha instead.
 - Railway env: `APP_ENV=production`, `APP_DEBUG=false`,
   `APP_URL=https://…` (**must be `https`** — mixed-content errors otherwise),
-  `SESSION_DRIVER=database`, `QUEUE_CONNECTION=database`, `CACHE_STORE=database`,
-  `FILESYSTEM_DISK=local`, `ANTHROPIC_API_KEY`, `UNSPLASH_ACCESS_KEY`,
-  `OPENAI_API_KEY`, `LOG_LEVEL=error`, `PORT=8080`.
+  `SESSION_DRIVER=database`, `SESSION_LIFETIME=43200` (30 days — was unset, so it
+  fell back to the 120-min default and signed teachers out mid-lesson),
+  `QUEUE_CONNECTION=database`, `CACHE_STORE=database`, `FILESYSTEM_DISK=local`,
+  `ANTHROPIC_API_KEY`, `UNSPLASH_ACCESS_KEY`, `OPENAI_API_KEY`,
+  `LOG_LEVEL=error`, `PORT=8080`.
 - **`railway run` can't reach `mysql.railway.internal`** (private network only).
-  Run one-off artisan commands in prod with `railway ssh "php artisan …"`.
+  Run one-off artisan commands in prod with `railway ssh "php artisan …"` — or,
+  for anything with `\` namespace separators, a `/tmp/*.php` bootstrap file over
+  `railway ssh` (the shell mangles `\` in `--execute=`).
+- **Session-cookie auth means an expired session looks like a broken feature.**
+  `resources/js/bootstrap.js` has an axios response interceptor that redirects to
+  `/login` on 401/419 (returns a never-settling promise so callers don't flash an
+  error mid-nav). Without it, Laravel's raw `"Unauthenticated."` surfaces in
+  whatever feature made the call. Keep it.
 
 ---
 
