@@ -26,6 +26,7 @@ Route::middleware('auth:web')->group(function () {
     Route::middleware(EnsureStudent::class)->prefix('student')->group(function () {
         Route::get('/lessons', [StudentContentController::class, 'lessons']);
         Route::get('/activities/{activity}', [StudentContentController::class, 'activity']);
+        Route::post('/attempts', [StudentContentController::class, 'storeAttempt']);
     });
 
     // Everything else is teacher-only.

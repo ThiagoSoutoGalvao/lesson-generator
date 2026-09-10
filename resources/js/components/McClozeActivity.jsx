@@ -11,7 +11,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 // Cambridge-style Multiple Choice Cloze: a connected passage with gaps, four
 // options per gap. Click an option to answer it (quiz-style green/red feedback);
 // the passage fills in with the correct word.
-export default function McClozeActivity({ activity, onClose }) {
+export default function McClozeActivity({ activity, onClose, onComplete }) {
     const [answers, setAnswers]        = useState({});   // blankIndex -> chosen option string
     const [bgUrl, setBgUrl]            = useState(null);
     const [showSave, setShowSave]      = useState(false);
@@ -29,12 +29,19 @@ export default function McClozeActivity({ activity, onClose }) {
     const totalBlanks = blanks.length;
     const score = blanks.reduce((n, b) => n + (answers[b.blankIndex] === b.blank ? 1 : 0), 0);
     const answeredCount = Object.keys(answers).length;
+    const complete = totalBlanks > 0 && answeredCount === totalBlanks;
 
     useEffect(() => {
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
             .then(({ data }) => setBgUrl(data.url))
             .catch(() => null);
     }, []);
+
+    // Student app (Phase S3): record the attempt once every gap is answered.
+    useEffect(() => {
+        if (complete) onComplete?.({ score, maxScore: totalBlanks });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [complete]);
 
     useEffect(() => {
         function onKey(e) { if (e.code === 'KeyF') toggleFullscreen(); }

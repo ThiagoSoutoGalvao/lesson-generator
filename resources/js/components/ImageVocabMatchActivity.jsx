@@ -12,7 +12,7 @@ function shuffle(arr) {
     return a;
 }
 
-export default function ImageVocabMatchActivity({ activity, onClose }) {
+export default function ImageVocabMatchActivity({ activity, onClose, onComplete }) {
     const pairs = activity.pairs;
     const total = pairs.length;
 
@@ -52,6 +52,13 @@ export default function ImageVocabMatchActivity({ activity, onClose }) {
         loadImages();
         return () => { cancelled = true; };
     }, []);
+
+    // Student app (Phase S3): completion only — you can't finish without every
+    // pair matched, so there's no meaningful score to record.
+    useEffect(() => {
+        if (finished) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     useEffect(() => {
         function onKey(e) {

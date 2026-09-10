@@ -1,6 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+import { reloadStudentLessons } from '@/student/lib/useStudentLessons';
 
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
@@ -21,6 +23,16 @@ import SentenceTransformationActivity from '@/components/SentenceTransformationA
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
 
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
+
+// Types whose component fires onComplete({ score, maxScore }) when the student
+// reaches the end (Phase S3). Quiz / True-False / MC Reading / Dialog / MC Cloze
+// / Word Categorisation emit a real score; Odd One Out / Image Vocab Match track
+// completion only (score null). The reveal-only templates (Cloze, Word
+// Formation, …) and Flashcards / Discussion / Unjumble get completion in S4.
+const RECORDS_ATTEMPT = new Set([
+    'quiz', 'true_false', 'mc_reading', 'dialog_gap_fill', 'mc_cloze',
+    'word_categorisation', 'odd_one_out', 'image_vocab_match',
+]);
 
 const COMPONENTS = {
     quiz:                    QuizActivity,
@@ -80,6 +92,18 @@ export default function StudentActivityPlayer() {
     const goHome = () => navigate('/s');
     const goBack = () => navigate(data?.trilha_lesson ? `/s/lesson/${data.trilha_lesson}` : '/s');
 
+    // Fire-and-forget: record the attempt and refresh the lesson list so the
+    // badge is up to date by the time the student taps Close. A failed POST is
+    // swallowed — it must never block the student mid-activity (a 401 is already
+    // handled by the axios interceptor, which redirects to /login).
+    const handleComplete = useCallback((result) => {
+        axios.post('/api/student/attempts', {
+            activity_id: Number(id),
+            score: result?.score ?? null,
+            max_score: result?.maxScore ?? null,
+        }).then(() => reloadStudentLessons()).catch(() => {});
+    }, [id]);
+
     if (error) return <FullscreenMessage onBack={goHome}>{error}</FullscreenMessage>;
 
     if (!data) {
@@ -102,6 +126,8 @@ export default function StudentActivityPlayer() {
     const props = content.type === 'quiz'
         ? { quiz: content, onClose: goBack }
         : { activity: content, onClose: goBack };
+
+    if (RECORDS_ATTEMPT.has(content.type)) props.onComplete = handleComplete;
 
     return <Cmp {...props} />;
 }

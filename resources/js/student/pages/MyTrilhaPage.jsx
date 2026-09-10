@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { TRILHAS, TRILHA_TOC } from '@/lib/trilhas';
-import { useStudentLessons, lessonCount } from '@/student/lib/useStudentLessons';
+import { useStudentLessons, lessonCount, lessonDone } from '@/student/lib/useStudentLessons';
 
 // A one-line preview of what a lesson covers, from its ToC.
 function preview(trilha, n) {
@@ -34,6 +34,8 @@ export default function MyTrilhaPage({ user }) {
             <div className="flex flex-col gap-2.5">
                 {lessons.map(n => {
                     const count = lessonCount(byLesson, n);
+                    const done = lessonDone(byLesson, n);
+                    const allDone = count > 0 && done === count;
                     return (
                         <Link
                             key={n}
@@ -48,8 +50,12 @@ export default function MyTrilhaPage({ user }) {
                                 <span className="block text-[12px] text-[#9384bd] truncate mt-0.5">{preview(user.trilha, n)}</span>
                             </span>
                             {count > 0 && (
-                                <span className="shrink-0 text-[11px] font-display font-bold text-[#fc6840] bg-[#fc6840]/12 rounded-full px-2 py-0.5">
-                                    {count}
+                                <span className={`shrink-0 text-[11px] font-display font-bold rounded-full px-2 py-0.5 ${
+                                    allDone
+                                        ? 'text-[#5be0a4] bg-[#3ecf8e]/15'
+                                        : 'text-[#fc6840] bg-[#fc6840]/12'
+                                }`}>
+                                    {done} / {count}
                                 </span>
                             )}
                             <svg className="w-4 h-4 text-white/30 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 5l7 7-7 7" /></svg>

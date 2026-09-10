@@ -12,7 +12,7 @@ function shuffle(arr) {
     return a;
 }
 
-export default function WordCategorisationActivity({ activity, onClose }) {
+export default function WordCategorisationActivity({ activity, onClose, onComplete }) {
     // flat list of all words with their correct category
     const allWords = activity.categories.flatMap(cat =>
         cat.words.map(w => ({ text: w, correct: cat.name }))
@@ -47,6 +47,12 @@ export default function WordCategorisationActivity({ activity, onClose }) {
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, []);
+
+    // Student app (Phase S3): record the attempt when the student checks answers.
+    useEffect(() => {
+        if (checked) onComplete?.({ score, maxScore: allWords.length });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [checked]);
 
     // ── helpers ──────────────────────────────────────────────────────────────
 

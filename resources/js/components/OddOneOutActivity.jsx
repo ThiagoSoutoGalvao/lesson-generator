@@ -7,7 +7,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 
-export default function OddOneOutActivity({ activity, onClose }) {
+export default function OddOneOutActivity({ activity, onClose, onComplete }) {
     const [groupIndex, setGroupIndex] = useState(0);
     const [wrongIdx, setWrongIdx]     = useState(null);
     const [revealed, setRevealed]     = useState(false);
@@ -35,6 +35,12 @@ export default function OddOneOutActivity({ activity, onClose }) {
     }, []);
 
     useEffect(() => () => clearTimeout(wrongTimer.current), []);
+
+    // Student app (Phase S3): completion only — Odd One Out keeps no score.
+    useEffect(() => {
+        if (finished) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     function handleGuess(word, idx) {
         if (revealed) return;

@@ -8,7 +8,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 const BUBBLE_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const OPTION_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
 
-export default function DialogGapFillActivity({ activity, onClose }) {
+export default function DialogGapFillActivity({ activity, onClose, onComplete }) {
     const blanks = activity.dialog
         .map((line, i) => line.blank ? i : null)
         .filter(i => i !== null);
@@ -39,6 +39,12 @@ export default function DialogGapFillActivity({ activity, onClose }) {
             scrollRef.current.scrollTo({ top: scrollRef.current.scrollHeight, behavior: 'smooth' });
         }
     }, [currentBlank]);
+
+    // Student app (Phase S3): record the attempt when the results screen shows.
+    useEffect(() => {
+        if (finished) onComplete?.({ score, maxScore: blanks.length });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     useEffect(() => {
         function onKey(e) {

@@ -9,7 +9,7 @@ const LABELS = ['A', 'B', 'C', 'D'];
 const FONT_SIZES   = ['text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl'];
 const OPTION_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
-export default function QuizActivity({ quiz, onClose }) {
+export default function QuizActivity({ quiz, onClose, onComplete }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     // answers: { [questionIndex]: selectedAnswerIndex }
     const [answers, setAnswers]           = useState({});
@@ -45,6 +45,13 @@ export default function QuizActivity({ quiz, onClose }) {
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, [answered, finished, currentIndex]);
+
+    // Student app (Phase S3): record the attempt when the results screen shows.
+    // Re-fires if the student replays — that's an intentional new attempt.
+    useEffect(() => {
+        if (finished) onComplete?.({ score, maxScore: total });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     function handleAnswer(index) {
         if (answered) return;

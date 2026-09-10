@@ -5,6 +5,20 @@ import { activityMeta } from '@/student/lib/activityMeta';
 
 const cardBase = 'rounded-2xl border border-white/10 bg-[#291f66]/55 backdrop-blur-md';
 
+function ProgressBadge({ item }) {
+    if (!item.done) return null;
+    const hasScore = item.last_score != null && item.last_max;
+    return (
+        <span
+            className="shrink-0 inline-flex items-center gap-1 rounded-full bg-[#3ecf8e]/15 text-[#5be0a4] px-2 py-0.5 text-[11px] font-display font-bold"
+            title={item.attempts > 1 ? `${item.attempts} attempts` : 'Completed'}
+        >
+            <svg className="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.2"><path d="M5 13l4 4L19 7" /></svg>
+            {hasScore && `${item.last_score}/${item.last_max}`}
+        </span>
+    );
+}
+
 function ActivityRow({ item }) {
     const meta = activityMeta(item.type);
     return (
@@ -19,6 +33,7 @@ function ActivityRow({ item }) {
                 <span className="block font-display font-semibold text-[14.5px] text-white truncate">{item.name}</span>
                 <span className="block text-[12px] text-[#9384bd] mt-0.5">{meta.label}</span>
             </span>
+            <ProgressBadge item={item} />
             <svg className="w-4 h-4 text-white/30 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4"><path d="M9 5l7 7-7 7" /></svg>
         </Link>
     );

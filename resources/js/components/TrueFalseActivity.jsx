@@ -14,7 +14,7 @@ const OPTION_COLORS = {
 
 const FONT_SIZES  = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 
-export default function TrueFalseActivity({ activity, onClose }) {
+export default function TrueFalseActivity({ activity, onClose, onComplete }) {
     const total   = activity.statements.length;
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -51,6 +51,12 @@ export default function TrueFalseActivity({ activity, onClose }) {
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, [answered, currentIndex]);
+
+    // Student app (Phase S3): record the attempt when the results screen shows.
+    useEffect(() => {
+        if (finished) onComplete?.({ score, maxScore: total });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     function handleChoose(option) {
         if (answered) return;

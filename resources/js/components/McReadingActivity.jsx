@@ -11,7 +11,7 @@ const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 // Cambridge-style Multiple Choice Reading: a passage that stays visible while the
 // student works one comprehension question at a time. Same split-panel model as
 // TrueFalseActivity, with generic 4-option questions.
-export default function McReadingActivity({ activity, onClose }) {
+export default function McReadingActivity({ activity, onClose, onComplete }) {
     const questions = activity.questions ?? [];
     const total = questions.length;
 
@@ -37,6 +37,12 @@ export default function McReadingActivity({ activity, onClose }) {
     }, []);
 
     useEffect(() => { setChosen(null); }, [currentIndex]);
+
+    // Student app (Phase S3): record the attempt when the results screen shows.
+    useEffect(() => {
+        if (finished) onComplete?.({ score, maxScore: total });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     useEffect(() => {
         function onKey(e) {
