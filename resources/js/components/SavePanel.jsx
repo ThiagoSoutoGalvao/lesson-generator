@@ -22,6 +22,7 @@ function lsSet(key, value) {
 export default function SavePanel({ activity, onDone }) {
     const [mode, setMode] = useState('trilha'); // 'trilha' | 'freeform'
     const [status, setStatus] = useState('idle');
+    const [errorMsg, setErrorMsg] = useState('');
 
     // Trilha mode — pre-filled from the active lesson session if there is one
     // (the teacher is mid-way through building a lesson), else just the last
@@ -84,7 +85,11 @@ export default function SavePanel({ activity, onDone }) {
             }
             setStatus('saved');
             setTimeout(onDone, 1200);
-        } catch {
+        } catch (err) {
+            // Show what actually failed. A bare "please try again" hid a real
+            // validation error (an activity type missing from the store()
+            // validator) behind what looked like a flaky network.
+            setErrorMsg(err.response?.data?.message ?? 'Failed to save. Please try again.');
             setStatus('error');
         }
     }
@@ -229,7 +234,7 @@ export default function SavePanel({ activity, onDone }) {
                 )}
 
                 {status === 'error' && (
-                    <p className="text-red-400 text-xs">Failed to save. Please try again.</p>
+                    <p className="text-red-400 text-xs">{errorMsg}</p>
                 )}
 
                 <div className="flex gap-2 justify-end pt-0.5">
