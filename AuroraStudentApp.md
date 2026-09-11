@@ -405,18 +405,57 @@ their trilha. Nothing is saved.
   confirmed `score: 2, max_score: 2`, My Trilha's pill read `9/9` and turned
   green. Zero console errors.
 
-### Phase S5 — Progress dashboards + polish
-- Student `/s/progress` history.
-- Teacher per-student progress view + Students-page summary.
-- Mobile pass on the student shell.
-- **Checkpoint:** teacher and student can both see a coherent progress picture.
+### Phase S5 — Progress dashboards + polish ✅ DONE (2026-09-11, commit `8cfe1b0`)
+- **`app/Services/StudentProgressService.php`** — the one builder behind both
+  endpoints below, so the student and teacher views can never disagree about
+  what "done" means: per-lesson `{lesson, done, total}` + a recent-attempts
+  feed (`{name, type, lesson, score, max_score, completed_at}`, joined from
+  `activity_attempts` + `activities`, newest first, capped at 30).
+- **`GET /api/student/progress`** (student, own trilha) → `ProgressPage.jsx`
+  rewritten from the S1 placeholder: activities-completed stat + a progress
+  bar, a "N total attempts — you've retried a few" note when attempts exceed
+  distinct activities done, a recent-activity list (icon/name/lesson/score or
+  checkmark/relative time), and a "🎉 Trilha complete!" banner.
+- **`GET /api/students/{student}/progress`** (teacher, `teacher_id` scoped) →
+  `StudentsPage.jsx`'s `StudentRow` gets a "View progress" toggle that lazily
+  fetches and shows the same stat + coloured per-lesson pills (`L7 · 2/2`,
+  green once full) + a compact recent list, plus a matching completion nudge.
+- **"Complete" is checked against every *configured* lesson**
+  (`TRILHAS[trilha].lessons` — 8/8/12), not just the lessons that happen to
+  have activities today. Computing it off `activities_done ===
+  activities_total` alone would read 100% the moment every *existing*
+  activity is done, even with half the trilha still unbuilt — a real trap,
+  caught before shipping rather than after.
+- **Open Question 5 resolved: manual.** No auto-advance — the completion
+  banner (both sides) is a visible nudge toward the trilha dropdown that
+  already existed on `/students`, not a new mechanism.
+- **Mobile bug 1 (real):** `TrueFalseActivity` / `McReadingActivity` headers
+  pack Score/DisplayControls/a Hide-Show toggle/Save/Fullscreen/✕ into one
+  non-wrapping row — the toggle button is what tips these two over 390px,
+  unlike most other activity headers, which share the same header class but
+  weren't reported broken. Added `flex-wrap` (identical fix to Phase M8's
+  navbar overflow). Verified the ✕ sits fully inside a 390px viewport and
+  both templates are still playable end-to-end by tap.
+- **Mobile bug 2 (turned out to be a non-issue):** `word_categorisation` and
+  `unjumble` both already have `onClick` placement handlers alongside their
+  HTML5 `draggable` ones — a tap synthesizes a click on touch devices, so
+  the click path already covers touch. Verified both score correctly using
+  tap-only interaction (no drag) on a Playwright touch-emulated context. No
+  code change needed; the original bug note overstated it as fully broken.
+- **Checkpoint met:** teacher and student see a coherent, agreeing progress
+  picture. Verified via temp Glow activities + Playwright (cleaned up after):
+  3/3 activities + 4 recent rows + correct retry note on the student page;
+  teacher panel shows the same 3/3 and correct per-lesson pills; zero console
+  errors; existing test suite unaffected.
+
+**Aurora Student App core roadmap (S1–S5) is now complete.**
 
 ### Phase S6 — Monetization (DEFERRED)
 - Trial logic + Stripe/Cashier per §8. Not started until real usage exists.
 
 ## 10. Open questions
 
-### Resolved (2026-09-03)
+### All resolved
 
 1. **Publish granularity** → **everything trilha-tagged is auto-visible.** No
    per-activity publish step. `student_visible` column kept as an escape hatch
@@ -427,11 +466,11 @@ their trilha. Nothing is saved.
 4. **Invite delivery** → **teacher sets the password** and hands it over, for the
    test phase. Email set-password link is a later additive enhancement.
 
-### Still open
-
-5. **Trilha completion / advancement** — automatic when all lessons are done, or
-   teacher manually moves the student to the next trilha? Leaning manual for v1.
-   (Resolve during S5.)
+5. **Trilha completion / advancement** → **RESOLVED S5: manual.** No
+   auto-advance. Both the student's Progress page and the teacher's per-student
+   panel show a "trilha complete" nudge once every configured lesson is fully
+   done; the teacher still moves the student via the existing trilha dropdown
+   on `/students`.
 6. **`built_by` attribution** — **resolved in S2: hidden from students.** The
    student content API never returns `built_by` / `user_id`.
 7. **Progress denominator** — **RESOLVED S3**: (a) every student-visible activity
@@ -762,8 +801,13 @@ grouping is the highest-impact single piece.
 - ✅ S4 — `onComplete` on the remaining 9 types (all 17 now record an attempt);
   Unjumble reclassified into the scored group mid-build — 2026-09-11, commit
   `81a2439`.
-- ⬜ **S5 next** — progress dashboards (`/s/progress`, teacher per-student view)
-  + mobile polish.
+- ✅ S5 — progress dashboards (shared `StudentProgressService`, student
+  `/s/progress`, teacher per-student panel on `/students`), trilha-advancement
+  Open Question resolved manual, both known mobile bugs closed (one real fix,
+  one turned out to already work) — 2026-09-11, commit `8cfe1b0`.
+
+**Student App core roadmap (S1–S5) complete.** S6 (monetization) stays
+deferred until real usage exists, per §8.
 
 ### Post-Phase-T fix — "lesson session" ✅ DONE (2026-09-05)
 

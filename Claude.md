@@ -168,14 +168,25 @@ branches at module scope on `window.__AURORA_USER__.role` (injected by
   reclassified mid-phase** — its component turns out to track a real score
   (correct-on-first-check) with its own results screen, so it joined the scored
   group like Quiz, not the completion group the roadmap assumed.
-- ⬜ **S5 (next)** — dashboards (`/s/progress`, teacher per-student view) + mobile
-  polish (see the known bugs below).
+- ✅ **S5** — progress dashboards + the two known mobile bugs.
+  `App\Services\StudentProgressService::build($student)` is the **one** shared
+  builder behind both `GET /api/student/progress` (own trilha) and
+  `GET /api/students/{student}/progress` (teacher, own students only) — per-lesson
+  done/total + a recent-attempts feed, so the two sides can't disagree.
+  `ProgressPage.jsx` (student) shows the stat + a "Trilha complete!" banner;
+  `StudentsPage.jsx` (teacher) gets a lazy per-row "View progress" toggle with the
+  same numbers + a matching completion nudge. **"Complete" is checked against every
+  *configured* lesson** (`TRILHAS[trilha].lessons`), not just lessons that happen
+  to have activities yet — resolves Open Question 5 (trilha advancement) as
+  **manual**: no auto-move, just both sides pointing at the existing trilha
+  dropdown. `TrueFalseActivity`/`McReadingActivity` headers gained `flex-wrap`
+  (same fix as Phase M8's navbar) so the ✕ no longer sits off-viewport at 390px.
+  `word_categorisation`/`unjumble` touch drag-and-drop turned out to be a
+  non-issue — both already have `onClick` placement alongside the HTML5 drag
+  handlers; verified tap-only on a touch-emulated context.
 - **For a student to see an activity:** `trilha` matches exactly · `trilha_lesson`
   **not null** · type not teacher-only · `student_visible` true · student
   `is_active` and same `trilha`.
-- **Known S5 bug:** `TrueFalseActivity` / `McReadingActivity` split-screen layouts
-  render their ✕ off-viewport at 390px. Also open: `word_categorisation` /
-  `unjumble` HTML5 drag-and-drop doesn't work on touch.
 
 ### Branding — "Aurora Night" (Phase B, `AuroraBranding.md`)
 Shell pages only (`/`, `/upload`, `/generate`, `/library` via `Layout.jsx`, plus
@@ -280,8 +291,11 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ## 6. Next after Phase 11
 
-Aurora Student App **S5** — progress dashboards + mobile polish. See §4 and
-`AuroraStudentApp.md`.
+The Aurora Student App roadmap (S1–S5) is **complete**. **S6 (monetization)
+is deferred** until real student usage exists (§4). With no student-app phase
+queued, next is either resuming **Phase 11** itself, or whatever real usage
+from the beta teachers/students surfaces first — check with the user before
+starting new work here.
 
 ---
 
