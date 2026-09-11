@@ -10,7 +10,7 @@ const PRON_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'
 const DEF_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const EXAMPLE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl',  'text-2xl'];
 
-export default function FlashcardActivity({ activity, onClose }) {
+export default function FlashcardActivity({ activity, onClose, onComplete }) {
     const [index, setIndex] = useState(0);
     const [flipped, setFlipped] = useState(false);
     const [knownIds, setKnownIds] = useState(new Set());
@@ -80,6 +80,13 @@ export default function FlashcardActivity({ activity, onClose }) {
     }
 
     function handleStillLearning() { advance(knownIds); }
+
+    // Student app (Phase S4): completion only — every card was marked "Got It"
+    // to get here, but the deck-cycling mechanic means no single-pass score.
+    useEffect(() => {
+        if (finished) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     function handleRestart() {
         setDeck(activity.cards.map((_, i) => i));

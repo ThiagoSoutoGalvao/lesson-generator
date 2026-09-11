@@ -10,7 +10,7 @@ const FONT_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 // Cambridge-style Open Cloze: a connected passage with single-word gaps and no
 // word bank. Teacher clicks a gap to reveal the answer. Same presentation model
 // as ClozeActivity, without the word bank.
-export default function OpenClozeActivity({ activity, onClose }) {
+export default function OpenClozeActivity({ activity, onClose, onComplete }) {
     const [revealed, setRevealed]      = useState(new Set());
     const [bgUrl, setBgUrl]            = useState(null);
     const [showSave, setShowSave]      = useState(false);
@@ -37,6 +37,13 @@ export default function OpenClozeActivity({ activity, onClose }) {
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, []);
+
+    // Student app (Phase S4): reveal-only — completion once every blank is revealed.
+    const complete = totalBlanks > 0 && revealed.size === totalBlanks;
+    useEffect(() => {
+        if (complete) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [complete]);
 
     function revealBlank(idx) { setRevealed(r => new Set([...r, idx])); }
     function revealAll() { setRevealed(new Set(Array.from({ length: totalBlanks }, (_, i) => i))); }

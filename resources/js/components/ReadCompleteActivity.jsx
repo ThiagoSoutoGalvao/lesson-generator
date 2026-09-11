@@ -15,7 +15,7 @@ const FONT_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 // even though Laravel's global TrimStrings middleware strips the edge spaces the
 // text parts carried when the activity is saved (same reason ClozeActivity's
 // blanks use mx-0.5).
-export default function ReadCompleteActivity({ activity, onClose }) {
+export default function ReadCompleteActivity({ activity, onClose, onComplete }) {
     const [revealed, setRevealed]      = useState(new Set());
     const [bgUrl, setBgUrl]            = useState(null);
     const [showSave, setShowSave]      = useState(false);
@@ -42,6 +42,13 @@ export default function ReadCompleteActivity({ activity, onClose }) {
         window.addEventListener('keydown', onKey);
         return () => window.removeEventListener('keydown', onKey);
     }, []);
+
+    // Student app (Phase S4): reveal-only — completion once every blank is revealed.
+    const complete = totalBlanks > 0 && revealed.size === totalBlanks;
+    useEffect(() => {
+        if (complete) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [complete]);
 
     function revealBlank(idx) { setRevealed(r => new Set([...r, idx])); }
     function revealAll() { setRevealed(new Set(Array.from({ length: totalBlanks }, (_, i) => i))); }

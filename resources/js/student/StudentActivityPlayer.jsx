@@ -25,13 +25,19 @@ import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
 
 // Types whose component fires onComplete({ score, maxScore }) when the student
-// reaches the end (Phase S3). Quiz / True-False / MC Reading / Dialog / MC Cloze
-// / Word Categorisation emit a real score; Odd One Out / Image Vocab Match track
-// completion only (score null). The reveal-only templates (Cloze, Word
-// Formation, …) and Flashcards / Discussion / Unjumble get completion in S4.
+// reaches the end. Scored (S3 + Unjumble, reclassified in S4 once its component
+// turned out to track a real score too): quiz, true_false, mc_reading,
+// dialog_gap_fill, mc_cloze, word_categorisation, unjumble. Completion only, no
+// score (S3's odd_one_out/image_vocab_match + S4's reveal-only and no-reveal
+// templates): odd_one_out, image_vocab_match, cloze, open_cloze, read_complete,
+// word_formation, sentence_transformation, error_correction, flashcards,
+// discussion_questions.
 const RECORDS_ATTEMPT = new Set([
     'quiz', 'true_false', 'mc_reading', 'dialog_gap_fill', 'mc_cloze',
-    'word_categorisation', 'odd_one_out', 'image_vocab_match',
+    'word_categorisation', 'odd_one_out', 'image_vocab_match', 'unjumble',
+    'cloze', 'open_cloze', 'read_complete', 'word_formation',
+    'sentence_transformation', 'error_correction', 'flashcards',
+    'discussion_questions',
 ]);
 
 const COMPONENTS = {

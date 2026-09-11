@@ -8,7 +8,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 const FONT_SIZES = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
 const FOLLOW_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
-export default function DiscussionQuestionsActivity({ activity, onClose }) {
+export default function DiscussionQuestionsActivity({ activity, onClose, onComplete }) {
     const [index, setIndex]           = useState(0);
     const [bgUrl, setBgUrl]           = useState(null);
     const [showSave, setShowSave]     = useState(false);
@@ -44,6 +44,13 @@ export default function DiscussionQuestionsActivity({ activity, onClose }) {
 
     function next() { if (index < total - 1) setIndex(i => i + 1); }
     function prev() { if (index > 0) setIndex(i => i - 1); }
+
+    // Student app (Phase S4): no reveal/finish concept here — the only real
+    // "reached the end" signal is arriving at the last question. No score.
+    useEffect(() => {
+        if (index === total - 1) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index]);
 
     function promoteFollowUp(fu) {
         setDisplayQuestion(fu);

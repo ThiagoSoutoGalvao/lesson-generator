@@ -36,7 +36,7 @@ function buildSegments(passage, items) {
     return segments;
 }
 
-export default function ErrorCorrectionActivity({ activity, onClose }) {
+export default function ErrorCorrectionActivity({ activity, onClose, onComplete }) {
     const [index, setIndex]             = useState(0);
     const [revealed, setRevealed]       = useState(false);
     const [bgUrl, setBgUrl]             = useState(null);
@@ -79,6 +79,13 @@ export default function ErrorCorrectionActivity({ activity, onClose }) {
     function handlePrev() {
         if (index > 0) { setIndex(i => i - 1); setRevealed(false); }
     }
+
+    // Student app (Phase S4): reveal-only, no end screen — completion fires when
+    // the student reveals the correction on the last item.
+    useEffect(() => {
+        if (index === total - 1 && revealed) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index, revealed]);
 
     function renderSentence(sentence, error, correction, isRevealed) {
         const parts = sentence.split(error);

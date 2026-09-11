@@ -7,7 +7,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 
-export default function SentenceTransformationActivity({ activity, onClose }) {
+export default function SentenceTransformationActivity({ activity, onClose, onComplete }) {
     const [index, setIndex]             = useState(0);
     const [revealed, setRevealed]       = useState(false);
     const [bgUrl, setBgUrl]             = useState(null);
@@ -41,6 +41,13 @@ export default function SentenceTransformationActivity({ activity, onClose }) {
     function handlePrev() {
         if (index > 0) { setIndex(i => i - 1); setRevealed(false); }
     }
+
+    // Student app (Phase S4): reveal-only, no end screen — completion fires when
+    // the student reveals the answer on the last item.
+    useEffect(() => {
+        if (index === total - 1 && revealed) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index, revealed]);
 
     const bgStyle = bgUrl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }

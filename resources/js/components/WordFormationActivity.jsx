@@ -10,7 +10,7 @@ const SENTENCE_SIZES = ['text-lg',  'text-xl',   'text-2xl', 'text-3xl', 'text-4
 const FORM_SIZES     = ['text-sm',  'text-base', 'text-lg',  'text-xl',  'text-2xl'];
 const LABEL_SIZES    = ['text-[10px]', 'text-xs', 'text-sm', 'text-base', 'text-lg'];
 
-export default function WordFormationActivity({ activity, onClose }) {
+export default function WordFormationActivity({ activity, onClose, onComplete }) {
     const [index, setIndex]         = useState(0);
     const [revealed, setRevealed]   = useState(false);
     const [bgUrl, setBgUrl]         = useState(null);
@@ -44,6 +44,13 @@ export default function WordFormationActivity({ activity, onClose }) {
     function handlePrev() {
         if (index > 0) { setIndex(i => i - 1); setRevealed(false); }
     }
+
+    // Student app (Phase S4): reveal-only, no end screen — completion fires when
+    // the student reveals the answer on the last item.
+    useEffect(() => {
+        if (index === total - 1 && revealed) onComplete?.({});
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [index, revealed]);
 
     function renderSentence(sentence, answer, isRevealed) {
         const parts = sentence.split('___');

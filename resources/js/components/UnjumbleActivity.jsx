@@ -20,7 +20,7 @@ function toTiles(words) {
     return words.map((word, i) => ({ word, id: i }));
 }
 
-export default function UnjumbleActivity({ activity, onClose }) {
+export default function UnjumbleActivity({ activity, onClose, onComplete }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [available, setAvailable] = useState(() => shuffle(toTiles(activity.sentences[0].words)));
     const [placed, setPlaced] = useState([]);
@@ -134,6 +134,13 @@ export default function UnjumbleActivity({ activity, onClose }) {
         setScore(0);
         setFinished(false);
     }
+
+    // Student app (Phase S4): Unjumble does track a real score (correct-on-first-
+    // check, not incremented by Reveal) — same treatment as the S3 scored group.
+    useEffect(() => {
+        if (finished) onComplete?.({ score, maxScore: total });
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [finished]);
 
     function placedTileClass() {
         if (checkStatus === 'correct')  return 'bg-green-500 border-green-400 cursor-default';
