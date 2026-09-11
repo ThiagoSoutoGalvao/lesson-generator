@@ -379,13 +379,31 @@ their trilha. Nothing is saved.
   3/4, teacher `POST /api/student/attempts` → 403, zero console errors; attempt
   rows confirmed in the DB.
 
-### Phase S4 — Remaining templates + completion semantics
-- `onComplete` (score null → checkmark badge) for the **reveal-only** templates
-  (Cloze, Open Cloze, Read Complete, Word Formation, Sentence Transformation,
-  Error Correction) and the no-score ones (Discussion, Flashcards, Unjumble).
-  These need a terminal affordance added — the reveal-only ones end on
-  "all revealed", the others on "reached the end" / an explicit "Mark done".
-- **Checkpoint:** every student-facing template records a completion.
+### Phase S4 — Remaining templates + completion semantics ✅ DONE (2026-09-11, commit `81a2439`)
+- `onComplete` wired on the last 9 types — all **17** student-facing templates now
+  record an attempt. No new table/endpoint — pure reuse of S3's plumbing.
+- **Reveal-only** (no student input → no score, completion only): Cloze, Open
+  Cloze, Read Complete fire on `revealed.size === totalBlanks`; Word Formation,
+  Sentence Transformation, Error Correction have no end screen at all, so
+  completion fires when the student reveals the answer on the **last** item
+  (`index === total - 1 && revealed`).
+- **Discussion Questions** has no reveal/finish concept whatsoever — the only
+  "reached the end" signal available is arriving at the last question
+  (`index === total - 1`). Fires on arrival, not on an explicit action.
+- **Flashcards** already had a real `finished` state (every card marked "Got
+  It" — the deck cycles "still learning" cards back in until none remain) —
+  wired straight to completion. No score reported since the deck-cycling
+  mechanic means there's no meaningful single-pass score.
+- **Reclassification caught mid-build**: Unjumble was assumed no-score per the
+  original roadmap wording, but its component actually tracks a real score
+  (correct-on-first-`Check`, not incremented by `Reveal`) with its own "You got
+  X out of Y correct" results screen — identical shape to Quiz. Moved into the
+  scored group instead of completion-only.
+- **Checkpoint met:** every student-facing template records a completion.
+  Verified via temp Glow lesson (9 seeded activities) + Playwright — all 8
+  completion-only types confirmed `score: null` directly in the DB, Unjumble
+  confirmed `score: 2, max_score: 2`, My Trilha's pill read `9/9` and turned
+  green. Zero console errors.
 
 ### Phase S5 — Progress dashboards + polish
 - Student `/s/progress` history.
@@ -741,8 +759,11 @@ grouping is the highest-impact single piece.
   `onComplete({ score, maxScore })` on 8 components (6 scored, 2 completion-only);
   done-badges on the lesson view; `done / total` pill on My Trilha — 2026-09-11,
   commit `4e973bf`.
-- ⬜ **S4 next** — completion for the reveal-only templates + Flashcards /
-  Discussion / Unjumble (no score → checkmark badge).
+- ✅ S4 — `onComplete` on the remaining 9 types (all 17 now record an attempt);
+  Unjumble reclassified into the scored group mid-build — 2026-09-11, commit
+  `81a2439`.
+- ⬜ **S5 next** — progress dashboards (`/s/progress`, teacher per-student view)
+  + mobile polish.
 
 ### Post-Phase-T fix — "lesson session" ✅ DONE (2026-09-05)
 

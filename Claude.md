@@ -157,11 +157,19 @@ branches at module scope on `window.__AURORA_USER__.role` (injected by
   drives the badge). `StudentActivityPlayer` POSTs + calls
   `reloadStudentLessons()`. Badges on `LessonPage`, `done/total` pill on
   `MyTrilhaPage`. Teacher Library launch never passes `onComplete` — untouched.
-- ⬜ **S4** — completion for the **reveal-only** templates (Cloze, Open Cloze,
-  Read Complete, Word Formation, Sentence Transformation, Error Correction — they
-  take no student input, so no score) plus Flashcards / Discussion / Unjumble.
-  The roadmap's "~11 auto-scored" was optimistic; only 6 genuinely score.
-- ⬜ **S5** dashboards (`/s/progress`, teacher per-student view) + mobile polish.
+- ✅ **S4** — `onComplete` on all remaining templates; every one of the **17**
+  student-facing types now records an attempt (no new table/endpoint, reused
+  S3's). **Reveal-only** (Cloze, Open Cloze, Read Complete: `revealed.size ===
+  totalBlanks`; Word Formation, Sentence Transformation, Error Correction: last
+  item revealed — no end screen to key off) → completion, no score. **Discussion
+  Questions** has no reveal/finish at all — fires on arriving at the last
+  question. **Flashcards** already had a real `finished` (every card "Got It")
+  → completion (deck-cycling means no single-pass score). **Unjumble was
+  reclassified mid-phase** — its component turns out to track a real score
+  (correct-on-first-check) with its own results screen, so it joined the scored
+  group like Quiz, not the completion group the roadmap assumed.
+- ⬜ **S5 (next)** — dashboards (`/s/progress`, teacher per-student view) + mobile
+  polish (see the known bugs below).
 - **For a student to see an activity:** `trilha` matches exactly · `trilha_lesson`
   **not null** · type not teacher-only · `student_visible` true · student
   `is_active` and same `trilha`.
@@ -272,8 +280,8 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ## 6. Next after Phase 11
 
-Aurora Student App **S4** (completion for the reveal-only + no-score templates) —
-see §4 and `AuroraStudentApp.md`.
+Aurora Student App **S5** — progress dashboards + mobile polish. See §4 and
+`AuroraStudentApp.md`.
 
 ---
 
