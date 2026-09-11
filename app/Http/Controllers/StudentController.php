@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\StudentProgressService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -82,5 +83,24 @@ class StudentController extends Controller
         $student->save();
 
         return response()->json($student->only(['id', 'name', 'email', 'trilha', 'is_active', 'created_at']));
+    }
+
+    /**
+     * One student's progress — per-lesson done/total + a recent-activity feed
+     * (Phase S5). Same builder the student's own /api/student/progress uses.
+     *
+     * GET /api/students/{student}/progress
+     */
+    public function progress(User $student)
+    {
+        $this->guardTeacher();
+
+        abort_unless(
+            $student->role === 'student' && $student->teacher_id === auth()->id(),
+            403,
+            'Not your student.',
+        );
+
+        return response()->json(StudentProgressService::build($student));
     }
 }

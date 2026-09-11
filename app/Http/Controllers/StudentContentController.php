@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\ActivityAttempt;
+use App\Services\StudentProgressService;
 use Illuminate\Http\Request;
 
 /**
@@ -81,6 +82,18 @@ class StudentContentController extends Controller
             'trilha_lesson' => $activity->trilha_lesson,
             'content'       => $activity->content,
         ]);
+    }
+
+    /**
+     * The student's own progress snapshot — per-lesson done/total counts and a
+     * recent-activity feed (Phase S5). Same shape and builder as the teacher's
+     * per-student view.
+     *
+     * GET /api/student/progress
+     */
+    public function progress(Request $request)
+    {
+        return response()->json(StudentProgressService::build($request->user()));
     }
 
     /**

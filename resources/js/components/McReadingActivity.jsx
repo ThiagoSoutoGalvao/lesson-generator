@@ -95,8 +95,10 @@ export default function McReadingActivity({ activity, onClose, onComplete }) {
 
             {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
-            {/* Header */}
-            <div className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
+            {/* Header — wraps to a second row on narrow screens (the "Hide/Show
+                question" toggle is what tips this one over 390px, unlike most
+                other activity headers) so the ✕ never ends up off-viewport. */}
+            <div className="relative z-10 flex items-center justify-between flex-wrap gap-y-2 px-8 py-4 shrink-0">
                 <div>
                     <span className="text-white font-semibold text-sm capitalize">{activity.topic}</span>
                     <span className="text-white/40 text-sm ml-3">Question {currentIndex + 1} / {total}</span>
