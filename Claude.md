@@ -364,12 +364,33 @@ starting new work here.
 - `php artisan tinker --execute` chokes on `@` in the argument on this
   Windows/PowerShell setup — use a standalone PHP bootstrap script instead.
 
-### CSS / layout (recurring — has bitten this project 4+ times)
-- **`items-center` + `overflow-y-auto` on the same scroll container is a trap.**
-  When content overflows, flexbox centres it and pushes the top out of reach —
-  `scrollTop` can't go negative. Invisible until a content batch grows the list.
-  Fix: top-aligned `overflow-y-auto` container, centre the inner list with
-  `mx-auto`. (Hit: Pronunciation select screens, all 3 DET select screens.)
+### CSS / layout (recurring — has bitten this project 5+ times)
+- **`justify-center` (or `items-center` on the scroll axis) + `overflow-y-auto`
+  on the same container is a trap.** When content overflows, flexbox centres it
+  and pushes the top out of reach — `scrollTop` can't go negative. This isn't
+  only a "list grew too long" bug — it hits a **single fixed-height activity
+  screen** just as easily once one question/answer/passage is long enough
+  (`fixed inset-0` + no real page scroll makes every activity's main content
+  column vulnerable). Fix: drop centring on the scroll axis, keep it on the
+  cross axis, add `overflow-y-auto` + real padding. (Hit: Pronunciation select
+  screens, all 3 DET select screens, then **8 activity templates at once**
+  — Quiz, Word Formation, Odd One Out, Cloze, Discussion Questions, Sentence
+  Transformation, Flashcards, Unjumble, Read Complete, Open Cloze — found via
+  manual student-app QA, not caught by any of the automated Playwright passes
+  because those never scripted "type a long answer".) A **split-screen**
+  (passage-left/exercise-right) has the same failure shape when it stacks to
+  one column on mobile: the outer wrapper needs `overflow-y-auto` on mobile
+  (`md:overflow-hidden` to keep the desktop split unchanged) with both panels'
+  flex-grow/shrink/scroll classes gated behind `md:` — otherwise the stacked
+  content below the passage is unreachable no matter how the student scrolls.
+  (Hit: True/False, MC Reading.)
+- **A student-facing component needs an explicit opt-out for teacher-only UI,
+  not an assumption nobody will click it.** Every activity template's Save
+  button/panel rendered unconditionally — `StudentActivityPlayer` never hid it,
+  so a student could open the save dialog for an endpoint that 403s them. Fixed
+  with an `hideSave` prop, defaulted off (teacher Library launch untouched),
+  forced on from `StudentActivityPlayer`. Any *new* teacher-only control added
+  to an activity template needs the same treatment from day one.
 - **A card/glass treatment tuned against one background photo does NOT transfer
   to another photo.** Re-learned twice on Pronunciation. Any surface that must
   guarantee text contrast over an unpredictable photo has to be **dark and
