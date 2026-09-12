@@ -10,7 +10,7 @@ const PRON_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'
 const DEF_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const EXAMPLE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl',  'text-2xl'];
 
-export default function FlashcardActivity({ activity, onClose, onComplete }) {
+export default function FlashcardActivity({ activity, onClose, onComplete, hideSave }) {
     const [index, setIndex] = useState(0);
     const [flipped, setFlipped] = useState(false);
     const [knownIds, setKnownIds] = useState(new Set());
@@ -116,7 +116,7 @@ export default function FlashcardActivity({ activity, onClose, onComplete }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/60" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
@@ -139,7 +139,7 @@ export default function FlashcardActivity({ activity, onClose, onComplete }) {
                         {questionMode ? 'Definition → Word' : 'Word → Definition'}
                     </button>
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -155,7 +155,10 @@ export default function FlashcardActivity({ activity, onClose, onComplete }) {
             </div>
 
             {/* Card */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-8">
+            {/* Top-aligned + scrollable, not centered — the 420px card plus
+                the Got It/Still Learning buttons can't get pushed off-screen
+                on a short phone viewport. */}
+            <div className="relative z-10 flex-1 flex flex-col items-center px-8 gap-8 overflow-y-auto py-8">
                 <div onClick={() => setFlipped(f => !f)} className="cursor-pointer w-full max-w-2xl select-none" style={{ perspective: '1200px' }}>
                     <div style={{
                         transformStyle: 'preserve-3d',

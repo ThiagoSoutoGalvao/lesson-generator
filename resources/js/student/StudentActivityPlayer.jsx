@@ -129,9 +129,12 @@ export default function StudentActivityPlayer() {
 
     // Match the teacher Library's launch contract exactly: quiz takes `quiz`,
     // every other component takes `activity`; `onClose` returns to the lesson.
+    // hideSave is always true here — a student saving into the trilha library
+    // isn't a real feature (the endpoint is teacher-only and would 403 anyway),
+    // it was just never hidden from this launch path.
     const props = content.type === 'quiz'
-        ? { quiz: content, onClose: goBack }
-        : { activity: content, onClose: goBack };
+        ? { quiz: content, onClose: goBack, hideSave: true }
+        : { activity: content, onClose: goBack, hideSave: true };
 
     if (RECORDS_ATTEMPT.has(content.type)) props.onComplete = handleComplete;
 

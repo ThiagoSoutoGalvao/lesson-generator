@@ -8,7 +8,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 const BUBBLE_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const OPTION_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
 
-export default function DialogGapFillActivity({ activity, onClose, onComplete }) {
+export default function DialogGapFillActivity({ activity, onClose, onComplete, hideSave }) {
     const blanks = activity.dialog
         .map((line, i) => line.blank ? i : null)
         .filter(i => i !== null);
@@ -132,7 +132,7 @@ export default function DialogGapFillActivity({ activity, onClose, onComplete })
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/65" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
@@ -143,7 +143,7 @@ export default function DialogGapFillActivity({ activity, onClose, onComplete })
                 <div className="flex items-center gap-5">
                     <span className="text-white font-semibold text-sm">Score: <span className="text-yellow-400">{score}</span></span>
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>

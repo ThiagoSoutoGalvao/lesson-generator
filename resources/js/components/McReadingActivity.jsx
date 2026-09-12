@@ -11,7 +11,7 @@ const LETTERS = ['A', 'B', 'C', 'D', 'E'];
 // Cambridge-style Multiple Choice Reading: a passage that stays visible while the
 // student works one comprehension question at a time. Same split-panel model as
 // TrueFalseActivity, with generic 4-option questions.
-export default function McReadingActivity({ activity, onClose, onComplete }) {
+export default function McReadingActivity({ activity, onClose, onComplete, hideSave }) {
     const questions = activity.questions ?? [];
     const total = questions.length;
 
@@ -93,7 +93,7 @@ export default function McReadingActivity({ activity, onClose, onComplete }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/65" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header — wraps to a second row on narrow screens (the "Hide/Show
                 question" toggle is what tips this one over 390px, unlike most
@@ -109,7 +109,7 @@ export default function McReadingActivity({ activity, onClose, onComplete }) {
                     <button onClick={() => setShowQuestion(o => !o)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Toggle question (P)">
                         {showQuestion ? 'Hide question' : 'Show question'}
                     </button>
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -117,17 +117,22 @@ export default function McReadingActivity({ activity, onClose, onComplete }) {
                 </div>
             </div>
 
-            <div className="relative z-10 flex-1 flex flex-col md:flex-row gap-4 px-6 md:px-12 py-2 overflow-hidden">
+            {/* On mobile (<md) this stacks into one column and the OUTER
+                container is what scrolls, so the student can always scroll
+                straight through passage -> options -> next. On desktop
+                (md:flex-row) it's still the split-screen with each panel
+                scrolling independently inside a fixed-height row, unchanged. */}
+            <div className="relative z-10 flex-1 flex flex-col md:flex-row gap-4 px-6 md:px-12 py-2 overflow-y-auto md:overflow-hidden">
 
                 {/* Passage panel */}
-                <div className={`${showQuestion ? 'md:w-[52%] shrink-0' : 'flex-1'} bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto transition-all duration-300`}>
+                <div className={`${showQuestion ? 'md:w-[52%] md:shrink-0' : 'md:flex-1'} bg-white/8 border border-white/15 rounded-2xl p-5 md:overflow-y-auto transition-all duration-300`}>
                     <p className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-3">Reading Passage</p>
                     <p className={`leading-relaxed whitespace-pre-line ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>{activity.passage}</p>
                 </div>
 
                 {/* Question + options */}
                 {showQuestion && question && (
-                    <div className="flex-1 flex flex-col justify-center gap-5 overflow-y-auto py-2">
+                    <div className="md:flex-1 flex flex-col justify-center gap-5 md:overflow-y-auto py-2">
                         <h2 className={`font-bold leading-snug drop-shadow-lg ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>{question.text}</h2>
 
                         <div className="flex flex-col gap-3">

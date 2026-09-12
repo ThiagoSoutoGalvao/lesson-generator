@@ -12,7 +12,7 @@ function shuffle(arr) {
     return a;
 }
 
-export default function WordCategorisationActivity({ activity, onClose, onComplete }) {
+export default function WordCategorisationActivity({ activity, onClose, onComplete, hideSave }) {
     // flat list of all words with their correct category
     const allWords = activity.categories.flatMap(cat =>
         cat.words.map(w => ({ text: w, correct: cat.name }))
@@ -160,7 +160,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/60" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
@@ -173,7 +173,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                     )}
                 </div>
                 <div className="flex items-center gap-5">
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -194,7 +194,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                             onDragOver={e => e.preventDefault()}
                             onDrop={e => onDropCategory(e, cat.name)}
                             onClick={() => onClickCategory(cat.name)}
-                            className={`flex-1 flex flex-col gap-2 rounded-2xl border-2 border-dashed p-4 transition-colors
+                            className={`flex-1 flex flex-col gap-2 rounded-2xl border-2 border-dashed p-4 overflow-y-auto transition-colors
                                 ${selected && !checked ? 'border-yellow-400/60 bg-white/5 cursor-pointer' : 'border-white/20 bg-white/5'}
                             `}
                         >

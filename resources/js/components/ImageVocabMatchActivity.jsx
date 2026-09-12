@@ -12,7 +12,7 @@ function shuffle(arr) {
     return a;
 }
 
-export default function ImageVocabMatchActivity({ activity, onClose, onComplete }) {
+export default function ImageVocabMatchActivity({ activity, onClose, onComplete, hideSave }) {
     const pairs = activity.pairs;
     const total = pairs.length;
 
@@ -125,7 +125,7 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete 
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/65" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
@@ -136,7 +136,7 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete 
                     </span>
                 </div>
                 <div className="flex items-center gap-5">
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>

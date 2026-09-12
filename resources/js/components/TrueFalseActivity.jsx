@@ -14,7 +14,7 @@ const OPTION_COLORS = {
 
 const FONT_SIZES  = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 
-export default function TrueFalseActivity({ activity, onClose, onComplete }) {
+export default function TrueFalseActivity({ activity, onClose, onComplete, hideSave }) {
     const total   = activity.statements.length;
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -112,7 +112,7 @@ export default function TrueFalseActivity({ activity, onClose, onComplete }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/65" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header — wraps to a second row on narrow screens (the "Hide/Show
                 options" toggle is what tips this one over 390px, unlike most
@@ -136,7 +136,7 @@ export default function TrueFalseActivity({ activity, onClose, onComplete }) {
                     >
                         {showOptions ? 'Hide options' : 'Show options'}
                     </button>
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -144,17 +144,22 @@ export default function TrueFalseActivity({ activity, onClose, onComplete }) {
                 </div>
             </div>
 
-            <div className="relative z-10 flex-1 flex flex-col md:flex-row gap-4 px-6 md:px-12 py-2 overflow-hidden">
+            {/* On mobile (<md) this stacks into one column and the OUTER
+                container is what scrolls, so the student can always scroll
+                straight through passage -> statement -> options. On desktop
+                (md:flex-row) it's still the split-screen with each panel
+                scrolling independently, unchanged. */}
+            <div className="relative z-10 flex-1 flex flex-col md:flex-row gap-4 px-6 md:px-12 py-2 overflow-y-auto md:overflow-hidden">
 
                 {/* Passage panel */}
-                <div className={`${showOptions ? 'md:w-[62%] shrink-0' : 'flex-1'} bg-white/8 border border-white/15 rounded-2xl p-5 overflow-y-auto transition-all duration-300`}>
+                <div className={`${showOptions ? 'md:w-[62%] md:shrink-0' : 'md:flex-1'} bg-white/8 border border-white/15 rounded-2xl p-5 md:overflow-y-auto transition-all duration-300`}>
                     <p className="text-xs font-semibold text-white/40 uppercase tracking-wide mb-3">Reading Passage</p>
                     <p className={`leading-relaxed ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>{activity.passage}</p>
                 </div>
 
                 {/* Statement + options */}
                 {showOptions && (
-                    <div className="flex-1 flex flex-col justify-center gap-6">
+                    <div className="md:flex-1 flex flex-col justify-center gap-6">
                         <h2 className={`font-bold leading-snug drop-shadow-lg ${FONT_SIZES[fontSizeIdx]} ${textColor}`}>
                             {statement.text}
                         </h2>

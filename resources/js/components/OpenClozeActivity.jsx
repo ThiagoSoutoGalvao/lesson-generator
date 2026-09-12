@@ -10,7 +10,7 @@ const FONT_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 // Cambridge-style Open Cloze: a connected passage with single-word gaps and no
 // word bank. Teacher clicks a gap to reveal the answer. Same presentation model
 // as ClozeActivity, without the word bank.
-export default function OpenClozeActivity({ activity, onClose, onComplete }) {
+export default function OpenClozeActivity({ activity, onClose, onComplete, hideSave }) {
     const [revealed, setRevealed]      = useState(new Set());
     const [bgUrl, setBgUrl]            = useState(null);
     const [showSave, setShowSave]      = useState(false);
@@ -56,14 +56,14 @@ export default function OpenClozeActivity({ activity, onClose, onComplete }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">{revealed.size} / {totalBlanks} revealed</span>
                 <div className="flex items-center gap-5">
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -72,7 +72,10 @@ export default function OpenClozeActivity({ activity, onClose, onComplete }) {
             </div>
 
             {/* Main content */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-6 overflow-y-auto py-6">
+            {/* items-center is fine (horizontal); justify-center + overflow-y-auto
+                on the same axis is the trap — dropped so a long passage can't
+                trap its own top out of scroll range. */}
+            <div className="relative z-10 flex-1 flex flex-col items-center px-8 gap-6 overflow-y-auto py-6">
 
                 {activity.instruction && (
                     <p className="text-white/50 text-sm uppercase tracking-widest text-center">{activity.instruction}</p>

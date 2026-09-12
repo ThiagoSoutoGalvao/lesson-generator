@@ -11,7 +11,7 @@ const LETTERS = ['A', 'B', 'C', 'D'];
 // Cambridge-style Multiple Choice Cloze: a connected passage with gaps, four
 // options per gap. Click an option to answer it (quiz-style green/red feedback);
 // the passage fills in with the correct word.
-export default function McClozeActivity({ activity, onClose, onComplete }) {
+export default function McClozeActivity({ activity, onClose, onComplete, hideSave }) {
     const [answers, setAnswers]        = useState({});   // blankIndex -> chosen option string
     const [bgUrl, setBgUrl]            = useState(null);
     const [showSave, setShowSave]      = useState(false);
@@ -61,14 +61,14 @@ export default function McClozeActivity({ activity, onClose, onComplete }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
                 <span className="text-white/70 text-sm font-medium">{score} / {totalBlanks} correct · {answeredCount} answered</span>
                 <div className="flex items-center gap-5">
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>

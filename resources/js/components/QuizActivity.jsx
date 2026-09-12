@@ -9,7 +9,7 @@ const LABELS = ['A', 'B', 'C', 'D'];
 const FONT_SIZES   = ['text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl'];
 const OPTION_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
-export default function QuizActivity({ quiz, onClose, onComplete }) {
+export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     // answers: { [questionIndex]: selectedAnswerIndex }
     const [answers, setAnswers]           = useState({});
@@ -102,7 +102,7 @@ export default function QuizActivity({ quiz, onClose, onComplete }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
-            {showSave && <SavePanel activity={quiz} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={quiz} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
@@ -114,7 +114,7 @@ export default function QuizActivity({ quiz, onClose, onComplete }) {
                         Score: <span className="text-yellow-400">{score}</span>
                     </span>
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -123,7 +123,10 @@ export default function QuizActivity({ quiz, onClose, onComplete }) {
             </div>
 
             {/* Question + answers */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-10">
+            {/* Top-aligned + scrollable (not centered) so a long question/4
+                options can't push Next off-screen on a phone — see
+                Claude.md's items-center/justify-center + overflow-y-auto note. */}
+            <div className="relative z-10 flex-1 flex flex-col items-center px-8 gap-10 overflow-y-auto py-8">
                 {quiz.instruction && (
                     <p className="text-white/55 text-base text-center tracking-wide -mb-4">{quiz.instruction}</p>
                 )}
@@ -131,7 +134,11 @@ export default function QuizActivity({ quiz, onClose, onComplete }) {
                     {question.question}
                 </h2>
 
-                <div className="grid grid-cols-2 gap-4 w-full max-w-3xl">
+                {/* Single column on a phone: a 2-column grid sizes each row by
+                    its tallest cell, so one long answer forces a short
+                    neighbor into a huge matching box — same fix already used
+                    by the newer drills (HomophonesDrill, etc). */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-3xl">
                     {question.answers.map((answer, i) => {
                         let cls = 'bg-white/15 hover:bg-white/25 border-white/25 cursor-pointer';
                         if (answered) {

@@ -7,7 +7,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 
-export default function OddOneOutActivity({ activity, onClose, onComplete }) {
+export default function OddOneOutActivity({ activity, onClose, onComplete, hideSave }) {
     const [groupIndex, setGroupIndex] = useState(0);
     const [wrongIdx, setWrongIdx]     = useState(null);
     const [revealed, setRevealed]     = useState(false);
@@ -90,14 +90,14 @@ export default function OddOneOutActivity({ activity, onClose, onComplete }) {
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">Group {groupIndex + 1} / {total}</span>
                 <div className="flex items-center gap-5">
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -113,10 +113,14 @@ export default function OddOneOutActivity({ activity, onClose, onComplete }) {
             </div>
 
             {/* Main content */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-8">
+            {/* Top-aligned + scrollable, not centered — the 4 word tiles plus
+                the "Why?" panel can't push Next off-screen on a phone. */}
+            <div className="relative z-10 flex-1 flex flex-col items-center px-8 gap-8 overflow-y-auto py-8">
                 <p className="text-white/50 text-sm uppercase tracking-widest">Which one doesn't belong?</p>
 
-                <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
+                {/* Single column on a phone — same reasoning as Quiz's option
+                    grid: a 2-column grid sizes each row by its tallest cell. */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full max-w-lg">
                     {group.words.map((word, idx) => {
                         const isOdd   = word === group.odd_one;
                         const isWrong = wrongIdx === idx;

@@ -36,7 +36,7 @@ function buildSegments(passage, items) {
     return segments;
 }
 
-export default function ErrorCorrectionActivity({ activity, onClose, onComplete }) {
+export default function ErrorCorrectionActivity({ activity, onClose, onComplete, hideSave }) {
     const [index, setIndex]             = useState(0);
     const [revealed, setRevealed]       = useState(false);
     const [bgUrl, setBgUrl]             = useState(null);
@@ -144,7 +144,7 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete 
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/50" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
@@ -153,7 +153,7 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete 
                 </span>
                 <div className="flex items-center gap-5">
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -168,22 +168,26 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete 
                 </div>
             </div>
 
-            {/* Main content */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 py-6 overflow-y-auto">
-                <div className="max-w-2xl w-full flex flex-col gap-4">
+            {/* Main content — top-aligned + scrollable, not centered, so a long
+                passage can't push the reveal/next buttons out of reach and
+                can't trap its own top out of scroll range (see Claude.md's
+                items-center/justify-center + overflow-y-auto note). Passage
+                mode also drops the old inner max-h-[44vh] scroll box and
+                widens the card — the passage now flows and stretches like the
+                other reading templates instead of sitting boxed in the middle
+                of the screen. */}
+            <div className="relative z-10 flex-1 flex flex-col items-center px-8 py-6 gap-4 overflow-y-auto">
+                <div className={`${isPassage ? 'max-w-4xl' : 'max-w-2xl'} w-full flex flex-col gap-4`}>
 
                     <p className="text-white/45 text-xs uppercase tracking-widest text-center">{activity.instruction}</p>
 
                     <div className="flex flex-col rounded-2xl bg-black/30 backdrop-blur-sm border border-white/15 overflow-hidden">
 
                         {isPassage ? (
-                            <div className="relative">
-                                <div className="px-8 py-8 max-h-[44vh] overflow-y-auto">
-                                    <p className={`${PASSAGE_SIZES[fontSizeIdx]} leading-loose whitespace-pre-line ${textColor}`}>
-                                        {renderPassage()}
-                                    </p>
-                                </div>
-                                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-8 bg-gradient-to-t from-black/40 to-transparent" />
+                            <div className="px-8 py-8">
+                                <p className={`${PASSAGE_SIZES[fontSizeIdx]} leading-loose whitespace-pre-line ${textColor}`}>
+                                    {renderPassage()}
+                                </p>
                             </div>
                         ) : (
                             <div className="px-8 py-10 flex items-center justify-center">

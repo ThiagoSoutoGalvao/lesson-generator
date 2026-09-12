@@ -8,7 +8,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 const FONT_SIZES = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
 const FOLLOW_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
-export default function DiscussionQuestionsActivity({ activity, onClose, onComplete }) {
+export default function DiscussionQuestionsActivity({ activity, onClose, onComplete, hideSave }) {
     const [index, setIndex]           = useState(0);
     const [bgUrl, setBgUrl]           = useState(null);
     const [showSave, setShowSave]     = useState(false);
@@ -65,14 +65,14 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/40" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">Question {index + 1} / {total}</span>
                 <div className="flex items-center gap-5">
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -88,7 +88,9 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
             </div>
 
             {/* Question */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-8">
+            {/* Top-aligned + scrollable, not centered — several follow-up
+                chips can't push Prev/Next off-screen on a phone. */}
+            <div className="relative z-10 flex-1 flex flex-col items-center px-8 gap-8 overflow-y-auto py-8">
                 <div className="max-w-3xl w-full flex flex-col items-center gap-6 text-center">
                     <p className="text-white/40 text-xs uppercase tracking-widest">Discuss</p>
                     <h2 className={`${FONT_SIZES[fontSizeIdx]} font-bold leading-snug ${textColor}`}>{displayQuestion}</h2>

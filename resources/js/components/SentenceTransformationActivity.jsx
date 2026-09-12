@@ -7,7 +7,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 
-export default function SentenceTransformationActivity({ activity, onClose, onComplete }) {
+export default function SentenceTransformationActivity({ activity, onClose, onComplete, hideSave }) {
     const [index, setIndex]             = useState(0);
     const [revealed, setRevealed]       = useState(false);
     const [bgUrl, setBgUrl]             = useState(null);
@@ -57,14 +57,14 @@ export default function SentenceTransformationActivity({ activity, onClose, onCo
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/50" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
                 <span className="text-white/70 text-sm font-medium">Item {index + 1} / {total}</span>
                 <div className="flex items-center gap-5">
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
@@ -80,7 +80,9 @@ export default function SentenceTransformationActivity({ activity, onClose, onCo
             </div>
 
             {/* Main content */}
-            <div className="relative z-10 flex-1 flex flex-col items-center justify-center px-8 gap-6">
+            {/* Top-aligned + scrollable, not centered — a long original/answer
+                sentence can't push Prev/Next off-screen on a phone. */}
+            <div className="relative z-10 flex-1 flex flex-col items-center px-8 gap-6 overflow-y-auto py-8">
                 <div className="max-w-2xl w-full flex flex-col gap-5">
 
                     <p className="text-white/45 text-xs uppercase tracking-widest text-center">{activity.instruction}</p>
