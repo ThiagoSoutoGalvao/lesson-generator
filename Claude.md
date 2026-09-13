@@ -289,13 +289,25 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
-## 6. Next after Phase 11
+## 6. Next: Aurora Homework (`AuroraHomework.md`) — start at Phase H1
 
 The Aurora Student App roadmap (S1–S5) is **complete**. **S6 (monetization)
-is deferred** until real student usage exists (§4). With no student-app phase
-queued, next is either resuming **Phase 11** itself, or whatever real usage
-from the beta teachers/students surfaces first — check with the user before
-starting new work here.
+is deferred** until real student usage exists (§4).
+
+**Active initiative, decided 2026-09-14: Aurora Homework.** Full plan in
+`AuroraHomework.md` at the repo root. One-line version: Cambridge/DET/
+Pronunciation practice content is currently unreachable by any student
+account (routing gap, not a permissions one — `StudentShell` only knows 4
+routes); a teacher wants to assign specific practice to a specific student as
+homework, decoupled from trilha entirely. **Start with Phase H1** — a new
+"Practice" tab in the student shell making Cambridge/DET drills reachable and
+self-serve, no assignment tracking yet, no new table. H2 (the actual
+`student_assignments` model + teacher-side "Assign") and H3 ("My Homework" on
+the student side) follow once H1 is validated. First real test case: the
+user's own Cambridge B2 student, under his personal login.
+
+Phase 11 (Monetization) stays queued behind this — either could have gone
+first; the user chose Homework.
 
 ---
 
@@ -446,7 +458,8 @@ starting new work here.
 |---|---|
 | `docs/PROJECT_LOG.md` | Full phase-by-phase history (moved out of this file) |
 | `PronunciationFeature.md` | Pronunciation spec + future-topics catalog (§9–12) |
-| `AuroraStudentApp.md` | Student-app roadmap (S1+) and the mobile-first principle |
+| `AuroraStudentApp.md` | Student-app roadmap (S1–S5, complete) and the mobile-first principle |
+| `AuroraHomework.md` | **Active** — homework/assignment roadmap (H1+), start here |
 | `CambridgePracticeMode.md` / `CambridgeResearch.md` | Cambridge spec / research |
 | `# DET Practice Mode — Feature Roadmap.md` | DET spec |
 | `AuroraBranding.md` | Aurora palette / fonts / logo assets / Drive locations |
