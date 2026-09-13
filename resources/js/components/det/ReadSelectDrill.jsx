@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from './PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import readSelectSets from '@/data/det/readSelect.json';
@@ -33,8 +34,9 @@ export default function ReadSelectDrill() {
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const [difficulty, setDifficulty] = useState(AVAILABLE_DIFFICULTIES[0]);
 
+    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
     function backToDetTab() {
-        navigate('/upload', { state: { tab: 'det' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     function startSet(s) {

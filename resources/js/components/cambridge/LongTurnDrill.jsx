@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import SpeakingPromptDrill from '@/components/det/SpeakingPromptDrill';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
@@ -11,8 +12,9 @@ export default function LongTurnDrill() {
     const [items, setItems] = useState(null);
     const batches = groupByBatch(longTurnItems);
 
+    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'cambridge' } });
     function backToTab() {
-        navigate('/upload', { state: { tab: 'cambridge' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     if (items) {

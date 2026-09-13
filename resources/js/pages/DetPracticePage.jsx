@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { PracticeBackContext } from '@/hooks/usePracticeBack';
 import ReadSelectDrill from '@/components/det/ReadSelectDrill';
 import FillBlankDrill from '@/components/det/FillBlankDrill';
 import ReadCompleteDrill from '@/components/det/ReadCompleteDrill';
@@ -30,12 +31,17 @@ const DRILLS = {
     'interactive-speaking': InteractiveSpeakingDrill,
 };
 
-export default function DetPracticePage() {
+const DEFAULT_BACK_TO = { path: '/upload', state: { tab: 'det' } };
+
+// `backTo` lets whoever renders this route say where its own "Back" button (and every
+// leaf drill's) should go — the teacher's Upload page by default, or the student's
+// Practice tab (see StudentShell.jsx) when rendered there instead.
+export default function DetPracticePage({ backTo = DEFAULT_BACK_TO }) {
     const { type } = useParams();
     const navigate = useNavigate();
 
     function backToDetTab() {
-        navigate('/upload', { state: { tab: 'det' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     const Drill = DRILLS[type];
@@ -52,5 +58,9 @@ export default function DetPracticePage() {
         );
     }
 
-    return <Drill />;
+    return (
+        <PracticeBackContext.Provider value={backTo}>
+            <Drill />
+        </PracticeBackContext.Provider>
+    );
 }

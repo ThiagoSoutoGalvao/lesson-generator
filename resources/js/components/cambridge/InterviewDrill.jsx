@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import SpeakingPromptDrill from '@/components/det/SpeakingPromptDrill';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
@@ -13,8 +14,9 @@ export default function InterviewDrill() {
     const navigate = useNavigate();
     const [set, setSet] = useState(null);
 
+    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'cambridge' } });
     function backToTab() {
-        navigate('/upload', { state: { tab: 'cambridge' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     if (set) {

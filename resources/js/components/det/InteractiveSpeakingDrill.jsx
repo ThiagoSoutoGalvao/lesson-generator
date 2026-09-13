@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from './PracticeSessionShell';
 import SpeakingPromptDrill from './SpeakingPromptDrill';
 import scenarios from '@/data/det/interactiveSpeaking.json';
@@ -12,8 +13,9 @@ export default function InteractiveSpeakingDrill() {
     const navigate = useNavigate();
     const [scenario, setScenario] = useState(null);
 
+    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
     function backToDetTab() {
-        navigate('/upload', { state: { tab: 'det' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     if (scenario) {

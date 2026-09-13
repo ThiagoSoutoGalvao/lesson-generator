@@ -1,4 +1,5 @@
 import { useParams, useNavigate } from 'react-router-dom';
+import { PracticeBackContext } from '@/hooks/usePracticeBack';
 import WordFormationDrill from '@/components/cambridge/WordFormationDrill';
 import KeyWordTransformationDrill from '@/components/cambridge/KeyWordTransformationDrill';
 import McClozeDrill from '@/components/cambridge/McClozeDrill';
@@ -42,12 +43,17 @@ const DRILLS = {
     'genre': GenreDrill,
 };
 
-export default function CambridgePracticePage() {
+const DEFAULT_BACK_TO = { path: '/upload', state: { tab: 'cambridge' } };
+
+// `backTo` lets whoever renders this route say where its own "Back" button (and every
+// leaf drill's) should go — the teacher's Upload page by default, or the student's
+// Practice tab (see StudentShell.jsx) when rendered there instead.
+export default function CambridgePracticePage({ backTo = DEFAULT_BACK_TO }) {
     const { type } = useParams();
     const navigate = useNavigate();
 
     function backToCambridgeTab() {
-        navigate('/upload', { state: { tab: 'cambridge' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     const Drill = DRILLS[type];
@@ -64,5 +70,9 @@ export default function CambridgePracticePage() {
         );
     }
 
-    return <Drill />;
+    return (
+        <PracticeBackContext.Provider value={backTo}>
+            <Drill />
+        </PracticeBackContext.Provider>
+    );
 }

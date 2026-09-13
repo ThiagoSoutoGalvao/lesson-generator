@@ -2,7 +2,10 @@ import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
 import MyTrilhaPage from '@/student/pages/MyTrilhaPage';
 import LessonPage from '@/student/pages/LessonPage';
 import ProgressPage from '@/student/pages/ProgressPage';
+import PracticePage from '@/student/pages/PracticePage';
 import StudentActivityPlayer from '@/student/StudentActivityPlayer';
+import DetPracticePage from '@/pages/DetPracticePage';
+import CambridgePracticePage from '@/pages/CambridgePracticePage';
 
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
 
@@ -53,6 +56,9 @@ export default function StudentShell({ user }) {
                     <Route path="/s" element={<MyTrilhaPage user={user} />} />
                     <Route path="/s/lesson/:n" element={<LessonPage user={user} />} />
                     <Route path="/s/activity/:id" element={<StudentActivityPlayer />} />
+                    <Route path="/s/practice" element={<PracticePage />} />
+                    <Route path="/s/practice/det/:type" element={<DetPracticePage backTo={{ path: '/s/practice', state: { mode: 'det' } }} />} />
+                    <Route path="/s/practice/cambridge/:type" element={<CambridgePracticePage backTo={{ path: '/s/practice', state: { mode: 'cambridge' } }} />} />
                     <Route path="/s/progress" element={<ProgressPage user={user} />} />
                     <Route path="*" element={<Navigate to="/s" replace />} />
                 </Routes>
@@ -63,6 +69,10 @@ export default function StudentShell({ user }) {
                     <NavLink to="/s" end className={tabCls}>
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M3 10.5 12 3l9 7.5V21H3z" /></svg>
                         My Trilha
+                    </NavLink>
+                    <NavLink to="/s/practice" className={tabCls}>
+                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="8" /><circle cx="12" cy="12" r="3" /></svg>
+                        Practice
                     </NavLink>
                     <NavLink to="/s/progress" className={tabCls}>
                         <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M4 20V10M12 20V4M20 20v-7" /></svg>

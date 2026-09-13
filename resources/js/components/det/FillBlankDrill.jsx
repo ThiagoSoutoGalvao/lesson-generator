@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from './PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import fillBlankItems from '@/data/det/fillBlank.json';
@@ -43,8 +44,9 @@ export default function FillBlankDrill() {
     const [difficulty, setDifficulty] = useState('all');
     const [sessionItems, setSessionItems] = useState(fillBlankItems);
 
+    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
     function backToDetTab() {
-        navigate('/upload', { state: { tab: 'det' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     function start() {

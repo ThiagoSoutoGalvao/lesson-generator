@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from './PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import readCompleteSets from '@/data/det/readComplete.json';
@@ -50,8 +51,9 @@ export default function ReadCompleteDrill() {
     const [sessionKey, setSessionKey] = useState(0);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
+    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
     function backToDetTab() {
-        navigate('/upload', { state: { tab: 'det' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     function startSet(s) {

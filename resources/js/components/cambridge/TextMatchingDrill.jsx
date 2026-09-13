@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
@@ -38,8 +39,9 @@ export default function TextMatchingDrill({ sets, title, selectSubtitle, selectI
     const [sessionKey, setSessionKey] = useState(0);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
+    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'cambridge' } });
     function backToTab() {
-        navigate('/upload', { state: { tab: 'cambridge' } });
+        navigate(backTo.path, { state: backTo.state });
     }
 
     function startSet(s) {
