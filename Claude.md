@@ -289,22 +289,29 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
-## 6. Next: Aurora Homework (`AuroraHomework.md`) — start at Phase H1
+## 6. Next: Aurora Homework (`AuroraHomework.md`) — start at Phase H2
 
 The Aurora Student App roadmap (S1–S5) is **complete**. **S6 (monetization)
 is deferred** until real student usage exists (§4).
 
 **Active initiative, decided 2026-09-14: Aurora Homework.** Full plan in
-`AuroraHomework.md` at the repo root. One-line version: Cambridge/DET/
-Pronunciation practice content is currently unreachable by any student
-account (routing gap, not a permissions one — `StudentShell` only knows 4
-routes); a teacher wants to assign specific practice to a specific student as
-homework, decoupled from trilha entirely. **Start with Phase H1** — a new
-"Practice" tab in the student shell making Cambridge/DET drills reachable and
-self-serve, no assignment tracking yet, no new table. H2 (the actual
-`student_assignments` model + teacher-side "Assign") and H3 ("My Homework" on
-the student side) follow once H1 is validated. First real test case: the
-user's own Cambridge B2 student, under his personal login.
+`AuroraHomework.md` at the repo root. One-line version: a teacher wants to
+assign specific practice to a specific student as homework, decoupled from
+trilha entirely.
+
+- ✅ **H1** (2026-09-14, commit `aa79e68`) — Cambridge/DET reachable in the
+  student app. New "Practice" tab in `StudentShell`'s bottom nav
+  (`PracticePage.jsx`), new routes reusing `CambridgePracticePage` /
+  `DetPracticePage` directly. No new table, no scoring changes. Found and
+  fixed along the way: every Cambridge/DET leaf drill component hardcoded
+  its own "Back" button to `/upload`, which doesn't exist for a student —
+  `resources/js/hooks/usePracticeBack.js` now lets whichever wrapper page
+  renders a drill say where "back" (and the active tab) restores to.
+- ⬜ **H2 next** — `student_assignments` table + teacher-side "Assign"
+  action + per-student homework list. First real test case: the user's own
+  Cambridge B2 student, under his personal login.
+- ⬜ **H3** — "My Homework" on the student side, follows once H2 is
+  validated.
 
 Phase 11 (Monetization) stays queued behind this — either could have gone
 first; the user chose Homework.
@@ -424,6 +431,16 @@ first; the user chose Homework.
 - `welcome.blade.php` injects `window.__AURORA_USER__ = @json($auroraUser)` —
   compute the `->only([...])` into a `@php` variable **first**; `@json()` can't
   parse a nested method call.
+- **A leaf component's own "Back"/"Exit" button hardcoding one parent route is
+  the same shape of bug as the `hideSave` one above** — it silently assumes it
+  will only ever be launched from one place. All 25 Cambridge/DET drill
+  components did this (`navigate('/upload', { state: { tab } })`), which broke
+  the moment Aurora Homework H1 gave students a second entry point
+  (`/s/practice`, not `/upload`). Fixed with a small context
+  (`usePracticeBack.js`) the wrapper page sets once, instead of threading a
+  prop through every leaf by hand. **Any component that navigates "back" to a
+  hardcoded absolute path should be treated as teacher-only-launcher debt** —
+  ask where else it might get mounted before assuming there's only one caller.
 
 ### Content strategy
 - All practice-mode + trilha content is **static hand-authored JSON** — no DB, no

@@ -75,20 +75,34 @@ before this touches any other Aurora teacher.
 
 ## 4. Phases
 
-### Phase H1 — Cambridge/DET reachable in the student app (browsable, no assignment yet)
+### ✅ Phase H1 — Cambridge/DET reachable in the student app (2026-09-14, commit `aa79e68`)
 
 - New **"Practice"** tab in `StudentShell`'s bottom nav, alongside My Trilha
-  and Progress.
-- New student-shell routes rendering the existing Cambridge/DET drill
-  components. Reuse `CambridgePracticeLauncher` / `DetPracticeLauncher`
-  (currently defined in `resources/js/pages/UploadPage.jsx`, teacher-only) as
-  the basis for the student-side launcher grid — they're link grids with no
-  teacher-only logic baked in, so this should be closer to "wire up routing +
-  a nav entry" than a rebuild.
+  and Progress. `resources/js/student/pages/PracticePage.jsx` — Cambridge B2
+  / DET toggle, grouped drill lists, styled to match `MyTrilhaPage`'s tokens.
+- New routes `/s/practice`, `/s/practice/cambridge/:type`,
+  `/s/practice/det/:type` in `StudentShell.jsx`, rendering
+  `CambridgePracticePage` / `DetPracticePage` directly — not a rebuild of
+  `CambridgePracticeLauncher` / `DetPracticeLauncher` (those stayed
+  teacher-only in `UploadPage.jsx`, unused by this phase in the end), just a
+  new picker UI pointing at the same drill components already used there.
 - **No new table. No scoring/attempt changes.** Purely making already-built,
   already-shipped content reachable from the student shell.
-- **Checkpoint:** the student logs in, taps Practice, picks a Cambridge or
-  DET drill, and plays it — unassisted, no teacher involved.
+- **Found mid-build, fixed:** every Cambridge/DET leaf drill component (25
+  files) hardcoded its own "Back" button to `navigate('/upload', { state })`
+  — fine while only the teacher's Upload page could reach them, broken for a
+  student (no `/upload` route in `StudentShell` at all). Fixed with
+  `resources/js/hooks/usePracticeBack.js`, a small context
+  `CambridgePracticePage`/`DetPracticePage` set once at the top of the tree
+  saying where "back" (and the active Cambridge/DET tab) should restore to —
+  the teacher's Upload page by default, the student's Practice tab when
+  rendered there.
+- **Checkpoint met:** the student logs in, taps Practice, picks a Cambridge
+  or DET drill, and plays it — unassisted, no teacher involved. Verified via
+  `scratchpad/qa_h1.mjs` + `qa_h1_mode_restore.mjs` (student) and
+  `qa_h1_teacher_regression.mjs` (teacher Upload flow unaffected).
+- **Deferred, unchanged from the plan:** Pronunciation does not get a
+  Practice-tab entry yet (open question §3, still open).
 
 ### Phase H2 — Assignment data model + teacher-side "Assign"
 
@@ -134,5 +148,5 @@ before this touches any other Aurora teacher.
 
 ## 6. Where to start
 
-**Start with Phase H1.** See `Claude.md` §6 for the one-line pointer, or
-jump straight to §4 above.
+**Phase H1 is done (2026-09-14).** Next: **Phase H2** — the
+`student_assignments` table + teacher-side "Assign" action, see §4 above.
