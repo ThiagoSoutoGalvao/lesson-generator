@@ -141,6 +141,124 @@ function StudentProgressPanel({ studentId }) {
     );
 }
 
+// Assigned activities for one student (Aurora Homework Phase H2) — deliberately
+// its own panel, not folded into StudentProgressPanel above: trilha progress is
+// "how they're doing on the shared curriculum," homework is "stuff I personally
+// handed them," and mixing the two lists would blur that distinction for the
+// teacher exactly the way we're avoiding on the student side too.
+function HomeworkPanel({ studentId }) {
+    const [homework, setHomework] = useState(null);
+    const [error, setError]       = useState(null);
+    const [library, setLibrary]   = useState(null);
+    const [activityId, setActivityId] = useState('');
+    const [note, setNote]         = useState('');
+    const [busy, setBusy]         = useState(false);
+    const [assignErr, setAssignErr] = useState('');
+
+    useEffect(() => {
+        let alive = true;
+        axios.get(`/api/students/${studentId}/assignments`)
+            .then(({ data }) => { if (alive) setHomework(data.homework); })
+            .catch(() => { if (alive) setError('Could not load homework.'); });
+        axios.get('/api/activities')
+            .then(({ data }) => { if (alive) setLibrary(data); })
+            .catch(() => {});
+        return () => { alive = false; };
+    }, [studentId]);
+
+    async function assign(e) {
+        e.preventDefault();
+        if (!activityId) return;
+        setBusy(true); setAssignErr('');
+        try {
+            const { data } = await axios.post(`/api/students/${studentId}/assignments`, {
+                activity_id: Number(activityId),
+                note: note || null,
+            });
+            const activity = library.find(a => a.id === Number(activityId));
+            setHomework(prev => [
+                { id: data.id, activity_id: activity.id, name: activity.name, type: activity.type, note: data.note, done: false },
+                ...(prev ?? []).filter(h => h.activity_id !== activity.id),
+            ]);
+            setActivityId(''); setNote('');
+        } catch {
+            setAssignErr('Could not assign that activity.');
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    async function unassign(assignmentId) {
+        setHomework(prev => prev.filter(h => h.id !== assignmentId));
+        axios.delete(`/api/students/${studentId}/assignments/${assignmentId}`).catch(() => {});
+    }
+
+    return (
+        <div className="flex flex-col gap-4">
+            <form onSubmit={assign} className="flex flex-col sm:flex-row gap-2">
+                <select
+                    value={activityId}
+                    onChange={e => setActivityId(e.target.value)}
+                    className="flex-1 min-w-0 bg-white/8 border border-white/15 text-white text-xs rounded-lg px-2.5 py-2 cursor-pointer"
+                >
+                    <option value="" className="bg-[#1c1540]">
+                        {library === null ? 'Loading your library…' : 'Choose an activity to assign…'}
+                    </option>
+                    {library?.map(a => (
+                        <option key={a.id} value={a.id} className="bg-[#1c1540]">{a.name}</option>
+                    ))}
+                </select>
+                <input
+                    value={note}
+                    onChange={e => setNote(e.target.value)}
+                    placeholder="Note (optional)"
+                    maxLength={255}
+                    className="sm:w-40 bg-white/8 border border-white/15 text-white text-xs rounded-lg px-2.5 py-2 placeholder-white/35"
+                />
+                <button
+                    disabled={busy || !activityId}
+                    className="text-xs font-semibold px-3 py-2 rounded-lg bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-40 text-white transition-colors cursor-pointer shrink-0"
+                >
+                    Assign
+                </button>
+            </form>
+            {assignErr && <p className="text-red-300 text-xs">{assignErr}</p>}
+
+            {error && <p className="text-red-300 text-xs px-1">{error}</p>}
+            {!error && homework === null && <p className="text-white/40 text-xs px-1">Loading…</p>}
+            {homework?.length === 0 && <p className="text-white/40 text-xs">Nothing assigned yet.</p>}
+            {homework?.length > 0 && (
+                <div className="flex flex-col gap-1.5">
+                    {homework.map(item => {
+                        const meta = activityMeta(item.type);
+                        return (
+                            <div key={item.id} className="flex items-center gap-2.5 bg-white/5 rounded-xl px-3 py-2">
+                                <span className="shrink-0 text-sm">{meta.icon}</span>
+                                <span className="flex-1 min-w-0">
+                                    <span className="block text-white/85 text-xs truncate">{item.name}</span>
+                                    {item.note && <span className="block text-white/40 text-[11px] truncate mt-0.5">{item.note}</span>}
+                                </span>
+                                <span className={`shrink-0 text-[11px] font-display font-bold rounded-full px-2 py-0.5 ${
+                                    item.done ? 'bg-[#3ecf8e]/15 text-[#5be0a4]' : 'bg-white/8 text-white/50'
+                                }`}>
+                                    {item.done ? 'Done' : 'Not done'}
+                                </span>
+                                <button
+                                    onClick={() => unassign(item.id)}
+                                    className="shrink-0 text-white/30 hover:text-red-300 text-xs transition-colors cursor-pointer"
+                                    title="Unassign"
+                                >
+                                    ✕
+                                </button>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
+        </div>
+    );
+}
+
 function StudentRow({ s, onChange }) {
     const [busy, setBusy]       = useState(false);
     const [expanded, setExpanded] = useState(false);
@@ -185,8 +303,15 @@ function StudentRow({ s, onChange }) {
                 </button>
             </div>
             {expanded && (
-                <div className="border-t border-white/10 bg-black/15 px-4 py-4">
-                    <StudentProgressPanel studentId={s.id} />
+                <div className="border-t border-white/10 bg-black/15 px-4 py-4 flex flex-col gap-5">
+                    <div>
+                        <p className="font-display font-semibold text-[11px] tracking-wide uppercase text-white/40 mb-2.5">Trilha progress</p>
+                        <StudentProgressPanel studentId={s.id} />
+                    </div>
+                    <div className="border-t border-white/10 pt-4">
+                        <p className="font-display font-semibold text-[11px] tracking-wide uppercase text-white/40 mb-2.5">Homework — assigned directly, outside the trilha</p>
+                        <HomeworkPanel studentId={s.id} />
+                    </div>
                 </div>
             )}
         </div>

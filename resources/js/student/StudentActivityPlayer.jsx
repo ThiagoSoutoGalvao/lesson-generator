@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 import { reloadStudentLessons } from '@/student/lib/useStudentLessons';
@@ -77,6 +77,7 @@ function FullscreenMessage({ children, onBack }) {
 export default function StudentActivityPlayer() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
 
@@ -96,7 +97,10 @@ export default function StudentActivityPlayer() {
     }, [id]);
 
     const goHome = () => navigate('/s');
-    const goBack = () => navigate(data?.trilha_lesson ? `/s/lesson/${data.trilha_lesson}` : '/s');
+    // A homework activity (Phase H2) has no trilha_lesson — whoever linked here
+    // (e.g. ProgressPage's Homework section) says where "back" goes via
+    // location.state.from instead.
+    const goBack = () => navigate(location.state?.from ?? (data?.trilha_lesson ? `/s/lesson/${data.trilha_lesson}` : '/s'));
 
     // Fire-and-forget: record the attempt and refresh the lesson list so the
     // badge is up to date by the time the student taps Close. A failed POST is

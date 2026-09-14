@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Activity;
 use App\Models\ActivityAttempt;
+use App\Models\StudentAssignment;
+use App\Services\StudentHomeworkService;
 use App\Services\StudentProgressService;
 use Illuminate\Http\Request;
 
@@ -97,6 +99,18 @@ class StudentContentController extends Controller
     }
 
     /**
+     * Activities assigned to this student directly by their teacher — kept
+     * deliberately separate from the trilha-scoped lessons() list (Aurora
+     * Homework Phase H2). Same builder the teacher's per-student view uses.
+     *
+     * GET /api/student/homework
+     */
+    public function homework(Request $request)
+    {
+        return response()->json(['homework' => StudentHomeworkService::build($request->user())]);
+    }
+
+    /**
      * Record a completed attempt. `score` / `max_score` are omitted for
      * completion-only activities. Unlimited retakes — every call inserts a row.
      *
@@ -129,16 +143,23 @@ class StudentContentController extends Controller
     }
 
     /**
-     * The one visibility gate, shared by every endpoint here: the activity must
-     * belong to the student's trilha, be flagged visible, and not be a
-     * teacher-only type. 404 (not 403) so we never confirm an activity exists.
+     * The one visibility gate, shared by every endpoint here. Never a
+     * teacher-only type, and one of two independent paths: same trilha as the
+     * student (unchanged), or directly assigned to them (Phase H2) — the
+     * latter is how a one-off activity, which has no trilha at all, reaches a
+     * student for the first time. 404 (not 403) so we never confirm an
+     * activity exists.
      */
     private function assertVisible(Activity $activity, $student): void
     {
         abort_unless(
-            $activity->trilha === $student->trilha
-                && $activity->student_visible
-                && ! in_array($activity->type, Activity::TEACHER_ONLY_TYPES, true),
+            ! in_array($activity->type, Activity::TEACHER_ONLY_TYPES, true)
+                && (
+                    ($activity->trilha === $student->trilha && $activity->student_visible)
+                    || StudentAssignment::where('student_id', $student->id)
+                        ->where('activity_id', $activity->id)
+                        ->exists()
+                ),
             404,
         );
     }

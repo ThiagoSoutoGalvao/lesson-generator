@@ -184,9 +184,13 @@ branches at module scope on `window.__AURORA_USER__.role` (injected by
   `word_categorisation`/`unjumble` touch drag-and-drop turned out to be a
   non-issue — both already have `onClick` placement alongside the HTML5 drag
   handlers; verified tap-only on a touch-emulated context.
-- **For a student to see an activity:** `trilha` matches exactly · `trilha_lesson`
-  **not null** · type not teacher-only · `student_visible` true · student
-  `is_active` and same `trilha`.
+- **For a student to see an activity** (`StudentContentController::assertVisible()`):
+  type not teacher-only, **and** either (a) same `trilha` + `trilha_lesson`
+  not null + `student_visible` true (the original, trilha-scoped path), **or**
+  (b) a `student_assignments` row exists for that student + activity (Aurora
+  Homework H2 — how a one-off activity, which has no trilha at all, reaches a
+  student). The two paths are independent `OR` branches, not layered — an
+  activity doesn't need both.
 
 ### Branding — "Aurora Night" (Phase B, `AuroraBranding.md`)
 Shell pages only (`/`, `/upload`, `/generate`, `/library` via `Layout.jsx`, plus
@@ -289,15 +293,14 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
-## 6. Next: Aurora Homework (`AuroraHomework.md`) — start at Phase H2
+## 6. Next: nothing queued — Aurora Homework's core roadmap shipped
 
 The Aurora Student App roadmap (S1–S5) is **complete**. **S6 (monetization)
 is deferred** until real student usage exists (§4).
 
-**Active initiative, decided 2026-09-14: Aurora Homework.** Full plan in
-`AuroraHomework.md` at the repo root. One-line version: a teacher wants to
-assign specific practice to a specific student as homework, decoupled from
-trilha entirely.
+**Aurora Homework** (decided 2026-09-14, full history in
+`AuroraHomework.md`): a teacher wants to hand specific content to a specific
+student, decoupled from trilha entirely — both phases are done:
 
 - ✅ **H1** (2026-09-14, commit `aa79e68`) — Cambridge/DET reachable in the
   student app. New "Practice" tab in `StudentShell`'s bottom nav
@@ -307,14 +310,26 @@ trilha entirely.
   its own "Back" button to `/upload`, which doesn't exist for a student —
   `resources/js/hooks/usePracticeBack.js` now lets whichever wrapper page
   renders a drill say where "back" (and the active tab) restores to.
-- ⬜ **H2 next** — `student_assignments` table + teacher-side "Assign"
-  action + per-student homework list. First real test case: the user's own
-  Cambridge B2 student, under his personal login.
-- ⬜ **H3** — "My Homework" on the student side, follows once H2 is
-  validated.
+- ✅ **H2** (2026-09-15) — assign one Library activity to one student,
+  independent of trilha. **Narrowed after real use of H1**: Cambridge/DET
+  didn't need an assignment mechanism (Practice's free access already
+  covers it, no scarcity problem) — the actual blocker was a *custom
+  generated activity* made for one specific student having no way to reach
+  them at all, one-off activities being invisible to every student. So H2
+  dropped the originally-planned `kind`/`practice_ref` split and shipped
+  activity-only, merged with what was going to be a separate H3 (the
+  student-facing list) since a permission with nowhere to see it helps no
+  one. `student_assignments` table, `assertVisible()` gained a second
+  visibility path, `StudentHomeworkService` (shared builder, same split as
+  `StudentProgressService`). Teacher: a "Homework" section in `StudentsPage`'s
+  per-student panel, kept visually separate from trilha progress. Student:
+  an amber-accented "Homework — from your teacher" section in `ProgressPage`,
+  kept visually separate from trilha content — same "don't blur the two"
+  principle on both sides.
 
-Phase 11 (Monetization) stays queued behind this — either could have gone
-first; the user chose Homework.
+Next step is real usage (the user's own Cambridge B2 student), not more
+building — see `AuroraHomework.md` §6. Phase 11 (Monetization) is the only
+other thing queued, whenever that's picked back up.
 
 ---
 
@@ -476,7 +491,7 @@ first; the user chose Homework.
 | `docs/PROJECT_LOG.md` | Full phase-by-phase history (moved out of this file) |
 | `PronunciationFeature.md` | Pronunciation spec + future-topics catalog (§9–12) |
 | `AuroraStudentApp.md` | Student-app roadmap (S1–S5, complete) and the mobile-first principle |
-| `AuroraHomework.md` | **Active** — homework/assignment roadmap (H1+), start here |
+| `AuroraHomework.md` | Homework/assignment roadmap — H1+H2 complete, §6 |
 | `CambridgePracticeMode.md` / `CambridgeResearch.md` | Cambridge spec / research |
 | `# DET Practice Mode — Feature Roadmap.md` | DET spec |
 | `AuroraBranding.md` | Aurora palette / fonts / logo assets / Drive locations |

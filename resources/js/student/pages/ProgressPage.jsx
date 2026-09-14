@@ -36,9 +36,36 @@ function RecentRow({ item }) {
     );
 }
 
+// Handed to this student directly by their teacher (Aurora Homework Phase H2)
+// — deliberately its own section, never merged into the trilha list above:
+// this wasn't built by the Aurora team for everyone on the trilha, it's
+// something their own teacher picked out just for them.
+function HomeworkRow({ item }) {
+    const meta = activityMeta(item.type);
+    return (
+        <Link
+            to={`/s/activity/${item.activity_id}`}
+            state={{ from: '/s/progress' }}
+            className="flex items-center gap-3 rounded-2xl border border-[#f8c63d]/25 bg-[#f8c63d]/[0.06] backdrop-blur-md p-3 transition-colors hover:border-[#f8c63d]/45 hover:bg-[#f8c63d]/[0.1]"
+        >
+            <span className="shrink-0 w-8 h-8 rounded-lg bg-[#f8c63d]/15 text-[15px] grid place-items-center">{meta.icon}</span>
+            <span className="flex-1 min-w-0">
+                <span className="block font-display font-semibold text-[13.5px] text-white truncate">{item.name}</span>
+                {item.note && <span className="block text-[11px] text-[#e8d9ae] mt-0.5 truncate">{item.note}</span>}
+            </span>
+            <span className={`shrink-0 text-[11px] font-display font-bold rounded-full px-2 py-0.5 ${
+                item.done ? 'bg-[#3ecf8e]/15 text-[#5be0a4]' : 'bg-[#f8c63d]/15 text-[#f8c63d]'
+            }`}>
+                {item.done ? 'Done' : 'To do'}
+            </span>
+        </Link>
+    );
+}
+
 export default function ProgressPage({ user }) {
     const [data, setData]       = useState(null);
     const [error, setError]     = useState(null);
+    const [homework, setHomework] = useState(null);
     const meta = TRILHAS[user.trilha];
 
     useEffect(() => {
@@ -46,6 +73,9 @@ export default function ProgressPage({ user }) {
         axios.get('/api/student/progress')
             .then(({ data }) => { if (alive) setData(data); })
             .catch(() => { if (alive) setError('Could not load your progress. Try again later.'); });
+        axios.get('/api/student/homework')
+            .then(({ data }) => { if (alive) setHomework(data.homework); })
+            .catch(() => {});
         return () => { alive = false; };
     }, []);
 
@@ -68,6 +98,17 @@ export default function ProgressPage({ user }) {
         <div className="px-5 pt-8">
             <h1 className="font-display font-bold text-[26px] text-white leading-tight">Your progress</h1>
             <p className="text-white/50 text-sm mt-1">{meta?.label ?? user.trilha} trilha</p>
+
+            {homework?.length > 0 && (
+                <div className="mt-6">
+                    <p className="font-display font-semibold text-[11px] tracking-[0.13em] uppercase text-[#f8c63d] mb-3">
+                        Homework — from your teacher
+                    </p>
+                    <div className="flex flex-col gap-2.5">
+                        {homework.map(item => <HomeworkRow key={item.id} item={item} />)}
+                    </div>
+                </div>
+            )}
 
             {error && (
                 <div className={`${cardBase} p-6 mt-6 text-center`}>

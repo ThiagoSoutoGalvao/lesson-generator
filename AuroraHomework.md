@@ -1,8 +1,8 @@
 # Aurora Homework / Assignments — Feature Roadmap
 
-**Status: planned, not started.** Decided 2026-09-14, right after finishing the
-Aurora Student App core roadmap (S1–S5, see `AuroraStudentApp.md`) and a
-same-day bug pass on it.
+**Status: H1 + H2 done (2026-09-14/15).** Decided 2026-09-14, right after
+finishing the Aurora Student App core roadmap (S1–S5, see
+`AuroraStudentApp.md`) and a same-day bug pass on it.
 
 ---
 
@@ -64,14 +64,20 @@ before this touches any other Aurora teacher.
   loosening that validation yet.
 - **First real test:** the user's own Cambridge B2 student, created under
   his personal login (not Aurora's).
-- **Open, not yet decided:** whether Cambridge assignments should deep-link
-  to a specific set (e.g. "Word Formation, Set 3") or just the type level
-  (e.g. "Word Formation," student picks a set themselves). Current routes
-  don't support set-level deep-linking — would need a small routing change.
-  Fine to ship type-level first (H2) and revisit.
 - **Also open:** whether Pronunciation gets the same "Practice tab"
   treatment as Cambridge/DET in H1. Same shape of problem, likely similar
-  cost — decide once H1 is built for Cambridge/DET and the pattern is clear.
+  cost — decide once real usage shows it's needed.
+- **Revised after using H1 for real (2026-09-15): `kind=practice` assignment
+  is dropped, H2 narrowed to activities only.** The teacher's actual friction
+  wasn't Cambridge/DET — Practice (H1) already gives unlimited, free access
+  to that, no scarcity problem to solve. The real blocker: a *custom
+  generated activity* made for one specific student (exactly today's real
+  case — text + vocab generated to match a lesson) had **no way to reach
+  that student at all**, one-off activities being invisible to every
+  student, always. So H2 became "assign one Library activity to one
+  student," full stop — no `kind`, no `practice_ref`. If a real need for
+  assigning a *specific Cambridge set* ever shows up, add it back then; the
+  original deep-link question above is moot until it does.
 
 ## 4. Phases
 
@@ -104,32 +110,54 @@ before this touches any other Aurora teacher.
 - **Deferred, unchanged from the plan:** Pronunciation does not get a
   Practice-tab entry yet (open question §3, still open).
 
-### Phase H2 — Assignment data model + teacher-side "Assign"
+### ✅ Phase H2 — Assign one activity to one student (2026-09-15)
 
-- New `student_assignments` table: `student_id`, `kind` (`activity` |
-  `practice`), `activity_id` (nullable, FK), `practice_ref` (nullable string,
-  e.g. `cambridge:word-formation` or `det:fill-blank`), an optional teacher
-  note, `assigned_at`, `completed_at`.
-- "Assign to student" action added wherever the content already lives — a
-  Library activity card, a Cambridge/DET tile.
-- The teacher's per-student panel (built in Phase S5, `StudentsPage.jsx`'s
-  "View progress" toggle) gains an outstanding/done homework list alongside
-  the existing progress stats.
-- **Checkpoint:** the teacher assigns one specific thing to one specific
-  student and sees it listed against their name.
+Narrowed and merged with what was originally planned as a separate H3, once
+using H1 for real showed the actual shape of the problem (§3). One shipped
+unit — a teacher assigns, a student sees and plays it, same day.
 
-### Phase H3 — "My Homework" on the student side
+- `student_assignments` table: `student_id`, `activity_id`, `note`, unique on
+  `(student_id, activity_id)`. No `kind`, no `practice_ref` — see the revised
+  decision in §3.
+- `StudentContentController::assertVisible()` gained a second, independent
+  path: visible if same trilha as the student (unchanged) **or** an
+  assignment row exists for that student + activity. This is how a
+  trilha-less one-off activity reaches a student for the first time.
+- `StudentHomeworkService::build($student)` — shared builder (same split as
+  `StudentProgressService`) behind the student's own
+  `GET /api/student/homework` and the teacher's
+  `GET /api/students/{student}/assignments`. Completion is read straight off
+  `activity_attempts`, not tracked on the assignment — nothing to keep in
+  sync.
+- Teacher: `StudentsPage.jsx`'s existing per-student panel (from S5) gained a
+  second section, **"Homework — assigned directly, outside the trilha"** —
+  visually and structurally separate from the "Trilha progress" section
+  above it, not merged. Assign form: pick from the teacher's own Library
+  (`GET /api/activities`, already existed), optional note, unassign per row.
+- Student: `ProgressPage.jsx` gained a **"Homework — from your teacher"**
+  section, amber-accented (trilha content stays coral) and rendered only
+  when something's assigned — deliberately never folded into the trilha
+  list, so a student never has to wonder whether something was built by the
+  Aurora team or handed to them personally by their own teacher.
+- `StudentActivityPlayer`'s close button now respects `location.state.from`
+  (falls back to the old trilha_lesson logic) — a homework activity has no
+  `trilha_lesson` to derive a sensible "back" target from otherwise.
+- Ownership guarded server-side: a teacher can only assign their own
+  activities (`Activity::where('user_id', auth()->id())`) to their own
+  students (`guardOwnStudent`) — never another teacher's content or student.
+- **Checkpoint met:** teacher generates a one-off activity, assigns it to a
+  student with a note, student sees it in a clearly separate Homework
+  section, plays it, teacher sees it marked Done. Verified end-to-end via
+  `scratchpad/qa_h2_homework.mjs` (assign → 404-before/visible-after →
+  play → complete → Done on both sides → unassign → 404 again). Zero real
+  console/page errors.
 
-- A homework list the student actually sees — own tab, or folded into
-  Progress; decide once H1/H2 exist and the navigation can be felt for real
-  rather than guessed at.
-- Activity-kind homework completes automatically through the existing
-  `activity_attempts` / `onComplete` pipeline (already built in S3/S4) — no
-  new completion logic needed for that half.
-- Practice-kind (Cambridge/DET) homework gets a simple student-initiated
-  "mark as done" button, per the v1 decision above.
-- **Checkpoint:** the student sees "Your teacher assigned: Word Formation,
-  Set 3," completes it, and the teacher sees it marked done on their side.
+### Phase H3 — dropped, folded into H2
+
+Originally planned as a separate phase ("My Homework" on the student side).
+Once H2 was narrowed to activities-only (§3), there was no longer a reason
+to ship the visibility fix and the student-facing list separately — a
+permission with nowhere to see it doesn't help anyone. Shipped together.
 
 ## 5. Relationship to other work
 
@@ -148,5 +176,9 @@ before this touches any other Aurora teacher.
 
 ## 6. Where to start
 
-**Phase H1 is done (2026-09-14).** Next: **Phase H2** — the
-`student_assignments` table + teacher-side "Assign" action, see §4 above.
+**H1 and H2 are both done (2026-09-14/15).** The core roadmap this doc set
+out to build — Cambridge/DET reachable, and one activity assignable to one
+student — is complete and validated end-to-end locally. Nothing is
+currently queued here; next steps are either real usage (the user's own
+Cambridge B2 student, under his personal login) surfacing what's actually
+needed next, or picking Phase 11 (Monetization, `Claude.md` §5) back up.

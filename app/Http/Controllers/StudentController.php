@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
+use App\Models\StudentAssignment;
 use App\Models\User;
+use App\Services\StudentHomeworkService;
 use App\Services\StudentProgressService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -94,13 +97,80 @@ class StudentController extends Controller
     public function progress(User $student)
     {
         $this->guardTeacher();
+        $this->guardOwnStudent($student);
 
+        return response()->json(StudentProgressService::build($student));
+    }
+
+    /**
+     * This student's assigned activities (Phase H2). Same builder the
+     * student's own GET /api/student/homework uses.
+     *
+     * GET /api/students/{student}/assignments
+     */
+    public function assignments(User $student)
+    {
+        $this->guardTeacher();
+        $this->guardOwnStudent($student);
+
+        return response()->json(['homework' => StudentHomeworkService::build($student)]);
+    }
+
+    /**
+     * Assign one of the teacher's own activities to this student, independent
+     * of trilha — the mechanism a one-off activity (no trilha at all) uses to
+     * reach a student for the first time. Re-assigning the same activity
+     * updates the note instead of erroring (unique on student_id+activity_id).
+     *
+     * POST /api/students/{student}/assignments
+     */
+    public function assign(User $student, Request $request)
+    {
+        $this->guardTeacher();
+        $this->guardOwnStudent($student);
+
+        $data = $request->validate([
+            'activity_id' => ['required', 'integer'],
+            'note'        => ['nullable', 'string', 'max:255'],
+        ]);
+
+        // Only an activity this teacher actually owns can be handed to a
+        // student — otherwise any teacher could assign any other teacher's
+        // (or the shared Aurora trilha's) content by guessing an id.
+        $activity = Activity::where('user_id', auth()->id())->findOrFail($data['activity_id']);
+
+        $assignment = StudentAssignment::updateOrCreate(
+            ['student_id' => $student->id, 'activity_id' => $activity->id],
+            ['note' => $data['note'] ?? null],
+        );
+
+        return response()->json($assignment, 201);
+    }
+
+    /**
+     * Unassign — the student loses access unless some other path (trilha)
+     * still grants it. Their past attempts on it are untouched.
+     *
+     * DELETE /api/students/{student}/assignments/{assignment}
+     */
+    public function unassign(User $student, StudentAssignment $assignment)
+    {
+        $this->guardTeacher();
+        $this->guardOwnStudent($student);
+
+        abort_unless($assignment->student_id === $student->id, 404);
+
+        $assignment->delete();
+
+        return response()->json(['ok' => true]);
+    }
+
+    private function guardOwnStudent(User $student): void
+    {
         abort_unless(
             $student->role === 'student' && $student->teacher_id === auth()->id(),
             403,
             'Not your student.',
         );
-
-        return response()->json(StudentProgressService::build($student));
     }
 }

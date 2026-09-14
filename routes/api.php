@@ -28,6 +28,7 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/activities/{activity}', [StudentContentController::class, 'activity']);
         Route::post('/attempts', [StudentContentController::class, 'storeAttempt']);
         Route::get('/progress', [StudentContentController::class, 'progress']);
+        Route::get('/homework', [StudentContentController::class, 'homework']);
     });
 
     // Everything else is teacher-only.
@@ -36,6 +37,9 @@ Route::middleware('auth:web')->group(function () {
         Route::post('/students', [StudentController::class, 'store']);
         Route::patch('/students/{student}', [StudentController::class, 'update']);
         Route::get('/students/{student}/progress', [StudentController::class, 'progress']);
+        Route::get('/students/{student}/assignments', [StudentController::class, 'assignments']);
+        Route::post('/students/{student}/assignments', [StudentController::class, 'assign']);
+        Route::delete('/students/{student}/assignments/{assignment}', [StudentController::class, 'unassign']);
 
         Route::get('/documents', [DocumentController::class, 'index']);
         Route::post('/documents', [DocumentController::class, 'store']);
