@@ -178,7 +178,17 @@ permission with nowhere to see it doesn't help anyone. Shipped together.
 
 **H1 and H2 are both done (2026-09-14/15).** The core roadmap this doc set
 out to build — Cambridge/DET reachable, and one activity assignable to one
-student — is complete and validated end-to-end locally. Nothing is
-currently queued here; next steps are either real usage (the user's own
-Cambridge B2 student, under his personal login) surfacing what's actually
-needed next, or picking Phase 11 (Monetization, `Claude.md` §5) back up.
+student — is complete, validated end-to-end locally, and confirmed live in
+production: the user checked the teacher side himself on 2026-09-16
+("the homework section shows up" — `StudentsPage.jsx`'s new "Homework —
+assigned directly, outside the trilha" section, under an expanded student's
+"View progress"). Student-side confirmation (the amber "Homework — from your
+teacher" section on `ProgressPage.jsx`, only visible once something's
+actually assigned) hasn't been separately checked yet — worth a quick look
+next time, though it shares the same backend and was covered by
+`qa_h2_homework.mjs` end-to-end.
+
+Nothing is currently queued here; next steps are either real usage (the
+user's own Cambridge B2 student, under his personal login) surfacing what's
+actually needed next, or picking Phase 11 (Monetization, `Claude.md` §5)
+back up.

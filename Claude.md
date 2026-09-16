@@ -327,9 +327,10 @@ student, decoupled from trilha entirely — both phases are done:
   kept visually separate from trilha content — same "don't blur the two"
   principle on both sides.
 
-Next step is real usage (the user's own Cambridge B2 student), not more
-building — see `AuroraHomework.md` §6. Phase 11 (Monetization) is the only
-other thing queued, whenever that's picked back up.
+Confirmed live in production 2026-09-16 — user checked the teacher-side
+Homework section himself. Next step is real usage (the user's own Cambridge
+B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
+(Monetization) is the only other thing queued, whenever that's picked back up.
 
 ---
 
