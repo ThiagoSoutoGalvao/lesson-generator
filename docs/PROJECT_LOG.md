@@ -883,3 +883,80 @@ teachers): https://claude.ai/code/artifact/cd0f5d1f-b11b-4416-a5d4-4db03a3a6293
 
 **Next: S3** — `activity_attempts` table, `onComplete` on the auto-scored
 templates, done-badges + last score on the lesson view, `n / N` on My Trilha.
+
+
+## 22. Generate — level selector + exam-style pills ✅ COMPLETED (2026-09-20)
+
+**Why.** A Lights teacher said the app "worked better for A2 up" and had no real-beginner
+templates; separately, the user wanted templates to be reusable for Cambridge / DET /
+TOEFL students instead of feeding the practice tabs more static content. Root cause of the
+first: `/generate` had **no level control**, and 10 of the 15 generators hard-coded
+"B1-B2" (plus pinned sentence / passage lengths).
+
+**Process.** A subagent mapped the 15 templates onto the three exams (source docs:
+`TOEFLResearch.md`, `CambridgePracticeMode.md`, the DET roadmap — no new web research), the
+plan was mocked up as a published Artifact ("Generate Picker Mockup"), the user answered
+six design questions, then it was built. Commits `de58d2c` (level) and `f3fb394` (pills).
+
+**Level selector** — `App\Services\LanguageLevel` + `resources/js/lib/levels.js`.
+- `level` ∈ A1 / A2 / B1 / B2 on `/api/generate` (nullable → B1). All 15 `generateX()` take
+  an optional `?string $level`, all 15 `buildXPrompt()` take a `LanguageLevel`.
+- Per level: wording (`beginner (A1)`, `elementary (A2)`, `B1-B2`, `B2-C1`), Unjumble
+  sentence length (3-6 / 5-8 / 6-10 / 8-14), MC-Reading passage length, a scale factor
+  (0.65 / 0.85 / 1 / 1.25) for the other pinned passage lengths (`span()`), and one
+  `- LEVEL — …` rule injected before each prompt's closing "Return ONLY the raw JSON" line.
+- **B1 is byte-identical to the pre-change prompts** — proved by loading the old
+  `ClaudeService` from git next to the new one and comparing every builder via reflection
+  (B1, null and an invalid code all match). Keep that property: don't put a level back
+  into a prompt string by hand.
+- The default *Instructions* text on 7 templates no longer states lengths / "B1–B2" (the
+  level owns them — an explicit length in the task text would out-vote the level rule).
+  Only visible change at B1: True/False's default passage goes from 90–130 to the
+  builder's 80–150 words.
+- `TRILHA_LEVEL = { Lights: 'A1' }` (`trilhas.js`): adding to a Lights lesson pre-selects A1
+  and says so. Glow / Radiant deliberately unset — their levels were never given.
+- Selector labels read A1 / A2 / B1 / **B2+** (the mockup said "A1+"…; that reads as "and up"
+  on a selector, so only the works-from *tags* keep the "+").
+
+**Exam styles** — `resources/js/lib/examStyles.js`.
+- Per template: `from` (lowest suitable level) and `exams[]`, each `direct` (same task shape
+  → pill + counts for the filter) or `similar` (related skill → detail line only).
+  Today: Cambridge 5 (Word Formation, Open Cloze, MC Cloze, Sentence Transformation, MC
+  Reading), TOEFL 3 (Unjumble, MC Reading, Read and Complete), DET 1 (Read and Complete).
+  **The template→task pairing is a judgement call**, not something an exam body states; two
+  pairings rest on outside knowledge worth a spot-check (DET Read and Complete being
+  letter-gapped; True/False/Not Given being IELTS-style → no pill).
+- Wording is "-style" on purpose: ETS's trademark rules allow the name only adjectivally;
+  "B2 First" / "C1 Advanced" avoided (Cambridge trademarks) in favour of plain CEFR. One
+  disclaimer line under the picker. No logos, no exam colours.
+- Optional exam chips (with counts) skip the goal step. Edge cases handled: a selected
+  format survives a switch to an exam it also mirrors, is dropped otherwise, and stays
+  visible under one of its goals when the filter is cleared.
+
+**Verified** (`scratchpad/qa_level.mjs`, `qa_exam.mjs`; temp teacher created + deleted;
+`/api/generate` mocked): 18 + 29 checks pass — payload carries `level`, Lights → A1, bad
+level → 422, chips/pills/tags/detail lines, filter edge cases, 390px no overflow, zero
+console errors from the app. Plus a faked-Anthropic run showing the level reaches the
+outgoing request, and the reflection regression above.
+
+**Decisions from the user:** pills as mocked · works-from values are guesses, fine to edit ·
+level sits next to the source · ship the exam filter now · fifth **Writing** goal (only when
+the first writing format exists) · **no** Portuguese translations · **Interactive Reading
+not a template** · **listening out for now** (a small Listen-and-Repeat session may come
+later, in the Pronunciation style) · Vocabulary Practice gets no DET pill (the DET roadmap
+scoped 7 types; it was added on top, and Quiz already covers definition MC).
+
+**Next** (order in `CLAUDE.md` §6): restore Image Vocab Match + Word Categorisation
+generators → Match Pairs / Signs & Notices / Picture Prompts → exam-style additions.
+**Speak About the Photo** should ship with a handful of natural, level-tied sentence
+starters for the student (they over-use "I can see…"); it and the beginner Picture Prompts
+share machinery (Unsplash is already integrated), so decide one card or two when building.
+
+**Tooling gotchas hit while testing (Windows):** `execFileSync('php')` from Node fails
+(ENOENT) — php is a `.bat` shim at `~/.config/herd/bin/php.bat` (use it with `shell: true`);
+PowerShell `Set-Content -Encoding utf8` adds a BOM (breaks a PHP `namespace` line) and
+`Get-Content -Raw` reads UTF-8 as ANSI (turns em dashes into `â€”`, which fakes a diff) —
+use `[IO.File]::ReadAllText/WriteAllText` with `UTF8Encoding($false)`; an inline `node -e`
+with regexes + `$` inside bash is a quoting trap — write a script file; read computed
+styles only after `transition-all` settles (a mid-fade screenshot looked like a missing
+selected-card ring).
