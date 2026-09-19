@@ -85,7 +85,7 @@ EOT;
         return $response->json('content.0.text');
     }
 
-    public function generateQuiz(string $source, string $prompt): array
+    public function generateQuiz(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -99,7 +99,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildQuizPrompt($source, $prompt),
+                    'content' => $this->buildQuizPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -116,7 +116,7 @@ EOT;
         return $data;
     }
 
-    public function generateFlashcards(string $source, string $prompt): array
+    public function generateFlashcards(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -130,7 +130,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildFlashcardsPrompt($source, $prompt),
+                    'content' => $this->buildFlashcardsPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -147,7 +147,7 @@ EOT;
         return $data;
     }
 
-    private function buildFlashcardsPrompt(string $source, string $prompt): string
+    private function buildFlashcardsPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -171,15 +171,15 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Definitions must be simple and clear for B1-B2 English learners — avoid complex words in the definition itself
+- Definitions must be simple and clear for {$lv->cefr} English learners — avoid complex words in the definition itself
 - Both example sentences should feel natural and contextual, not textbook-stiff; each should show the word used differently
 - Pronunciation must be standard IPA notation wrapped in forward slashes (broad/phonemic transcription, not narrow), using RP or General American consistently
-- Each card's keyword must be a descriptive scene phrase (not just the word itself) and visually distinct from the others
+- Each card's keyword must be a descriptive scene phrase (not just the word itself) and visually distinct from the others{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateUnjumble(string $source, string $prompt): array
+    public function generateUnjumble(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -193,7 +193,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildUnjumblePrompt($source, $prompt),
+                    'content' => $this->buildUnjumblePrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -210,7 +210,7 @@ EOT;
         return $data;
     }
 
-    private function buildUnjumblePrompt(string $source, string $prompt): string
+    private function buildUnjumblePrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -235,13 +235,13 @@ Rules:
 - "words" is the sentence split into individual words IN THE CORRECT ORDER — the app will shuffle them
 - Each word in "words" must include any attached punctuation (e.g. "morning." not "morning")
 - Joining all "words" with a single space must reproduce "sentence" exactly
-- Sentences should be B1-B2 level English and 6-10 words long
-- Each sentence's keyword must be a descriptive scene phrase and visually distinct from the others
+- Sentences should be {$lv->cefr} level English and {$lv->unjumbleWords} words long
+- Each sentence's keyword must be a descriptive scene phrase and visually distinct from the others{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateTrueFalse(string $source, string $prompt): array
+    public function generateTrueFalse(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -255,7 +255,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildTrueFalsePrompt($source, $prompt),
+                    'content' => $this->buildTrueFalsePrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -272,7 +272,7 @@ EOT;
         return $data;
     }
 
-    private function buildTrueFalsePrompt(string $source, string $prompt): string
+    private function buildTrueFalsePrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -284,7 +284,7 @@ Return a JSON object with EXACTLY this structure:
   "type": "true_false",
   "topic": "<short topic description>",
   "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the passage topic, e.g. 'students studying library books' or 'tourists exploring city map'>",
-  "passage": "<the reading passage students will refer to — 80 to 150 words, copied or lightly adapted from the text>",
+  "passage": "<the reading passage students will refer to — {$lv->span(80, 150, ' to ')} words, copied or lightly adapted from the text>",
   "statements": [
     {
       "text": "<a statement about the passage>",
@@ -312,12 +312,12 @@ Rules:
 - "Not Given" means the passage neither confirms nor contradicts it — the information is simply absent
 - Statements must be unambiguous — no borderline True/False cases
 - Not Given statements must be genuinely absent from the passage, not just implied
-- Statements should be full sentences, not questions
+- Statements should be full sentences, not questions{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateWordFormation(string $source, string $prompt): array
+    public function generateWordFormation(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -331,7 +331,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildWordFormationPrompt($source, $prompt),
+                    'content' => $this->buildWordFormationPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -348,7 +348,7 @@ EOT;
         return $data;
     }
 
-    private function buildWordFormationPrompt(string $source, string $prompt): string
+    private function buildWordFormationPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -378,12 +378,12 @@ Rules:
 - The sentence must make the required word class clear from context — students should be able to work out the form from the grammar of the sentence
 - Cover a variety of word classes across the items: nouns, verbs, adjectives, and adverbs
 - Each root word must be different — do not reuse the same root
-- The gap marked as ___ must have exactly one correct answer
+- The gap marked as ___ must have exactly one correct answer{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateOddOneOut(string $source, string $prompt): array
+    public function generateOddOneOut(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -397,7 +397,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildOddOneOutPrompt($source, $prompt),
+                    'content' => $this->buildOddOneOutPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -414,7 +414,7 @@ EOT;
         return $data;
     }
 
-    private function buildOddOneOutPrompt(string $source, string $prompt): string
+    private function buildOddOneOutPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -440,13 +440,13 @@ Rules:
 - Each group must have exactly 4 words: 3 that share a clear connection and 1 odd one out
 - The odd word must be clearly and unambiguously different — no borderline cases
 - The reason must explain both why the odd word doesn't fit AND what connects the other three
-- Words should be B1-B2 level English vocabulary from the text
-- Vary the position of the odd word across groups — do not always put it last
+- Words should be {$lv->cefr} level English vocabulary from the text
+- Vary the position of the odd word across groups — do not always put it last{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateCloze(string $source, string $prompt): array
+    public function generateCloze(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -460,7 +460,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildClozePrompt($source, $prompt),
+                    'content' => $this->buildClozePrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -477,7 +477,7 @@ EOT;
         return $data;
     }
 
-    private function buildClozePrompt(string $source, string $prompt): string
+    private function buildClozePrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -504,14 +504,14 @@ Rules:
 - The "parts" array alternates between text segments and blanks — every blank must be surrounded by text parts
 - The "word_bank" array must contain exactly the same words as all the "blank" entries, in a different (shuffled) order
 - Generate 6 to 8 blanks spread naturally across the passage
-- The full passage (all text and blank values joined) should be 60–120 words
+- The full passage (all text and blank values joined) should be {$lv->span(60, 120, '–')} words
 - Remove words that test key vocabulary or grammar — not trivial words like articles or prepositions
-- Each blank should be clearly answerable from the surrounding context
+- Each blank should be clearly answerable from the surrounding context{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateDialogGapFill(string $source, string $prompt): array
+    public function generateDialogGapFill(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -525,7 +525,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildDialogGapFillPrompt($source, $prompt),
+                    'content' => $this->buildDialogGapFillPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -542,7 +542,7 @@ EOT;
         return $data;
     }
 
-    private function buildDialogGapFillPrompt(string $source, string $prompt): string
+    private function buildDialogGapFillPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -581,12 +581,12 @@ Rules:
 - The "line" field on a blank item always contains the correct answer text
 - Non-blank lines have no "options" field
 - Use only two speakers throughout the dialog
-- Dialogue must be B1-B2 level English and feel natural, not textbook-stiff
+- Dialogue must be {$lv->cefr} level English and feel natural, not textbook-stiff{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateDiscussionQuestions(string $source, string $prompt): array
+    public function generateDiscussionQuestions(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -600,7 +600,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildDiscussionQuestionsPrompt($source, $prompt),
+                    'content' => $this->buildDiscussionQuestionsPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -617,7 +617,7 @@ EOT;
         return $data;
     }
 
-    private function buildDiscussionQuestionsPrompt(string $source, string $prompt): string
+    private function buildDiscussionQuestionsPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -642,13 +642,13 @@ Rules:
 - Questions must be genuinely open-ended — no yes/no questions
 - Each question should invite students to share opinions, experiences, or ideas related to the text
 - Each question must have exactly 2 follow-up prompts — short phrases to keep the conversation going (e.g. "Why do you think so?", "Can you give an example?", "Have you ever experienced this?")
-- Questions should be B1-B2 level and feel natural in conversation, not academic
-- Vary the type: some personal ("Have you ever…?"), some opinion ("Do you think…?"), some hypothetical ("What would you do if…?")
+- Questions should be {$lv->cefr} level and feel natural in conversation, not academic
+- Vary the type: some personal ("Have you ever…?"), some opinion ("Do you think…?"), some hypothetical ("What would you do if…?"){$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateSentenceTransformation(string $source, string $prompt): array
+    public function generateSentenceTransformation(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -662,7 +662,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildSentenceTransformationPrompt($source, $prompt),
+                    'content' => $this->buildSentenceTransformationPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -679,7 +679,7 @@ EOT;
         return $data;
     }
 
-    private function buildSentenceTransformationPrompt(string $source, string $prompt): string
+    private function buildSentenceTransformationPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -707,13 +707,13 @@ Rules:
 - Each item tests a distinct grammar structure from the text: tense changes, passive voice, reported speech, modal verbs, conditionals, comparatives, or phrasal verbs
 - The key word must appear in the answer and cannot be modified (no inflection changes)
 - The "stem" gives students the start of the second sentence to anchor their answer — it should end naturally at the gap point, followed by "..."
-- Both sentences must be natural English at B2 level
-- Each item must test a different grammar point — do not repeat structures
+- Both sentences must be natural English at {$lv->top} level
+- Each item must test a different grammar point — do not repeat structures{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateErrorCorrection(string $source, string $prompt): array
+    public function generateErrorCorrection(string $source, string $prompt, ?string $level = null): array
     {
         $source = $this->sanitizeUtf8($source);
 
@@ -727,7 +727,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildErrorCorrectionPrompt($source, $prompt),
+                    'content' => $this->buildErrorCorrectionPrompt($source, $prompt, LanguageLevel::from($level)),
                 ],
             ],
         ]);
@@ -771,7 +771,7 @@ EOT;
         return $data;
     }
 
-    private function buildErrorCorrectionPrompt(string $source, string $prompt): string
+    private function buildErrorCorrectionPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -809,21 +809,21 @@ Two modes — choose based on the task:
 Rules:
 - Generate the number of items requested in the task — typically 6–12 (in passage mode, 5–8)
 - Each sentence must contain EXACTLY one error — no more, no less
-- Errors must be realistic mistakes that B1-B2 learners commonly make: wrong tense, subject-verb agreement, wrong preposition, incorrect article, wrong word form, or vocabulary confusion
+- Errors must be realistic mistakes that {$lv->cefr} learners commonly make: wrong tense, subject-verb agreement, wrong preposition, incorrect article, wrong word form, or vocabulary confusion
 - The "error" field must be copied character-for-character from the sentence — same spelling, spacing, and capitalization — since it is matched verbatim against the sentence text (and, in passage mode, against the passage text)
 - The "correction" replaces only the erroneous part — the rest of the sentence stays the same
 - Each item must test a different type of error — do not repeat error categories
 - Sentences should feel natural and relate to the topic
 - In passage mode, keep the passage coherent and readable — a real short text, not a list of unrelated sentences
 - Before writing each item, first think of the fully correct sentence, then change exactly one word or phrase to create the error — never submit a sentence that is already grammatically correct with no real mistake in it
-- After writing each item, verify: (1) the "error" text appears in the "sentence" text exactly as written (and in "passage" in passage mode), (2) "error" and "correction" are different, (3) replacing "error" with "correction" produces a natural, fully correct sentence — discard and rewrite any item that fails this check
+- After writing each item, verify: (1) the "error" text appears in the "sentence" text exactly as written (and in "passage" in passage mode), (2) "error" and "correction" are different, (3) replacing "error" with "correction" produces a natural, fully correct sentence — discard and rewrite any item that fails this check{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateOpenCloze(string $source, string $prompt): array
+    public function generateOpenCloze(string $source, string $prompt, ?string $level = null): array
     {
-        $data = $this->requestJson($this->buildOpenClozePrompt($this->sanitizeUtf8($source), $prompt));
+        $data = $this->requestJson($this->buildOpenClozePrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
 
         $data['parts'] = $this->cleanClozeParts($data['parts'] ?? [], false);
         if (! $this->hasBlank($data['parts'])) {
@@ -833,7 +833,7 @@ EOT;
         return $data;
     }
 
-    private function buildOpenClozePrompt(string $source, string $prompt): string
+    private function buildOpenClozePrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -857,18 +857,18 @@ Return a JSON object with EXACTLY this structure:
 
 Rules:
 - The "parts" array alternates text and gaps: every { "blank": ... } must sit between two { "text": ... } parts
-- Joining all the text values and blank values in order must read as one natural, connected passage of 80-140 words
+- Joining all the text values and blank values in order must read as one natural, connected passage of {$lv->span(80, 140)} words
 - Generate 6 to 10 gaps
 - Each gap must be ONE common grammatical or functional word — articles, prepositions, auxiliary or modal verbs, pronouns, relative pronouns, conjunctions, quantifiers, or words in fixed phrases. NOT topic vocabulary (that would need a word bank)
-- Each gap must have exactly one clearly correct answer a B1-B2 student can find from the surrounding context — never a gap where several different words work equally well
-- Never put two gaps next to each other with no words between them
+- Each gap must have exactly one clearly correct answer {$lv->student} can find from the surrounding context — never a gap where several different words work equally well
+- Never put two gaps next to each other with no words between them{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateMcCloze(string $source, string $prompt): array
+    public function generateMcCloze(string $source, string $prompt, ?string $level = null): array
     {
-        $data = $this->requestJson($this->buildMcClozePrompt($this->sanitizeUtf8($source), $prompt));
+        $data = $this->requestJson($this->buildMcClozePrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
 
         $data['parts'] = $this->cleanClozeParts($data['parts'] ?? [], true);
         if (! $this->hasBlank($data['parts'])) {
@@ -878,7 +878,7 @@ EOT;
         return $data;
     }
 
-    private function buildMcClozePrompt(string $source, string $prompt): string
+    private function buildMcClozePrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -902,12 +902,12 @@ Return a JSON object with EXACTLY this structure:
 
 Rules:
 - The "parts" array alternates text and gaps: every gap object must sit between two { "text": ... } parts
-- Joining all the text values and each gap's "blank" value in order must read as one natural, connected passage of 90-150 words
+- Joining all the text values and each gap's "blank" value in order must read as one natural, connected passage of {$lv->span(90, 150)} words
 - Generate 6 to 10 gaps
 - Each gap has EXACTLY 4 options; exactly one is correct and is repeated verbatim as "blank"
 - The three wrong options must be the same part of speech and look plausible on a quick read — the gap should test collocation, phrasal verbs, easily-confused words, linking words, or fixed expressions, NOT basic meaning
 - Options are single words or very short phrases (2 words maximum)
-- Never put two gaps next to each other with no words between them
+- Never put two gaps next to each other with no words between them{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
@@ -954,9 +954,9 @@ EOT;
         return $this->hasBlankKey($parts, 'blank');
     }
 
-    public function generateMcReading(string $source, string $prompt): array
+    public function generateMcReading(string $source, string $prompt, ?string $level = null): array
     {
-        $data = $this->requestJson($this->buildMcReadingPrompt($this->sanitizeUtf8($source), $prompt));
+        $data = $this->requestJson($this->buildMcReadingPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
 
         $data['questions'] = array_values(array_filter($data['questions'] ?? [], function ($q) {
             $text    = $q['text']    ?? '';
@@ -976,7 +976,7 @@ EOT;
         return $data;
     }
 
-    private function buildMcReadingPrompt(string $source, string $prompt): string
+    private function buildMcReadingPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -988,7 +988,7 @@ Return a JSON object with EXACTLY this structure:
   "type": "mc_reading",
   "topic": "<short topic description>",
   "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the passage topic>",
-  "passage": "<the reading passage — 220 to 380 words, written for B1-B2 learners>",
+  "passage": "<the reading passage — {$lv->readingWords} words, written for {$lv->cefr} learners>",
   "questions": [
     {
       "text": "<a comprehension question about the passage>",
@@ -1004,14 +1004,14 @@ Rules:
 - Each question has EXACTLY 4 options; exactly one is correct and is repeated verbatim as "answer"
 - Mix question types: main idea, specific detail, vocabulary in context, inference, and the writer's purpose or opinion
 - Wrong options must be plausible and drawn from the passage's topic — not obviously silly
-- The passage must actually contain (or clearly imply, for inference questions) the information each question tests
+- The passage must actually contain (or clearly imply, for inference questions) the information each question tests{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
 
-    public function generateReadComplete(string $source, string $prompt): array
+    public function generateReadComplete(string $source, string $prompt, ?string $level = null): array
     {
-        $data = $this->requestJson($this->buildReadCompletePrompt($this->sanitizeUtf8($source), $prompt));
+        $data = $this->requestJson($this->buildReadCompletePrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
 
         $clean = [];
         foreach ($data['parts'] ?? [] as $part) {
@@ -1060,7 +1060,7 @@ EOT;
         return $data;
     }
 
-    private function buildReadCompletePrompt(string $source, string $prompt): string
+    private function buildReadCompletePrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -1084,11 +1084,11 @@ Return a JSON object with EXACTLY this structure:
 
 Rules:
 - Concatenating, in order, every "text" value and each gap's full "answer" with NOTHING added between them must reproduce the passage exactly — so each "text" part MUST include the spaces and punctuation that surround the gap (note the leading/trailing spaces in the example above)
-- The passage must be one natural, connected passage of 60-120 words
+- The passage must be one natural, connected passage of {$lv->span(60, 120)} words
 - Gap 10 to 14 words across the passage
 - "given" must be the exact first letters of "answer" (same spelling), and must be strictly shorter than "answer" — about half the letters, rounded up (e.g. "disc" for "discovery", "im" for "important", "wea" for "weather")
-- Gap content words a B1-B2 student can recover from context — nouns, verbs, adjectives, adverbs — not tiny function words
-- Never gap two words in a row with no plain text between them
+- Gap content words {$lv->student} can recover from context — nouns, verbs, adjectives, adverbs — not tiny function words
+- Never gap two words in a row with no plain text between them{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
@@ -1394,7 +1394,7 @@ EOT;
         return $clean !== false ? $clean : '';
     }
 
-    private function buildQuizPrompt(string $source, string $prompt): string
+    private function buildQuizPrompt(string $source, string $prompt, LanguageLevel $lv): string
     {
         return <<<EOT
 {$source}
@@ -1426,7 +1426,7 @@ Rules:
 - Randomise the position of the correct answer — do not always place it first
 - Each question's keyword must be a concrete visual noun or phrase that represents the specific question content, different from the other questions' keywords
 - The "instruction" field must contain the task instruction once — do NOT include it inside the "question" field of any question
-- When a question has multiple blanks and an answer fills more than one blank, separate the parts with " / " (e.g. "has / left", "will / be going")
+- When a question has multiple blanks and an answer fills more than one blank, separate the parts with " / " (e.g. "has / left", "will / be going"){$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

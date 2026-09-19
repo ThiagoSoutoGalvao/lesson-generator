@@ -18,6 +18,7 @@ class ActivityController extends Controller
             'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,mc_reading,odd_one_out,cloze,open_cloze,mc_cloze,read_complete,discussion_questions,sentence_transformation,error_correction'],
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
+            'level'       => ['nullable', 'in:A1,A2,B1,B2'],
         ]);
 
         $provided = collect(['document_id', 'topic', 'source_text'])
@@ -62,24 +63,25 @@ class ActivityController extends Controller
         }
 
         $prompt = $request->prompt;
+        $level  = $request->input('level'); // null = B1, the level the prompts were written for
 
         try {
             $activity = match ($request->type) {
-                'quiz'                    => $claude->generateQuiz($source, $prompt),
-                'flashcards'              => $claude->generateFlashcards($source, $prompt),
-                'unjumble'                => $claude->generateUnjumble($source, $prompt),
-                'dialog_gap_fill'         => $claude->generateDialogGapFill($source, $prompt),
-                'word_formation'          => $claude->generateWordFormation($source, $prompt),
-                'true_false'              => $claude->generateTrueFalse($source, $prompt),
-                'mc_reading'              => $claude->generateMcReading($source, $prompt),
-                'odd_one_out'             => $claude->generateOddOneOut($source, $prompt),
-                'cloze'                   => $claude->generateCloze($source, $prompt),
-                'open_cloze'              => $claude->generateOpenCloze($source, $prompt),
-                'mc_cloze'                => $claude->generateMcCloze($source, $prompt),
-                'read_complete'           => $claude->generateReadComplete($source, $prompt),
-                'discussion_questions'    => $claude->generateDiscussionQuestions($source, $prompt),
-                'sentence_transformation' => $claude->generateSentenceTransformation($source, $prompt),
-                'error_correction'        => $claude->generateErrorCorrection($source, $prompt),
+                'quiz'                    => $claude->generateQuiz($source, $prompt, $level),
+                'flashcards'              => $claude->generateFlashcards($source, $prompt, $level),
+                'unjumble'                => $claude->generateUnjumble($source, $prompt, $level),
+                'dialog_gap_fill'         => $claude->generateDialogGapFill($source, $prompt, $level),
+                'word_formation'          => $claude->generateWordFormation($source, $prompt, $level),
+                'true_false'              => $claude->generateTrueFalse($source, $prompt, $level),
+                'mc_reading'              => $claude->generateMcReading($source, $prompt, $level),
+                'odd_one_out'             => $claude->generateOddOneOut($source, $prompt, $level),
+                'cloze'                   => $claude->generateCloze($source, $prompt, $level),
+                'open_cloze'              => $claude->generateOpenCloze($source, $prompt, $level),
+                'mc_cloze'                => $claude->generateMcCloze($source, $prompt, $level),
+                'read_complete'           => $claude->generateReadComplete($source, $prompt, $level),
+                'discussion_questions'    => $claude->generateDiscussionQuestions($source, $prompt, $level),
+                'sentence_transformation' => $claude->generateSentenceTransformation($source, $prompt, $level),
+                'error_correction'        => $claude->generateErrorCorrection($source, $prompt, $level),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

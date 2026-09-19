@@ -20,7 +20,8 @@ import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
-import { TRILHAS } from '@/lib/trilhas';
+import { TRILHAS, TRILHA_LEVEL } from '@/lib/trilhas';
+import { LEVELS, DEFAULT_LEVEL } from '@/lib/levels';
 import { getLessonSession, clearLessonSession } from '@/lib/lessonSession';
 
 // What a teacher is trying to get students to practise. This is the first choice
@@ -64,12 +65,12 @@ const TEMPLATES = [
     {
         id: 'open_cloze', label: 'Open Cloze (no word bank)', goals: ['grammar'],
         blurb: 'A passage with single-word gaps and no word bank. Grammar and function words — prepositions, articles, auxiliaries.',
-        defaultPrompt: 'Create an Open Cloze passage of 80–140 words with 8 single-word gaps, no word bank. Each gap should be a grammar or function word the student works out from context.',
+        defaultPrompt: 'Create an Open Cloze passage with 8 single-word gaps, no word bank. Each gap should be a grammar or function word the student works out from context.',
     },
     {
         id: 'mc_cloze', label: 'Multiple Choice Cloze', goals: ['grammar', 'vocabulary'],
         blurb: 'A passage with 4 options per gap. Collocation, phrasal verbs, easily-confused words.',
-        defaultPrompt: 'Create a Multiple Choice Cloze passage of 90–150 words with 8 gaps, each with 4 options. Test collocation, phrasal verbs, linking words and easily-confused words.',
+        defaultPrompt: 'Create a Multiple Choice Cloze passage with 8 gaps, each with 4 options. Test collocation, phrasal verbs, linking words and easily-confused words.',
     },
     {
         id: 'sentence_transformation', label: 'Sentence Transformation', goals: ['grammar'],
@@ -79,7 +80,7 @@ const TEMPLATES = [
     {
         id: 'error_correction', label: 'Error Correction — sentences', goals: ['grammar'],
         blurb: 'Separate sentences, each with one mistake to find and correct.',
-        defaultPrompt: 'Create 8 error correction sentences, each with exactly one realistic B1–B2 mistake. Cover a range: tense, agreement, prepositions, articles, word form, vocabulary.',
+        defaultPrompt: 'Create 8 error correction sentences, each with exactly one realistic mistake. Cover a range: tense, agreement, prepositions, articles, word form, vocabulary.',
     },
     {
         id: 'error_correction_passage', type: 'error_correction', label: 'Error Correction — passage', goals: ['grammar', 'reading'],
@@ -89,7 +90,7 @@ const TEMPLATES = [
     {
         id: 'unjumble', label: 'Unjumble', goals: ['grammar'],
         blurb: 'Scrambled words to reorder into a correct sentence. Good for word order.',
-        defaultPrompt: 'Make 6 unjumble sentences using the target structures. Each sentence should be 6–10 words long.',
+        defaultPrompt: 'Make 6 unjumble sentences using the target structures.',
     },
     {
         id: 'dialog_gap_fill', label: 'Dialogue Gap-Fill', goals: ['grammar', 'speaking'],
@@ -99,17 +100,17 @@ const TEMPLATES = [
     {
         id: 'true_false', label: 'True / False / Not Given', goals: ['reading'],
         blurb: 'A reading passage and 6 statements to judge. Trains close reading and inference.',
-        defaultPrompt: 'Write a reading passage of 90–130 words and 6 statements — 2 True, 2 False, 2 Not Given. Vary the order.',
+        defaultPrompt: 'Write a reading passage and 6 statements — 2 True, 2 False, 2 Not Given. Vary the order.',
     },
     {
         id: 'mc_reading', label: 'Reading Comprehension (MC)', goals: ['reading'],
         blurb: 'A longer passage stays on screen while students answer 6 multiple-choice questions. Main idea, detail, inference.',
-        defaultPrompt: 'Write a 220–380 word passage and 6 multiple-choice comprehension questions (4 options each): mix main idea, detail, vocabulary in context, inference and purpose.',
+        defaultPrompt: 'Write a passage and 6 multiple-choice comprehension questions (4 options each): mix main idea, detail, vocabulary in context, inference and purpose.',
     },
     {
         id: 'read_complete', label: 'Read and Complete', goals: ['reading', 'vocabulary'],
         blurb: 'A short passage where each gapped word shows its first few letters. Recognition & spelling.',
-        defaultPrompt: 'Write a connected passage of 60–120 words and gap 10–14 content words, showing roughly the first half of each word.',
+        defaultPrompt: 'Write a connected passage and gap 10–14 content words, showing roughly the first half of each word.',
     },
     {
         id: 'discussion_questions', label: 'Discussion Questions', goals: ['speaking'],
@@ -136,6 +137,8 @@ export default function GeneratePage() {
     const [activity, setActivity]     = useState(location.state?.activity ?? null);
     const [errorMsg, setErrorMsg]     = useState('');
     const [lessonSession, setLessonSessionState] = useState(() => getLessonSession());
+    // Starts from the trilha's level while adding to a lesson (Lights → A1), else B1.
+    const [level, setLevel] = useState(() => TRILHA_LEVEL[getLessonSession()?.trilha] ?? DEFAULT_LEVEL);
 
     useEffect(() => {
         axios.get('/api/documents')
@@ -157,13 +160,17 @@ export default function GeneratePage() {
             setActivity(null);
             setStatus('idle');
         }
-        setLessonSessionState(getLessonSession());
+        const session = getLessonSession();
+        setLessonSessionState(session);
+        setLevel(TRILHA_LEVEL[session?.trilha] ?? DEFAULT_LEVEL);
     }, [location.key]);
 
     const template     = TEMPLATES.find(t => t.id === templateId) ?? null;
     const goalTemplates = goal ? TEMPLATES.filter(t => t.goals.includes(goal)) : [];
     const selectedDoc  = documents.find(d => d.id === Number(documentId));
     const pageCount    = selectedDoc?.page_count ?? null;
+    const currentLevel = LEVELS.find(l => l.id === level) ?? LEVELS[2];
+    const trilhaLevel  = lessonSession ? TRILHA_LEVEL[lessonSession.trilha] : null;
 
     function pickGoal(g) {
         setGoal(g);
@@ -187,7 +194,7 @@ export default function GeneratePage() {
         setActivity(null);
         setErrorMsg('');
 
-        const body = { type: template.type ?? template.id, prompt };
+        const body = { type: template.type ?? template.id, prompt, level };
         if (sourceMode === 'topic') {
             body.topic = topic.trim();
         } else {
@@ -367,6 +374,40 @@ export default function GeneratePage() {
                                             </div>
                                         )}
                                     </div>
+                                )}
+                            </div>
+
+                            <div className="flex flex-col gap-2">
+                                <span id="level-label" className="text-sm font-medium text-white/80">
+                                    Level <span className="text-white/40 font-normal ml-1">— how simple to keep the language</span>
+                                </span>
+                                <div className="grid grid-cols-4 gap-1.5" role="group" aria-labelledby="level-label">
+                                    {LEVELS.map(l => (
+                                        <button
+                                            key={l.id}
+                                            type="button"
+                                            onClick={() => setLevel(l.id)}
+                                            aria-pressed={level === l.id}
+                                            className={`flex flex-col items-center gap-0.5 py-2 rounded-xl border transition-all cursor-pointer ${
+                                                level === l.id
+                                                    ? 'bg-[#e0521f] border-[#e0521f] text-white'
+                                                    : 'bg-white/5 border-white/12 text-white/70 hover:bg-white/10 hover:text-white'
+                                            }`}
+                                        >
+                                            <span className="text-sm font-semibold">{l.label}</span>
+                                            <span className={`text-[10px] ${level === l.id ? 'text-white/90' : 'text-white/45'}`}>{l.name}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                                <p className="text-xs text-white/65 bg-black/25 border border-white/10 rounded-lg px-3 py-2">
+                                    <span className="font-semibold text-white">Claude is told, at {currentLevel.label}:</span> {currentLevel.say}
+                                </p>
+                                {trilhaLevel && (
+                                    <p className="text-xs text-[#fdb08a]">
+                                        {level === trilhaLevel
+                                            ? `Set from ${TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha}. Change it if this lesson needs more.`
+                                            : `${TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha} suggests ${trilhaLevel}. You changed it for this activity.`}
+                                    </p>
                                 )}
                             </div>
 
