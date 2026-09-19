@@ -21,7 +21,8 @@ import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
 import { TRILHAS, TRILHA_LEVEL } from '@/lib/trilhas';
-import { LEVELS, DEFAULT_LEVEL } from '@/lib/levels';
+import { LEVELS, DEFAULT_LEVEL, LEVEL_RANK } from '@/lib/levels';
+import { EXAMS, EXAM_ORDER, TEMPLATE_META, isDirect } from '@/lib/examStyles';
 import { getLessonSession, clearLessonSession } from '@/lib/lessonSession';
 
 // What a teacher is trying to get students to practise. This is the first choice
@@ -121,6 +122,50 @@ const TEMPLATES = [
 
 const inputCls = 'w-full bg-white/8 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840] focus:border-transparent backdrop-blur-sm transition-colors';
 
+// Pills + "works from" tag on a format card; when the card is picked, a detail line says
+// which exam task it mirrors (and any similar skills), and warns if the level is too low.
+function TemplateMeta({ templateId, selected, level }) {
+    const meta = TEMPLATE_META[templateId];
+    if (!meta) return null;
+    const direct  = meta.exams.filter(x => x.kind === 'direct');
+    const similar = meta.exams.filter(x => x.kind === 'similar');
+    const tooLow  = LEVEL_RANK[level] < LEVEL_RANK[meta.from];
+
+    return (
+        <>
+            <span className="flex flex-wrap items-center gap-1.5 mt-1.5">
+                {direct.map(x => (
+                    <span key={x.exam} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-white/85">
+                        {EXAMS[x.exam]}
+                    </span>
+                ))}
+                <span
+                    className="ml-auto text-[11px] font-semibold tabular-nums text-[#fdb08a] border border-[#fdb08a]/45 rounded-md px-1.5 py-px"
+                    title="Lowest level this format suits"
+                >
+                    {meta.from}+
+                </span>
+            </span>
+            {selected && (
+                <span className="mt-2 pt-2 border-t border-white/15 text-xs leading-relaxed text-white/90 flex flex-col gap-0.5">
+                    {direct.map(x => (
+                        <span key={x.exam}><span className="font-semibold text-[#fdb08a]">Mirrors</span> · {EXAMS[x.exam]}: {x.task}</span>
+                    ))}
+                    {similar.map(x => (
+                        <span key={x.exam}><span className="font-semibold text-[#fdb08a]">Similar skill</span> · {EXAMS[x.exam]}: {x.task}</span>
+                    ))}
+                    {meta.exams.length === 0 && (
+                        <span><span className="font-semibold text-[#fdb08a]">General format</span> · not tied to one exam.</span>
+                    )}
+                    {tooLow && (
+                        <span className="text-[#ffd39a]">Made for {meta.from}+. At {level} it will be a stretch.</span>
+                    )}
+                </span>
+            )}
+        </>
+    );
+}
+
 export default function GeneratePage() {
     const [searchParams] = useSearchParams();
     const location = useLocation();
@@ -128,6 +173,7 @@ export default function GeneratePage() {
     const [documentId, setDocumentId] = useState('');
     const [goal, setGoal]             = useState(null);
     const [templateId, setTemplateId] = useState(null);
+    const [exam, setExam]             = useState(null); // optional filter: 'cambridge' | 'det' | 'toefl'
     const [prompt, setPrompt]         = useState('');
     const [sourceMode, setSourceMode] = useState('topic'); // 'topic' | 'document'
     const [topic, setTopic]           = useState('');
@@ -167,6 +213,11 @@ export default function GeneratePage() {
 
     const template     = TEMPLATES.find(t => t.id === templateId) ?? null;
     const goalTemplates = goal ? TEMPLATES.filter(t => t.goals.includes(goal)) : [];
+    // With an exam picked, the goal step is skipped and every format that mirrors that exam is listed.
+    const examTemplates = exam ? TEMPLATES.filter(t => isDirect(t.id, exam)) : [];
+    const shownTemplates = exam ? examTemplates : goalTemplates;
+    const showFormats    = exam || goal;
+    const examCount      = e => TEMPLATES.filter(t => isDirect(t.id, e)).length;
     const selectedDoc  = documents.find(d => d.id === Number(documentId));
     const pageCount    = selectedDoc?.page_count ?? null;
     const currentLevel = LEVELS.find(l => l.id === level) ?? LEVELS[2];
@@ -176,6 +227,18 @@ export default function GeneratePage() {
         setGoal(g);
         setTemplateId(null);
         setPrompt('');
+    }
+
+    function pickExam(e) {
+        const next = exam === e ? null : e;
+        setExam(next);
+        if (next) {
+            // A format picked earlier that doesn't mirror this exam is dropped.
+            if (template && !isDirect(template.id, next)) { setTemplateId(null); setPrompt(''); }
+        } else if (template && !template.goals.includes(goal)) {
+            // Clearing the filter: keep the chosen format visible under one of its goals.
+            setGoal(template.goals[0]);
+        }
     }
 
     function pickTemplate(t) {
@@ -268,8 +331,38 @@ export default function GeneratePage() {
             <div className="lg-surface border rounded-2xl p-6">
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
-                    {/* Step 1 — goal */}
+                    {/* Optional exam filter — skips the goal step */}
                     <div className="flex flex-col gap-2">
+                        <span className="text-sm font-medium text-white/80">
+                            Preparing a student for an exam? <span className="text-white/40 font-normal ml-1">— optional, skips straight to matching formats</span>
+                        </span>
+                        <div className="flex flex-wrap gap-2">
+                            {EXAM_ORDER.map(e => (
+                                <button
+                                    key={e}
+                                    type="button"
+                                    onClick={() => pickExam(e)}
+                                    aria-pressed={exam === e}
+                                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
+                                        exam === e
+                                            ? 'bg-[#fc6840]/15 border-[#fc6840] text-white ring-2 ring-[#fc6840]/35'
+                                            : 'bg-white/5 border-white/15 text-white/70 hover:bg-white/10 hover:text-white'
+                                    }`}
+                                >
+                                    {EXAMS[e]}
+                                    <span className={`tabular-nums text-[11px] ${exam === e ? 'text-white/85' : 'text-white/50'}`}>{examCount(e)}</span>
+                                </button>
+                            ))}
+                        </div>
+                        {exam && examCount(exam) <= 3 && (
+                            <p className="text-xs text-white/55">
+                                Only {examCount(exam)} {examCount(exam) === 1 ? 'format' : 'formats'} so far. More are on the way.
+                            </p>
+                        )}
+                    </div>
+
+                    {/* Step 1 — goal (hidden while an exam is picked) */}
+                    <div className={`${exam ? 'hidden' : 'flex'} flex-col gap-2`}>
                         <label className="text-sm font-medium text-white/80">1. What do you want to practise?</label>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             {GOALS.map(g => (
@@ -291,15 +384,18 @@ export default function GeneratePage() {
                     </div>
 
                     {/* Step 2 — template */}
-                    {goal && (
+                    {showFormats && (
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-white/80">2. Choose a format</label>
-                            <div className="grid sm:grid-cols-2 gap-2">
-                                {goalTemplates.map(t => (
+                            <label className="text-sm font-medium text-white/80">
+                                {exam ? `Formats that mirror ${EXAMS[exam]} tasks` : '2. Choose a format'}
+                            </label>
+                            <div className="grid sm:grid-cols-2 items-start gap-2">
+                                {shownTemplates.map(t => (
                                     <button
                                         key={t.id}
                                         type="button"
                                         onClick={() => pickTemplate(t)}
+                                        aria-pressed={templateId === t.id}
                                         className={`flex flex-col gap-1 text-left px-3.5 py-3 rounded-xl transition-all cursor-pointer border ${
                                             templateId === t.id
                                                 ? 'bg-[#fc6840]/15 border-[#fc6840] ring-2 ring-[#fc6840]/40'
@@ -308,6 +404,7 @@ export default function GeneratePage() {
                                     >
                                         <span className="text-sm font-semibold text-white">{t.label}</span>
                                         <span className={`text-xs leading-snug ${templateId === t.id ? 'text-white/90' : 'text-white/45'}`}>{t.blurb}</span>
+                                        <TemplateMeta templateId={t.id} selected={templateId === t.id} level={level} />
                                     </button>
                                 ))}
                             </div>
@@ -318,7 +415,7 @@ export default function GeneratePage() {
                     {template && (
                         <>
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-white/80">3. Where should the content come from?</label>
+                                <label className="text-sm font-medium text-white/80">{exam ? 2 : 3}. Where should the content come from?</label>
                                 <div className="flex gap-2">
                                     {[['topic', 'A topic'], ['document', 'An uploaded document']].map(([mode, lbl]) => (
                                         <button
@@ -438,6 +535,9 @@ export default function GeneratePage() {
 
             <p className="lg-shell-text text-white/70 text-xs">
                 Looking for a Presentation or a Reading Text? Those are on the Upload page.
+            </p>
+            <p className="lg-shell-text text-white/60 text-[11px] max-w-prose">
+                Exam-style means modelled on the task format. All content is original and is not affiliated with or endorsed by Cambridge University Press &amp; Assessment, ETS or Duolingo.
             </p>
 
             {status === 'loading' && (
