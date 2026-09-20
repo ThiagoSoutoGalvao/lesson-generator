@@ -74,6 +74,17 @@ page range behind a toggle). `GOALS` + `TEMPLATES` config is at the top of
 Correction — sentences" and "— passage" are two cards on one `error_correction`
 type.
 
+**Level + exam styles (2026-09-20, `PROJECT_LOG.md` §22).** Step 3 has a **Level**
+selector (A1 / A2 / B1 / B2+) → `level` on `/api/generate` →
+`App\Services\LanguageLevel` feeds every builder in `ClaudeService`. **B1 is the
+default and byte-identical to the old hard-coded "B1-B2" prompts** — don't hard-code
+a level in a prompt again. Adding to a Lights lesson pre-selects A1
+(`TRILHA_LEVEL` in `trilhas.js`: Lights A1, Glow B1, Radiant B2 — the last two are
+approximate, per Thiago). Format cards carry
+"Cambridge-/DET-/TOEFL-style" pills + an "A1+" works-from tag from
+`resources/js/lib/examStyles.js` (direct matches only get a pill; wording stays
+adjectival — the names are trademarks), and optional exam chips skip the goal step.
+
 **15 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
 `word_formation`, `true_false`, `mc_reading`, `odd_one_out`, `cloze`,
 `open_cloze`, `mc_cloze`, `read_complete`, `discussion_questions`,
@@ -293,10 +304,20 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
-## 6. Next: nothing queued — Aurora Homework's core roadmap shipped
+## 6. Next: more `/generate` formats (agreed 2026-09-20) — Homework's roadmap shipped
 
 The Aurora Student App roadmap (S1–S5) is **complete**. **S6 (monetization)
 is deferred** until real student usage exists (§4).
+
+**Queued, in order** (mockup: the published "Generate Picker Mockup" artifact):
+restore the `image_vocab_match` / `word_categorisation` generators (beginner
+picture vocab; components already exist) → new beginner formats (Match Pairs,
+Signs & Notices, Picture Prompts) → exam-style additions (TOEFL Read in Daily Life /
+Interview; DET Fill in the Blanks / Real-or-Fake Word / Read Then Speak; Cambridge
+Gapped Text / Multiple Matching) and a fifth **Writing** goal when the first writing
+prompt format lands. **Speak About the Photo** gets natural, level-tied sentence
+starters ("I can see…" is what students over-use). **Ruled out:** Interactive
+Reading as a template, Portuguese translations, listening (Listen and Repeat parked).
 
 **Aurora Homework** (decided 2026-09-14, full history in
 `AuroraHomework.md`): a teacher wants to hand specific content to a specific
