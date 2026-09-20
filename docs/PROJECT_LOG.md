@@ -913,8 +913,10 @@ six design questions, then it was built. Commits `de58d2c` (level) and `f3fb394`
   level owns them — an explicit length in the task text would out-vote the level rule).
   Only visible change at B1: True/False's default passage goes from 90–130 to the
   builder's 80–150 words.
-- `TRILHA_LEVEL = { Lights: 'A1' }` (`trilhas.js`): adding to a Lights lesson pre-selects A1
-  and says so. Glow / Radiant deliberately unset — their levels were never given.
+- `TRILHA_LEVEL = { Lights: 'A1', Glow: 'B1', Radiant: 'B2' }` (`trilhas.js`): adding to a
+  trilha lesson pre-selects that level and says so. Lights = real beginners (its teachers);
+  Glow ≈ B1 and Radiant ≈ B2 were given by Thiago on 2026-09-21 as approximate. (Shipped
+  first with Lights only, then extended the same day.)
 - Selector labels read A1 / A2 / B1 / **B2+** (the mockup said "A1+"…; that reads as "and up"
   on a selector, so only the works-from *tags* keep the "+").
 

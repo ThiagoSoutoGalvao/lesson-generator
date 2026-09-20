@@ -9,10 +9,10 @@ export const TRILHAS = {
 export const TRILHA_NAMES = Object.keys(TRILHAS);
 
 // The level /generate pre-selects while a teacher is adding to a trilha lesson (see
-// `lib/levels.js`). Only Lights is set: its teachers confirmed it is for real
-// beginners. Add Glow / Radiant once their levels are agreed — until then they
-// fall back to the default level.
-export const TRILHA_LEVEL = { Lights: 'A1' };
+// `lib/levels.js`). Lights is for real beginners (confirmed by its teachers); Glow and
+// Radiant sit close to B1 and B2 (Thiago, 2026-09-21) — approximate, and the teacher
+// can change the level for any single activity.
+export const TRILHA_LEVEL = { Lights: 'A1', Glow: 'B1', Radiant: 'B2' };
 
 // Verbatim table-of-contents per lesson, taken from the PDFs in `trilhas/`.
 // Shown read-only in the Library coverage-grid brief panel so teachers don't
