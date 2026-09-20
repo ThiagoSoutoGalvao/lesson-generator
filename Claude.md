@@ -85,15 +85,16 @@ approximate, per Thiago). Format cards carry
 `resources/js/lib/examStyles.js` (direct matches only get a pill; wording stays
 adjectival — the names are trademarks), and optional exam chips skip the goal step.
 
-**15 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
+**17 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
 `word_formation`, `true_false`, `mc_reading`, `odd_one_out`, `cloze`,
 `open_cloze`, `mc_cloze`, `read_complete`, `discussion_questions`,
-`sentence_transformation`, `error_correction`.
+`sentence_transformation`, `error_correction`, `image_vocab_match`,
+`word_categorisation`.
 
-- `image_vocab_match` and `word_categorisation` **have no backend generator** —
-  the components + save-validation + library launch branches still exist (saved
-  ones relaunch), but you cannot create new ones. `.md` docs mentioning them as
-  live are stale.
+- `image_vocab_match` and `word_categorisation` are generatable again (2026-09-21;
+  they had been removed in May 2026 with no recorded reason). Both validate what
+  Claude returns — a repeated word is refused, since the screens identify a word
+  by its text. Older `.md` docs beside the code may still describe the old state.
 - `section_focus` (the old Vocabulary/Grammar/Listening/Reading pills) was
   **removed entirely** in Phase T. `detectSections` / `SectionController` /
   `/api/detect-sections` still exist but are unused by the frontend.
@@ -310,9 +311,9 @@ The Aurora Student App roadmap (S1–S5) is **complete**. **S6 (monetization)
 is deferred** until real student usage exists (§4).
 
 **Queued, in order** (mockup: the published "Generate Picker Mockup" artifact):
-restore the `image_vocab_match` / `word_categorisation` generators (beginner
-picture vocab; components already exist) → new beginner formats (Match Pairs,
-Signs & Notices, Picture Prompts) → exam-style additions (TOEFL Read in Daily Life /
+✅ restore the `image_vocab_match` / `word_categorisation` generators (2026-09-21) →
+new beginner formats (Match Pairs, Signs & Notices, Picture Prompts — **next**) →
+exam-style additions (TOEFL Read in Daily Life /
 Interview; DET Fill in the Blanks / Real-or-Fake Word / Read Then Speak; Cambridge
 Gapped Text / Multiple Matching) and a fifth **Writing** goal when the first writing
 prompt format lands. **Speak About the Photo** gets natural, level-tied sentence

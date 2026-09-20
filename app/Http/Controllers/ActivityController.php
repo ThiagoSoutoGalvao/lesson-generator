@@ -15,7 +15,7 @@ class ActivityController extends Controller
             'topic'       => ['nullable', 'string', 'max:200'],
             'source_text' => ['nullable', 'string', 'max:8000'],
             'prompt'      => ['required', 'string', 'max:1000'],
-            'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,mc_reading,odd_one_out,cloze,open_cloze,mc_cloze,read_complete,discussion_questions,sentence_transformation,error_correction'],
+            'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,mc_reading,odd_one_out,cloze,open_cloze,mc_cloze,read_complete,discussion_questions,sentence_transformation,error_correction,image_vocab_match,word_categorisation'],
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
             'level'       => ['nullable', 'in:A1,A2,B1,B2'],
@@ -82,6 +82,8 @@ class ActivityController extends Controller
                 'discussion_questions'    => $claude->generateDiscussionQuestions($source, $prompt, $level),
                 'sentence_transformation' => $claude->generateSentenceTransformation($source, $prompt, $level),
                 'error_correction'        => $claude->generateErrorCorrection($source, $prompt, $level),
+                'image_vocab_match'       => $claude->generateImageVocabMatch($source, $prompt, $level),
+                'word_categorisation'     => $claude->generateWordCategorisation($source, $prompt, $level),
             };
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

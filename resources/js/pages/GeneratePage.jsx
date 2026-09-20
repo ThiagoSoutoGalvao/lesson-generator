@@ -16,6 +16,8 @@ import McClozeActivity from '@/components/McClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
 import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
+import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
+import WordCategorisationActivity from '@/components/WordCategorisationActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
@@ -42,6 +44,16 @@ const TEMPLATES = [
         id: 'flashcards', label: 'Flashcards', goals: ['vocabulary'],
         blurb: 'Flip cards — word, definition, examples. Introduce or revise a set of words.',
         defaultPrompt: 'Create 8 flashcards for the key vocabulary. For each word include a clear student-friendly definition and two natural example sentences.',
+    },
+    {
+        id: 'image_vocab_match', label: 'Image Vocab Match', goals: ['vocabulary'],
+        blurb: 'Match each picture to its word. Best for concrete vocabulary — jobs, clothes, food, places.',
+        defaultPrompt: 'Create an image matching activity with 6 concrete vocabulary words the student can match to photos. Choose words a photograph shows clearly.',
+    },
+    {
+        id: 'word_categorisation', label: 'Word Categorisation', goals: ['vocabulary'],
+        blurb: 'Sort words into 2 or 3 groups — food or drink, positive or negative. Good for meaning and word class.',
+        defaultPrompt: 'Create a word categorisation activity with 2 categories of 5 words each. Every word must clearly belong to exactly one category.',
     },
     {
         id: 'odd_one_out', label: 'Odd One Out', goals: ['vocabulary'],
@@ -301,6 +313,8 @@ export default function GeneratePage() {
     if (activity?.type === 'discussion_questions')   return <DiscussionQuestionsActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'sentence_transformation') return <SentenceTransformationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'error_correction')        return <ErrorCorrectionActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'image_vocab_match')       return <ImageVocabMatchActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'word_categorisation')     return <WordCategorisationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'grammar_explainer')       return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'presentation')            return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'reading_text')            return <ReadingTextActivity activity={activity} onClose={handleClose} onDerive={(a) => { setActivity(a); setStatus('success'); }} />;

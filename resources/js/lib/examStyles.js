@@ -25,6 +25,8 @@ const similar = (exam, task) => ({ exam, kind: 'similar', task });
 
 export const TEMPLATE_META = {
     flashcards:               { from: 'A1', exams: [] },
+    image_vocab_match:        { from: 'A1', exams: [] },
+    word_categorisation:      { from: 'A1', exams: [] },
     odd_one_out:              { from: 'A2', exams: [] },
     word_formation:           { from: 'A2', exams: [direct('cambridge', 'Use of English Part 3, word formation')] },
     quiz:                     { from: 'A1', exams: [] },

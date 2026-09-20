@@ -962,3 +962,32 @@ use `[IO.File]::ReadAllText/WriteAllText` with `UTF8Encoding($false)`; an inline
 with regexes + `$` inside bash is a quoting trap — write a script file; read computed
 styles only after `transition-all` settles (a mid-fade screenshot looked like a missing
 selected-card ring).
+
+
+### 22b. Beginner formats, batch 1 — Image Vocab Match + Word Categorisation generators ✅ (2026-09-21)
+
+Both were removed in May 2026 (`67d05f2` "remove Image Vocab Match", `258a674` "Replace
+Word Categorisation with Word Formation") — the commit messages give no reason, so treat the
+old prompts as unproven. What survived: the two components (already emitting student
+`onComplete`), save validation, Library launch, student player + `activityMeta`.
+
+- `ClaudeService::generateImageVocabMatch` / `generateWordCategorisation` (+ builders) on the
+  newer `requestJson()` pattern, level-aware via `LanguageLevel` (same `{$lv->rules}` anchor).
+  `ActivityController` accepts both types. Prompts recovered from git and tightened.
+- **Validation before shipping what Claude returns** (the screens identify a word by its
+  text, so duplicates silently break them): Image Vocab Match drops pairs with a missing word
+  or keyword and repeated words (<3 left → "try again", cap 8); Word Categorisation *refuses*
+  a word that appears in two categories (case-insensitive), drops categories under 3 words,
+  needs ≥2 categories, caps at 3. Failures surface as the usual 502 message.
+- Picker: two cards right after Flashcards in Vocabulary, tagged A1+, no exam pill (they
+  mirror no exam, so the exam-chip counts stay 5 / 1 / 3).
+- Verified: 12 backend checks (Anthropic faked — level rule reaches the prompt, every
+  validation branch), the 15-builder B1 byte-identical regression still passes, and 17 browser
+  checks with **deliberately wrong answers**: a wrong Image Vocab Match pick is rejected; putting
+  every Word Categorisation word under "Food" scores exactly 5 / 10 with the five drinks red and
+  "→ Drink". Zero console errors.
+- **Not verified:** real Claude output at A1 (no API spend). Real Unsplash results for
+  Image Vocab Match keywords are also unseen here (`/api/background` was mocked) — the first
+  real use should check that the 4–8 pictures are distinct and recognisable.
+- Note: `Claude.md` is the tracked filename (git is case-sensitive about it even on Windows);
+  `git add CLAUDE.md` silently stages nothing.

@@ -1104,6 +1104,138 @@ EOT;
         return false;
     }
 
+    public function generateImageVocabMatch(string $source, string $prompt, ?string $level = null): array
+    {
+        $data = $this->requestJson($this->buildImageVocabMatchPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
+
+        // Keep only complete pairs, each word once — a repeated word would make two
+        // pictures match the same tile, which the screen can't tell apart.
+        $pairs = [];
+        $seen  = [];
+        foreach ($data['pairs'] ?? [] as $pair) {
+            $word    = trim((string) ($pair['word'] ?? ''));
+            $keyword = trim((string) ($pair['keyword'] ?? ''));
+            if ($word === '' || $keyword === '' || isset($seen[mb_strtolower($word)])) {
+                continue;
+            }
+            $seen[mb_strtolower($word)] = true;
+            $pairs[] = ['word' => $word, 'keyword' => $keyword];
+        }
+
+        if (count($pairs) < 3) {
+            throw new RuntimeException('Claude did not return enough word and picture pairs — please try generating again.');
+        }
+
+        $data['type']  = 'image_vocab_match';
+        $data['pairs'] = array_slice($pairs, 0, 8);
+
+        return $data;
+    }
+
+    private function buildImageVocabMatchPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "image_vocab_match",
+  "topic": "<short topic description, e.g. 'hotel vocabulary'>",
+  "pairs": [
+    {
+      "word": "<vocabulary word or short phrase>",
+      "keyword": "<3-5 word descriptive Unsplash search phrase that visually illustrates this word, e.g. 'woman drinking coffee cafe' or 'person climbing mountain summit'>"
+    }
+  ]
+}
+
+Rules:
+- Generate the number of pairs requested in the task — 6 if none is given, never fewer than 4 or more than 8
+- Each word must be a concrete noun or short noun phrase that a photograph can show clearly (a job, an object, a place, a food, an item of clothing) — nothing abstract
+- Each keyword must be a vivid, descriptive scene or image (3-5 words) — not just the word itself — so Unsplash returns a recognisable, relevant photo
+- Keywords must be visually distinct from each other — no two pairs should produce similar-looking images
+- Words should be {$lv->cefr} level vocabulary relevant to the topic
+- Each word must appear only once{$lv->rules}
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateWordCategorisation(string $source, string $prompt, ?string $level = null): array
+    {
+        $data = $this->requestJson($this->buildWordCategorisationPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
+
+        // The screen places a word by its text, so a word in two categories (or an
+        // empty or one-sided task) can't be scored — refuse it rather than ship it.
+        $categories = [];
+        $seen       = [];
+        foreach ($data['categories'] ?? [] as $category) {
+            $name  = trim((string) ($category['name'] ?? ''));
+            $words = [];
+            foreach ($category['words'] ?? [] as $word) {
+                $word = trim((string) $word);
+                if ($word === '') {
+                    continue;
+                }
+                if (isset($seen[mb_strtolower($word)])) {
+                    throw new RuntimeException('Claude put the same word in two categories — please try generating again.');
+                }
+                $seen[mb_strtolower($word)] = true;
+                $words[] = $word;
+            }
+            if ($name !== '' && count($words) >= 3) {
+                $categories[] = ['name' => $name, 'words' => $words];
+            }
+        }
+
+        if (count($categories) < 2) {
+            throw new RuntimeException('Claude did not return at least two usable categories — please try generating again.');
+        }
+
+        $data['type']       = 'word_categorisation';
+        $data['categories'] = array_slice($categories, 0, 3);
+
+        return $data;
+    }
+
+    private function buildWordCategorisationPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "word_categorisation",
+  "topic": "<short description of the categorisation task, e.g. 'Food or drink?'>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the vocabulary theme, e.g. 'street market colourful vegetables' or 'cafe table coffee cake'>",
+  "categories": [
+    {
+      "name": "<category name>",
+      "words": ["<word>", "<word>", "<word>", "<word>", "<word>"]
+    },
+    {
+      "name": "<category name>",
+      "words": ["<word>", "<word>", "<word>", "<word>", "<word>"]
+    }
+  ]
+}
+
+Rules:
+- Use 2 or 3 categories (never more)
+- Each category must have between 4 and 6 words — 5 if the task gives no number
+- All categories must have the same number of words
+- Words must be clearly and unambiguously correct for their category — no borderline cases
+- No word may appear in more than one category
+- Words should be single words or short phrases (max 3 words)
+- Words should be {$lv->cefr} level vocabulary
+- Suitable categories: food / drink, clothes / things you carry, jobs / places, positive / negative adjectives, Formal / Informal, Countable / Uncountable, Verb / Noun / Adjective, or topic-based groupings — choose ones that fit the level and the task{$lv->rules}
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     /** Shared Claude JSON request used by the newer generators. */
     private function requestJson(string $content): array
     {
