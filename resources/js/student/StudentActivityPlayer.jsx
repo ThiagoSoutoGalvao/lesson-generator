@@ -21,6 +21,9 @@ import McClozeActivity from '@/components/McClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
 import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
+import MatchPairsActivity from '@/components/MatchPairsActivity';
+import SignsNoticesActivity from '@/components/SignsNoticesActivity';
+import PicturePromptsActivity from '@/components/PicturePromptsActivity';
 
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
 
@@ -38,6 +41,8 @@ const RECORDS_ATTEMPT = new Set([
     'cloze', 'open_cloze', 'read_complete', 'word_formation',
     'sentence_transformation', 'error_correction', 'flashcards',
     'discussion_questions',
+    'match_pairs', 'signs_notices', // scored: right first time / total
+    'picture_prompts',              // completion only — speaking has no answer to check
 ]);
 
 const COMPONENTS = {
@@ -58,6 +63,9 @@ const COMPONENTS = {
     discussion_questions:    DiscussionQuestionsActivity,
     sentence_transformation: SentenceTransformationActivity,
     error_correction:        ErrorCorrectionActivity,
+    match_pairs:             MatchPairsActivity,
+    signs_notices:           SignsNoticesActivity,
+    picture_prompts:         PicturePromptsActivity,
 };
 
 function FullscreenMessage({ children, onBack }) {

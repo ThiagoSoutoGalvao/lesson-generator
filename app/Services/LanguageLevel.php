@@ -52,6 +52,16 @@ final class LanguageLevel
         };
     }
 
+    /** One pinned length (e.g. the most words in a short text), scaled for the level (unchanged at B1). */
+    public function scaled(int $n): int
+    {
+        if ($this->scale === 1.0) {
+            return $n;
+        }
+
+        return max(5, (int) round($n * $this->scale / 5) * 5);
+    }
+
     /** A "min-max" passage-length range, scaled for the level (unchanged at B1). */
     public function span(int $min, int $max, string $sep = '-'): string
     {

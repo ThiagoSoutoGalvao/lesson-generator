@@ -991,3 +991,42 @@ old prompts as unproven. What survived: the two components (already emitting stu
   real use should check that the 4–8 pictures are distinct and recognisable.
 - Note: `Claude.md` is the tracked filename (git is case-sensitive about it even on Windows);
   `git add CLAUDE.md` silently stages nothing.
+
+
+### 22c. Beginner formats, batch 2 — Match Pairs, Signs & Notices, Picture Prompts ✅ (2026-09-21)
+
+Three genuinely new types (no screen existed), built for the Lights trilha's real beginners.
+Held back from Railway on purpose (Thiago: push after batch 2) — see the push in the commit log.
+
+- **Match Pairs** (`match_pairs`, vocabulary): click one side then its partner, either side
+  first. **Scored** — pairs matched with no wrong try / total. Generator refuses repeated
+  left *or* right items (a repeated right item would have two partners), needs ≥4, caps at 8.
+- **Signs & Notices** (`signs_notices`, reading): one short real-life text per screen, dressed
+  as a sign / notice / message, with one 3-option question. **Scored** on first-try answers.
+  Validation drops any item without exactly 3 distinct options or with an out-of-range
+  answer (a numeric string like "2" is accepted); text length is capped per level via the new
+  `LanguageLevel::scaled()` (25 / 35 / 40 / 50 words at A1 / A2 / B1 / B2).
+- **Picture Prompts** (`picture_prompts`, speaking): a photo (via `/api/background`, like
+  Flashcards), an open question, 2–3 picture-specific openers, and a panel **"Instead of “I can
+  see…” try:"** with a hand-written, level-tied bank (`lib/pictureFrames.js`, 6 phrases per level
+  — Thiago's request: students always say "I can see…"). The generator saves the `level` on the
+  activity so the right bank shows on relaunch and for students. Any starter Claude writes
+  that begins "I can see" / "I see" is stripped in code, whatever the prompt said.
+  **Completion only** (the teacher marks speaking live). One card serves both the beginner task
+  and DET's Speak About the Photo, so it carries the **DET-style** pill (DET chip 1 → 2) — a
+  judgement call; split it into two cards if the DET pill on an A1 activity feels wrong.
+- Wiring (the ~10-place checklist is in `Claude.md` §4): `LESSON_SLOTS` now counts
+  `word_categorisation` + `match_pairs` toward a lesson's **Vocabulary** cell and `picture_prompts`
+  toward **Speaking** (the coverage grid previously ignored them).
+- **Verified:** 17 backend checks (Anthropic faked: every validation branch, the level rule
+  and length cap reaching the prompt), the earlier backend suites and the 15-builder B1
+  regression still green, and 41 browser checks with deliberately wrong answers — a wrong
+  Match Pairs pair costs exactly one point (3 / 4), a wrong first Signs & Notices option costs
+  exactly one (2 / 3); saving all three types, relaunching them from the Library (Picture Prompts
+  keeps its A1 bank), and 390px width (no sideways overflow, ✕ on screen, last option / Next
+  reachable by scrolling). The temp QA teacher and the activities it saved were deleted.
+- **Not verified:** real Claude output at A1 for any of the five new generators, and real
+  Unsplash photos for Picture Prompts (mocked here) — the photo search phrases ("people doing
+  something in a clear setting") are the part most likely to need tuning on first real use.
+  The student-app path is wired (player, meta, attempt recording) but was not exercised with a
+  student login this round.

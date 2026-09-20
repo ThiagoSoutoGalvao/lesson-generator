@@ -174,6 +174,9 @@ export const TYPE_LABELS = {
     discussion_questions:     'Discussion',
     sentence_transformation:  'Transform',
     error_correction:         'Error Correction',
+    match_pairs:              'Match Pairs',
+    signs_notices:            'Signs & Notices',
+    picture_prompts:          'Picture Prompts',
     grammar_explainer:        'Grammar',
     presentation:             'Presentation',
     reading_text:             'Reading Text',
@@ -185,9 +188,9 @@ export const TYPE_LABELS = {
 export const LESSON_SLOTS = [
     { key: 'presentation', label: 'Presentation', types: ['presentation', 'grammar_explainer'] },
     { key: 'reading',      label: 'Reading Text', types: ['reading_text'] },
-    { key: 'vocabulary',   label: 'Vocabulary',   types: ['flashcards', 'image_vocab_match'] },
+    { key: 'vocabulary',   label: 'Vocabulary',   types: ['flashcards', 'image_vocab_match', 'word_categorisation', 'match_pairs'] },
     { key: 'grammar',      label: 'Grammar',      types: ['quiz', 'sentence_transformation', 'error_correction', 'cloze', 'word_formation'] },
-    { key: 'speaking',     label: 'Speaking',     types: ['discussion_questions'] },
+    { key: 'speaking',     label: 'Speaking',     types: ['discussion_questions', 'picture_prompts'] },
 ];
 
 // "LIGHTS L03 · Quiz · Present continuous & everyday verbs"

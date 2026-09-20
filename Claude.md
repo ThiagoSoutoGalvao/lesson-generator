@@ -85,11 +85,23 @@ approximate, per Thiago). Format cards carry
 `resources/js/lib/examStyles.js` (direct matches only get a pill; wording stays
 adjectival — the names are trademarks), and optional exam chips skip the goal step.
 
-**17 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
+**20 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
 `word_formation`, `true_false`, `mc_reading`, `odd_one_out`, `cloze`,
 `open_cloze`, `mc_cloze`, `read_complete`, `discussion_questions`,
 `sentence_transformation`, `error_correction`, `image_vocab_match`,
-`word_categorisation`.
+`word_categorisation`, `match_pairs`, `signs_notices`, `picture_prompts`.
+
+- **Adding a type touches ~10 places** (the batch-2 checklist): `ClaudeService` generator +
+  builder (with `{$lv->rules}`), `ActivityController` (`in:` list + match arm),
+  `SavedActivityController` (`in:` list), the component, `GeneratePage` (import, `TEMPLATES`,
+  render branch), `examStyles.js`, `LibraryPage` (import, labels, colours, filters, launch),
+  `StudentActivityPlayer` (import, `RECORDS_ATTEMPT`, `COMPONENTS`), `activityMeta.js`,
+  `trilhas.js` (`TYPE_LABELS`, `LESSON_SLOTS`).
+- `match_pairs` and `signs_notices` are scored (right first time / total); `picture_prompts`
+  is completion-only (a speaking task the teacher marks live) and saves the `level` it was
+  made at, which picks its "Instead of “I can see…” try:" bank (hand-written in
+  `lib/pictureFrames.js`). Picture Prompts is one card for both the beginner "describe the
+  picture" task and DET's Speak About the Photo (it carries the DET-style pill).
 
 - `image_vocab_match` and `word_categorisation` are generatable again (2026-09-21;
   they had been removed in May 2026 with no recorded reason). Both validate what
@@ -312,13 +324,12 @@ is deferred** until real student usage exists (§4).
 
 **Queued, in order** (mockup: the published "Generate Picker Mockup" artifact):
 ✅ restore the `image_vocab_match` / `word_categorisation` generators (2026-09-21) →
-new beginner formats (Match Pairs, Signs & Notices, Picture Prompts — **next**) →
-exam-style additions (TOEFL Read in Daily Life /
-Interview; DET Fill in the Blanks / Real-or-Fake Word / Read Then Speak; Cambridge
-Gapped Text / Multiple Matching) and a fifth **Writing** goal when the first writing
-prompt format lands. **Speak About the Photo** gets natural, level-tied sentence
-starters ("I can see…" is what students over-use). **Ruled out:** Interactive
-Reading as a template, Portuguese translations, listening (Listen and Repeat parked).
+✅ new beginner formats: Match Pairs, Signs & Notices, Picture Prompts (2026-09-21; Picture
+Prompts also covers Speak About the Photo, with level-tied openers) → **next:** exam-style
+additions (TOEFL Read in Daily Life / Interview; DET Fill in the Blanks / Real-or-Fake Word /
+Read Then Speak; Cambridge Gapped Text / Multiple Matching) and a fifth **Writing** goal
+when the first writing prompt format lands. **Ruled out:** Interactive Reading as a
+template, Portuguese translations, listening (Listen and Repeat parked).
 
 **Aurora Homework** (decided 2026-09-14, full history in
 `AuroraHomework.md`): a teacher wants to hand specific content to a specific

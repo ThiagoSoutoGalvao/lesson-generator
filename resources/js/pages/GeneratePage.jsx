@@ -18,6 +18,9 @@ import SentenceTransformationActivity from '@/components/SentenceTransformationA
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
 import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
 import WordCategorisationActivity from '@/components/WordCategorisationActivity';
+import MatchPairsActivity from '@/components/MatchPairsActivity';
+import SignsNoticesActivity from '@/components/SignsNoticesActivity';
+import PicturePromptsActivity from '@/components/PicturePromptsActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
@@ -54,6 +57,11 @@ const TEMPLATES = [
         id: 'word_categorisation', label: 'Word Categorisation', goals: ['vocabulary'],
         blurb: 'Sort words into 2 or 3 groups — food or drink, positive or negative. Good for meaning and word class.',
         defaultPrompt: 'Create a word categorisation activity with 2 categories of 5 words each. Every word must clearly belong to exactly one category.',
+    },
+    {
+        id: 'match_pairs', label: 'Match Pairs', goals: ['vocabulary'],
+        blurb: 'Match the two halves — digits and number words, countries and nationalities, words and definitions.',
+        defaultPrompt: 'Create a match-the-pairs activity with 6 pairs. Each item on the left has exactly one partner on the right.',
     },
     {
         id: 'odd_one_out', label: 'Odd One Out', goals: ['vocabulary'],
@@ -111,6 +119,11 @@ const TEMPLATES = [
         defaultPrompt: 'Write a natural 10–12 line dialogue between two people on the topic, with 3 gaps to complete. Wrong options should be plausible but clearly not the best fit.',
     },
     {
+        id: 'signs_notices', label: 'Signs & Notices', goals: ['reading'],
+        blurb: 'Short signs, notices and messages, each with one easy question. Real-life reading for beginners.',
+        defaultPrompt: 'Create 5 short real-life texts (signs, notices and messages). Give each one question with 3 options.',
+    },
+    {
         id: 'true_false', label: 'True / False / Not Given', goals: ['reading'],
         blurb: 'A reading passage and 6 statements to judge. Trains close reading and inference.',
         defaultPrompt: 'Write a reading passage and 6 statements — 2 True, 2 False, 2 Not Given. Vary the order.',
@@ -124,6 +137,11 @@ const TEMPLATES = [
         id: 'read_complete', label: 'Read and Complete', goals: ['reading', 'vocabulary'],
         blurb: 'A short passage where each gapped word shows its first few letters. Recognition & spelling.',
         defaultPrompt: 'Write a connected passage and gap 10–14 content words, showing roughly the first half of each word.',
+    },
+    {
+        id: 'picture_prompts', label: 'Picture Prompts', goals: ['speaking'],
+        blurb: 'A photo and a question to describe it, with natural sentence starters for the level. Speaking practice.',
+        defaultPrompt: 'Create 4 picture prompts. For each, choose a photo that shows people doing something, ask a question about it, and give 2 or 3 sentence starters.',
     },
     {
         id: 'discussion_questions', label: 'Discussion Questions', goals: ['speaking'],
@@ -315,6 +333,9 @@ export default function GeneratePage() {
     if (activity?.type === 'error_correction')        return <ErrorCorrectionActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'image_vocab_match')       return <ImageVocabMatchActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'word_categorisation')     return <WordCategorisationActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'match_pairs')             return <MatchPairsActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'signs_notices')           return <SignsNoticesActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'picture_prompts')         return <PicturePromptsActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'grammar_explainer')       return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'presentation')            return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'reading_text')            return <ReadingTextActivity activity={activity} onClose={handleClose} onDerive={(a) => { setActivity(a); setStatus('success'); }} />;

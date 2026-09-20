@@ -17,6 +17,9 @@ import McClozeActivity from '@/components/McClozeActivity';
 import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
 import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
 import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
+import MatchPairsActivity from '@/components/MatchPairsActivity';
+import SignsNoticesActivity from '@/components/SignsNoticesActivity';
+import PicturePromptsActivity from '@/components/PicturePromptsActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
@@ -41,6 +44,9 @@ const TYPE_LABELS = {
     discussion_questions:     'Discussion',
     sentence_transformation:  'Transform',
     error_correction:         'Error Correction',
+    match_pairs:              'Match Pairs',
+    signs_notices:            'Signs & Notices',
+    picture_prompts:          'Picture Prompts',
     grammar_explainer:        'Grammar',
     presentation:             'Presentation',
     reading_text:             'Reading Text',
@@ -64,6 +70,9 @@ const TYPE_COLORS = {
     discussion_questions:    'bg-sky-500/80 text-white',
     sentence_transformation: 'bg-violet-500/80 text-white',
     error_correction:        'bg-red-500/80 text-white',
+    match_pairs:             'bg-cyan-600/80 text-white',
+    signs_notices:           'bg-orange-600/80 text-white',
+    picture_prompts:         'bg-sky-600/80 text-white',
     grammar_explainer:       'bg-emerald-500/80 text-white',
     presentation:            'bg-indigo-500/80 text-white',
     reading_text:            'bg-green-600/80 text-white',
@@ -73,7 +82,8 @@ const TYPE_FILTERS = [
     'all', 'quiz', 'flashcards', 'unjumble', 'dialog_gap_fill',
     'word_categorisation', 'true_false', 'mc_reading', 'read_complete', 'image_vocab_match',
     'word_formation', 'odd_one_out', 'cloze', 'open_cloze', 'mc_cloze', 'discussion_questions',
-    'sentence_transformation', 'error_correction', 'grammar_explainer', 'presentation', 'reading_text', 'essay_feedback',
+    'sentence_transformation', 'error_correction', 'match_pairs', 'signs_notices', 'picture_prompts',
+    'grammar_explainer', 'presentation', 'reading_text', 'essay_feedback',
 ];
 
 const filterBtnCls = (active) =>
@@ -341,6 +351,9 @@ export default function LibraryPage() {
         if (launched.type === 'discussion_questions')    return <DiscussionQuestionsActivity {...props} />;
         if (launched.type === 'sentence_transformation') return <SentenceTransformationActivity {...props} />;
         if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;
+        if (launched.type === 'match_pairs')             return <MatchPairsActivity {...props} />;
+        if (launched.type === 'signs_notices')           return <SignsNoticesActivity {...props} />;
+        if (launched.type === 'picture_prompts')         return <PicturePromptsActivity {...props} />;
         if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'presentation')            return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'reading_text')            return <ReadingTextActivity {...props} onDerive={setLaunched} />;

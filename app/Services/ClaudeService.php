@@ -1236,6 +1236,200 @@ Rules:
 EOT;
     }
 
+    public function generateMatchPairs(string $source, string $prompt, ?string $level = null): array
+    {
+        $data = $this->requestJson($this->buildMatchPairsPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
+
+        // A pair is only usable if both halves are unique: a repeated right-hand item
+        // would have two possible partners and the screen could not score the match.
+        $pairs     = [];
+        $seenLeft  = [];
+        $seenRight = [];
+        foreach ($data['pairs'] ?? [] as $pair) {
+            $left  = trim((string) ($pair['left'] ?? ''));
+            $right = trim((string) ($pair['right'] ?? ''));
+            if ($left === '' || $right === '' || isset($seenLeft[mb_strtolower($left)]) || isset($seenRight[mb_strtolower($right)])) {
+                continue;
+            }
+            $seenLeft[mb_strtolower($left)]   = true;
+            $seenRight[mb_strtolower($right)] = true;
+            $pairs[] = ['left' => $left, 'right' => $right];
+        }
+
+        if (count($pairs) < 4) {
+            throw new RuntimeException('Claude did not return enough matching pairs — please try generating again.');
+        }
+
+        $data['type']  = 'match_pairs';
+        $data['pairs'] = array_slice($pairs, 0, 8);
+
+        return $data;
+    }
+
+    private function buildMatchPairsPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "match_pairs",
+  "topic": "<short description of what is being matched, e.g. 'Countries and nationalities'>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic, e.g. 'world map travel desk'>",
+  "pairs": [
+    { "left": "<the item shown on the left>", "right": "<its one partner, shown on the right>" }
+  ]
+}
+
+Rules:
+- Generate the number of pairs requested in the task — 6 if none is given, never fewer than 4 or more than 8
+- Every left item has exactly ONE correct partner on the right, and no right item could reasonably match a different left item
+- All left items are the same kind of thing and all right items are the same kind of thing (for example digits and number words, countries and nationalities, words and short definitions, words and their opposites, base verbs and past forms)
+- Keep every item short — a word or a short phrase of at most 6 words; a definition must be simple and use easier words than the word it defines
+- No item may appear twice, on either side
+- Words should be {$lv->cefr} level{$lv->rules}
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generateSignsNotices(string $source, string $prompt, ?string $level = null): array
+    {
+        $data = $this->requestJson($this->buildSignsNoticesPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
+
+        // Keep only items with a text, a question, three distinct options and an answer
+        // that points at one of them — anything else can't be marked.
+        $items = [];
+        foreach ($data['items'] ?? [] as $item) {
+            $text     = trim((string) ($item['text'] ?? ''));
+            $question = trim((string) ($item['question'] ?? ''));
+            $options  = array_values(array_map(fn ($o) => trim((string) $o), (array) ($item['options'] ?? [])));
+            $answer   = is_numeric($item['answer'] ?? null) ? (int) $item['answer'] : null; // "1" counts as 1
+
+            if ($text === '' || $question === '' || count($options) !== 3 || in_array('', $options, true)
+                || count(array_unique(array_map('mb_strtolower', $options))) !== 3
+                || $answer === null || $answer < 0 || $answer > 2) {
+                continue;
+            }
+
+            $kind    = in_array($item['kind'] ?? '', ['sign', 'notice', 'message'], true) ? $item['kind'] : 'notice';
+            $items[] = ['kind' => $kind, 'text' => $text, 'question' => $question, 'options' => $options, 'answer' => $answer];
+        }
+
+        if (count($items) < 3) {
+            throw new RuntimeException('Claude did not return enough usable texts — please try generating again.');
+        }
+
+        $data['type']  = 'signs_notices';
+        $data['items'] = array_slice($items, 0, 8);
+
+        return $data;
+    }
+
+    private function buildSignsNoticesPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "signs_notices",
+  "topic": "<short description, e.g. 'Signs and notices around town'>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image, e.g. 'busy city street shops'>",
+  "items": [
+    {
+      "kind": "<'sign', 'notice' or 'message'>",
+      "text": "<the text exactly as the student reads it>",
+      "question": "<one easy question about it, e.g. 'Where would you see this?' or 'What does it mean?'>",
+      "options": ["<option A>", "<option B>", "<option C>"],
+      "answer": <0, 1 or 2 — the index of the correct option>
+    }
+  ]
+}
+
+Rules:
+- Generate the number of items requested in the task — 5 if none is given, never fewer than 3 or more than 8
+- Use real-life texts: a "sign" is a short public sign (NO PARKING, WET FLOOR, OPEN 9-5), a "notice" is a short notice on a wall or door (opening times, a cancelled class, a rule), a "message" is a short text message or note between two people. Mix the three kinds
+- Each text is no more than {$lv->scaled(40)} words and must make sense without any picture
+- Every question has exactly 3 options and exactly ONE is correct; the two wrong options must be clearly wrong but plausible; vary which position holds the correct answer
+- Keep the questions simple and direct (where would you see this, what does it mean, what must you do, who is it from)
+- Use invented names, shops and places — never real brands{$lv->rules}
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    public function generatePicturePrompts(string $source, string $prompt, ?string $level = null): array
+    {
+        $lv   = LanguageLevel::from($level);
+        $data = $this->requestJson($this->buildPicturePromptsPrompt($this->sanitizeUtf8($source), $prompt, $lv));
+
+        $prompts = [];
+        foreach ($data['prompts'] ?? [] as $item) {
+            $keyword  = trim((string) ($item['keyword'] ?? ''));
+            $question = trim((string) ($item['question'] ?? ''));
+            if ($keyword === '' || $question === '') {
+                continue;
+            }
+
+            // Students over-use "I can see…"; the opener bank exists to move them past it,
+            // so a starter that begins that way is dropped even if Claude ignored the rule.
+            $starters = [];
+            foreach ((array) ($item['starters'] ?? []) as $starter) {
+                $starter = trim((string) $starter);
+                if ($starter !== '' && ! preg_match('/^i\s+(can\s+)?see\b/i', $starter)) {
+                    $starters[] = $starter;
+                }
+            }
+
+            $prompts[] = ['keyword' => $keyword, 'question' => $question, 'starters' => array_slice($starters, 0, 3)];
+        }
+
+        if (count($prompts) < 2) {
+            throw new RuntimeException('Claude did not return enough picture prompts — please try generating again.');
+        }
+
+        $data['type']    = 'picture_prompts';
+        $data['level']   = $lv->code; // the screen shows the opener bank for this level
+        $data['prompts'] = array_slice($prompts, 0, 6);
+
+        return $data;
+    }
+
+    private function buildPicturePromptsPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "picture_prompts",
+  "topic": "<short topic, e.g. 'A day at the beach'>",
+  "prompts": [
+    {
+      "keyword": "<3-6 word Unsplash search phrase for a photo that shows people doing something in a clear setting, e.g. 'family picnic park sunny day' or 'friends cooking dinner kitchen'>",
+      "question": "<one open question that gets the student describing the photo, e.g. 'What is happening in this picture?'>",
+      "starters": ["<a natural opening the student can finish, ending in …>", "<another>", "<a third>"]
+    }
+  ]
+}
+
+Rules:
+- Generate the number of prompts requested in the task — 4 if none is given, never fewer than 2 or more than 6
+- Each keyword must describe a photo with people, an activity and a clear setting, so a stock-photo search returns something there is plenty to talk about — a different scene for every prompt
+- The question is short and open (what / who / where), never yes/no
+- Each starter is a natural way to begin a sentence about the photo and ends with "…" (for example "It looks like they are …" or "In the background, there is …")
+- NEVER use "I can see" or "I see" in a starter — students over-use it, so give them different ways in
+- Vary the starters within a prompt: one about what is happening, one about the setting or objects, one giving a guess or an opinion
+- Starters must be {$lv->cefr} level language{$lv->rules}
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
     /** Shared Claude JSON request used by the newer generators. */
     private function requestJson(string $content): array
     {

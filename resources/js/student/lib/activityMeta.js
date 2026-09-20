@@ -20,6 +20,9 @@ export const ACTIVITY_META = {
     discussion_questions:    { label: 'Discussion',           icon: '🗣️' },
     sentence_transformation: { label: 'Transform',            icon: '🔄' },
     error_correction:        { label: 'Find the mistake',     icon: '🔍' },
+    match_pairs:             { label: 'Match pairs',          icon: '🔗' },
+    signs_notices:           { label: 'Signs & notices',      icon: '🪧' },
+    picture_prompts:         { label: 'Describe the picture', icon: '📷' },
 };
 
 export function activityMeta(type) {
