@@ -4,6 +4,7 @@ import axios from 'axios';
 import { TRILHAS } from '@/lib/trilhas';
 import { relativeTime } from '@/lib/time';
 import { activityMeta } from '@/student/lib/activityMeta';
+import { logout } from '@/student/lib/logout';
 
 const cardBase = 'rounded-2xl border border-white/10 bg-[#291f66]/55 backdrop-blur-md';
 
@@ -169,6 +170,19 @@ export default function ProgressPage({ user }) {
                     )}
                 </>
             )}
+
+            <div className={`${cardBase} mt-10 p-4 flex items-center gap-3`}>
+                <div className="min-w-0 flex-1">
+                    <p className="text-[11px] text-[#9384bd]">Signed in as</p>
+                    <p className="text-white text-sm font-display font-semibold truncate">{user?.name}</p>
+                </div>
+                <button
+                    onClick={logout}
+                    className="shrink-0 text-sm font-semibold px-4 py-2 rounded-xl border border-white/20 text-white/85 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                    Log out
+                </button>
+            </div>
         </div>
     );
 }

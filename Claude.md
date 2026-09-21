@@ -519,6 +519,12 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
   as-typed first, then cleaned. Anything new that sets a password should go through `Credentials::password()`.
   The Students page shows a hand-over card (exactly what was saved) and has **Reset password** per student.
   sqlite (local) compares emails case-sensitively, MySQL (Railway) doesn't — don't trust a local email-case result.
+- **A signed-in user is bounced away from `/login`** (`guest` middleware), so a student's only way to switch accounts is the
+  **Log out** card on the student Progress tab. Teacher data is **per account**: students are listed by `teacher_id`,
+  activities by `user_id` — signing in as a different teacher (personal vs Aurora shared) shows a different set, which
+  looks like "my data disappeared". To see who owns what, or why one login fails, run the read-only
+  `php artisan accounts:audit [email] [--password=]` (locally, or `railway ssh "php artisan accounts:audit …"`).
+  The Gabriel login failure is **still unresolved** (`PROJECT_LOG.md` §25 follow-up).
 - `php artisan test` has **10 pre-existing failures** in the stock Breeze tests (`Route [dashboard] not defined`,
   closed registration, profile routes) — not regressions; `StudentLoginTest` is the one that matters for login.
 

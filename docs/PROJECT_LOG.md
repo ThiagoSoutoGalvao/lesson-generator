@@ -1175,3 +1175,24 @@ account is unconfirmed; what was found by reproducing it locally through the rea
 `scratchpad/qa_2026-09/qa_student_login.mjs` (14 browser checks through the real Students + login pages). The rest
 of the suite has 10 **pre-existing** failures in the stock Breeze tests (`Route [dashboard] not defined`, registration
 closed on purpose, profile routes) — identical on the original code, untouched.
+
+**Follow-up (2026-09-22, same day) — the whitespace fix did NOT resolve Gabriel's case.** After the fix deployed and his
+password was reset from the new Students-page button, Gabriel still got "credentials do not match". So stray whitespace was
+a real bug but not (or not the only) cause for him; the cause is **still open**. What is known / added:
+- Thiago also reported that some students and activities he had created "disappeared" after the recent changes. **Nothing
+  shipped can delete data**: the last migration is 2026-09-15 (`student_assignments`), every migration is additive, and the
+  local database was checked intact (154 activities, 11 users) after all test runs (PHPUnit uses `:memory:`). The likely
+  explanation is **account scoping** — students are listed by `teacher_id = auth()->id()` and the Library by `user_id`, so
+  signing in as a *different teacher account* (his personal login vs the Aurora shared one) shows a different set (locally:
+  personal id 1 owns 144 activities + 2 students, Aurora id 69 owns 10 + 6). **Unconfirmed for prod** — needs
+  `accounts:audit` on Railway (below); also possible: he was on the local `lesson-generator.test` site.
+- **Students had no Log out** (only on the "account paused" / "no trilha" screens). A signed-in student is redirected away
+  from `/login` (`guest` middleware), so a phone that had logged in as a student was stuck in that session and could not
+  test another account. Added a "Signed in as … / Log out" card at the bottom of the student **Progress** tab
+  (`student/lib/logout.js` shared with the paused screen). `qa_student_logout.mjs`: 8 checks at 390px.
+- **`php artisan accounts:audit`** (read-only, never prints a hash): no argument → every account with the activities and
+  students it owns; `accounts:audit gabriel@x.com` → does that login exist, active?, whose student is it, similar emails if
+  not; `--password=…` → does the server accept that password (as typed / edge-cleaned). Run in prod with
+  `railway ssh "php artisan accounts:audit …"`.
+- Candidate causes still open for Gabriel: an email typo when the account was created; the account being created on the
+  other environment (local vs Railway); a stale password auto-filled by the phone's password manager.

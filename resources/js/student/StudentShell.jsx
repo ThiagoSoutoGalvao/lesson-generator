@@ -4,23 +4,11 @@ import LessonPage from '@/student/pages/LessonPage';
 import ProgressPage from '@/student/pages/ProgressPage';
 import PracticePage from '@/student/pages/PracticePage';
 import StudentActivityPlayer from '@/student/StudentActivityPlayer';
+import { logout } from '@/student/lib/logout';
 import DetPracticePage from '@/pages/DetPracticePage';
 import CambridgePracticePage from '@/pages/CambridgePracticePage';
 
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
-
-function logout() {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = '/logout';
-    const t = document.createElement('input');
-    t.type = 'hidden';
-    t.name = '_token';
-    t.value = document.querySelector('meta[name="csrf-token"]')?.content ?? '';
-    form.appendChild(t);
-    document.body.appendChild(form);
-    form.submit();
-}
 
 // A blocked / not-ready state — its own screen, no nav.
 function Notice({ title, body }) {
