@@ -251,7 +251,10 @@ touched** — they keep their dark `#1a1a2e` + photo look.
 screen brightness (50–100, a fixed black veil), font (`default` Inter / `system`
 / `poppins` / `lexend`, applied as `data-app-font` on `<html>`).
 `DisplayControls.jsx` is a portal popover — `variant="nav"` (navbar) vs
-`"activity"` (drill/activity header), `colors={false}` for the two tile games.
+`"activity"` (drill/activity header). `colors={false}` hides the text-colour swatches for
+screens whose colours carry meaning — Word Categorisation, Image Vocab Match, Picture
+Prompts (added 2026-09-22; this prop was documented here long before it existed, and the two
+tile games had **no** Display panel at all until then). Every activity screen now has it.
 - `TEXT_COLORS` (the standard 5: White / Yellow / Orange / Red / Cyan) is now the
   **single source of truth** — exported from `useDisplay`, components stopped
   redefining it. Each activity keeps its own per-layout `*_SIZES` arrays indexed

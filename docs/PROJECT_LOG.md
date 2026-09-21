@@ -1108,3 +1108,26 @@ teacher's task text and the A2 level rule still present), and the B1 byte-identi
 takes a table of intentional line changes so it still proves nothing else moved. **Not verified
 against real Claude output** (no API spend): whether Claude actually produces 10 good items, and
 whether 10 True/False statements from an 80–150-word passage stay unambiguous. Try it once.
+
+
+## 24. Display panel on every activity screen (2026-09-22)
+Thiago reported "no customizing tab anymore" on Multiple Choice Cloze and asked for it on all
+templates. No feature called "customizing" exists in the code or the git history; asked which he
+meant, he chose the **Display ("Aa") panel** (text size / colour / brightness / font).
+**Finding:** Multiple Choice Cloze *does* have it and it works — checked in a browser: the panel
+opens, and text size, text colour and font each measurably changed the passage. So that report
+could not be reproduced (if he still doesn't see it somewhere specific — Library launch, phone,
+the student app — a screenshot of that place is what's needed). What the audit did find:
+- **Word Categorisation and Image Vocab Match never had the panel** (git history is empty) — the
+  only two of 23 activity screens without it. Added, with the size setting applied to their word
+  tiles and category names (default step = the original size, verified 16px / 14px / 18px).
+- `DisplayControls` had **no `colors` prop**, although this file and Picture Prompts assumed one.
+  Added it: `colors={false}` hides the text-colour swatches, used on the two tile games and Picture
+  Prompts, where text colours mean matched / right / wrong / selected. Default (swatches shown)
+  is unchanged — verified on MC Cloze.
+- The smallest size step is tiny everywhere (existing MC Cloze passage 9.4px, Image Vocab Match
+  7.9px) — an existing property of the shared scale, left alone.
+**Verified:** source audit (23/23 screens render the panel) + 14 browser checks (panel opens; colour
+swatches hidden on the tile games and present on MC Cloze; size steps grow/shrink tiles and names;
+both games still playable; zero console errors) and all earlier suites still pass. One of my own
+older test checks (A2 "Back") was timing-flaky and was made robust.

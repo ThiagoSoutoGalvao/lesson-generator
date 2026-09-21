@@ -1,7 +1,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+
+// Word-tile text size for the shared Display panel's 5 steps (step 3, the default, is the original size).
+const TILE_SIZES = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'];
 
 function shuffle(arr) {
     const a = [...arr];
@@ -24,6 +29,7 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
     const [finished, setFinished]     = useState(false);
     const [showSave, setShowSave]     = useState(false);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const { sizeIdx } = useDisplay();
 
     useEffect(() => {
         let cancelled = false;
@@ -136,6 +142,8 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
                     </span>
                 </div>
                 <div className="flex items-center gap-5">
+                    {/* colours here mean matched / wrong, so the shared text-colour picker is hidden */}
+                    <DisplayControls colors={false} />
                     {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
                         {isFullscreen ? '⊡' : '⛶'}
@@ -151,7 +159,7 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
                         <button
                             key={originalIdx}
                             onClick={() => handleWordClick(orderIdx)}
-                            className={`px-5 py-2.5 rounded-xl font-semibold text-base border-2 transition-all duration-150 cursor-pointer
+                            className={`px-5 py-2.5 rounded-xl font-semibold ${TILE_SIZES[sizeIdx]} border-2 transition-all duration-150 cursor-pointer
                                 ${selected === orderIdx
                                     ? 'bg-blue-500 border-blue-400 text-white scale-105 shadow-lg shadow-blue-500/30'
                                     : 'bg-white/10 border-white/20 text-white hover:bg-white/20 hover:border-white/40'}

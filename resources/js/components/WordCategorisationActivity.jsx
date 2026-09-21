@@ -1,7 +1,13 @@
 import { useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
+import DisplayControls from '@/components/DisplayControls';
+import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+
+// Text sizes for the shared Display panel's 5 steps (step 3, the default, is the original size).
+const TILE_SIZES = ['text-[11px]', 'text-xs', 'text-sm', 'text-base', 'text-lg'];
+const HEAD_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
 
 function shuffle(arr) {
     const a = [...arr];
@@ -26,6 +32,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
     const [bgUrl, setBgUrl]       = useState(null);
     const [showSave, setShowSave] = useState(false);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const { sizeIdx } = useDisplay();
     const dragRef = useRef(null);
 
     const allPlaced  = pool.length === 0;
@@ -143,7 +150,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                 draggable={!checked}
                 onDragStart={e => onDragStartWord(e, word, location)}
                 onClick={() => onClickWord(word, location)}
-                className={`${colorCls} border rounded-xl px-4 py-2 text-sm font-semibold select-none transition-all duration-150 shadow`}
+                className={`${colorCls} border rounded-xl px-4 py-2 ${TILE_SIZES[sizeIdx]} font-semibold select-none transition-all duration-150 shadow`}
                 style={{ cursor: checked ? 'default' : 'grab' }}
             >
                 {word}
@@ -173,6 +180,8 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                     )}
                 </div>
                 <div className="flex items-center gap-5">
+                    {/* tile colours here mean selected / right / wrong, so the shared text-colour picker is hidden */}
+                    <DisplayControls colors={false} />
                     {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Fullscreen (F)">
                         {isFullscreen ? '⊡' : '⛶'}
@@ -198,7 +207,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                                 ${selected && !checked ? 'border-yellow-400/60 bg-white/5 cursor-pointer' : 'border-white/20 bg-white/5'}
                             `}
                         >
-                            <h3 className="text-white font-bold text-lg text-center mb-1 shrink-0">
+                            <h3 className={`text-white font-bold ${HEAD_SIZES[sizeIdx]} text-center mb-1 shrink-0`}>
                                 {cat.name}
                             </h3>
                             <div className="flex flex-wrap gap-2 content-start">

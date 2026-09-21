@@ -17,7 +17,9 @@ const FONT_PREVIEW = {
 // panel (text size, colour, screen brightness, font) — the same panel from the
 // navbar (`variant="nav"`) and from every activity header (`variant="activity"`).
 // All of it reads/writes the persisted DisplayProvider state.
-export default function DisplayControls({ variant = 'activity', className = '' }) {
+// `colors={false}` hides the text-colour swatches — for screens whose text colours carry meaning
+// (right / wrong / selected), where a user-picked colour would fight them.
+export default function DisplayControls({ variant = 'activity', className = '', colors = true }) {
     const d = useDisplay();
     const [open, setOpen] = useState(false);
     const triggerRef = useRef(null);
@@ -90,6 +92,7 @@ export default function DisplayControls({ variant = 'activity', className = '' }
                     </Section>
 
                     {/* Text colour */}
+                    {colors && (
                     <Section label="Text colour">
                         <div className="flex items-center gap-2.5">
                             {TEXT_COLORS.map(({ label, cls, hex }) => (
@@ -107,6 +110,7 @@ export default function DisplayControls({ variant = 'activity', className = '' }
                             ))}
                         </div>
                     </Section>
+                    )}
 
                     {/* Screen brightness */}
                     <Section label="Screen brightness">
