@@ -305,8 +305,9 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly 6 statements
-- Distribute answers roughly evenly: 2 True, 2 False, 2 Not Given — but vary the order
+- Generate the number of statements requested in the task — 6 if none is given, never fewer than 3 or more than 12
+- Distribute the answers as evenly as possible across True, False and Not Given (with 6 statements: 2 of each) — but vary the order
+- For more than 8 statements, the passage may be up to 50% longer than the length above so there is enough to test
 - "True" means the passage clearly supports the statement
 - "False" means the passage clearly contradicts the statement
 - "Not Given" means the passage neither confirms nor contradicts it — the information is simply absent
@@ -436,7 +437,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly 6 groups
+- Generate the number of groups requested in the task — 6 if none is given, never fewer than 3 or more than 15
 - Each group must have exactly 4 words: 3 that share a clear connection and 1 odd one out
 - The odd word must be clearly and unambiguously different — no borderline cases
 - The reason must explain both why the odd word doesn't fit AND what connects the other three
@@ -638,7 +639,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly 6 questions
+- Generate the number of questions requested in the task — 6 if none is given, never fewer than 3 or more than 15
 - Questions must be genuinely open-ended — no yes/no questions
 - Each question should invite students to share opinions, experiences, or ideas related to the text
 - Each question must have exactly 2 follow-up prompts — short phrases to keep the conversation going (e.g. "Why do you think so?", "Can you give an example?", "Have you ever experienced this?")
@@ -1000,7 +1001,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly 6 questions
+- Generate the number of questions requested in the task — 6 if none is given, never fewer than 3 or more than 10
 - Each question has EXACTLY 4 options; exactly one is correct and is repeated verbatim as "answer"
 - Mix question types: main idea, specific detail, vocabulary in context, inference, and the writer's purpose or opinion
 - Wrong options must be plausible and drawn from the passage's topic — not obviously silly

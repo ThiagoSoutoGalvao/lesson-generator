@@ -1092,3 +1092,19 @@ else moved. **Not verified against real Claude output** (no API spend) — try 1
 **Same "exactly 6" cap still exists in four other templates:** True/False (statements — also keeps a
 2/2/2 True/False/Not Given mix), Odd One Out (groups), Discussion Questions and MC Reading (questions).
 Left as is until asked.
+
+### 23c. The other four "exactly 6" templates now honour the requested count (2026-09-22)
+Same fix as 23b, asked for by Thiago, applied to the four templates that still pinned the count:
+**True/False** (statements, 3–12), **Odd One Out** (groups, 3–15), **Discussion Questions**
+(questions, 3–15), **MC Reading** (questions, 3–10); 6 remains the default when the task gives
+no number. Extra care where a count interacts with something else: True/False's fixed
+"2 True, 2 False, 2 Not Given" is now "as evenly as possible (with 6 statements: 2 of each)", and
+for more than 8 statements the passage may be up to 50% longer so there is enough to test; its
+default Instructions text says "an even mix" instead of "2 True, 2 False, 2 Not Given" so editing the
+number can't contradict itself. No screen assumed six (all use `length`); MC Reading's server-side
+validation only drops malformed questions — it has no count cap. **Verified:** 22 backend checks
+(Anthropic faked; per template: 10 entries pass through, no "exactly 6", the cap wording, the
+teacher's task text and the A2 level rule still present), and the B1 byte-identical regression now
+takes a table of intentional line changes so it still proves nothing else moved. **Not verified
+against real Claude output** (no API spend): whether Claude actually produces 10 good items, and
+whether 10 True/False statements from an 80–150-word passage stay unambiguous. Try it once.

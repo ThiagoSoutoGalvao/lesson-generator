@@ -126,7 +126,7 @@ const TEMPLATES = [
     {
         id: 'true_false', label: 'True / False / Not Given', goals: ['reading'],
         blurb: 'A reading passage and 6 statements to judge. Trains close reading and inference.',
-        defaultPrompt: 'Write a reading passage and 6 statements — 2 True, 2 False, 2 Not Given. Vary the order.',
+        defaultPrompt: 'Write a reading passage and 6 statements — an even mix of True, False and Not Given. Vary the order.',
     },
     {
         id: 'mc_reading', label: 'Reading Comprehension (MC)', goals: ['reading'],
