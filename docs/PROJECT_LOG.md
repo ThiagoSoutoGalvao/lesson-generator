@@ -1136,3 +1136,42 @@ older test checks (A2 "Back") was timing-flaky and was made robust.
 (the Display panel) on Multiple Choice Cloze — the report is resolved, nothing further to do there. In the same
 message he decided **not** to add Practice-attempt tracking for now (§23's known limit stands), and asked for the
 `Co-Authored-By` lines to be removed from commit messages (rule now in `Claude.md` §3).
+
+
+## 25. Student login: "credentials don't match" for a freshly created student (2026-09-22)
+
+Thiago created a student (Gabriel) a few minutes earlier, they tried to log in together, and got "These
+credentials do not match our records" — not the first time. Production data was **not** read (the earlier
+`railway ssh` read was refused by the permission classifier and was not retried), so the exact cause for Gabriel's
+account is unconfirmed; what was found by reproducing it locally through the real endpoints:
+
+- **Passwords were stored exactly as typed, edge spaces included.** Laravel's `TrimStrings` never trims password
+  fields, so a password created as `Lights-2026 ` (a slip, or a paste from WhatsApp/Slack that also drags along a
+  non-breaking or zero-width character) was hashed *with* the extra character. The student types it without and is
+  refused — with no hint on either screen. Independent of database. Reproduced (feature test failed before the fix).
+- **Email case:** login compared the email as typed. MySQL (Railway) ignores case so it was fine in prod, but sqlite
+  (local Herd) is case-sensitive — a local-only artefact, fixed anyway.
+- **No recovery path:** the Students page had no way to reset a password (the `PATCH /api/students/{id}` endpoint
+  supported it; nothing in the UI called it), and after "Create student" the form cleared, so the teacher could not
+  check what had been saved — a mistyped email or password stayed invisible.
+- Ruled out by testing: double hashing (`Hash::make` + the model's `hashed` cast — the cast leaves a valid hash
+  alone), the email being trimmed/lower-cased on save, and the rate limiter (it shows a different message).
+
+**Fix**
+- `App\Support\Credentials` — `password()` strips whitespace, Unicode spaces (incl. NBSP) and zero-width characters
+  from both ends; `email()` does that plus lower-casing. Used by `StudentController` (`store`, and `update` when a
+  password is sent — cleaned *before* validation so "min 8" counts the real password) and `student:create`.
+- `LoginRequest::attempt()` tries exactly what was typed first, then the cleaned version. So an **older account whose
+  stored password already carries a stray space still logs in** if the student types it that way; only a failed first
+  try costs a second bcrypt check.
+- Students page: after creating a student (or resetting), a green **hand-over card** shows the login URL, the saved
+  email and the saved password, with a Copy button; each row has **Reset password**. Email/password inputs (create
+  form, reset, login page) switch off autocorrect / auto-capitalise.
+- **An existing account with a bad stored password needs one reset** from the Students page — login can't guess a
+  space that isn't in what the student types. Gabriel's is the obvious one to reset.
+
+**Verified:** `tests/Feature/Auth/StudentLoginTest.php` (13 tests: exact, capitals, spaces, NBSP/zero-width, symbols,
+`çã`, a legacy padded password, reset, wrong password still refused, min-length counted after cleaning) and
+`scratchpad/qa_2026-09/qa_student_login.mjs` (14 browser checks through the real Students + login pages). The rest
+of the suite has 10 **pre-existing** failures in the stock Breeze tests (`Route [dashboard] not defined`, registration
+closed on purpose, profile routes) — identical on the original code, untouched.

@@ -7,6 +7,7 @@ use App\Models\StudentAssignment;
 use App\Models\User;
 use App\Services\StudentHomeworkService;
 use App\Services\StudentProgressService;
+use App\Support\Credentials;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
@@ -41,6 +42,12 @@ class StudentController extends Controller
     {
         $this->guardTeacher();
 
+        // Clean before validating so "min 8" counts the real password, not trailing spaces.
+        $request->merge([
+            'email'    => Credentials::email($request->input('email')),
+            'password' => Credentials::password($request->input('password')),
+        ]);
+
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:100'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
@@ -50,7 +57,7 @@ class StudentController extends Controller
 
         $student = new User();
         $student->name       = $data['name'];
-        $student->email      = strtolower(trim($data['email']));
+        $student->email      = $data['email'];
         $student->password   = Hash::make($data['password']);
         $student->role       = 'student';
         $student->trilha     = $data['trilha'];
@@ -73,6 +80,10 @@ class StudentController extends Controller
             403,
             'Not your student.',
         );
+
+        if ($request->has('password')) {
+            $request->merge(['password' => Credentials::password($request->input('password'))]);
+        }
 
         $data = $request->validate([
             'trilha'    => ['sometimes', Rule::in(['Lights', 'Glow', 'Radiant'])],

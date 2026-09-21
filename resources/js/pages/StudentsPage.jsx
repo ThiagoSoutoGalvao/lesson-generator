@@ -6,6 +6,45 @@ import { activityMeta } from '@/student/lib/activityMeta';
 
 const inputCls = 'w-full bg-white/8 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]';
 
+// Same edge-stripping the server applies (App\Support\Credentials): whitespace, Unicode spaces
+// and zero-width characters — so the hand-over card shows the password that was really saved.
+const cleanSecret = s => s.replace(/^[\s\p{Z}​-‍⁠﻿]+|[\s\p{Z}​-‍⁠﻿]+$/gu, '');
+
+// Fields whose text a phone keyboard or browser must not "help" with.
+const plainText = { autoComplete: 'off', autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false };
+
+function Handover({ info, onClose }) {
+    const [copied, setCopied] = useState(false);
+    const loginUrl = `${window.location.origin}/login`;
+
+    async function copy() {
+        try {
+            await navigator.clipboard.writeText(`Login: ${loginUrl}\nEmail: ${info.email}\nPassword: ${info.password}`);
+            setCopied(true);
+        } catch { /* clipboard blocked — the details are on screen to copy by hand */ }
+    }
+
+    return (
+        <div className="rounded-2xl border border-[#3ecf8e]/40 bg-[#3ecf8e]/10 p-4 flex flex-col gap-2">
+            <p className="text-[#5be0a4] text-sm font-display font-semibold">{info.heading}</p>
+            <dl className="text-sm text-white/90 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 break-all">
+                <dt className="text-white/50">Login</dt><dd>{loginUrl}</dd>
+                <dt className="text-white/50">Email</dt><dd>{info.email}</dd>
+                <dt className="text-white/50">Password</dt><dd className="font-mono">{info.password}</dd>
+            </dl>
+            <p className="text-white/45 text-xs">This is exactly what was saved — no spaces before or after. It won't be shown again.</p>
+            <div className="flex gap-2">
+                <button onClick={copy} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#e0521f] hover:bg-[#c9461a] text-white transition-colors cursor-pointer">
+                    {copied ? 'Copied ✓' : 'Copy details'}
+                </button>
+                <button onClick={onClose} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                    Done
+                </button>
+            </div>
+        </div>
+    );
+}
+
 function NewStudentForm({ onCreated }) {
     const [name, setName]         = useState('');
     const [email, setEmail]       = useState('');
@@ -13,13 +52,15 @@ function NewStudentForm({ onCreated }) {
     const [password, setPassword] = useState('');
     const [busy, setBusy]         = useState(false);
     const [err, setErr]           = useState('');
+    const [handover, setHandover] = useState(null);
 
     async function submit(e) {
         e.preventDefault();
-        setBusy(true); setErr('');
+        setBusy(true); setErr(''); setHandover(null);
         try {
             const { data } = await axios.post('/api/students', { name, email, trilha, password });
             onCreated(data);
+            setHandover({ heading: `${data.name} is ready to log in`, email: data.email, password: cleanSecret(password) });
             setName(''); setEmail(''); setPassword(''); setTrilha('Lights');
         } catch (e2) {
             setErr(e2.response?.data?.message ?? Object.values(e2.response?.data?.errors ?? {})[0]?.[0] ?? 'Could not create the student.');
@@ -29,22 +70,25 @@ function NewStudentForm({ onCreated }) {
     }
 
     return (
-        <form onSubmit={submit} className="lg-surface border rounded-2xl p-5 flex flex-col gap-3">
-            <h3 className="font-display text-white font-bold text-sm">New student</h3>
-            <div className="grid sm:grid-cols-2 gap-3">
-                <input className={inputCls} placeholder="Full name" value={name} onChange={e => setName(e.target.value)} required />
-                <input className={inputCls} type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-                <select className={`${inputCls} cursor-pointer`} value={trilha} onChange={e => setTrilha(e.target.value)}>
-                    {TRILHA_NAMES.map(t => <option key={t} value={t} className="bg-[#1c1540]">{TRILHAS[t].label}</option>)}
-                </select>
-                <input className={inputCls} type="text" placeholder="Password (min 8 chars)" value={password} onChange={e => setPassword(e.target.value)} minLength={8} required />
-            </div>
-            {err && <p className="text-red-300 text-xs">{err}</p>}
-            <button disabled={busy} className="self-start bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-40 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors cursor-pointer">
-                {busy ? 'Creating…' : 'Create student'}
-            </button>
-            <p className="text-white/40 text-xs">You set the password and hand it over. The student logs in at the same page you do.</p>
-        </form>
+        <div className="flex flex-col gap-3">
+            <form onSubmit={submit} className="lg-surface border rounded-2xl p-5 flex flex-col gap-3">
+                <h3 className="font-display text-white font-bold text-sm">New student</h3>
+                <div className="grid sm:grid-cols-2 gap-3">
+                    <input className={inputCls} placeholder="Full name" value={name} onChange={e => setName(e.target.value)} required />
+                    <input className={inputCls} type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required {...plainText} />
+                    <select className={`${inputCls} cursor-pointer`} value={trilha} onChange={e => setTrilha(e.target.value)}>
+                        {TRILHA_NAMES.map(t => <option key={t} value={t} className="bg-[#1c1540]">{TRILHAS[t].label}</option>)}
+                    </select>
+                    <input className={inputCls} type="text" placeholder="Password (min 8 chars)" value={password} onChange={e => setPassword(e.target.value)} minLength={8} required {...plainText} />
+                </div>
+                {err && <p className="text-red-300 text-xs">{err}</p>}
+                <button disabled={busy} className="self-start bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-40 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors cursor-pointer">
+                    {busy ? 'Creating…' : 'Create student'}
+                </button>
+                <p className="text-white/40 text-xs">You set the password and hand it over. The student logs in at the same page you do.</p>
+            </form>
+            {handover && <Handover info={handover} onClose={() => setHandover(null)} />}
+        </div>
     );
 }
 
@@ -262,6 +306,10 @@ function HomeworkPanel({ studentId }) {
 function StudentRow({ s, onChange }) {
     const [busy, setBusy]       = useState(false);
     const [expanded, setExpanded] = useState(false);
+    const [resetting, setResetting] = useState(false);
+    const [newPassword, setNewPassword] = useState('');
+    const [resetErr, setResetErr] = useState('');
+    const [handover, setHandover] = useState(null);
 
     async function patch(payload) {
         setBusy(true);
@@ -270,6 +318,18 @@ function StudentRow({ s, onChange }) {
             onChange(data);
         } finally {
             setBusy(false);
+        }
+    }
+
+    async function resetPassword(e) {
+        e.preventDefault();
+        setResetErr('');
+        try {
+            await patch({ password: newPassword });
+            setHandover({ heading: `New password saved for ${s.name}`, email: s.email, password: cleanSecret(newPassword) });
+            setResetting(false); setNewPassword('');
+        } catch (e2) {
+            setResetErr(Object.values(e2.response?.data?.errors ?? {})[0]?.[0] ?? e2.response?.data?.message ?? 'Could not change the password.');
         }
     }
 
@@ -301,7 +361,40 @@ function StudentRow({ s, onChange }) {
                 >
                     {s.is_active ? 'Deactivate' : 'Reactivate'}
                 </button>
+                <button
+                    disabled={busy}
+                    onClick={() => { setResetting(r => !r); setResetErr(''); setHandover(null); }}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                    Reset password
+                </button>
             </div>
+            {resetting && (
+                <form onSubmit={resetPassword} className="border-t border-white/10 bg-black/15 px-4 py-3 flex flex-col gap-2">
+                    <div className="flex flex-wrap gap-2">
+                        <input
+                            className={`${inputCls} flex-1 min-w-[12rem]`}
+                            type="text"
+                            placeholder="New password (min 8 chars)"
+                            value={newPassword}
+                            onChange={e => setNewPassword(e.target.value)}
+                            minLength={8}
+                            required
+                            autoFocus
+                            {...plainText}
+                        />
+                        <button disabled={busy} className="text-xs font-semibold px-4 py-2 rounded-lg bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-40 text-white transition-colors cursor-pointer">
+                            Save password
+                        </button>
+                    </div>
+                    {resetErr && <p className="text-red-300 text-xs">{resetErr}</p>}
+                </form>
+            )}
+            {handover && (
+                <div className="border-t border-white/10 bg-black/15 px-4 py-3">
+                    <Handover info={handover} onClose={() => setHandover(null)} />
+                </div>
+            )}
             {expanded && (
                 <div className="border-t border-white/10 bg-black/15 px-4 py-4 flex flex-col gap-5">
                     <div>

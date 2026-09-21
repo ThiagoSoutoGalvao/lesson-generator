@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\User;
+use App\Support\Credentials;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
@@ -26,7 +27,7 @@ class CreateStudent extends Command
     public function handle(): int
     {
         $name   = $this->option('name') ?: $this->ask('Student name');
-        $email  = strtolower(trim($this->option('email') ?: $this->ask('Student email')));
+        $email  = Credentials::email($this->option('email') ?: $this->ask('Student email'));
         $trilha = ucfirst(strtolower($this->option('trilha') ?: $this->choice('Trilha', ['Lights', 'Glow', 'Radiant'])));
         $teacherEmail = strtolower(trim($this->option('teacher') ?: $this->ask('Owning teacher email')));
 
@@ -49,8 +50,8 @@ class CreateStudent extends Command
             return self::FAILURE;
         }
 
-        $password = $this->option('password') ?: $this->secret('Password (min 8 characters)');
-        if (strlen((string) $password) < 8) {
+        $password = Credentials::password($this->option('password') ?: $this->secret('Password (min 8 characters)'));
+        if (strlen($password) < 8) {
             $this->error('Password must be at least 8 characters.');
             return self::FAILURE;
         }

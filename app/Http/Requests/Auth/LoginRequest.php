@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Support\Credentials;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
@@ -42,7 +43,7 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        if (! $this->attempt()) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
@@ -51,6 +52,29 @@ class LoginRequest extends FormRequest
         }
 
         RateLimiter::clear($this->throttleKey());
+    }
+
+    /**
+     * Exactly what was typed first; then the same with stray edge spaces removed and the
+     * email lower-cased — phone keyboards add a trailing space or capital, and a password
+     * pasted from a chat can carry an invisible character. Only a failed first try costs
+     * the second bcrypt check.
+     */
+    private function attempt(): bool
+    {
+        $remember = $this->boolean('remember');
+        $typed    = $this->only('email', 'password');
+
+        if (Auth::attempt($typed, $remember)) {
+            return true;
+        }
+
+        $clean = [
+            'email'    => Credentials::email($typed['email'] ?? ''),
+            'password' => Credentials::password($typed['password'] ?? ''),
+        ];
+
+        return $clean !== $typed && Auth::attempt($clean, $remember);
     }
 
     /**
