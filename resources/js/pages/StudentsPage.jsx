@@ -355,9 +355,11 @@ function StudentRow({ s, onChange, onRemoved }) {
     return (
         <div className={`lg-surface border rounded-2xl overflow-hidden ${s.is_active ? '' : 'opacity-55'}`}>
             <div className="p-4 flex flex-wrap items-center gap-3">
-                <div className="min-w-0 flex-1">
-                    <p className="font-display font-semibold text-white text-sm truncate">{s.name}</p>
-                    <p className="text-white/50 text-xs truncate">{s.email}</p>
+                {/* Its own full-width line: with five buttons on the row a flex-1 name shrank to a couple of letters. */}
+                <div className="min-w-0 basis-full">
+                    <p className="font-display font-semibold text-white text-sm break-words">{s.name}</p>
+                    {/* wraps instead of "…": the email is exactly what the student has to type, so show all of it */}
+                    <p className="text-white/50 text-xs break-all">{s.email}</p>
                 </div>
                 <select
                     value={s.trilha}
