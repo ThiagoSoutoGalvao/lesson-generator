@@ -1,4 +1,6 @@
+import { useEffect } from 'react';
 import { Routes, Route, Navigate, NavLink } from 'react-router-dom';
+import axios from 'axios';
 import MyTrilhaPage from '@/student/pages/MyTrilhaPage';
 import LessonPage from '@/student/pages/LessonPage';
 import ProgressPage from '@/student/pages/ProgressPage';
@@ -22,7 +24,35 @@ function Notice({ title, body }) {
     );
 }
 
+// The student's trilha and active flag are read once, when the page loads (window.__AURORA_USER__), and the
+// lesson list is cached — so a teacher changing the trilha (or pausing the account) did nothing on a phone that
+// already had the app open. Ask the server again whenever the app comes back to the foreground, and once a minute
+// while it is visible; if either changed, reload so the whole app starts from the new state.
+function useFreshAccount(user) {
+    useEffect(() => {
+        let last = 0;
+        const check = async () => {
+            if (document.visibilityState !== 'visible' || Date.now() - last < 10_000) return;
+            last = Date.now();
+            try {
+                const { data } = await axios.get('/api/me');
+                if (data.trilha !== user.trilha || data.is_active !== user.is_active) window.location.reload();
+            } catch { /* offline or a blip — try again next time */ }
+        };
+        const timer = setInterval(check, 60_000);
+        document.addEventListener('visibilitychange', check);
+        window.addEventListener('focus', check);
+        return () => {
+            clearInterval(timer);
+            document.removeEventListener('visibilitychange', check);
+            window.removeEventListener('focus', check);
+        };
+    }, [user.trilha, user.is_active]);
+}
+
 export default function StudentShell({ user }) {
+    useFreshAccount(user);
+
     if (user.is_active === false) {
         return <Notice title="Your account is paused" body="Ask your Aurora teacher to reactivate it, then log in again." />;
     }

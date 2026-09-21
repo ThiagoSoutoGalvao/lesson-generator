@@ -15,7 +15,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->trustProxies(at: '*');
         // Activity/exercise content is Claude-generated JSON — trimming its string
         // values corrupts cloze passages (drops the spaces that sit against a gap).
-        $middleware->trimStrings(except: ['content', 'content.*', 'source_text']);
+        // `activities.*.content` is the same rule for the bulk import (POST /api/activities/import).
+        $middleware->trimStrings(except: ['content', 'content.*', 'source_text', 'activities.*.content', 'activities.*.content.*']);
         $middleware->appendToGroup('api', [
             \Illuminate\Cookie\Middleware\EncryptCookies::class,
             \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,

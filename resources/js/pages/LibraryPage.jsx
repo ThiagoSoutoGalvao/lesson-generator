@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
@@ -288,6 +288,56 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
     );
 }
 
+// Loads a file written by `php artisan activities:export` (e.g. made on the local site) into THIS
+// account's library. Whatever owner the file came from, the activities land under whoever is signed in.
+function ImportActivities({ onDone }) {
+    const inputRef = useRef(null);
+    const [busy, setBusy] = useState(false);
+    const [msg, setMsg]   = useState(null);   // { ok, text }
+
+    async function pick(e) {
+        const file = e.target.files?.[0];
+        e.target.value = '';                  // so choosing the same file again still fires
+        if (!file) return;
+        setBusy(true); setMsg(null);
+        try {
+            let json;
+            try { json = JSON.parse(await file.text()); }
+            catch { throw new Error("That file isn't a Lesson Generator export (it isn't valid JSON)."); }
+            const list = Array.isArray(json) ? json : json?.activities;
+            if (!Array.isArray(list) || list.length === 0) throw new Error('That file has no activities in it.');
+
+            const { data } = await axios.post('/api/activities/import', { activities: list });
+            await onDone();
+            setMsg({
+                ok: true,
+                text: data.imported === 0
+                    ? `Nothing new — all ${data.skipped} were already in your library.`
+                    : `Imported ${data.imported} ${data.imported === 1 ? 'activity' : 'activities'}${data.skipped ? ` (${data.skipped} already there)` : ''}.`,
+            });
+        } catch (err) {
+            const first = Object.values(err.response?.data?.errors ?? {})[0]?.[0];
+            setMsg({ ok: false, text: first ?? err.response?.data?.message ?? err.message ?? 'Could not import that file.' });
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    return (
+        <div className="flex flex-col items-start sm:items-end gap-1.5">
+            <input ref={inputRef} type="file" accept=".json,application/json" onChange={pick} className="hidden" aria-label="Choose an activities file to import" />
+            <button
+                onClick={() => inputRef.current?.click()}
+                disabled={busy}
+                className="text-xs font-semibold px-3.5 py-2 rounded-lg border border-white/20 text-white/85 hover:text-white hover:bg-white/10 disabled:opacity-40 transition-colors cursor-pointer"
+            >
+                {busy ? 'Importing…' : 'Import from file'}
+            </button>
+            {msg && <p className={`text-xs max-w-xs sm:text-right ${msg.ok ? 'text-[#5be0a4]' : 'text-red-300'}`}>{msg.text}</p>}
+        </div>
+    );
+}
+
 export default function LibraryPage() {
     const [activities, setActivities] = useState([]);
     const [folders, setFolders]       = useState([]);
@@ -316,6 +366,12 @@ export default function LibraryPage() {
             })
             .finally(() => setLoading(false));
     }, []);
+
+    async function reloadLists() {
+        const [acts, fols] = await Promise.all([axios.get('/api/activities'), axios.get('/api/folders')]);
+        setActivities(acts.data);
+        setFolders(fols.data);
+    }
 
     async function handleSaveBrief(payload) {
         const { data } = await axios.put('/api/trilha-briefs', payload);
@@ -386,9 +442,12 @@ export default function LibraryPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <div>
-                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Activity Library</h2>
-                <p className="lg-shell-text text-white/75 mt-1 text-sm">Your saved activities — relaunch them any time.</p>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                    <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Activity Library</h2>
+                    <p className="lg-shell-text text-white/75 mt-1 text-sm">Your saved activities — relaunch them any time.</p>
+                </div>
+                <ImportActivities onDone={reloadLists} />
             </div>
 
             {/* Type filter */}

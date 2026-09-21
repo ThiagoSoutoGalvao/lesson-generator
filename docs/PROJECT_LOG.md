@@ -1224,3 +1224,18 @@ Deletes, in one transaction, the student's `activity_attempts`, `student_assignm
 signed out) and the user; the teacher's activities are untouched; the email becomes reusable. Verified:
 `RemoveStudentTest` (6) + `qa_remove_student.mjs` (11 checks at 390px: cancel keeps, confirm removes, survives a reload,
 removed student locked out, other student survives, no horizontal scroll, zero console errors).
+
+**Trilha change not reaching an open student app; local → live activity transfer (2026-09-22).**
+- *Trilha:* the server was right (a `PATCH` changes `/api/student/lessons` and `/api/me` at once — `ChangeStudentTrilhaTest`).
+  The student app read `trilha` / `is_active` once at page load (`window.__AURORA_USER__`) and cached the lesson list, so a phone
+  that already had the app open kept showing the old trilha. `StudentShell` now calls `/api/me` when the app returns to the
+  foreground (focus / visibilitychange) and once a minute while visible, and reloads if the trilha or active flag changed
+  (a removed student's open app is bounced to /login the same way, via the 401 interceptor).
+- *Activities made on the wrong (local) site:* `php artisan activities:export <file> [--user=email] [--since=YYYY-MM-DD] [--id=…]`
+  (read-only; JSON without ids/owner) + **Library → "Import from file"** (`POST /api/activities/import`, teacher-only, ≤100,
+  validated like a normal save, owned by whoever is signed in, an identical name+type+content is skipped so re-importing is safe).
+  **`bootstrap/app.php` `trimStrings` now also excludes `activities.*.content(.*)`** — without it the import would have stripped the
+  spaces next to cloze gaps (the earlier save bug); `test_spaces_next_to_the_gaps_are_kept_exactly` fails without the exception.
+  The three local activities since 2026-09-21 (all owner = personal account: presentation "VerbPatterns-changeMeaning",
+  sentence transformation "Verbpatterns", mc_cloze "verbPatterns") were exported to `~/Downloads/lesson-generator-activities.json`.
+  Verified: `ImportActivitiesTest` (9), `ChangeStudentTrilhaTest`, `qa_import_trilha.mjs` (14 checks, using the real export file).
