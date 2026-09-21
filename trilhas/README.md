@@ -86,6 +86,12 @@ RADIANT L11 · Odd One Out  · Minimal pairs — /ɪ/ vs /iː/
 - Not allowed in Focus: student names, dates, `final`, `v2`, `copy`, `NEW`.
 - Always set **Built by** to your own name.
 
+What the save panel does for you (2026-09-22): the **Saves as** line is exactly what gets stored. Extra spaces, underscores and
+invisible characters are cleaned, the first letter is capitalised, SHOUTING is lowered to sentence case, and a stray `·` is
+removed from the Focus (it would split the name into extra parts). Things only you can judge show as **amber hints** under the
+Focus box and never block saving: more than 6 words, Title Case, "final / v2 / copy / NEW", dates, and repeating the trilha,
+lesson or type. Spaces now type normally — before this, the activity's keyboard shortcuts (Space, F…) swallowed them.
+
 ---
 
 ## 4. When a lesson is "done"

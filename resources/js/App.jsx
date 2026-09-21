@@ -1,4 +1,5 @@
 import './bootstrap';
+import '@/lib/typingGuard';   // must stay first: it has to be the first window keydown listener (see the file)
 import '../css/app.css';
 import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';

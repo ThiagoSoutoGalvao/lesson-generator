@@ -1239,3 +1239,25 @@ removed student locked out, other student survives, no horizontal scroll, zero c
   The three local activities since 2026-09-21 (all owner = personal account: presentation "VerbPatterns-changeMeaning",
   sentence transformation "Verbpatterns", mc_cloze "verbPatterns") were exported to `~/Downloads/lesson-generator-activities.json`.
   Verified: `ImportActivitiesTest` (9), `ChangeStudentTrilhaTest`, `qa_import_trilha.mjs` (14 checks, using the real export file).
+
+## 26. Activity names: typing in the Save panel, and the naming standard (2026-09-22)
+
+Thiago: "I cannot hit space [when saving an activity] and the names look just clutter … properly formatted is essential for trilhas."
+- **Root cause (reproduced first):** typing `Past simple vs present perfect: for fun` in the Save panel's Focus box produced
+  `Pastsimplevspresentperfect:forfun`; each "f" also requested fullscreen (3×) and Space flipped the flashcard behind the panel.
+  ~30 screens register `window.addEventListener('keydown')` shortcuts; the Space ones call `preventDefault()` and none of them
+  checked whether the target was a text box. The library shows the after-effect: ~100 one-off names such as
+  `Present_Perfect_Simple_Cont_Presentation`, `IrregularVerbsA1`, `newYearsFamilyparty`.
+- **Fix 1 — `lib/typingGuard.js`:** one window keydown listener, registered first (import order in `App.jsx`), calls
+  `stopImmediatePropagation()` when the target is a text-entry element (text-like inputs, textarea, select, contenteditable;
+  not checkbox/radio/button), letting Escape/Tab through. Typing itself is never prevented; shortcuts still work when nothing
+  is being typed (tested: Space flips a card, F requests fullscreen). Also fixes any other text box inside an activity.
+- **Fix 2 — `lib/naming.js` + `SavePanel`:** the Focus is tidied before it is composed/saved (`tidyFocus`: spaces, underscores,
+  NBSP/zero-width, no `·`, first letter capitalised — never an IPA symbol — and SHOUTING of 2+ words lowered); a live "n / 6
+  words" counter; non-blocking amber hints per `trilhas/README.md` §3 (>6 words, Title Case, final/v2/copy/NEW, dates, repeating
+  trilha/lesson/type). One-off names are tidied (`Work_and__careers` → `Work and careers`) and show a "Saves as" line when
+  changed; book/lesson/folder are trimmed and collapsed (underscores kept). Existing names are **not** rewritten.
+- **Verified:** `qa_save_naming.mjs` (20 browser checks — fails 12/20 on the old build, incl. the exact `Pastsimplevs…` output),
+  `qa_naming_unit.mjs` (40), and every earlier suite still passes (display 14, beginner 17, batch2 41, A2 55, login 14, logout 8,
+  remove 11). `qa_display` had started failing only because its `div.select-none` selector now matched the LOCAL badge.
+- **Open:** renaming existing cluttered activities (no Rename in the Library yet; only delete + re-save).

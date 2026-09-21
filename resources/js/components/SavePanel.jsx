@@ -4,6 +4,7 @@ import {
     TRILHAS, TRILHA_NAMES, TEACHERS, TYPE_LABELS, composeActivityName,
 } from '@/lib/trilhas';
 import { getLessonSession, setLessonSession } from '@/lib/lessonSession';
+import { tidyText, collapse, tidyFocus, focusHints, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
 
 const fieldCls = 'bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full';
 const selectCls = `${fieldCls} appearance-none cursor-pointer`;
@@ -47,12 +48,18 @@ export default function SavePanel({ activity, onDone }) {
     const typeLabel = TYPE_LABELS[activity.type] ?? activity.type;
     const lessonCount = trilha ? TRILHAS[trilha].lessons : 0;
 
+    // What is saved is the tidied Focus (single spaces, no underscores or " · ", sentence case) — see lib/naming.js.
+    const cleanFocus  = useMemo(() => tidyFocus(focus), [focus]);
+    const focusWords  = wordCount(cleanFocus);
+    const hints       = useMemo(() => focusHints(focus, { typeLabel }), [focus, typeLabel]);
+    const cleanName   = tidyText(name);
+
     const composedName = useMemo(
-        () => composeActivityName({ trilha, lesson, type: activity.type, focus }),
-        [trilha, lesson, activity.type, focus],
+        () => composeActivityName({ trilha, lesson, type: activity.type, focus: cleanFocus }),
+        [trilha, lesson, activity.type, cleanFocus],
     );
 
-    const trilhaValid = trilha && lesson && focus.trim() && builtBy;
+    const trilhaValid = trilha && lesson && cleanFocus && builtBy;
 
     async function handleSave(e) {
         e.preventDefault();
@@ -68,12 +75,12 @@ export default function SavePanel({ activity, onDone }) {
                 built_by: builtBy,
             }
             : {
-                name,
+                name: cleanName,
                 type: activity.type,
                 content: activity,
-                book: book.trim() || null,
-                lesson: freeLesson.trim() || null,
-                folder: folder.trim() || null,
+                book: collapse(book) || null,
+                lesson: collapse(freeLesson) || null,
+                folder: collapse(folder) || null,
             };
 
         try {
@@ -161,16 +168,28 @@ export default function SavePanel({ activity, onDone }) {
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className={labelCls}>Focus — the specific language point</label>
+                            <div className="flex items-baseline justify-between gap-2">
+                                <label htmlFor="save-focus" className={labelCls}>Focus — the specific language point</label>
+                                <span className={`text-[11px] tabular-nums ${focusWords > MAX_FOCUS_WORDS ? 'text-amber-300' : 'text-white/35'}`}>
+                                    {focusWords} / {MAX_FOCUS_WORDS} words
+                                </span>
+                            </div>
                             <input
+                                id="save-focus"
                                 value={focus}
                                 onChange={e => setFocus(e.target.value)}
                                 required
                                 maxLength={60}
                                 autoFocus
+                                autoComplete="off"
                                 placeholder="e.g. Present continuous & everyday verbs"
                                 className={fieldCls}
                             />
+                            {hints.length > 0 && (
+                                <ul data-testid="focus-hints" className="text-amber-300 text-[11px] leading-snug list-disc pl-4 space-y-0.5">
+                                    {hints.map(h => <li key={h}>{h}</li>)}
+                                </ul>
+                            )}
                         </div>
 
                         <div className="flex flex-col gap-1">
@@ -203,9 +222,13 @@ export default function SavePanel({ activity, onDone }) {
                             onChange={e => setName(e.target.value)}
                             required
                             autoFocus
+                            autoComplete="off"
                             placeholder="Activity name"
                             className={fieldCls}
                         />
+                        {cleanName && cleanName !== name && (
+                            <p className="text-white/45 text-[11px] -mt-1.5">Saves as: <span className="font-mono text-white/70">{cleanName}</span></p>
+                        )}
                         <div className="grid grid-cols-2 gap-2">
                             <input
                                 value={book}
@@ -247,7 +270,7 @@ export default function SavePanel({ activity, onDone }) {
                     </button>
                     <button
                         type="submit"
-                        disabled={status === 'saving' || (mode === 'trilha' && !trilhaValid)}
+                        disabled={status === 'saving' || (mode === 'trilha' ? !trilhaValid : !cleanName)}
                         className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400/30 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors cursor-pointer"
                     >
                         {status === 'saving' ? 'Saving…' : 'Save'}

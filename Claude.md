@@ -536,6 +536,20 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
 - `php artisan test` has **10 pre-existing failures** in the stock Breeze tests (`Route [dashboard] not defined`,
   closed registration, profile routes) — not regressions; `StudentLoginTest` is the one that matters for login.
 
+### Keyboard shortcuts vs typing
+- ~30 activity/drill screens register **window-level `keydown` shortcuts** (Space next/flip/reveal, F fullscreen, P/R/V,
+  arrows). They used to fire while a teacher typed in a text box inside the same screen — the Save panel's Focus/name box lost
+  every space (`preventDefault`) and "f" toggled fullscreen, so names came out as `Pastsimplevspresentperfect`.
+  `lib/typingGuard.js` (imported **first** in `App.jsx`) stops keydown from reaching those handlers while focus is in a
+  text-entry element (Escape/Tab pass through). **Don't add per-component "is typing?" checks and don't reorder that
+  import** — a new shortcut is guarded automatically, but only if it listens on `window` in the bubble phase.
+- **Activity names** (`lib/naming.js`, used by `SavePanel`): trilha names are `TRILHA L## · Type · Focus`; the Focus is tidied
+  (spaces / underscores / invisible characters, sentence case, no `·`) and amber hints flag >6 words, Title Case,
+  final/v2/copy/NEW, dates and repeated trilha/lesson/type — hints never block saving. One-off names get tidied too.
+  Existing names saved before 2026-09-22 (many one-off ones are `Words_With_Underscores` / run-together) are **not** rewritten.
+- A test that picks elements by a generic class (`div.select-none`) can start matching the yellow LOCAL badge (`role=status`) —
+  scope selectors (`:not([role=status])`).
+
 ### Content strategy
 - All practice-mode + trilha content is **static hand-authored JSON** — no DB, no
   runtime API. Keep batch-adding on request; don't build an authoring helper or
