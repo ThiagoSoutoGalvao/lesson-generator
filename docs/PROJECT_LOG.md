@@ -1210,3 +1210,10 @@ a real bug but not (or not the only) cause for him; the cause is **still open**.
   do not match" whatever the password. (Same mix-up as 2026-09-19, see `accounts_and_urls` memory. Inference from the data;
   not yet confirmed by Thiago.)
 - The only Gabriel on Railway is `gabriel@email.com` (id 13, created 2026-09-16, owned by the personal account).
+
+**Local-environment badge (2026-09-22).** To stop the local/live mix-up recurring: when `APP_ENV=local` a small yellow tab
+"LOCAL — not the live site" hangs from the top-centre of the login page (`guest.blade.php`), the teacher app and the student
+app (`EnvBadge.jsx`, driven by `window.__AURORA_LOCAL__` = `app()->isLocal()` injected in `welcome.blade.php` — the server's
+own environment, not the hostname, so it stays right behind a tunnel). It never shows on Railway (`APP_ENV=production`),
+ignores taps (`pointer-events-none`), and the new-student hand-over card adds "this account does not exist on the live site"
+when local. Verified: `LocalEnvironmentBadgeTest` (2) + `qa_env_badge.mjs` (9 checks, phone + desktop, flag-false case).

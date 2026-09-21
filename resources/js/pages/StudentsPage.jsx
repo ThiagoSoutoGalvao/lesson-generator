@@ -3,6 +3,7 @@ import axios from 'axios';
 import { TRILHA_NAMES, TRILHAS } from '@/lib/trilhas';
 import { relativeTime } from '@/lib/time';
 import { activityMeta } from '@/student/lib/activityMeta';
+import { IS_LOCAL } from '@/components/EnvBadge';
 
 const inputCls = 'w-full bg-white/8 border border-white/15 rounded-xl px-3.5 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]';
 
@@ -32,6 +33,11 @@ function Handover({ info, onClose }) {
                 <dt className="text-white/50">Email</dt><dd>{info.email}</dd>
                 <dt className="text-white/50">Password</dt><dd className="font-mono">{info.password}</dd>
             </dl>
+            {IS_LOCAL && (
+                <p className="text-[#f5b400] text-xs font-semibold">
+                    ⚠ You are on your LOCAL test site. This account does not exist on the live site — a student can't use it. Create it on the Railway address instead.
+                </p>
+            )}
             <p className="text-white/45 text-xs">This is exactly what was saved — no spaces before or after. It won't be shown again.</p>
             <div className="flex gap-2">
                 <button onClick={copy} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[#e0521f] hover:bg-[#c9461a] text-white transition-colors cursor-pointer">

@@ -46,6 +46,9 @@
         </style>
     </head>
     <body class="antialiased text-white">
+        @if (app()->isLocal())
+            <div role="status" style="position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:200;pointer-events:none;background:#f5b400;color:#1a1200;font-size:11px;font-weight:700;letter-spacing:.02em;padding:2px 12px;border-radius:0 0 8px 8px;box-shadow:0 2px 6px rgba(0,0,0,.35)">LOCAL — not the live site</div>
+        @endif
         <div class="aurora-ground min-h-screen flex flex-col sm:justify-center items-center pt-10 sm:pt-0 px-4">
             <a href="/" class="mb-8 transition-opacity hover:opacity-80">
                 <img src="/brand/aurora-logo-horizontal-white.png" alt="Aurora" class="h-12 w-auto">

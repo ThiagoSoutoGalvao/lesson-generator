@@ -4,6 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Layout from '@/components/Layout';
 import ErrorBoundary from '@/components/ErrorBoundary';
+import EnvBadge from '@/components/EnvBadge';
 import { DisplayProvider } from '@/hooks/useDisplay';
 import UploadPage from '@/pages/UploadPage';
 import GeneratePage from '@/pages/GeneratePage';
@@ -51,6 +52,7 @@ function App() {
     return (
         <BrowserRouter>
           <DisplayProvider>
+            <EnvBadge />
             <ErrorBoundary>
                 {isStudent ? <StudentShell user={USER} /> : <TeacherApp />}
             </ErrorBoundary>
