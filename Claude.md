@@ -527,8 +527,12 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
   **Local vs Railway is the recurring trap** (a student created on `lesson-generator.test` doesn't exist on the live
   site): when `APP_ENV=local` every page shows a yellow **"LOCAL — not the live site"** tab (`EnvBadge.jsx`,
   `window.__AURORA_LOCAL__` from `welcome.blade.php`, and `guest.blade.php` for the login page), and the new-student
-  hand-over card warns. Production audit 2026-09-22: no data lost; Gabriel's failure was most likely this mix-up
-  (`PROJECT_LOG.md` §25) — unconfirmed by Thiago.
+  hand-over card warns. Production audit 2026-09-22: no data lost; Gabriel's failure was this mix-up
+  (confirmed by Thiago — he had been on `lesson-generator.test`; `PROJECT_LOG.md` §25).
+- **Moving activities local → live:** `php artisan activities:export` (local, read-only) + Library **Import from file**
+  (Railway; lands under the signed-in account, re-import is safe). The import route's `trimStrings` exception
+  (`activities.*.content`, in `bootstrap/app.php`) protects cloze spacing — keep it. Students can't be moved; create them
+  on Railway. An open student app re-checks `/api/me` on focus and every minute and reloads if the trilha / active flag changed.
 - `php artisan test` has **10 pre-existing failures** in the stock Breeze tests (`Route [dashboard] not defined`,
   closed registration, profile routes) — not regressions; `StudentLoginTest` is the one that matters for login.
 
