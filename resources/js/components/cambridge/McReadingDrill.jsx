@@ -4,7 +4,9 @@ import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
-import mcReadingSets from '@/data/cambridge/b2/mcReading.json';
+import b2Sets from '@/data/cambridge/b2/mcReading.json';
+import a2Sets from '@/data/cambridge/a2/mcReading.json';
+import { CAMBRIDGE_LEVEL_LABEL, partHint } from '@/lib/cambridgeLevels';
 
 const PASSAGE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
 const QUESTION_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
@@ -25,7 +27,8 @@ function OptionButton({ label, selected, isAnswer, revealed, disabled, onClick }
     return <button onClick={onClick} disabled={disabled} className={cls}>{label}</button>;
 }
 
-export default function McReadingDrill() {
+export default function McReadingDrill({ level = 'b2' }) {
+    const sets = level === 'a2' ? a2Sets : b2Sets;
     const navigate = useNavigate();
     const [phase, setPhase] = useState('select'); // select | drilling | results
     const [set, setSet] = useState(null);
@@ -76,8 +79,8 @@ export default function McReadingDrill() {
     return (
         <PracticeSessionShell
             watermark={<CambridgeWatermark />}
-            title="Multiple Choice Reading — B2 First"
-            subtitle={phase === 'drilling' ? set.title : 'Choose a passage to practice — Reading & Use of English, Part 5'}
+            title={`Multiple Choice Reading — ${CAMBRIDGE_LEVEL_LABEL[level]}`}
+            subtitle={phase === 'drilling' ? set.title : `Choose a passage to practice — ${partHint(level, 5)}`}
             progressLabel={phase === 'drilling' ? `Question ${qIndex + 1} of ${set.questions.length}` : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}
@@ -86,7 +89,7 @@ export default function McReadingDrill() {
                 <div className="flex-1 overflow-y-auto px-8 py-8">
                     <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
                         <p className="text-white/60 text-sm text-center mb-2">Read the passage, then answer the questions about it.</p>
-                        {mcReadingSets.map(s => (
+                        {sets.map(s => (
                             <button key={s.id} onClick={() => startSet(s)}
                                 className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white font-bold transition-all cursor-pointer text-left">
                                 <p className="text-lg">{s.title}</p>
@@ -98,15 +101,17 @@ export default function McReadingDrill() {
             )}
 
             {phase === 'drilling' && set && question && (
-                <div key={`${sessionKey}-${qIndex}`} className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
-                    <div className={`md:w-[46%] overflow-y-auto p-8 border-b md:border-b-0 md:border-r border-white/10 ${PASSAGE_SIZES[fontSizeIdx]} leading-relaxed ${textColor} flex flex-col gap-4`}>
+                /* Split screen on desktop; on a phone the two panels stack and the whole area
+                   scrolls (overflow-hidden here used to leave the options unreachable). */
+                <div key={`${sessionKey}-${qIndex}`} className="flex-1 flex flex-col md:flex-row min-h-0 overflow-y-auto md:overflow-hidden">
+                    <div className={`md:w-[46%] shrink-0 md:shrink md:overflow-y-auto p-8 border-b md:border-b-0 md:border-r border-white/10 ${PASSAGE_SIZES[fontSizeIdx]} leading-relaxed ${textColor} flex flex-col gap-4`}>
                         <p className="text-white/40 text-xs font-semibold uppercase tracking-wide">Passage</p>
                         <h3 className="font-bold">{set.title}</h3>
                         {set.passage.map((para, i) => <p key={i}>{para}</p>)}
                     </div>
 
-                    <div className="flex-1 flex flex-col min-h-0">
-                        <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center gap-6 px-8 py-8">
+                    <div className="shrink-0 md:shrink md:flex-1 flex flex-col md:min-h-0">
+                        <div className="md:flex-1 md:overflow-y-auto flex flex-col items-center md:justify-center gap-6 px-8 py-8">
                             <p className={`${QUESTION_SIZES[fontSizeIdx]} font-semibold text-center max-w-xl ${textColor}`}>{question.question}</p>
                             <div className="flex flex-col gap-2 w-full max-w-xl">
                                 {question.options.map((opt, i) => (

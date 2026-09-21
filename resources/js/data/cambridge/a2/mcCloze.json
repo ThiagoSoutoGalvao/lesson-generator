@@ -1,0 +1,116 @@
+[
+  {
+    "id": "cloze-mc-a2-1",
+    "level": "A2",
+    "title": "Saturday at the Market",
+    "paragraph": "Every Saturday morning, Maria goes to the town market with her sister. They {{1}} up early because there is not much good fruit after ten o'clock. Today Maria wants to {{2}} some apples and a big bag of potatoes. The apples are cheaper {{3}} the ones in the supermarket, and they taste better. She also needs {{4}} milk, but the market doesn't sell it. After shopping, the sisters {{5}} a coffee in a small café near the bridge. They usually come back {{6}} twelve o'clock and cook lunch together.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "get",
+        "options": ["take", "get", "put", "make"]
+      },
+      {
+        "id": 2,
+        "answer": "buy",
+        "options": ["sell", "spend", "buy", "pay"]
+      },
+      {
+        "id": 3,
+        "answer": "than",
+        "options": ["than", "as", "that", "then"]
+      },
+      {
+        "id": 4,
+        "answer": "some",
+        "options": ["a", "many", "any", "some"]
+      },
+      {
+        "id": 5,
+        "answer": "have",
+        "options": ["have", "do", "put", "give"]
+      },
+      {
+        "id": 6,
+        "answer": "at",
+        "options": ["on", "at", "in", "to"]
+      }
+    ]
+  },
+  {
+    "id": "cloze-mc-a2-2",
+    "level": "A2",
+    "title": "A Holiday by the Sea",
+    "paragraph": "Last summer, Tom and his wife went to a small town by the sea. The weather was very {{1}}, so they spent most days on the beach. Tom {{2}} a lot of photos of the old harbour. In the evenings they {{3}} dinner at different restaurants. There {{4}} a lovely fish restaurant next to their hotel, and it was the best of all. They were there for five days. {{5}} the last morning, it rained, so they {{6}} inside the hotel and read books.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "good",
+        "options": ["well", "best", "good", "better"]
+      },
+      {
+        "id": 2,
+        "answer": "took",
+        "options": ["gave", "took", "made", "did"]
+      },
+      {
+        "id": 3,
+        "answer": "had",
+        "options": ["had", "made", "put", "did"]
+      },
+      {
+        "id": 4,
+        "answer": "was",
+        "options": ["had", "were", "been", "was"]
+      },
+      {
+        "id": 5,
+        "answer": "On",
+        "options": ["At", "On", "In", "By"]
+      },
+      {
+        "id": 6,
+        "answer": "stayed",
+        "options": ["stayed", "lived", "visited", "arrived"]
+      }
+    ]
+  },
+  {
+    "id": "cloze-mc-a2-3",
+    "level": "A2",
+    "title": "An Evening English Course",
+    "paragraph": "Anna started an evening English course in September. The classes are {{1}} Monday and Wednesday, from six to eight o'clock. She finishes work at five, so she can have a snack {{2}} the class starts. There are only eight students, so there is {{3}} time for everyone to speak. Anna {{4}} homework for about half an hour every night. Her English is already {{5}} than it was in the summer. She doesn't have {{6}} free time, but she never misses a class.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "on",
+        "options": ["in", "at", "on", "by"]
+      },
+      {
+        "id": 2,
+        "answer": "before",
+        "options": ["before", "after", "during", "between"]
+      },
+      {
+        "id": 3,
+        "answer": "enough",
+        "options": ["many", "few", "every", "enough"]
+      },
+      {
+        "id": 4,
+        "answer": "does",
+        "options": ["makes", "does", "takes", "plays"]
+      },
+      {
+        "id": 5,
+        "answer": "better",
+        "options": ["better", "good", "best", "well"]
+      },
+      {
+        "id": 6,
+        "answer": "much",
+        "options": ["many", "a", "much", "few"]
+      }
+    ]
+  }
+]

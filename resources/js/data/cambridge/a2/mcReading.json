@@ -1,0 +1,114 @@
+[
+  {
+    "id": "mcr-a2-1",
+    "level": "A2",
+    "title": "A New Flat in Dunford",
+    "passage": [
+      "Hi Ana, I'm writing from my new flat in Dunford! I moved here last Saturday with my brother, and we carried all the boxes up three floors because there is no lift. My legs are still tired, but I love the flat. It has a big window in the kitchen and a small balcony.",
+      "The town is quiet, and the people are friendly. There is a bakery next door, and the owner gave me a free bread roll on my first morning. My new job at the library starts on Monday. The bus ride takes twenty minutes, so I have to get up at seven.",
+      "I'm a little nervous about the job, but I think I'll be fine. Why don't you come and visit in two weeks? You can sleep on the sofa, and I'll cook your favourite pasta. Please write back soon! Love, Marta"
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "Why did Marta and her brother carry the boxes up three floors?",
+        "options": [
+          "They wanted some exercise.",
+          "The lift was too small.",
+          "The flat has no lift.",
+          "Nobody helped them with the boxes."
+        ],
+        "answerIndex": 2
+      },
+      {
+        "id": 2,
+        "question": "What can we say about the bakery owner?",
+        "options": [
+          "The owner is kind to new people.",
+          "The owner is Marta's brother.",
+          "The owner works at the library.",
+          "The owner is not very friendly."
+        ],
+        "answerIndex": 0
+      },
+      {
+        "id": 3,
+        "question": "How does Marta feel about her new job?",
+        "options": [
+          "She wants to change it.",
+          "She has already started working there.",
+          "She is sure it will be boring.",
+          "She is a little nervous about it."
+        ],
+        "answerIndex": 3
+      },
+      {
+        "id": 4,
+        "question": "Why is Marta writing to Ana?",
+        "options": [
+          "To ask Ana to help her move.",
+          "To tell Ana her news and invite her.",
+          "To say sorry for missing a visit.",
+          "To ask Ana for a job at the library."
+        ],
+        "answerIndex": 1
+      }
+    ]
+  },
+  {
+    "id": "mcr-a2-2",
+    "level": "A2",
+    "title": "The Vegetable Stall on Mill Street",
+    "passage": [
+      "Every Saturday morning, Rosa Vega opens her small stall in the market on Mill Street. She gets up at four o'clock, because she has to drive to her farm and collect the vegetables. By eight o'clock, the stall is full of tomatoes, carrots and green beans, and the first customers are already there.",
+      "Rosa's vegetables are not the cheapest in town. Tomatoes are cheaper in the supermarket. But many people prefer her stall, because her vegetables are fresh and she always has time to talk. \"I know all my customers,\" she says. \"I know who likes big carrots and who has a new baby.\"",
+      "Rosa goes home at two o'clock, very tired. She says the work is hard, but she loves being outside all day. Next spring, she is going to open a second stall in the next town, and her son will help her there. \"I want him to learn about the farm,\" she says."
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "Why does Rosa get up at four o'clock?",
+        "options": [
+          "She has to visit her son early.",
+          "She has another job at the supermarket.",
+          "She likes to cook breakfast for customers.",
+          "She has to collect vegetables from her farm."
+        ],
+        "answerIndex": 3
+      },
+      {
+        "id": 2,
+        "question": "What can we understand about Rosa's customers?",
+        "options": [
+          "Most of them are new in town.",
+          "Many of them visit her stall often.",
+          "Most of them want the cheapest food.",
+          "Most of them work at the supermarket."
+        ],
+        "answerIndex": 1
+      },
+      {
+        "id": 3,
+        "question": "How does Rosa feel about her work?",
+        "options": [
+          "It is hard, but she enjoys it.",
+          "It is too hard, so she wants to stop.",
+          "It is boring, so she wants an office job.",
+          "It is easy, but she does not like it."
+        ],
+        "answerIndex": 0
+      },
+      {
+        "id": 4,
+        "question": "What is the text mainly about?",
+        "options": [
+          "How to grow vegetables on a farm.",
+          "A supermarket on Mill Street.",
+          "A market seller, her work and her plans.",
+          "A son who wants to be a farmer."
+        ],
+        "answerIndex": 2
+      }
+    ]
+  }
+]

@@ -1,0 +1,122 @@
+[
+  {
+    "id": "mm-a2-1",
+    "level": "A2",
+    "title": "How Four People Relax",
+    "instruction": "Which person…",
+    "texts": [
+      {
+        "label": "A",
+        "name": "Nina",
+        "text": "After work I usually go for a walk in the park near my flat. It takes about forty minutes. I listen to music and I don't answer my phone. At the weekend I sometimes walk with my sister, but on weekdays I like to be alone. It helps me forget my problems at the office."
+      },
+      {
+        "label": "B",
+        "name": "Carlos",
+        "text": "I love cooking, so I relax in the kitchen. Every Saturday I invite three or four friends for dinner. I buy the food in the morning and we eat at eight. My friends bring drinks and dessert. I'm not a very good cook, but everyone says my pasta is great. We usually talk until midnight."
+      },
+      {
+        "label": "C",
+        "name": "Ella",
+        "text": "I work and study, so I don't have much free time. In the evening I sit on the sofa and watch a comedy series for one hour before bed. My husband is sometimes asleep before the end! I want to start going to the gym, but I'm always too tired after work. Maybe I will start in the summer."
+      },
+      {
+        "label": "D",
+        "name": "Omar",
+        "text": "I play football every Tuesday and Thursday evening with a team from my office. We play in a small sports centre near the station. I'm not the best player, but I run a lot and it makes me feel good. Last month we won a game for the first time, and we all went for pizza afterwards."
+      }
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "does something relaxing just before going to sleep?",
+        "answer": "C"
+      },
+      {
+        "id": 2,
+        "question": "plays a sport with people from their job?",
+        "answer": "D"
+      },
+      {
+        "id": 3,
+        "question": "prefers to be by themselves after work on most days?",
+        "answer": "A"
+      },
+      {
+        "id": 4,
+        "question": "wants to start doing sport but has no energy?",
+        "answer": "C"
+      },
+      {
+        "id": 5,
+        "question": "asks friends to eat with them every week?",
+        "answer": "B"
+      },
+      {
+        "id": 6,
+        "question": "had a first win with their team recently?",
+        "answer": "D"
+      }
+    ]
+  },
+  {
+    "id": "mm-a2-2",
+    "level": "A2",
+    "title": "Four Summer Holidays",
+    "instruction": "Which person…",
+    "texts": [
+      {
+        "label": "A",
+        "name": "Lucy",
+        "text": "Last August I went to the seaside with two friends. We travelled by train and stayed in a small hotel near the beach. Unfortunately, it rained for the first three days, so we visited a museum and some shops. After that the sun came out and we swam every morning. The fish restaurant near the hotel was cheap and very good."
+      },
+      {
+        "label": "B",
+        "name": "Hassan",
+        "text": "We spent a week in the mountains with my wife and our two little boys. Every day we walked in the forest, and the boys loved watching the cows. In the village there was no phone signal, and honestly I loved that. The nights were very cold, but our little house had a warm fire."
+      },
+      {
+        "label": "C",
+        "name": "Marta",
+        "text": "My husband and I spent four days in a big city. We stayed in a hotel in the centre and took the bus to see the famous places. The streets were full of tourists, and I'm happier in quiet places. I bought presents for my family, but I didn't enjoy the visit very much. Next time we'll go to a small town."
+      },
+      {
+        "label": "D",
+        "name": "Ben",
+        "text": "This summer I didn't go anywhere far. I bought a new car in June, so I had no money left for a holiday. But I took my bike and visited a different place near my town every day. I saw a castle, a lake and two old churches. I took a lot of photos and I met some nice people."
+      }
+    ],
+    "questions": [
+      {
+        "id": 1,
+        "question": "didn't enjoy being around lots of people?",
+        "answer": "C"
+      },
+      {
+        "id": 2,
+        "question": "had bad weather at the start of the holiday?",
+        "answer": "A"
+      },
+      {
+        "id": 3,
+        "question": "had no money for a holiday after buying something big?",
+        "answer": "D"
+      },
+      {
+        "id": 4,
+        "question": "liked not being able to use their phone?",
+        "answer": "B"
+      },
+      {
+        "id": 5,
+        "question": "found a good place to eat that didn't cost much?",
+        "answer": "A"
+      },
+      {
+        "id": 6,
+        "question": "took their children on holiday?",
+        "answer": "B"
+      }
+    ]
+  }
+]

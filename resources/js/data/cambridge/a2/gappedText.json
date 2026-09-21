@@ -1,0 +1,40 @@
+[
+  {
+    "id": "gap-a2-1",
+    "level": "A2",
+    "title": "A Day at the Seaside",
+    "paragraph": "Last Saturday, my sister Lena and I went to the seaside. We got up early and caught the seven o'clock bus. {{1}} The journey took about an hour, and we talked about our plans for the day. When we arrived, the sun was shining, but the sea was very cold. {{2}} Instead, we walked along the beach and looked for shells. Lena found a big white one, and I found three small ones. At lunchtime we were very hungry. {{3}} We ate them under a big umbrella and watched the children play. Later the sky became grey. {{4}} We ran to the bus stop and got home before dark. It was a lovely day, and we want to go back next month.",
+    "blanks": [
+      { "id": 1, "answer": "E" },
+      { "id": 2, "answer": "A" },
+      { "id": 3, "answer": "C" },
+      { "id": 4, "answer": "D" }
+    ],
+    "sentences": [
+      { "label": "A", "text": "We did not want to swim." },
+      { "label": "B", "text": "The water was warm, so we swam for an hour." },
+      { "label": "C", "text": "Lena took out the sandwiches she made in the morning." },
+      { "label": "D", "text": "Then it began to rain, so we decided to go home." },
+      { "label": "E", "text": "The bus was nearly empty, so we sat by the window." }
+    ]
+  },
+  {
+    "id": "gap-a2-2",
+    "level": "A2",
+    "title": "Tom's New Hobby",
+    "paragraph": "Last month, Tom started a new hobby. He wanted to learn the guitar, so he bought one from a small shop in town. {{1}} On the first evening he tried to play a song, but it sounded terrible. {{2}} Tom felt sad, and he almost stopped. The next day, his neighbour, Mrs Green, came to his door. {{3}} She showed him three easy notes and told him to practise every day. Tom listened to her, and he began to practise after work. Now he plays for twenty minutes every evening. {{4}} He can already play two songs, and on Sunday he is going to play one at his brother's party. Tom is very happy, and he wants to learn more songs.",
+    "blanks": [
+      { "id": 1, "answer": "D" },
+      { "id": 2, "answer": "B" },
+      { "id": 3, "answer": "A" },
+      { "id": 4, "answer": "E" }
+    ],
+    "sentences": [
+      { "label": "A", "text": "She heard him through the wall and wanted to help." },
+      { "label": "B", "text": "His fingers hurt, and he made a lot of mistakes." },
+      { "label": "C", "text": "Tom played the guitar in a band when he was ten." },
+      { "label": "D", "text": "It was not expensive, and it was a beautiful red colour." },
+      { "label": "E", "text": "He is much better than he was in the first week." }
+    ]
+  }
+]

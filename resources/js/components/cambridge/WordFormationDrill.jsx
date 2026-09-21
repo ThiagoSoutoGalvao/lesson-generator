@@ -4,7 +4,9 @@ import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
-import wordFormationSets from '@/data/cambridge/b2/wordFormation.json';
+import b2Sets from '@/data/cambridge/b2/wordFormation.json';
+import a2Sets from '@/data/cambridge/a2/wordFormation.json';
+import { CAMBRIDGE_LEVEL_LABEL, partHint } from '@/lib/cambridgeLevels';
 
 const ROOT_SIZES     = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
 const SENTENCE_SIZES = ['text-lg',  'text-xl',   'text-2xl', 'text-3xl', 'text-4xl'];
@@ -28,7 +30,8 @@ function renderSentence(sentence, answer, revealed) {
     );
 }
 
-export default function WordFormationDrill() {
+export default function WordFormationDrill({ level = 'b2' }) {
+    const sets = level === 'a2' ? a2Sets : b2Sets;
     const navigate = useNavigate();
     const [phase, setPhase] = useState('select'); // select | drilling
     const [set, setSet] = useState(null);
@@ -70,8 +73,8 @@ export default function WordFormationDrill() {
     return (
         <PracticeSessionShell
             watermark={<CambridgeWatermark />}
-            title="Word Formation — B2 First"
-            subtitle={phase === 'drilling' ? set.title : 'Choose a set to practice — Reading & Use of English, Part 3'}
+            title={`Word Formation — ${CAMBRIDGE_LEVEL_LABEL[level]}`}
+            subtitle={phase === 'drilling' ? set.title : `Choose a set to practice — ${partHint(level, 3)}`}
             progressLabel={phase === 'drilling' ? `Item ${index + 1} of ${total}` : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}
@@ -80,7 +83,7 @@ export default function WordFormationDrill() {
                 <div className="flex-1 overflow-y-auto px-8 py-8">
                     <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
                         <p className="text-white/60 text-sm text-center mb-2">Use the correct form of the root word to complete each sentence.</p>
-                        {wordFormationSets.map(s => (
+                        {sets.map(s => (
                             <button key={s.id} onClick={() => startSet(s)}
                                 className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white font-bold transition-all cursor-pointer text-left">
                                 <p className="text-lg">{s.title}</p>

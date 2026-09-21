@@ -1,5 +1,6 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { PracticeBackContext } from '@/hooks/usePracticeBack';
+import { A2_TYPES } from '@/lib/cambridgeLevels';
 import WordFormationDrill from '@/components/cambridge/WordFormationDrill';
 import KeyWordTransformationDrill from '@/components/cambridge/KeyWordTransformationDrill';
 import McClozeDrill from '@/components/cambridge/McClozeDrill';
@@ -48,7 +49,9 @@ const DEFAULT_BACK_TO = { path: '/upload', state: { tab: 'cambridge' } };
 // `backTo` lets whoever renders this route say where its own "Back" button (and every
 // leaf drill's) should go — the teacher's Upload page by default, or the student's
 // Practice tab (see StudentShell.jsx) when rendered there instead.
-export default function CambridgePracticePage({ backTo = DEFAULT_BACK_TO }) {
+// `level` is 'b2' (the original set) or 'a2' (the "A2 easy start" set — only the seven
+// Reading & Use of English task types in A2_TYPES have A2 content; see lib/cambridgeLevels.js).
+export default function CambridgePracticePage({ backTo = DEFAULT_BACK_TO, level = 'b2' }) {
     const { type } = useParams();
     const navigate = useNavigate();
 
@@ -56,7 +59,7 @@ export default function CambridgePracticePage({ backTo = DEFAULT_BACK_TO }) {
         navigate(backTo.path, { state: backTo.state });
     }
 
-    const Drill = DRILLS[type];
+    const Drill = level === 'a2' && !A2_TYPES.includes(type) ? undefined : DRILLS[type];
 
     if (!Drill) {
         return (
@@ -72,7 +75,7 @@ export default function CambridgePracticePage({ backTo = DEFAULT_BACK_TO }) {
 
     return (
         <PracticeBackContext.Provider value={backTo}>
-            <Drill />
+            <Drill level={level} />
         </PracticeBackContext.Provider>
     );
 }

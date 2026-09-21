@@ -4,7 +4,9 @@ import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
-import openClozeSets from '@/data/cambridge/b2/openCloze.json';
+import b2Sets from '@/data/cambridge/b2/openCloze.json';
+import a2Sets from '@/data/cambridge/a2/openCloze.json';
+import { CAMBRIDGE_LEVEL_LABEL, partHint } from '@/lib/cambridgeLevels';
 
 const PARAGRAPH_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const FONT_SIZE_MAX = PARAGRAPH_SIZES.length - 1;
@@ -43,7 +45,8 @@ function InlineInput({ blank, value, revealed, onChange }) {
     );
 }
 
-export default function OpenClozeDrill() {
+export default function OpenClozeDrill({ level = 'b2' }) {
+    const sets = level === 'a2' ? a2Sets : b2Sets;
     const navigate = useNavigate();
     const [phase, setPhase] = useState('select'); // select | drilling
     const [set, setSet] = useState(null);
@@ -86,8 +89,8 @@ export default function OpenClozeDrill() {
     return (
         <PracticeSessionShell
             watermark={<CambridgeWatermark />}
-            title="Open Cloze — B2 First"
-            subtitle={phase === 'drilling' ? set.title : 'Choose a text to practice — Reading & Use of English, Part 2'}
+            title={`Open Cloze — ${CAMBRIDGE_LEVEL_LABEL[level]}`}
+            subtitle={phase === 'drilling' ? set.title : `Choose a text to practice — ${partHint(level, 2)}`}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}
         >
@@ -95,7 +98,7 @@ export default function OpenClozeDrill() {
                 <div className="flex-1 overflow-y-auto px-8 py-8">
                     <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
                         <p className="text-white/60 text-sm text-center mb-2">Type the one word that best fits each gap — usually a grammar word.</p>
-                        {openClozeSets.map(s => (
+                        {sets.map(s => (
                             <button key={s.id} onClick={() => startSet(s)}
                                 className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white font-bold transition-all cursor-pointer text-left">
                                 <p className="text-lg">{s.title}</p>

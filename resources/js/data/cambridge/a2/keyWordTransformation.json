@@ -1,0 +1,131 @@
+[
+  {
+    "id": "kwt-a2-1",
+    "level": "A2",
+    "title": "Free Time",
+    "items": [
+      {
+        "original": "Football is more exciting than golf.",
+        "key_word": "EXCITING",
+        "stem": "Golf isn't",
+        "answer": "Golf isn't as exciting as football."
+      },
+      {
+        "original": "It is very cold today, so we can't swim.",
+        "key_word": "TOO",
+        "stem": "It",
+        "answer": "It is too cold to swim today."
+      },
+      {
+        "original": "Please don't use your phone in the cinema.",
+        "key_word": "MUSTN'T",
+        "stem": "You",
+        "answer": "You mustn't use your phone in the cinema."
+      },
+      {
+        "original": "Tom and I plan to see a film on Friday.",
+        "key_word": "GOING",
+        "stem": "Tom and I",
+        "answer": "Tom and I are going to see a film on Friday."
+      },
+      {
+        "original": "I want to watch a film tonight.",
+        "key_word": "LIKE",
+        "stem": "I'd",
+        "answer": "I'd like to watch a film tonight."
+      },
+      {
+        "original": "Mia got her guitar two years ago.",
+        "key_word": "HAD",
+        "stem": "Mia",
+        "answer": "Mia has had her guitar for two years."
+      }
+    ]
+  },
+  {
+    "id": "kwt-a2-2",
+    "level": "A2",
+    "title": "At Home",
+    "items": [
+      {
+        "original": "We have two bedrooms in our flat.",
+        "key_word": "ARE",
+        "stem": "There",
+        "answer": "There are two bedrooms in our flat."
+      },
+      {
+        "original": "The bedroom is smaller than the bathroom.",
+        "key_word": "BIGGER",
+        "stem": "The bathroom",
+        "answer": "The bathroom is bigger than the bedroom."
+      },
+      {
+        "original": "I must get up early tomorrow.",
+        "key_word": "HAVE",
+        "stem": "I",
+        "answer": "I have to get up early tomorrow."
+      },
+      {
+        "original": "I know how to play the piano.",
+        "key_word": "CAN",
+        "stem": "I",
+        "answer": "I can play the piano."
+      },
+      {
+        "original": "My daughter is too young to use the oven.",
+        "key_word": "ENOUGH",
+        "stem": "My daughter",
+        "answer": "My daughter isn't old enough to use the oven."
+      },
+      {
+        "original": "Sam moved into this flat in 2020 and still lives here.",
+        "key_word": "SINCE",
+        "stem": "Sam",
+        "answer": "Sam has lived in this flat since 2020."
+      }
+    ]
+  },
+  {
+    "id": "kwt-a2-3",
+    "level": "A2",
+    "title": "Shopping",
+    "items": [
+      {
+        "original": "What is the price of this jacket?",
+        "key_word": "COST",
+        "stem": "How much",
+        "answer": "How much does this jacket cost?"
+      },
+      {
+        "original": "This shirt is cheaper than that one.",
+        "key_word": "EXPENSIVE",
+        "stem": "That shirt",
+        "answer": "That shirt is more expensive than this one."
+      },
+      {
+        "original": "Please pay at the desk before you leave.",
+        "key_word": "MUST",
+        "stem": "You",
+        "answer": "You must pay at the desk before you leave."
+      },
+      {
+        "original": "Shopping with my sister is fun.",
+        "key_word": "ENJOY",
+        "stem": "I",
+        "answer": "I enjoy shopping with my sister."
+      },
+      {
+        "original": "I have no eggs at home.",
+        "key_word": "ANY",
+        "stem": "I don't",
+        "answer": "I don't have any eggs at home."
+      },
+      {
+        "original": "The market opened three years ago and is still open.",
+        "key_word": "FOR",
+        "stem": "The market",
+        "answer": "The market has been open for three years."
+      }
+    ]
+  }
+]

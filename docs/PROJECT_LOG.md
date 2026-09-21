@@ -1030,3 +1030,52 @@ Held back from Railway on purpose (Thiago: push after batch 2) — see the push 
   something in a clear setting") are the part most likely to need tuning on first real use.
   The student-app path is wired (player, meta, attempt recording) but was not exercised with a
   student login this round.
+
+
+## 23. Cambridge "A2 easy start" ✅ (2026-09-22)
+
+**Why.** Thiago's partner wants to practise English through the student app, level assumed A2
+(unconfirmed). The Practice tab's Cambridge drills are B2 First — too hard — and he had no time
+to generate lots of activities. So: a small static A2 set in the same seven task types, which
+doubles as a diagnostic (he'll see what she gets right and decide what to prepare next).
+I first said subagents didn't fit *generating* activities (that is one click per format on
+`/generate`, and results land in the Library, not the static tab); they do fit *authoring a static
+content bank* — the established pattern in `Claude.md` (parallel subagents, own scratch files,
+central validation).
+
+**Content — 7 subagents in parallel, one per part**, each writing only to a scratch file (never
+the repo), each given the exact schema, A2 language limits and the originality rule. Per part:
+Word Formation 3 sets × 6 items, Open Cloze 3 × 6 gaps, MC Cloze 3 × 6 gaps, Key Word
+Transformation 3 × 6 items, MC Reading 2 sets × 4 questions, Gapped Text 2 sets × 4 gaps (+1
+distractor), Multiple Matching 2 sets × 6 questions. Merged only after central checks: a validator
+(structure, counts, answer keys, length limits, no 6-word run shared with the existing B2 files)
+**and a full read-through by me** — subagent self-reports were not trusted. The read-through
+found six items to change, all fixed before merging: 4 Key Word Transformation items (two used
+"necessary"/"possible", one made the student invent an antonym, one had an ambiguous verb switch),
+an MC Reading option that said "He" for a bakery owner whose gender the text never gives, and a
+Multiple Matching question using "afford". Everything is original (invented names, no real brands).
+
+**Code.** The seven drills take `level` (`b2` default, `a2`) and choose their data + title
+("… — A2 easy start"); `GappedTextDrill`'s hard-coded "Six sentences … (A–G)" intro is now derived
+from the data (A2: "Four … (A–E)"). `CambridgePracticePage` takes `level` and rejects A2 for types
+without A2 content. Labelled "A2 easy start" — deliberately not "A2 Key" (trademark; and it is not
+the official A2 task set). Student tab renamed "🎓 Cambridge" (was "Cambridge B2").
+
+**Found and fixed on the way (pre-existing, affected the B2 content too):** `McReadingDrill` and
+`TextMatchingDrill` (Multiple Matching) were the split-screen-can't-scroll-on-mobile trap from
+§8's CSS gotchas — at 390 × 844 the answer options sat at y = 824–1048 with a non-scrolling page,
+i.e. unreachable on a phone. Fixed with the standard recipe (outer wrapper `overflow-y-auto
+md:overflow-hidden`, panel grow/shrink/scroll gated behind `md:`); desktop split verified unchanged.
+
+**Verified** (`qa_a2.mjs`, temp teacher + temp student created and deleted): 55 browser checks —
+launcher and student tab, all seven drills as both teacher and student with **deliberately wrong
+answers** (Open Cloze 5 / 6, MC Cloze 5 / 6, Gapped Text 3 / 4, MC Reading 3 / 4, Multiple Matching
+5 / 6, all exact), B2 untouched (Gapped Text still "Six … (A–G)", 5 original sets), the unknown-A2-type
+guard, Back navigation, 390 px no overflow, zero console errors. All earlier suites still pass.
+
+**Known limits.** (1) **Practice drills record no attempts** (Homework H1 decision — no table for
+them), so Thiago cannot see her results in the app; he has to watch her or ask for the on-screen
+scores. If he wants the diagnostic captured, that is a new feature (a practice-attempts table).
+(2) A2-level appropriateness was judged by reading, not by a CEFR word-list tool. (3) Key Word
+Transformation is self-checked (the answer is revealed, nothing is auto-marked), so alternative
+correct answers are up to the reader.

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { A2_PARTS } from '@/lib/cambridgeLevels';
 
 // Exam-prep practice, reachable on its own — independent of the student's trilha.
 // Same drills the teacher launches from Upload → DET/Cambridge tabs
@@ -31,7 +32,7 @@ const DET_SECTIONS = [
 
 const CAMBRIDGE_SECTIONS = [
     {
-        label: 'Reading & Use of English',
+        label: 'B2 First — Reading & Use of English',
         items: [
             { type: 'word-formation', label: 'Word Formation' },
             { type: 'key-word-transformation', label: 'Key Word Transformation' },
@@ -68,6 +69,14 @@ const CAMBRIDGE_SECTIONS = [
         ],
     },
 ];
+
+// The same seven Reading & Use of English task types, written at A2 (see lib/cambridgeLevels.js).
+// Listed first so a learner who is starting out finds it before the B2 set.
+const CAMBRIDGE_A2_SECTION = {
+    label: 'A2 easy start',
+    note: 'A gentler set in the same task styles: short texts and everyday topics. A good place to begin.',
+    items: A2_PARTS,
+};
 
 function DrillRow({ to, label }) {
     return (
@@ -122,7 +131,7 @@ export default function PracticePage() {
                             : 'bg-white/5 border-white/10 text-white/50'
                     }`}
                 >
-                    🎓 Cambridge B2
+                    🎓 Cambridge
                 </button>
                 <button
                     onClick={() => setMode('det')}
@@ -136,6 +145,9 @@ export default function PracticePage() {
                 </button>
             </div>
 
+            {mode === 'cambridge' && (
+                <Section {...CAMBRIDGE_A2_SECTION} base="/s/practice/cambridge-a2" />
+            )}
             {mode === 'cambridge' && CAMBRIDGE_SECTIONS.map(section => (
                 <Section key={section.label} {...section} base="/s/practice/cambridge" />
             ))}

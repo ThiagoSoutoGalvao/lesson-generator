@@ -40,6 +40,7 @@ function TeacherApp() {
                 <Route path="/pronunciation/drill/:type" element={<PronunciationDrillPage />} />
                 <Route path="/det/practice/:type" element={<DetPracticePage />} />
                 <Route path="/cambridge/practice/:type" element={<CambridgePracticePage />} />
+                <Route path="/cambridge/a2/:type" element={<CambridgePracticePage level="a2" />} />
             </Routes>
         </Layout>
     );

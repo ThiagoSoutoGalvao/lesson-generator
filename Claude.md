@@ -136,7 +136,13 @@ quiz type, `activity={...}` for everything else.
   Gapped Text), Speaking (4 parts), Writing (2 parts); C1 Advanced Cross-Text
   Multiple Matching only. All on `PracticeSessionShell` / `SpeakingPromptDrill`.
   Generic mortarboard watermark — **no Cambridge crest/shield/wordmark** (trademarked).
-  Content data under `resources/js/data/cambridge/{b2,c1}/`.
+  Content data under `resources/js/data/cambridge/{a2,b2,c1}/`.
+  **"A2 easy start"** (2026-09-22): the same 7 Reading & Use of English task types written
+  at A2 (2–3 sets each, `data/cambridge/a2/`), for a learner just starting out. The drills
+  take a `level` prop (`b2` default / `a2`, `lib/cambridgeLevels.js`); routes
+  `/cambridge/a2/:type` (teacher) and `/s/practice/cambridge-a2/:type` (student), listed first
+  on the student Practice tab and the teacher launcher. Only those 7 types have A2 content.
+  **Practice drills record no attempts** — a student's results are visible only on screen.
   **Deferred:** rest of C1 content; Listening.
   **Rule for all three modes:** original content only, never past-paper text, no
   official branding, no score that claims to be a real exam score.

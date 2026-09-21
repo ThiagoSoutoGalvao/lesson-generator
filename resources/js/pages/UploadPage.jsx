@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '@/components/Spinner';
+import { A2_PARTS } from '@/lib/cambridgeLevels';
 
 // ─── Presentation Tab ─────────────────────────────────────────────────────────
 
@@ -789,6 +790,20 @@ function CambridgePracticeLauncher() {
 
     return (
         <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-4">
+                <p className="font-display lg-shell-text text-white text-2xl font-bold">A2 easy start</p>
+                <p className="lg-shell-text text-white/75 text-xs font-medium -mt-2">
+                    The same Reading &amp; Use of English task styles, written at A2: short texts, everyday topics. Original content; no official score, no recording.
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {A2_PARTS.map(part => (
+                        <button key={part.type} onClick={() => navigate(`/cambridge/a2/${part.type}`)} className={drillButtonCls}>
+                            {part.label}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
             <div className="flex flex-col gap-4">
                 <p className="font-display lg-shell-text text-white text-2xl font-bold">B2 First</p>
                 <p className="lg-shell-text text-white/75 text-xs font-medium -mt-2">

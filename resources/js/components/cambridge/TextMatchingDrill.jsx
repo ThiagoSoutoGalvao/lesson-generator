@@ -103,8 +103,10 @@ export default function TextMatchingDrill({ sets, title, selectSubtitle, selectI
             )}
 
             {phase === 'drilling' && set && question && (
-                <div key={`${sessionKey}-${qIndex}`} className="flex-1 flex flex-col md:flex-row min-h-0 overflow-hidden">
-                    <div className={`md:w-[50%] overflow-y-auto p-8 border-b md:border-b-0 md:border-r border-white/10 ${TEXT_SIZES[fontSizeIdx]} leading-relaxed ${textColor} flex flex-col gap-5`}>
+                /* Split screen on desktop; on a phone the two panels stack and the whole area
+                   scrolls (overflow-hidden here used to leave the answer buttons unreachable). */
+                <div key={`${sessionKey}-${qIndex}`} className="flex-1 flex flex-col md:flex-row min-h-0 overflow-y-auto md:overflow-hidden">
+                    <div className={`md:w-[50%] shrink-0 md:shrink md:overflow-y-auto p-8 border-b md:border-b-0 md:border-r border-white/10 ${TEXT_SIZES[fontSizeIdx]} leading-relaxed ${textColor} flex flex-col gap-5`}>
                         <p className="text-white/40 text-xs font-semibold uppercase tracking-wide">{set.instruction}</p>
                         {set.texts.map(t => (
                             <div key={t.label}>
@@ -114,8 +116,8 @@ export default function TextMatchingDrill({ sets, title, selectSubtitle, selectI
                         ))}
                     </div>
 
-                    <div className="flex-1 flex flex-col min-h-0">
-                        <div className="flex-1 overflow-y-auto flex flex-col items-center justify-center gap-6 px-8 py-8">
+                    <div className="shrink-0 md:shrink md:flex-1 flex flex-col md:min-h-0">
+                        <div className="md:flex-1 md:overflow-y-auto flex flex-col items-center md:justify-center gap-6 px-8 py-8">
                             <p className={`${QUESTION_SIZES[fontSizeIdx]} font-semibold text-center max-w-xl ${textColor}`}>
                                 {(set.questionPrefix ?? set.instruction)} {question.question}
                             </p>

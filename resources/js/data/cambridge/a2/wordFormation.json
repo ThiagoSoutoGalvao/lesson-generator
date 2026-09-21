@@ -1,0 +1,131 @@
+[
+  {
+    "id": "wf-a2-1",
+    "level": "A2",
+    "title": "A weekend away",
+    "items": [
+      {
+        "root": "BEAUTY",
+        "sentence": "The beach was ___, with white sand and blue water.",
+        "answer": "beautiful",
+        "form": "adjective"
+      },
+      {
+        "root": "VISIT",
+        "sentence": "Many ___ come to the small seaside town in July.",
+        "answer": "visitors",
+        "form": "noun (plural)"
+      },
+      {
+        "root": "HAPPY",
+        "sentence": "The hotel room was dirty and noisy, so we felt very ___.",
+        "answer": "unhappy",
+        "form": "negative adjective"
+      },
+      {
+        "root": "CARE",
+        "sentence": "Please drive ___ because the road is wet.",
+        "answer": "carefully",
+        "form": "adverb"
+      },
+      {
+        "root": "SUN",
+        "sentence": "It was warm and ___ all weekend, so we ate lunch outside.",
+        "answer": "sunny",
+        "form": "adjective"
+      },
+      {
+        "root": "MANAGE",
+        "sentence": "The woman at the desk is the hotel ___, so please ask her.",
+        "answer": "manager",
+        "form": "noun"
+      }
+    ]
+  },
+  {
+    "id": "wf-a2-2",
+    "level": "A2",
+    "title": "At work",
+    "items": [
+      {
+        "root": "HELP",
+        "sentence": "My manager is very ___ when I have a problem.",
+        "answer": "helpful",
+        "form": "adjective"
+      },
+      {
+        "root": "WORK",
+        "sentence": "Sam is a new ___ at the cafe; he started on Monday.",
+        "answer": "worker",
+        "form": "noun"
+      },
+      {
+        "root": "TIDY",
+        "sentence": "His desk is very ___, with papers and pens everywhere.",
+        "answer": "untidy",
+        "form": "negative adjective"
+      },
+      {
+        "root": "QUICK",
+        "sentence": "Anna types very ___, so she finishes her reports early.",
+        "answer": "quickly",
+        "form": "adverb"
+      },
+      {
+        "root": "SUCCESS",
+        "sentence": "Our new shop is very ___, and lots of people come every day.",
+        "answer": "successful",
+        "form": "adjective"
+      },
+      {
+        "root": "MEET",
+        "sentence": "I have a ___ with my boss at ten o'clock.",
+        "answer": "meeting",
+        "form": "noun"
+      }
+    ]
+  },
+  {
+    "id": "wf-a2-3",
+    "level": "A2",
+    "title": "Food and cooking",
+    "items": [
+      {
+        "root": "HEALTH",
+        "sentence": "Eating cake and sweets every day is ___ for you.",
+        "answer": "unhealthy",
+        "form": "negative adjective"
+      },
+      {
+        "root": "TASTE",
+        "sentence": "This soup is really ___; can I have some more?",
+        "answer": "tasty",
+        "form": "adjective"
+      },
+      {
+        "root": "SLOW",
+        "sentence": "Cook the rice ___ for about twenty minutes.",
+        "answer": "slowly",
+        "form": "adverb"
+      },
+      {
+        "root": "BAKE",
+        "sentence": "The ___ gets up at four o'clock to make fresh bread.",
+        "answer": "baker",
+        "form": "noun"
+      },
+      {
+        "root": "COOK",
+        "sentence": "My father loves ___ and makes dinner for us every day.",
+        "answer": "cooking",
+        "form": "noun"
+      },
+      {
+        "root": "COLOUR",
+        "sentence": "The salad looked very ___, with red, yellow and green vegetables.",
+        "answer": "colourful",
+        "form": "adjective"
+      }
+    ]
+  }
+]

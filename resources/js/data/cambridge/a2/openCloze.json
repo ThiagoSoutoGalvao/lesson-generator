@@ -1,0 +1,98 @@
+[
+  {
+    "id": "cloze-open-a2-1",
+    "level": "A2",
+    "title": "A Trip to the Market",
+    "paragraph": "Hi Anna, I hope you are well. Yesterday I went to the market {{1}} my sister. It was very big, with lots {{2}} stalls selling fruit and cheese. My sister is {{3}} very good cook, so she bought a lot of food. The apples were cheap, {{4}} the cheese was too expensive! After that, my sister and {{5}} had lunch in a small café. Next Saturday we are {{6}} to visit a different market. Please come with us! Love, Ben",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "with"
+      },
+      {
+        "id": 2,
+        "answer": "of"
+      },
+      {
+        "id": 3,
+        "answer": "a"
+      },
+      {
+        "id": 4,
+        "answer": "but"
+      },
+      {
+        "id": 5,
+        "answer": "I"
+      },
+      {
+        "id": 6,
+        "answer": "going"
+      }
+    ]
+  },
+  {
+    "id": "cloze-open-a2-2",
+    "level": "A2",
+    "title": "Working in a Shop",
+    "paragraph": "My name is Tom, and I work in a small shop in the city. I get up {{1}} half past six every morning {{2}} the shop opens at eight and I live far away. My friend Kim works in the shop too, and she is very kind. I often see {{3}} on the train. There {{4}} four other workers in our shop. We are very busy {{5}} Saturdays. Yesterday it {{6}} very cold, so we drank hot tea all day.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "at"
+      },
+      {
+        "id": 2,
+        "answer": "because"
+      },
+      {
+        "id": 3,
+        "answer": "her"
+      },
+      {
+        "id": 4,
+        "answer": "are"
+      },
+      {
+        "id": 5,
+        "answer": "on"
+      },
+      {
+        "id": 6,
+        "answer": "was"
+      }
+    ]
+  },
+  {
+    "id": "cloze-open-a2-3",
+    "level": "A2",
+    "title": "Summer on an Island",
+    "paragraph": "Last summer, my husband and I went on holiday to a small island. The hotel was near the beach, and we swam in {{1}} sea every morning. The beach is ten minutes {{2}} the hotel. A friend asked me how {{3}} days we stayed there, and I said, \"Seven.\" The weather {{4}} hot and sunny, so we did not need warm clothes. My husband wants to go again next year, {{5}} I want {{6}} try a different place.",
+    "blanks": [
+      {
+        "id": 1,
+        "answer": "the"
+      },
+      {
+        "id": 2,
+        "answer": "from"
+      },
+      {
+        "id": 3,
+        "answer": "many"
+      },
+      {
+        "id": 4,
+        "answer": "was"
+      },
+      {
+        "id": 5,
+        "answer": "but"
+      },
+      {
+        "id": 6,
+        "answer": "to"
+      }
+    ]
+  }
+]

@@ -59,6 +59,7 @@ export default function StudentShell({ user }) {
                     <Route path="/s/practice" element={<PracticePage />} />
                     <Route path="/s/practice/det/:type" element={<DetPracticePage backTo={{ path: '/s/practice', state: { mode: 'det' } }} />} />
                     <Route path="/s/practice/cambridge/:type" element={<CambridgePracticePage backTo={{ path: '/s/practice', state: { mode: 'cambridge' } }} />} />
+                    <Route path="/s/practice/cambridge-a2/:type" element={<CambridgePracticePage level="a2" backTo={{ path: '/s/practice', state: { mode: 'cambridge' } }} />} />
                     <Route path="/s/progress" element={<ProgressPage user={user} />} />
                     <Route path="*" element={<Navigate to="/s" replace />} />
                 </Routes>

@@ -4,7 +4,9 @@ import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
-import gappedTextSets from '@/data/cambridge/b2/gappedText.json';
+import b2Sets from '@/data/cambridge/b2/gappedText.json';
+import a2Sets from '@/data/cambridge/a2/gappedText.json';
+import { CAMBRIDGE_LEVEL_LABEL, partHint } from '@/lib/cambridgeLevels';
 
 const PARAGRAPH_SIZES = ['text-lg',   'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const REF_SIZES       = ['text-base', 'text-lg', 'text-xl',  'text-2xl', 'text-3xl'];
@@ -44,7 +46,14 @@ function InlineGap({ blank, value, revealed, sentences, onChange }) {
     );
 }
 
-export default function GappedTextDrill() {
+const NUM_WORDS = ['Zero', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
+
+export default function GappedTextDrill({ level = 'b2' }) {
+    const sets = level === 'a2' ? a2Sets : b2Sets;
+    // The intro counts the gaps / sentences in the data, so B2 (6 gaps, A–G) and A2 (4 gaps, A–E) both read right.
+    const nGaps = sets[0]?.blanks.length ?? 6;
+    const lastLabel = String.fromCharCode(64 + (sets[0]?.sentences.length ?? 7));
+    const intro = `${NUM_WORDS[nGaps] ?? nGaps} sentences have been removed from the text. Choose the correct sentence (A–${lastLabel}) for each gap — one option is a distractor and doesn't fit anywhere.`;
     const navigate = useNavigate();
     const [phase, setPhase] = useState('select'); // select | drilling
     const [set, setSet] = useState(null);
@@ -87,16 +96,16 @@ export default function GappedTextDrill() {
     return (
         <PracticeSessionShell
             watermark={<CambridgeWatermark />}
-            title="Gapped Text — B2 First"
-            subtitle={phase === 'drilling' ? set.title : 'Choose a text to practice — Reading & Use of English, Part 6'}
+            title={`Gapped Text — ${CAMBRIDGE_LEVEL_LABEL[level]}`}
+            subtitle={phase === 'drilling' ? set.title : `Choose a text to practice — ${partHint(level, 6)}`}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}
         >
             {phase === 'select' && (
                 <div className="flex-1 overflow-y-auto px-8 py-8">
                     <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
-                        <p className="text-white/60 text-sm text-center mb-2">Six sentences have been removed from the text. Choose the correct sentence (A–G) for each gap — one option is a distractor and doesn't fit anywhere.</p>
-                        {gappedTextSets.map(s => (
+                        <p className="text-white/60 text-sm text-center mb-2">{intro}</p>
+                        {sets.map(s => (
                             <button key={s.id} onClick={() => startSet(s)}
                                 className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white font-bold transition-all cursor-pointer text-left">
                                 <p className="text-lg">{s.title}</p>

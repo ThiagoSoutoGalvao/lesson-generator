@@ -4,7 +4,9 @@ import { usePracticeBack } from '@/hooks/usePracticeBack';
 import PracticeSessionShell from '@/components/det/PracticeSessionShell';
 import { useDisplay } from '@/hooks/useDisplay';
 import CambridgeWatermark from '@/components/cambridge/CambridgeWatermark';
-import keyWordSets from '@/data/cambridge/b2/keyWordTransformation.json';
+import b2Sets from '@/data/cambridge/b2/keyWordTransformation.json';
+import a2Sets from '@/data/cambridge/a2/keyWordTransformation.json';
+import { CAMBRIDGE_LEVEL_LABEL, partHint } from '@/lib/cambridgeLevels';
 
 const SENTENCE_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const FONT_SIZE_MAX = SENTENCE_SIZES.length - 1;
@@ -12,7 +14,8 @@ const FONT_SIZE_MAX = SENTENCE_SIZES.length - 1;
 const primaryBtnCls = 'px-6 py-3 rounded-xl bg-amber-500/30 border border-amber-400/50 hover:bg-amber-500/40 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold transition-colors cursor-pointer';
 const secondaryBtnCls = 'px-6 py-3 rounded-xl bg-white/10 border border-white/20 hover:bg-white/20 disabled:opacity-30 disabled:cursor-default text-white font-semibold transition-colors cursor-pointer';
 
-export default function KeyWordTransformationDrill() {
+export default function KeyWordTransformationDrill({ level = 'b2' }) {
+    const sets = level === 'a2' ? a2Sets : b2Sets;
     const navigate = useNavigate();
     const [phase, setPhase] = useState('select'); // select | drilling
     const [set, setSet] = useState(null);
@@ -54,8 +57,8 @@ export default function KeyWordTransformationDrill() {
     return (
         <PracticeSessionShell
             watermark={<CambridgeWatermark />}
-            title="Key Word Transformation — B2 First"
-            subtitle={phase === 'drilling' ? set.title : 'Choose a set to practice — Reading & Use of English, Part 4'}
+            title={`Key Word Transformation — ${CAMBRIDGE_LEVEL_LABEL[level]}`}
+            subtitle={phase === 'drilling' ? set.title : `Choose a set to practice — ${partHint(level, 4)}`}
             progressLabel={phase === 'drilling' ? `Item ${index + 1} of ${total}` : undefined}
             onRedo={phase === 'drilling' ? redo : undefined}
             onBack={phase === 'select' ? backToTab : () => setPhase('select')}
@@ -64,7 +67,7 @@ export default function KeyWordTransformationDrill() {
                 <div className="flex-1 overflow-y-auto px-8 py-8">
                     <div className="flex flex-col gap-3 max-w-md w-full mx-auto">
                         <p className="text-white/60 text-sm text-center mb-2">Rewrite each sentence using the key word, without changing its meaning.</p>
-                        {keyWordSets.map(s => (
+                        {sets.map(s => (
                             <button key={s.id} onClick={() => startSet(s)}
                                 className="px-6 py-6 rounded-2xl bg-white/8 border border-white/20 hover:bg-white/15 hover:border-white/40 text-white font-bold transition-all cursor-pointer text-left">
                                 <p className="text-lg">{s.title}</p>
