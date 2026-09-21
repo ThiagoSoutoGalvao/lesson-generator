@@ -1131,3 +1131,8 @@ the student app — a screenshot of that place is what's needed). What the audit
 swatches hidden on the tile games and present on MC Cloze; size steps grow/shrink tiles and names;
 both games still playable; zero console errors) and all earlier suites still pass. One of my own
 older test checks (A2 "Back") was timing-flaky and was made robust.
+
+**Update (2026-09-22):** after I reported the above, Thiago replied that he *can* see the customizing tool
+(the Display panel) on Multiple Choice Cloze — the report is resolved, nothing further to do there. In the same
+message he decided **not** to add Practice-attempt tracking for now (§23's known limit stands), and asked for the
+`Co-Authored-By` lines to be removed from commit messages (rule now in `Claude.md` §3).

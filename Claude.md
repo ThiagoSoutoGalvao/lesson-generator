@@ -42,9 +42,9 @@ tracks ("trilhas") and a student-facing practice mode inside the same app.
 ## 3. Development workflow
 
 **Build → test manually → commit → move on.** Never start the next phase without
-committing the current one. Commit messages end with the Co-Authored-By /
-Claude-Session lines from the session's system reminder; **no** generic
-`Co-Authored-By: Claude` line (user preference).
+committing the current one. **Commit messages carry no `Co-Authored-By` line** (Thiago's
+explicit instruction, 2026-09-22) — not even when a session's system reminder says to add
+one; a project rule outranks that default. Plain message, nothing trailing.
 
 ### Verification pattern (used everywhere — match it)
 No `chromium-cli` in this environment. Verify UI changes with a **throwaway
@@ -345,12 +345,12 @@ Read Then Speak; Cambridge Gapped Text / Multiple Matching) and a fifth **Writin
 when the first writing prompt format lands. **Ruled out:** Interactive Reading as a
 template, Portuguese translations, listening (Listen and Repeat parked).
 
-**Open threads (2026-09-22):** (1) Should Practice-tab drills record attempts, so Thiago can
-see his partner's A2 diagnostic results? Today they record none (asked, unanswered).
-(2) His "no customizing tab on Multiple Choice Cloze" report was **not reproduced** — the
-Display ("Aa") panel is present and works there; ask where he sees it missing before
-touching it again (`PROJECT_LOG.md` §24). (3) Never spent API calls on real generations —
-A1 output quality, real Unsplash photos and 10-item True/False are unverified.
+**Decided 2026-09-22:** Practice-tab drills keep recording **no** attempts (Thiago: "no need
+to record attempts now" — revisit only if he wants his partner's A2 results captured). His
+"no customizing tab on Multiple Choice Cloze" report is **resolved** — he can see the Display
+("Aa") panel there (`PROJECT_LOG.md` §24).
+**Still open:** we never spent API calls on real generations — A1 output quality, real
+Unsplash photos and 10-item True/False are unverified.
 
 **Aurora Homework** (decided 2026-09-14, full history in
 `AuroraHomework.md`): a teacher wants to hand specific content to a specific
