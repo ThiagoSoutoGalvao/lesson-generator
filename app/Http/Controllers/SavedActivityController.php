@@ -95,6 +95,26 @@ class SavedActivityController extends Controller
         return response()->json(['imported' => $imported, 'skipped' => $skipped]);
     }
 
+    /**
+     * Rename one of the teacher's own activities. Only the name changes — trilha, lesson, content and
+     * ownership are untouched. Whitespace is tidied the same way the Save panel does it.
+     *
+     * PATCH /api/activities/{activity}   { name }
+     */
+    public function update(Request $request, Activity $activity)
+    {
+        abort_if($activity->user_id !== auth()->id(), 403);
+
+        $request->validate(['name' => ['required', 'string', 'max:255']]);
+
+        $name = trim(preg_replace('/[\s\p{Z}]+/u', ' ', preg_replace('/[\x{200B}-\x{200D}\x{2060}\x{FEFF}]/u', '', $request->input('name'))));
+        abort_if($name === '', 422, 'The name cannot be empty.');
+
+        $activity->update(['name' => $name]);
+
+        return response()->json($activity);
+    }
+
     public function destroy(Activity $activity)
     {
         abort_if($activity->user_id !== auth()->id(), 403);

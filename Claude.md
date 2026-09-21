@@ -546,7 +546,11 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
 - **Activity names** (`lib/naming.js`, used by `SavePanel`): trilha names are `TRILHA L## · Type · Focus`; the Focus is tidied
   (spaces / underscores / invisible characters, sentence case, no `·`) and amber hints flag >6 words, Title Case,
   final/v2/copy/NEW, dates and repeated trilha/lesson/type — hints never block saving. One-off names get tidied too.
-  Existing names saved before 2026-09-22 (many one-off ones are `Words_With_Underscores` / run-together) are **not** rewritten.
+  Names saved before 2026-09-22 (many one-off ones are `Words_With_Underscores` / camelCase) are **not** rewritten
+  automatically — each Library card has a **Rename** button (`PATCH /api/activities/{id}`, name only): a one-off edits the
+  whole name; a trilha activity edits only its Focus and the `TRILHA L## · Type ·` prefix is rebuilt from its real
+  trilha / lesson / type. The box opens pre-filled with `suggestName()` (camelCase split, underscores → spaces) for the
+  teacher to check — it can't invent a space where there was no boundary ("Familyparty").
 - A test that picks elements by a generic class (`div.select-none`) can start matching the yellow LOCAL badge (`role=status`) —
   scope selectors (`:not([role=status])`).
 

@@ -1260,4 +1260,17 @@ Thiago: "I cannot hit space [when saving an activity] and the names look just cl
 - **Verified:** `qa_save_naming.mjs` (20 browser checks — fails 12/20 on the old build, incl. the exact `Pastsimplevs…` output),
   `qa_naming_unit.mjs` (40), and every earlier suite still passes (display 14, beginner 17, batch2 41, A2 55, login 14, logout 8,
   remove 11). `qa_display` had started failing only because its `div.select-none` selector now matched the LOCAL badge.
-- **Open:** renaming existing cluttered activities (no Rename in the Library yet; only delete + re-save).
+- **Open (closed below):** renaming existing cluttered activities — see "Rename" at the end of this section.
+
+**Rename (2026-09-22, same day).** Thiago asked for a Library **Rename** because many existing names are camelCase / underscored and
+"we have just started the trilhas". Each Library card has a Rename button → an inline editor (`RenameActivity` in `LibraryPage.jsx`),
+`PATCH /api/activities/{activity}` (owner-only, teacher-only, **name only** — trilha, lesson, type, content and owner are ignored;
+whitespace/invisible characters tidied server-side; empty → 422). A **one-off** edits the whole name; a **trilha activity edits only
+its Focus** and the `TRILHA L## · Type ·` prefix is rebuilt from the activity's real trilha / lesson / type, so a name can't drift
+from where students see it and an off-standard old name is brought back to the standard on save. The box opens pre-filled with
+`suggestName()` — camelCase split (`IrregularVerbsA1` → `Irregular Verbs A1`), underscores → spaces, sentence case for a Focus —
+with a "Suggested from the old name — read it through" note; nothing is applied silently. Same live word count / amber hints as
+the Save panel; Enter saves, Escape cancels; Save is disabled when nothing changed.
+**Known limits (by design):** it cannot split a name that has no boundary (`newYearsFamilyparty` → `new Years Familyparty`), and a
+Focus suggestion lowers proper nouns (`Curitiba botanical garden`) — the teacher re-capitalises. Verified: `RenameActivityTest` (6),
+`qa_rename.mjs` (24 browser checks incl. 390px), `qa_naming_unit.mjs` (56, +16 for `suggestName`).

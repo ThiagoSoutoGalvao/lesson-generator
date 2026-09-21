@@ -24,7 +24,8 @@ import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
-import { TRILHAS, TRILHA_NAMES, TRILHA_TOC, LESSON_SLOTS, TEACHERS } from '@/lib/trilhas';
+import { TRILHAS, TRILHA_NAMES, TRILHA_TOC, LESSON_SLOTS, TEACHERS, TYPE_LABELS as NAME_TYPE_LABELS, composeActivityName } from '@/lib/trilhas';
+import { tidyText, tidyFocus, focusHints, suggestName, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
 
 const TYPE_LABELS = {
     quiz:                     'Quiz',
@@ -288,6 +289,82 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
     );
 }
 
+// Inline rename for one Library card. A trilha activity only edits its Focus — the `LIGHTS L03 · Type ·` part is rebuilt from
+// the activity's real trilha / lesson / type, so its name can't drift out of step with where students see it (and an old
+// name that broke the standard is brought back to it). A one-off edits the whole name. The box opens pre-filled with a
+// SUGGESTED tidy-up of the old name (camelCase split, underscores → spaces) that the teacher checks — nothing is applied silently.
+function RenameActivity({ activity: a, onSaved, onCancel }) {
+    const structured = Boolean(a.trilha);
+    const prefix = structured ? composeActivityName({ trilha: a.trilha, lesson: a.trilha_lesson, type: a.type, focus: '' }) : '';
+    const original = structured && a.name.startsWith(`${prefix} · `) ? a.name.slice(prefix.length + 3) : a.name;
+    const suggested = suggestName(original, { sentence: structured });
+
+    const [value, setValue] = useState(suggested);
+    const [busy, setBusy]   = useState(false);
+    const [err, setErr]     = useState('');
+
+    const clean     = structured ? tidyFocus(value) : tidyText(value);
+    const finalName = structured ? composeActivityName({ trilha: a.trilha, lesson: a.trilha_lesson, type: a.type, focus: clean }) : clean;
+    const hints     = structured ? focusHints(value, { typeLabel: NAME_TYPE_LABELS[a.type] ?? a.type }) : [];
+    const changed   = clean && finalName !== a.name;
+
+    async function submit(e) {
+        e.preventDefault();
+        if (!changed) return;
+        setBusy(true); setErr('');
+        try {
+            const { data } = await axios.patch(`/api/activities/${a.id}`, { name: finalName });
+            onSaved(data);
+        } catch (e2) {
+            setErr(Object.values(e2.response?.data?.errors ?? {})[0]?.[0] ?? e2.response?.data?.message ?? 'Could not rename. Please try again.');
+            setBusy(false);
+        }
+    }
+
+    return (
+        <form onSubmit={submit} className="flex flex-col gap-2 min-w-0 flex-1" aria-label={`Rename ${a.name}`}>
+            {structured && <p className="text-white/50 text-xs font-mono break-words">{prefix} ·</p>}
+            <input
+                value={value}
+                onChange={e => setValue(e.target.value)}
+                onKeyDown={e => { if (e.key === 'Escape') onCancel(); }}
+                autoFocus
+                onFocus={e => e.target.select()}
+                autoComplete="off"
+                maxLength={structured ? 60 : 255}
+                aria-label={structured ? 'Focus' : 'Activity name'}
+                placeholder={structured ? 'Focus — the specific language point' : 'Activity name'}
+                className="w-full bg-white/10 border border-white/25 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#fc6840]"
+            />
+            {structured && (
+                <p className={`text-[11px] tabular-nums ${wordCount(clean) > MAX_FOCUS_WORDS ? 'text-amber-300' : 'text-white/40'}`}>
+                    {wordCount(clean)} / {MAX_FOCUS_WORDS} words
+                </p>
+            )}
+            {hints.length > 0 && (
+                <ul data-testid="rename-hints" className="text-amber-300 text-[11px] leading-snug list-disc pl-4 space-y-0.5">
+                    {hints.map(h => <li key={h}>{h}</li>)}
+                </ul>
+            )}
+            {suggested !== original && value === suggested && (
+                <p className="text-white/50 text-[11px]">Suggested from the old name — read it through and fix anything I couldn’t split.</p>
+            )}
+            {clean && (
+                <p className="text-white/45 text-[11px] break-words">Saves as: <span data-testid="rename-preview" className="font-mono text-white/75">{finalName}</span></p>
+            )}
+            {err && <p className="text-red-300 text-xs">{err}</p>}
+            <div className="flex gap-2">
+                <button type="submit" disabled={busy || !changed} className="text-xs font-semibold px-3.5 py-1.5 rounded-lg bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-40 text-white transition-colors cursor-pointer">
+                    {busy ? 'Saving…' : 'Save name'}
+                </button>
+                <button type="button" onClick={onCancel} disabled={busy} className="text-xs font-semibold px-3.5 py-1.5 rounded-lg border border-white/20 text-white/75 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    );
+}
+
 // Loads a file written by `php artisan activities:export` (e.g. made on the local site) into THIS
 // account's library. Whatever owner the file came from, the activities land under whoever is signed in.
 function ImportActivities({ onDone }) {
@@ -347,6 +424,7 @@ export default function LibraryPage() {
     const [trilhaFilter, setTrilhaFilter] = useState('all'); // 'all' | 'Lights' | 'Glow' | 'Radiant' | '__none__'
     const [lessonFilter, setLessonFilter] = useState('all'); // lesson number as string, or 'all'
     const [launched, setLaunched]     = useState(null);
+    const [renamingId, setRenamingId] = useState(null);
     const [loading, setLoading]       = useState(true);
     const [error, setError]           = useState(null);
 
@@ -533,7 +611,16 @@ export default function LibraryPage() {
                         className="lg-surface lg-surface-hover border rounded-2xl p-5 flex flex-col gap-3 transition-colors"
                     >
                         <div className="flex items-start justify-between gap-2">
-                            <h3 className="font-display text-xl font-bold text-white leading-snug min-w-0 break-words">{a.name}</h3>
+                            {renamingId === a.id
+                                ? <RenameActivity
+                                    activity={a}
+                                    onCancel={() => setRenamingId(null)}
+                                    onSaved={updated => {
+                                        setActivities(prev => prev.map(x => (x.id === updated.id ? { ...x, name: updated.name } : x)));
+                                        setRenamingId(null);
+                                    }}
+                                  />
+                                : <h3 className="font-display text-xl font-bold text-white leading-snug min-w-0 break-words">{a.name}</h3>}
                             <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${TYPE_COLORS[a.type]}`}>
                                 {TYPE_LABELS[a.type]}
                             </span>
@@ -579,6 +666,12 @@ export default function LibraryPage() {
                                 className="flex-1 bg-[#e0521f] hover:bg-[#c9461a] text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer border border-[#e0521f]"
                             >
                                 Launch
+                            </button>
+                            <button
+                                onClick={() => setRenamingId(id => (id === a.id ? null : a.id))}
+                                className="bg-white/8 hover:bg-white/15 text-white/80 hover:text-white text-sm px-3 py-2.5 rounded-xl transition-colors cursor-pointer border border-white/12"
+                            >
+                                Rename
                             </button>
                             <button
                                 onClick={() => handleDelete(a.id)}

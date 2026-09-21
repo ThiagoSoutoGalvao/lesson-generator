@@ -34,6 +34,26 @@ export function tidyFocus(s) {
 export const wordCount = s => (s ? s.split(' ').filter(Boolean).length : 0);
 
 /**
+ * A SUGGESTION for tidying an old name — the Library's Rename box opens pre-filled with it and the teacher checks and edits
+ * it; it is never applied silently. Underscores → spaces, camelCase split into words ("IrregularVerbsA1" → "Irregular Verbs A1",
+ * "CityLife_Country" → "City Life Country"), then tidied. Digits stay attached ("7B", "A1"). With `sentence: true` (a trilha
+ * Focus, which the standard wants in sentence case) plain Capitalised words after the first are lower-cased; acronyms and
+ * anything with a digit are kept. One-off names keep their capitals, since a proper noun (Curitiba) can't be told from a word.
+ * It cannot invent a space where the old name had no boundary at all ("Familyparty"), so the teacher still has to read it.
+ */
+export function suggestName(original, { sentence = false } = {}) {
+    let s = tidyText(original)
+        .replace(/([a-z])([A-Z])/g, '$1 $2')            // irregularVerbs → irregular Verbs
+        .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2');     // AProcess → A Process
+    s = tidyText(s);
+    if (sentence) {
+        s = s.split(' ').map((w, i) => (i > 0 && /^[A-Z][a-z]+$/.test(w) ? w.toLowerCase() : w)).join(' ');
+        return capitaliseFirst(s);
+    }
+    return s;
+}
+
+/**
  * "Present Continuous & Everyday Verbs" — most of the words after the first start with a capital. Only a hint, never a
  * rewrite: "London Underground" or "Past simple vs Present perfect" are legitimate and must be left alone.
  */

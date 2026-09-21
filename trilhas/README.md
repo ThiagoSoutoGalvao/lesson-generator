@@ -92,6 +92,10 @@ removed from the Focus (it would split the name into extra parts). Things only y
 Focus box and never block saving: more than 6 words, Title Case, "final / v2 / copy / NEW", dates, and repeating the trilha,
 lesson or type. Spaces now type normally — before this, the activity's keyboard shortcuts (Space, F…) swallowed them.
 
+To fix a name you saved earlier, use **Rename** on its card in the Library. A trilha activity lets you edit only the Focus (the
+`TRILHA L## · Type` part is rebuilt from its real trilha and lesson); a one-off lets you edit the whole name. The box opens with a
+suggested tidy-up of the old name — camelCase split into words, underscores turned into spaces — for you to check and correct.
+
 ---
 
 ## 4. When a lesson is "done"
