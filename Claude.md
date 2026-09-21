@@ -58,7 +58,9 @@ Mock `/api/generate` rather than spending API calls. Local dev users:
 - teacher `aurora@aurora.test` / `aurora-local-dev` (id 69) — the Aurora shared login
 - student `student@aurora.test` / `student-local-dev` (Glow, id 71)
 
-Scratchpad already holds many `qa_*.mjs` scripts to copy from.
+Scratchpad already holds many `qa_*.mjs` scripts to copy from — the 2026-09 harness
+(level / pills / beginner / A2 / Display suites, `Http::fake` prompt checks and a B1
+byte-identical prompt regression) is in `scratchpad/qa_2026-09/`; read its README first.
 
 ---
 
@@ -84,6 +86,9 @@ approximate, per Thiago). Format cards carry
 "Cambridge-/DET-/TOEFL-style" pills + an "A1+" works-from tag from
 `resources/js/lib/examStyles.js` (direct matches only get a pill; wording stays
 adjectival — the names are trademarks), and optional exam chips skip the goal step.
+**Prompts honour the requested item count** (6 by default; per-template ranges in
+`ClaudeService`) — a hard-coded "Generate exactly N" out-votes the teacher's Instructions
+box, so never pin one.
 
 **20 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
 `word_formation`, `true_false`, `mc_reading`, `odd_one_out`, `cloze`,
@@ -339,6 +344,13 @@ additions (TOEFL Read in Daily Life / Interview; DET Fill in the Blanks / Real-o
 Read Then Speak; Cambridge Gapped Text / Multiple Matching) and a fifth **Writing** goal
 when the first writing prompt format lands. **Ruled out:** Interactive Reading as a
 template, Portuguese translations, listening (Listen and Repeat parked).
+
+**Open threads (2026-09-22):** (1) Should Practice-tab drills record attempts, so Thiago can
+see his partner's A2 diagnostic results? Today they record none (asked, unanswered).
+(2) His "no customizing tab on Multiple Choice Cloze" report was **not reproduced** — the
+Display ("Aa") panel is present and works there; ask where he sees it missing before
+touching it again (`PROJECT_LOG.md` §24). (3) Never spent API calls on real generations —
+A1 output quality, real Unsplash photos and 10-item True/False are unverified.
 
 **Aurora Homework** (decided 2026-09-14, full history in
 `AuroraHomework.md`): a teacher wants to hand specific content to a specific
