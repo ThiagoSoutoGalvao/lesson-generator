@@ -3,13 +3,16 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Models\ActivityAttempt;
 use App\Models\StudentAssignment;
 use App\Models\User;
 use App\Services\StudentHomeworkService;
 use App\Services\StudentProgressService;
 use App\Support\Credentials;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
@@ -97,6 +100,31 @@ class StudentController extends Controller
         $student->save();
 
         return response()->json($student->only(['id', 'name', 'email', 'trilha', 'is_active', 'created_at']));
+    }
+
+    /**
+     * Permanently remove one of this teacher's students, with their attempts, homework
+     * assignments and login sessions (a phone that is signed in is signed out). The teacher's
+     * activities are untouched. For "pause, keep the history" use is_active instead.
+     *
+     * DELETE /api/students/{student}
+     */
+    public function destroy(User $student)
+    {
+        $this->guardTeacher();
+        $this->guardOwnStudent($student);
+
+        DB::transaction(function () use ($student) {
+            // Explicit rather than relying on the foreign keys' ON DELETE CASCADE.
+            ActivityAttempt::where('student_id', $student->id)->delete();
+            StudentAssignment::where('student_id', $student->id)->delete();
+            if (Schema::hasTable('sessions')) {
+                DB::table('sessions')->where('user_id', $student->id)->delete();
+            }
+            $student->delete();
+        });
+
+        return response()->json(['ok' => true]);
     }
 
     /**

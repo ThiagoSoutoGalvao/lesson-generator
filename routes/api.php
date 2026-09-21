@@ -36,6 +36,7 @@ Route::middleware('auth:web')->group(function () {
         Route::get('/students', [StudentController::class, 'index']);
         Route::post('/students', [StudentController::class, 'store']);
         Route::patch('/students/{student}', [StudentController::class, 'update']);
+        Route::delete('/students/{student}', [StudentController::class, 'destroy']);
         Route::get('/students/{student}/progress', [StudentController::class, 'progress']);
         Route::get('/students/{student}/assignments', [StudentController::class, 'assignments']);
         Route::post('/students/{student}/assignments', [StudentController::class, 'assign']);

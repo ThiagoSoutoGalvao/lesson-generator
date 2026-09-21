@@ -1216,3 +1216,11 @@ app (`EnvBadge.jsx`, driven by `window.__AURORA_LOCAL__` = `app()->isLocal()` in
 own environment, not the hostname, so it stays right behind a tunnel). It never shows on Railway (`APP_ENV=production`),
 ignores taps (`pointer-events-none`), and the new-student hand-over card adds "this account does not exist on the live site"
 when local. Verified: `LocalEnvironmentBadgeTest` (2) + `qa_env_badge.mjs` (9 checks, phone + desktop, flag-false case).
+
+**Remove student (2026-09-22).** Each row on the Students page has a red **Remove** button → an inline two-step confirm
+("Remove <name> for good? … can't be undone. To just pause, use Deactivate") → `DELETE /api/students/{student}`
+(`StudentController::destroy`, teacher-only, own students only — a teacher account or another teacher's student is a 403).
+Deletes, in one transaction, the student's `activity_attempts`, `student_assignments`, `sessions` rows (a signed-in phone is
+signed out) and the user; the teacher's activities are untouched; the email becomes reusable. Verified:
+`RemoveStudentTest` (6) + `qa_remove_student.mjs` (11 checks at 390px: cancel keeps, confirm removes, survives a reload,
+removed student locked out, other student survives, no horizontal scroll, zero console errors).

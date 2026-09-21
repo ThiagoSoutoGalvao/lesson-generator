@@ -309,13 +309,26 @@ function HomeworkPanel({ studentId }) {
     );
 }
 
-function StudentRow({ s, onChange }) {
+function StudentRow({ s, onChange, onRemoved }) {
     const [busy, setBusy]       = useState(false);
     const [expanded, setExpanded] = useState(false);
     const [resetting, setResetting] = useState(false);
     const [newPassword, setNewPassword] = useState('');
     const [resetErr, setResetErr] = useState('');
     const [handover, setHandover] = useState(null);
+    const [confirmingRemove, setConfirmingRemove] = useState(false);
+    const [removeErr, setRemoveErr] = useState('');
+
+    async function remove() {
+        setBusy(true); setRemoveErr('');
+        try {
+            await axios.delete(`/api/students/${s.id}`);
+            onRemoved(s.id);
+        } catch (e2) {
+            setRemoveErr(e2.response?.data?.message ?? 'Could not remove the student.');
+            setBusy(false);
+        }
+    }
 
     async function patch(payload) {
         setBusy(true);
@@ -374,7 +387,31 @@ function StudentRow({ s, onChange }) {
                 >
                     Reset password
                 </button>
+                <button
+                    disabled={busy}
+                    onClick={() => { setConfirmingRemove(c => !c); setRemoveErr(''); }}
+                    className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-red-400/30 text-red-300/80 hover:text-red-200 hover:bg-red-500/15 transition-colors cursor-pointer"
+                >
+                    Remove
+                </button>
             </div>
+            {confirmingRemove && (
+                <div className="border-t border-red-400/20 bg-red-500/10 px-4 py-3 flex flex-col gap-2">
+                    <p className="text-red-100 text-xs leading-relaxed">
+                        Remove <strong>{s.name}</strong> for good? Their login, progress and assigned homework are deleted and this can't be undone.
+                        Your activities are not touched. (To just pause the login and keep the history, use <em>Deactivate</em>.)
+                    </p>
+                    <div className="flex gap-2">
+                        <button disabled={busy} onClick={remove} className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-600 hover:bg-red-700 disabled:opacity-40 text-white transition-colors cursor-pointer">
+                            {busy ? 'Removing…' : 'Yes, remove'}
+                        </button>
+                        <button disabled={busy} onClick={() => setConfirmingRemove(false)} className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer">
+                            Cancel
+                        </button>
+                    </div>
+                    {removeErr && <p className="text-red-300 text-xs">{removeErr}</p>}
+                </div>
+            )}
             {resetting && (
                 <form onSubmit={resetPassword} className="border-t border-white/10 bg-black/15 px-4 py-3 flex flex-col gap-2">
                     <div className="flex flex-wrap gap-2">
@@ -436,6 +473,10 @@ export default function StudentsPage() {
         });
     }
 
+    function removeStudent(id) {
+        setStudents(prev => prev.filter(p => p.id !== id));
+    }
+
     return (
         <div className="max-w-2xl mx-auto flex flex-col gap-6">
             <div>
@@ -454,7 +495,7 @@ export default function StudentsPage() {
                 students.length === 0
                     ? <p className="lg-shell-text text-[#c6b8e6] text-sm">No students yet — create one above.</p>
                     : <div className="flex flex-col gap-2.5">
-                        {students.map(s => <StudentRow key={s.id} s={s} onChange={upsert} />)}
+                        {students.map(s => <StudentRow key={s.id} s={s} onChange={upsert} onRemoved={removeStudent} />)}
                       </div>
             )}
         </div>
