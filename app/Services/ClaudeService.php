@@ -703,12 +703,12 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly 6 items
+- Generate the number of items requested in the task — 6 if none is given, never fewer than 3 or more than 20
 - Each item tests a distinct grammar structure from the text: tense changes, passive voice, reported speech, modal verbs, conditionals, comparatives, or phrasal verbs
 - The key word must appear in the answer and cannot be modified (no inflection changes)
 - The "stem" gives students the start of the second sentence to anchor their answer — it should end naturally at the gap point, followed by "..."
 - Both sentences must be natural English at {$lv->top} level
-- Each item must test a different grammar point — do not repeat structures{$lv->rules}
+- Vary the grammar points as much as you can — repeat a structure only when there are more items than distinct structures that suit the level{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

@@ -1079,3 +1079,16 @@ scores. If he wants the diagnostic captured, that is a new feature (a practice-a
 (2) A2-level appropriateness was judged by reading, not by a CEFR word-list tool. (3) Key Word
 Transformation is self-checked (the answer is revealed, nothing is auto-marked), so alternative
 correct answers are up to the reader.
+
+### 23b. Sentence Transformation no longer capped at 6 items (2026-09-22)
+Reported by Thiago: the template would not generate more than 6 sentences. Cause: the prompt's
+own rule "Generate exactly 6 items" (original, not from the level work) out-voted the number in the
+Instructions box; and "Each item must test a different grammar point" would also have forced a
+distinct structure per item. Now: "the number of items requested in the task — 6 if none is given,
+never fewer than 3 or more than 20", and grammar points are varied "as much as you can". The screen
+was already dynamic (`items.length`), `max_tokens` (4096) comfortably fits 20 items. The B1
+byte-identical regression now maps these two lines back before comparing, so it still proves nothing
+else moved. **Not verified against real Claude output** (no API spend) — try 10 items once.
+**Same "exactly 6" cap still exists in four other templates:** True/False (statements — also keeps a
+2/2/2 True/False/Not Given mix), Odd One Out (groups), Discussion Questions and MC Reading (questions).
+Left as is until asked.
