@@ -1207,8 +1207,7 @@ a real bug but not (or not the only) cause for him; the cause is **still open**.
   "minutes ago" is not in production at all. The local sqlite database (Herd, `lesson-generator.test`) does hold recently
   created `gabriel@email.com` (09-21 08:54) and `gabriel@test2.com` (09-21 09:50, paused). Strongest explanation: the account
   was created — and its password reset — on the **local** site, so Gabriel logging in on the Railway URL gets "credentials
-  do not match" whatever the password. (Same mix-up as 2026-09-19, see `accounts_and_urls` memory. Inference from the data;
-  not yet confirmed by Thiago.)
+  do not match" whatever the password. (Same mix-up as 2026-09-19, see `accounts_and_urls` memory. **Confirmed by Thiago 2026-09-22:** he had been using the `.test` site; on Railway his past activities were all there.)
 - The only Gabriel on Railway is `gabriel@email.com` (id 13, created 2026-09-16, owned by the personal account).
 
 **Local-environment badge (2026-09-22).** To stop the local/live mix-up recurring: when `APP_ENV=local` a small yellow tab
