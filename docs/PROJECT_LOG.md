@@ -1196,3 +1196,17 @@ a real bug but not (or not the only) cause for him; the cause is **still open**.
   `railway ssh "php artisan accounts:audit …"`.
 - Candidate causes still open for Gabriel: an email typo when the account was created; the account being created on the
   other environment (local vs Railway); a stale password auto-filled by the phone's password manager.
+
+**Production audit (2026-09-22, `accounts:audit` on Railway, MySQL):** 15 users, 110 activities, none ownerless.
+- **No data was lost.** Activities per account grew since the 2026-09-11 note: personal `t.soutogalvao` 10 → 42, `sapulha` 33 → 35,
+  Aurora shared login 6 → 28 (total 53 → 110). Student ids 11–15 are contiguous (the app has no delete-student action), so
+  no student row was ever removed. What differs is **who owns them**: personal login (id 1) owns 42 activities + 3 students
+  (`bob@gmail.com`, `gabriel@email.com`, `johndoe@test.com`); Aurora shared (id 10) owns 28 activities + 2 students
+  (`student@aurora.test`, `aquele@teste.com`). Signed in as the other account, the other set looks "gone".
+- **No student was created on Railway after 2026-09-19** (newest = id 15, `johndoe@test.com`, 09-19). So the Gabriel created
+  "minutes ago" is not in production at all. The local sqlite database (Herd, `lesson-generator.test`) does hold recently
+  created `gabriel@email.com` (09-21 08:54) and `gabriel@test2.com` (09-21 09:50, paused). Strongest explanation: the account
+  was created — and its password reset — on the **local** site, so Gabriel logging in on the Railway URL gets "credentials
+  do not match" whatever the password. (Same mix-up as 2026-09-19, see `accounts_and_urls` memory. Inference from the data;
+  not yet confirmed by Thiago.)
+- The only Gabriel on Railway is `gabriel@email.com` (id 13, created 2026-09-16, owned by the personal account).
