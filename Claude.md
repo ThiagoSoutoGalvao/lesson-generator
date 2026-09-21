@@ -524,7 +524,11 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
   activities by `user_id` — signing in as a different teacher (personal vs Aurora shared) shows a different set, which
   looks like "my data disappeared". To see who owns what, or why one login fails, run the read-only
   `php artisan accounts:audit [email] [--password=]` (locally, or `railway ssh "php artisan accounts:audit …"`).
-  The Gabriel login failure is **still unresolved** (`PROJECT_LOG.md` §25 follow-up).
+  **Local vs Railway is the recurring trap** (a student created on `lesson-generator.test` doesn't exist on the live
+  site): when `APP_ENV=local` every page shows a yellow **"LOCAL — not the live site"** tab (`EnvBadge.jsx`,
+  `window.__AURORA_LOCAL__` from `welcome.blade.php`, and `guest.blade.php` for the login page), and the new-student
+  hand-over card warns. Production audit 2026-09-22: no data lost; Gabriel's failure was most likely this mix-up
+  (`PROJECT_LOG.md` §25) — unconfirmed by Thiago.
 - `php artisan test` has **10 pre-existing failures** in the stock Breeze tests (`Route [dashboard] not defined`,
   closed registration, profile routes) — not regressions; `StudentLoginTest` is the one that matters for login.
 
