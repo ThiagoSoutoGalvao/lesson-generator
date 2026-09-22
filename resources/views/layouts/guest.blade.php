@@ -8,6 +8,13 @@
         <title>{{ config('app.name', 'Aurora') }}</title>
 
         <link rel="icon" type="image/png" href="/brand/aurora-symbol.png">
+        {{-- Same home-screen icon as welcome.blade.php, in case "Add to Home Screen" happens from the login page. --}}
+        <link rel="manifest" href="/manifest.json">
+        <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png">
+        <meta name="theme-color" content="#1A0F3D">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-title" content="Aurora">
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com">

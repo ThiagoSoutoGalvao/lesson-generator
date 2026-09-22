@@ -1274,3 +1274,30 @@ the Save panel; Enter saves, Escape cancels; Save is disabled when nothing chang
 **Known limits (by design):** it cannot split a name that has no boundary (`newYearsFamilyparty` → `new Years Familyparty`), and a
 Focus suggestion lowers proper nouns (`Curitiba botanical garden`) — the teacher re-capitalises. Verified: `RenameActivityTest` (6),
 `qa_rename.mjs` (24 browser checks incl. 390px), `qa_naming_unit.mjs` (56, +16 for `suggestName`).
+
+## 27. Home-screen icon + "Progress & Homework" rename (2026-09-23)
+
+Two students are using the app as a home-screen web app on their phones; the saved icon was a plain **"L"**. A teacher
+also couldn't find where to assign homework to a student.
+
+- **Home-screen icon:** the app had no web manifest and no `apple-touch-icon` at all, so both Android and iOS fell back to a
+  generated monogram from the page title ("Lesson Generator" → "L"). Added `public/manifest.json` (name, standalone display,
+  `start_url: "/"` — confirmed the `Route::middleware('auth')->get('/{any}', …)->where('any', '.*')` catch-all does match the
+  bare root, so this works for both roles) + `<link rel=manifest>` / `apple-touch-icon` / `theme-color` /
+  `apple-mobile-web-app-*` meta tags on **both** `welcome.blade.php` (the SPA — teacher and student) and `guest.blade.php`
+  (the login page, in case "Add to Home Screen" happens before signing in).
+  `public/icons/*.png` (192/512 "any", 192/512 "maskable", 180×180 apple-touch-icon) were generated from
+  `public/brand/aurora-symbol.png` on the Aurora Night gradient — **not** with an image library (none installed, no network
+  assumed): a small HTML/canvas page served same-origin through Herd, driven by Playwright, `canvas.toDataURL()` written to
+  a file. The source PNG has a lot of transparent margin around the actual mark, so the script measures the real ink
+  bounding box first and scales from that — the first pass (scaled from the full canvas) came out too small to read at
+  home-screen size. **Do not reuse `chromium.launch()` + `file://` images for canvas export** — a `file://` image taints the
+  canvas (`SecurityError` on `toDataURL`); the generator page must be same-origin with the image, hence serving it through
+  Herd (`public/_icon_gen_tmp.html`, deleted after the run — see the script if new icon sizes are ever needed).
+- **"Progress & Homework" rename:** `StudentsPage.jsx`'s per-row toggle was labelled **"View progress"**, and a teacher
+  didn't think to click it to find the homework-assignment form living in the same panel. Renamed to **"Progress &
+  Homework"** / **"Hide progress & homework"** — no functional change, the panel still shows both sections.
+- **Verified:** `qa_home_screen_icon.mjs` (32 checks — manifest fields, every icon file is really the size/type it claims and
+  has real content, the three entry points — login, teacher, student — all link to it) + `qa_student_row_layout.mjs`
+  updated for the new label (22, still pass). Full regression: all earlier suites pass; `php artisan test` — same 10
+  pre-existing Breeze failures as always, nothing new.

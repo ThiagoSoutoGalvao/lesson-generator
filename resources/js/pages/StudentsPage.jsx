@@ -373,7 +373,7 @@ function StudentRow({ s, onChange, onRemoved }) {
                     onClick={() => setExpanded(e => !e)}
                     className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
                 >
-                    {expanded ? 'Hide progress' : 'View progress'}
+                    {expanded ? 'Hide progress & homework' : 'Progress & Homework'}
                 </button>
                 <button
                     disabled={busy}

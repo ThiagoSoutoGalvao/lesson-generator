@@ -209,7 +209,9 @@ branches at module scope on `window.__AURORA_USER__.role` (injected by
   `GET /api/students/{student}/progress` (teacher, own students only) — per-lesson
   done/total + a recent-attempts feed, so the two sides can't disagree.
   `ProgressPage.jsx` (student) shows the stat + a "Trilha complete!" banner;
-  `StudentsPage.jsx` (teacher) gets a lazy per-row "View progress" toggle with the
+  `StudentsPage.jsx` (teacher) gets a lazy per-row toggle — labelled **"Progress &
+  Homework"** (renamed 2026-09-23; a teacher couldn't find where to assign homework,
+  which lives in the same panel as trilha progress) — with the
   same numbers + a matching completion nudge. **"Complete" is checked against every
   *configured* lesson** (`TRILHAS[trilha].lessons`), not just lessons that happen
   to have activities yet — resolves Open Question 5 (trilha advancement) as
