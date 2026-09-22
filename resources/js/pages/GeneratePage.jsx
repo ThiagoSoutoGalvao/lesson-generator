@@ -250,7 +250,6 @@ export default function GeneratePage() {
     const examCount      = e => TEMPLATES.filter(t => isDirect(t.id, e)).length;
     const selectedDoc  = documents.find(d => d.id === Number(documentId));
     const pageCount    = selectedDoc?.page_count ?? null;
-    const currentLevel = LEVELS.find(l => l.id === level) ?? LEVELS[2];
     const trilhaLevel  = lessonSession ? TRILHA_LEVEL[lessonSession.trilha] : null;
 
     function pickGoal(g) {
@@ -531,9 +530,6 @@ export default function GeneratePage() {
                                         </button>
                                     ))}
                                 </div>
-                                <p className="text-xs text-white/65 bg-black/25 border border-white/10 rounded-lg px-3 py-2">
-                                    <span className="font-semibold text-white">Claude is told, at {currentLevel.label}:</span> {currentLevel.say}
-                                </p>
                                 {trilhaLevel && (
                                     <p className="text-xs text-[#fdb08a]">
                                         {level === trilhaLevel
