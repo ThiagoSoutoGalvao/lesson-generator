@@ -1354,19 +1354,27 @@ account."
 - **Assign dropdown now groups by folder** (`<optgroup>`, `HomeworkPanel` in `StudentsPage.jsx`) — the exact
   workflow of building a per-student folder ("Ketlin") and picking from it now has a landmark instead of a flat
   alphabetical list of every saved activity.
-- **The "only 2 of 3 showed" mystery is unconfirmed** — the dropdown itself has no folder or type filtering (it
-  already listed every type, presentation included), so the most likely explanation is the same class of bug logged
-  earlier this session ([[accounts_and_urls]]): the third activity landed under a *different* signed-in account
-  (personal vs the Aurora shared login) than the one open when he checked the dropdown — that account's Library and
-  Students page never see the other's activities/students, with no error to explain why. **Confirming this needs
-  read access to the account itself**, which this session doesn't have — `php artisan activities:audit
-  --folder=Ketlin` (new, read-only) lists every activity in that folder **across every account** plus who owns each
-  one, so Thiago can check from `railway ssh` directly. If an activity landed under the wrong account, the already-
-  built `activities:export --id=<id>` + Library **Import from file** moves it into the right one (§27/§28 tooling
-  reused, not rebuilt). **Assigning a personal-account activity already works as long as the teacher is signed in
-  as that same account** — `StudentController::assign()`'s ownership check is `Activity::where('user_id',
-  auth()->id())`, nothing further to build there; the friction was findability (folder grouping) and the
-  presentation block, both fixed above.
+- **The "only 2 of 3 showed" mystery — resolved, and it was NOT the account-mismatch theory below.**
+  `php artisan activities:audit --folder=Ketlin` on Railway found exactly 2 activities in that folder, both owned by
+  the personal account — no split across accounts at all. Checked the neighbouring ids too (147/149/152, in case the
+  third was saved under a different name) — all unrelated trilha content from another teacher. **The third activity
+  was simply never saved** (most likely generated then navigated away from before the Save click completed, or a
+  save that failed silently) — not an account mix-up. Lesson: when a "missing item" report turns out to have a
+  plausible-sounding cause matching an earlier bug class, still verify with the read tool before writing it down as
+  the answer — the audit command existed specifically so this didn't have to stay a guess.
+- **Assigning a personal-account activity already works** as long as the teacher is signed in as that same account —
+  `StudentController::assign()`'s ownership check is `Activity::where('user_id', auth()->id())`, nothing further to
+  build there; the friction was findability (folder grouping) and the presentation block, both fixed above.
+- **Follow-up question, answered (2026-09-24): assigning does NOT work the same way across the two teacher logins.**
+  Assigning requires the activity **and** the student to both belong to whoever is signed in
+  (`StudentController::guardOwnStudent()`: `$student->teacher_id === auth()->id()`, on top of the activity ownership
+  check above). Trilha content is normally owned by the Aurora shared login; a student created under the *personal*
+  login (like Ketlin, confirmed via `accounts:audit`: `teacher_id=1`) can't be assigned a trilha activity directly —
+  it 403s with "Not your student," since Aurora doesn't own that student. The one-off workaround with existing
+  tooling: `activities:export --id=<trilha activity id>` then Library **Import from file** while signed in as the
+  personal account, which copies it in as a personally-owned activity, then assign normally. **Not fixed in code** —
+  this is a real, understood limitation of the current ownership model, not a bug; a proper fix (e.g. letting a
+  teacher assign from either login regardless of which owns the student) was offered but not requested.
 - **Verified:** `PresentationHomeworkTest` (6 — assigned presentation visible; un-assigned stays hidden; still
   excluded from the automatic trilha list even when trilha-matched; the other 3 teacher-only types stay blocked
   even when homework-assigned; attempt recording; assignment by the owning teacher), `AuditActivitiesTest` (4),

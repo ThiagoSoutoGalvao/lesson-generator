@@ -386,12 +386,16 @@ student, decoupled from trilha entirely — both phases are done:
 - **2026-09-24:** `presentation` can now reach a student through H2's assignment path (the one
   exception to `TEACHER_ONLY_TYPES`, `PROJECT_LOG.md` §29) — a teacher can leave a student a
   presentation as a take-home reference. `GrammarExplainerActivity` (the shared component) gained
-  `hideSave` + a completion signal it never had (nothing rendered it to a student before). The
-  Students-page assign `<select>` now groups by folder (`<optgroup>`), and
-  `php artisan activities:audit --folder=… / --name=…` (read-only) finds an activity across every
-  account when it's "missing" from one login's dropdown — almost always because it was saved under
-  the *other* login ([[accounts_and_urls]]); move it with `activities:export --id=<id>` + Library
-  **Import from file** on the right account.
+  `hideSave` + a completion signal it never had (nothing rendered it to a student before); its
+  mobile split-screen also had the stacked-panel scroll trap (§30, same class as True/False/MC
+  Reading) — fixed the same way. The Students-page assign `<select>` now groups by folder
+  (`<optgroup>`), and `php artisan activities:audit --folder=… / --name=…` (read-only) finds an
+  activity across every account when it's "missing" from one login's dropdown; move it with
+  `activities:export --id=<id>` + Library **Import from file** on the right account.
+  **Assigning requires the activity AND the student to belong to the same login** — a trilha
+  activity (normally owned by the Aurora shared login) can't be assigned directly to a
+  personal-account student; export/import it in first. Real limitation, not a bug — a cross-login
+  fix was offered, not requested.
 
 Confirmed live in production 2026-09-16 — user checked the teacher-side
 Homework section himself. Next step is real usage (the user's own Cambridge
