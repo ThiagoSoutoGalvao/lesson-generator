@@ -484,7 +484,11 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
   (`md:overflow-hidden` to keep the desktop split unchanged) with both panels'
   flex-grow/shrink/scroll classes gated behind `md:` — otherwise the stacked
   content below the passage is unreachable no matter how the student scrolls.
-  (Hit: True/False, MC Reading.)
+  (Hit: True/False, MC Reading, then **Presentation** — 2026-09-24, `PROJECT_LOG.md` §30, only surfaced
+  once a student could open one at all; the buttons at the bottom of the second stacked panel were
+  unreachable. **`locator.scrollIntoViewIfNeeded()` is not a valid test for this** — it can force
+  `scrollTop` through `overflow: hidden` via script, so it "passes" on broken code too; use a real
+  `page.mouse.wheel()` gesture instead, and prove it by reverting the fix and rerunning.)
 - **A student-facing component needs an explicit opt-out for teacher-only UI,
   not an assumption nobody will click it.** Every activity template's Save
   button/panel rendered unconditionally — `StudentActivityPlayer` never hid it,

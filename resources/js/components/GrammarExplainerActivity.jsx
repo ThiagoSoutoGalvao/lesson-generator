@@ -132,11 +132,15 @@ export default function GrammarExplainerActivity({ activity, onClose, onComplete
                 </div>
             </div>
 
-            {/* Slide content — split-screen, CSS-driven stagger */}
-            <div className="relative z-10 flex-1 flex px-12 py-6 overflow-hidden">
+            {/* Slide content — split-screen, CSS-driven stagger. On a phone the panels stack (flex-col)
+                instead of sitting side by side, so this needs to scroll like any other stacked split-
+                screen (True/False, MC Reading) — overflow-hidden here trapped the Prev/Next buttons
+                below the fold with no way to reach them whenever the left panel (title + rule) ran tall,
+                which is most slides. md:overflow-hidden keeps the desktop split exactly as it was. */}
+            <div className="relative z-10 flex-1 flex px-4 md:px-12 py-6 overflow-y-auto md:overflow-hidden">
                 <div
                     key={`${slideIdx}-${direction}`}
-                    className={`slide-content w-full h-full flex flex-col md:flex-row gap-8 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}
+                    className={`slide-content w-full h-auto min-h-full md:h-full flex flex-col md:flex-row gap-8 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}
                 >
                     {/* Left panel — title, rule, form */}
                     <div className="md:w-[56%] shrink-0 flex flex-col justify-center gap-5 min-h-0">
@@ -163,9 +167,12 @@ export default function GrammarExplainerActivity({ activity, onClose, onComplete
                         )}
                     </div>
 
-                    {/* Right panel — examples (scrollable) + navigation pinned at bottom */}
-                    <div className="flex-1 flex flex-col min-h-0">
-                        <div className="stagger-block flex-1 min-h-0 overflow-y-auto flex flex-col gap-3 pr-2">
+                    {/* Right panel — examples (scrollable) + navigation pinned at bottom. flex-1/min-h-0/
+                        overflow-y-auto only make sense once the desktop split gives this column a fixed
+                        height to scroll within (md:) — on mobile the page itself scrolls instead, so the
+                        examples just flow naturally and the buttons sit right after them. */}
+                    <div className="flex flex-col md:flex-1 md:min-h-0">
+                        <div className="stagger-block flex flex-col gap-3 pr-2 md:flex-1 md:min-h-0 md:overflow-y-auto">
                             {slide.examples.map((ex, i) => (
                                 <div key={i} className="rounded-xl bg-black/25 border border-white/10 px-6 py-4 flex items-baseline gap-3 shrink-0">
                                     <span className={`${accent.text} font-bold text-sm shrink-0`}>{i + 1}.</span>

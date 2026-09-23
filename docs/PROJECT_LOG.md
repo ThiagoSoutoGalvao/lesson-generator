@@ -1374,3 +1374,40 @@ account."
   with Save/+Add hidden and PDF-export kept, a different un-assigned activity still 404s as a control, completion
   marks it Done on both the teacher's and the student's own view). Full regression: `php artisan test` — same 10
   pre-existing Breeze failures, nothing new; earlier browser suites re-run clean.
+
+## 30. Presentation: unreachable Next button on a phone (2026-09-24, same day as §29)
+
+Thiago, immediately after confirming the presentation-homework fix worked: "on the first slide... there
+isn't a next button and it is not very intuitive on how to go to the next slide."
+
+**Cause:** the exact split-screen-stacks-on-mobile trap already documented in this file's gotchas (hit
+before on True/False and MC Reading) — just never caught here, because a student had never opened a
+Presentation before yesterday. `GrammarExplainerActivity`'s slide area is `overflow-hidden` with the two
+panels forced to `h-full`; on desktop that's fine (`md:flex-row`, a real side-by-side split). On a phone
+the panels stack (`flex-col`), and the Prev/Next buttons sit at the bottom of the *second* (right) panel
+— so whenever the first panel's title + rule (routinely the case; Thiago's actual first slide has a full
+paragraph) takes up more than the phone's screen height, the buttons are pushed below the fold with
+**no way to scroll to them** (`overflow-hidden` blocks real touch/wheel scrolling; it doesn't just clip
+visually). Confirmed by reading computed styles directly (`overflow-hidden`, `scrollHeight` 685 vs
+`clientHeight` 611 in the reproduction) rather than guessing.
+
+**Fix:** the outer slide wrapper is `overflow-y-auto md:overflow-hidden` (the page scrolls on a phone,
+exactly as before on desktop); the slide's own height is `h-auto min-h-full md:h-full` (grows past the
+viewport when content needs it, instead of being force-clipped); the examples list's `flex-1 min-h-0
+overflow-y-auto` (its own internal scroll, meaningful only once the desktop split gives it a bounded
+height) is gated behind `md:` so mobile just flows naturally into the page scroll instead of fighting a
+second, competing scroll region. Desktop is untouched — verified directly (computed styles: still
+`flex-row`, both panels real width, outer still `overflow-hidden`, examples still `overflow-y-auto`).
+
+**A real mobile-testing trap, worth remembering:** the first attempt at a regression test used
+`locator.scrollIntoViewIfNeeded()` to check the button became reachable — it passed on *both* the broken
+and the fixed code, because that Playwright method can force an element's ancestor `scrollTop` via
+script even through `overflow: hidden`, which a real finger/wheel cannot do. Rewritten to use
+`page.mouse.wheel()`, a genuine scroll gesture, which correctly failed against the pre-fix build and
+passed against the fix — confirmed by literally reverting the fix (`git stash`) and rerunning both ways.
+
+**Verified:** `qa_presentation_mobile.mjs` (9 checks, 375×667, using his real first-slide content —
+title/rule/5 examples straight from the production activity id 180) + `qa_presentation_desktop_check.mjs`
+(5 checks confirming the desktop split is byte-for-byte unaffected). Full regression: `php artisan test`
+unaffected (frontend-only change) — same 10 pre-existing Breeze failures; `qa_presentation_homework.mjs`
+and `qa_remove_student.mjs` re-run clean.
