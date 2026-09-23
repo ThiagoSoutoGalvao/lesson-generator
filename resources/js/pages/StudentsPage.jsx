@@ -11,8 +11,85 @@ const inputCls = 'w-full bg-white/8 border border-white/15 rounded-xl px-3.5 py-
 // and zero-width characters — so the hand-over card shows the password that was really saved.
 const cleanSecret = s => s.replace(/^[\s\p{Z}​-‍⁠﻿]+|[\s\p{Z}​-‍⁠﻿]+$/gu, '');
 
-// Fields whose text a phone keyboard or browser must not "help" with.
-const plainText = { autoComplete: 'off', autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false };
+// Fields whose text a phone keyboard or browser must not "help" with. Also tells password-manager
+// extensions (1Password, LastPass, Bitwarden, Dashlane) to leave this field alone — it isn't the
+// teacher's own password, it's one they're setting for someone else, and those extensions grabbing
+// it (auto-filling their own suggestion, or eating keystrokes while their icon is focused) is exactly
+// what made typing — and deleting — unreliable here.
+const plainText = {
+    autoComplete: 'off', autoCapitalize: 'none', autoCorrect: 'off', spellCheck: false,
+    'data-1p-ignore': 'true', 'data-lpignore': 'true', 'data-bwignore': 'true', 'data-form-type': 'other',
+};
+
+const EyeIcon = ({ off }) => (
+    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+        {off
+            ? <><path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-5 0-9.27-3.11-11-8 .74-2.06 2.03-3.89 3.68-5.27M9.9 4.24A10.94 10.94 0 0 1 12 4c5 0 9.27 3.11 11 8a13.16 13.16 0 0 1-1.67 2.94M14.12 14.12a3 3 0 1 1-4.24-4.24" /><path d="M1 1l22 22" /></>
+            : <><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8Z" /><circle cx="12" cy="12" r="3" /></>}
+    </svg>
+);
+
+// Masked by default (a screen-share or a glance over the shoulder shouldn't show it), one click reveals
+// it — the "show password" a teacher needs to check they typed it right, without it being on by default.
+function PasswordField({ value, onChange, placeholder, autoFocus }) {
+    const [shown, setShown] = useState(false);
+    return (
+        <div className="relative flex-1 min-w-[12rem]">
+            <input
+                className={`${inputCls} pr-9`}
+                type={shown ? 'text' : 'password'}
+                placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+                minLength={8}
+                required
+                autoFocus={autoFocus}
+                {...plainText}
+            />
+            <button
+                type="button"
+                onClick={() => setShown(s => !s)}
+                aria-label={shown ? 'Hide password' : 'Show password'}
+                title={shown ? 'Hide password' : 'Show password'}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-white/45 hover:text-white transition-colors cursor-pointer"
+            >
+                <EyeIcon off={shown} />
+            </button>
+        </div>
+    );
+}
+
+// One value + its own "copy just this" button. Relying on a teacher (or student) to manually select
+// the password text was the actual problem — a browser recognises an email or a URL as one tappable
+// unit, but a plain string like a password doesn't get that treatment, so a tap/click-drag grabs only
+// part of it. A dedicated button removes selection from the picture entirely.
+function CopyRow({ label, value, mono }) {
+    const [copied, setCopied] = useState(false);
+
+    async function copy() {
+        try {
+            await navigator.clipboard.writeText(value);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 1500);
+        } catch { /* clipboard blocked — the value is still on screen to select by hand */ }
+    }
+
+    return (
+        <>
+            <dt className="text-white/50 self-center">{label}</dt>
+            <dd className="flex items-center gap-2 min-w-0">
+                <span className={`min-w-0 break-all ${mono ? 'font-mono' : ''}`}>{value}</span>
+                <button
+                    type="button"
+                    onClick={copy}
+                    className="shrink-0 text-[11px] font-semibold px-2 py-0.5 rounded-md border border-white/15 text-white/60 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"
+                >
+                    {copied ? 'Copied ✓' : 'Copy'}
+                </button>
+            </dd>
+        </>
+    );
+}
 
 function Handover({ info, onClose }) {
     const [copied, setCopied] = useState(false);
@@ -28,10 +105,10 @@ function Handover({ info, onClose }) {
     return (
         <div className="rounded-2xl border border-[#3ecf8e]/40 bg-[#3ecf8e]/10 p-4 flex flex-col gap-2">
             <p className="text-[#5be0a4] text-sm font-display font-semibold">{info.heading}</p>
-            <dl className="text-sm text-white/90 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 break-all">
-                <dt className="text-white/50">Login</dt><dd>{loginUrl}</dd>
-                <dt className="text-white/50">Email</dt><dd>{info.email}</dd>
-                <dt className="text-white/50">Password</dt><dd className="font-mono">{info.password}</dd>
+            <dl className="text-sm text-white/90 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1.5">
+                <CopyRow label="Login" value={loginUrl} />
+                <CopyRow label="Email" value={info.email} />
+                <CopyRow label="Password" value={info.password} mono />
             </dl>
             {IS_LOCAL && (
                 <p className="text-[#f5b400] text-xs font-semibold">
@@ -85,7 +162,7 @@ function NewStudentForm({ onCreated }) {
                     <select className={`${inputCls} cursor-pointer`} value={trilha} onChange={e => setTrilha(e.target.value)}>
                         {TRILHA_NAMES.map(t => <option key={t} value={t} className="bg-[#1c1540]">{TRILHAS[t].label}</option>)}
                     </select>
-                    <input className={inputCls} type="text" placeholder="Password (min 8 chars)" value={password} onChange={e => setPassword(e.target.value)} minLength={8} required {...plainText} />
+                    <PasswordField placeholder="Password (min 8 chars)" value={password} onChange={e => setPassword(e.target.value)} />
                 </div>
                 {err && <p className="text-red-300 text-xs">{err}</p>}
                 <button disabled={busy} className="self-start bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-40 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition-colors cursor-pointer">
@@ -417,17 +494,7 @@ function StudentRow({ s, onChange, onRemoved }) {
             {resetting && (
                 <form onSubmit={resetPassword} className="border-t border-white/10 bg-black/15 px-4 py-3 flex flex-col gap-2">
                     <div className="flex flex-wrap gap-2">
-                        <input
-                            className={`${inputCls} flex-1 min-w-[12rem]`}
-                            type="text"
-                            placeholder="New password (min 8 chars)"
-                            value={newPassword}
-                            onChange={e => setNewPassword(e.target.value)}
-                            minLength={8}
-                            required
-                            autoFocus
-                            {...plainText}
-                        />
+                        <PasswordField placeholder="New password (min 8 chars)" value={newPassword} onChange={e => setNewPassword(e.target.value)} autoFocus />
                         <button disabled={busy} className="text-xs font-semibold px-4 py-2 rounded-lg bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-40 text-white transition-colors cursor-pointer">
                             Save password
                         </button>

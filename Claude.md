@@ -535,6 +535,14 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
   (Railway; lands under the signed-in account, re-import is safe). The import route's `trimStrings` exception
   (`activities.*.content`, in `bootstrap/app.php`) protects cloze spacing — keep it. Students can't be moved; create them
   on Railway. An open student app re-checks `/api/me` on focus and every minute and reloads if the trilha / active flag changed.
+- **Password fields the teacher fills in for someone else** (New Student, Reset password) use `PasswordField`
+  (masked, eye-icon toggle, `data-1p-ignore`/`data-lpignore`/`data-bwignore`/`data-form-type="other"` — stops a
+  password-manager extension claiming a field that isn't the signed-in person's own password, which was making
+  typing/Backspace unreliable). The hand-over card's Login/Email/Password lines each have their own **Copy** button
+  (`CopyRow`) — relying on manual text selection was the actual bug (a browser treats an email/URL as one tappable
+  unit; a plain password string doesn't get that, so a tap/drag on a phone often grabbed only part of it). The real
+  login page (`login.blade.php`, no app.js) has its own vanilla-JS show/hide toggle — don't add the ignore-attributes
+  there, that field *is* the person's own password.
 - `php artisan test` has **10 pre-existing failures** in the stock Breeze tests (`Route [dashboard] not defined`,
   closed registration, profile routes) — not regressions; `StudentLoginTest` is the one that matters for login.
 

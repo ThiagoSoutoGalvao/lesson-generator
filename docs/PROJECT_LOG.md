@@ -1301,3 +1301,31 @@ also couldn't find where to assign homework to a student.
   has real content, the three entry points — login, teacher, student — all link to it) + `qa_student_row_layout.mjs`
   updated for the new label (22, still pass). Full regression: all earlier suites pass; `php artisan test` — same 10
   pre-existing Breeze failures as always, nothing new.
+
+## 28. Hand-over card copy, and a show/hide toggle for password fields (2026-09-23)
+
+Thiago: "everything is copiable but the password" on the student hand-over card, and "when filling the password
+input for the students, it doesn't show the show password option. And once typed I can't delete it as well."
+
+- **Copy:** the hand-over card (`Handover` in `StudentsPage.jsx`) relied on manual text selection for the
+  Login/Email/Password lines plus one bulk "Copy details" button. A browser gives an email or a URL special
+  tap-to-select-the-whole-thing treatment; an arbitrary password string doesn't get that, so selecting it (especially
+  on a phone) tends to grab only part of it. Each line now has its own **Copy** button (`CopyRow`) alongside the
+  existing bulk button — copying the password row sends *only* the password, nothing else.
+- **Show/hide + can't-delete:** the admin-side password inputs (New Student, Reset password) were plain `type="text"`
+  (always visible, no toggle at all) — not what was asked for, and a field this generic (no `type="password"`, a
+  "password"-looking placeholder, no anti-autofill markers) is exactly the shape a password-manager browser
+  extension (1Password/LastPass/Bitwarden/Dashlane) will still try to claim and auto-suggest into, which can eat
+  keystrokes/backspace while its own icon has focus — the likely cause of "can't delete". Fixed with `PasswordField`:
+  masked (`type="password"`) by default with an eye-icon toggle to reveal, plus `data-1p-ignore` / `data-lpignore` /
+  `data-bwignore` / `data-form-type="other"` (this field sets someone *else's* password, not the teacher's own — a
+  password manager should never touch it). The real student/teacher **login page** (`login.blade.php`, part of the
+  guest layout that loads no app.js bundle) got its own small self-contained vanilla-JS toggle, since it can't use the
+  React component; its `autocomplete="current-password"` was left as-is and no ignore-attributes were added there —
+  that field *is* the signed-in person's own password, so a password manager offering to save/fill it is wanted.
+- **Verified:** `qa_password_field.mjs` (25 checks — masked by default, toggle reveals/re-hides without losing the
+  value, typing and Backspace both work, per-row copy sends exactly one value, bulk copy still sends all three, same
+  on the Reset-password field, same on the real login page). `navigator.clipboard` is unavailable on
+  `http://lesson-generator.test` (Chromium only exposes it on a secure context — https or literal `localhost`), so
+  the test stubs `writeText` via `addInitScript` and asserts on what it was called with, instead of reading the real
+  OS clipboard. Full regression: all earlier suites + `php artisan test` still pass.
