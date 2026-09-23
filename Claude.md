@@ -178,7 +178,8 @@ branches at module scope on `window.__AURORA_USER__.role` (injected by
   `StudentContentController` (`/api/student/lessons`, `/api/student/activities/{id}`)
   — **trilha-filtered, NOT owner-scoped** (students see the shared login's
   library); `Activity::TEACHER_ONLY_TYPES` excluded (`presentation`,
-  `reading_text`, `essay_feedback`, `grammar_explainer`); `EnsureTeacher` /
+  `reading_text`, `essay_feedback`, `grammar_explainer`) — **except `presentation` via a direct
+  Homework assignment** (2026-09-24, §6 below); `EnsureTeacher` /
   `EnsureStudent` middleware — **every non-`/me` API route is now role-gated**;
   `StudentActivityPlayer` at `/s/activity/:id`. No scoring yet.
 - ✅ **S3** — `activity_attempts` table (student_id, activity_id, nullable
@@ -382,6 +383,15 @@ student, decoupled from trilha entirely — both phases are done:
   an amber-accented "Homework — from your teacher" section in `ProgressPage`,
   kept visually separate from trilha content — same "don't blur the two"
   principle on both sides.
+- **2026-09-24:** `presentation` can now reach a student through H2's assignment path (the one
+  exception to `TEACHER_ONLY_TYPES`, `PROJECT_LOG.md` §29) — a teacher can leave a student a
+  presentation as a take-home reference. `GrammarExplainerActivity` (the shared component) gained
+  `hideSave` + a completion signal it never had (nothing rendered it to a student before). The
+  Students-page assign `<select>` now groups by folder (`<optgroup>`), and
+  `php artisan activities:audit --folder=… / --name=…` (read-only) finds an activity across every
+  account when it's "missing" from one login's dropdown — almost always because it was saved under
+  the *other* login ([[accounts_and_urls]]); move it with `activities:export --id=<id>` + Library
+  **Import from file** on the right account.
 
 Confirmed live in production 2026-09-16 — user checked the teacher-side
 Homework section himself. Next step is real usage (the user's own Cambridge

@@ -143,24 +143,29 @@ class StudentContentController extends Controller
     }
 
     /**
-     * The one visibility gate, shared by every endpoint here. Never a
-     * teacher-only type, and one of two independent paths: same trilha as the
-     * student (unchanged), or directly assigned to them (Phase H2) — the
-     * latter is how a one-off activity, which has no trilha at all, reaches a
-     * student for the first time. 404 (not 403) so we never confirm an
-     * activity exists.
+     * The one visibility gate, shared by every endpoint here. Two independent paths: same trilha
+     * as the student (the automatic, whole-class path), or directly assigned to them (Phase H2,
+     * a deliberate one-off action) — the latter is how an activity with no trilha at all reaches
+     * a student for the first time. 404 (not 403) so we never confirm an activity exists.
+     *
+     * Teacher-only types are blocked on both paths — EXCEPT `presentation` via the homework path:
+     * a teacher can deliberately hand a student a presentation as a take-home reference (2026-09-24),
+     * even though presentations stay out of the automatic trilha list (they're built for the teacher
+     * to narrate live, and a whole trilha's worth showing up unprompted isn't what was asked for).
      */
     private function assertVisible(Activity $activity, $student): void
     {
-        abort_unless(
-            ! in_array($activity->type, Activity::TEACHER_ONLY_TYPES, true)
-                && (
-                    ($activity->trilha === $student->trilha && $activity->student_visible)
-                    || StudentAssignment::where('student_id', $student->id)
-                        ->where('activity_id', $activity->id)
-                        ->exists()
-                ),
-            404,
-        );
+        $assigned = StudentAssignment::where('student_id', $student->id)
+            ->where('activity_id', $activity->id)
+            ->exists();
+
+        $viaTrilha = $activity->trilha === $student->trilha
+            && $activity->student_visible
+            && ! in_array($activity->type, Activity::TEACHER_ONLY_TYPES, true);
+
+        $viaHomework = $assigned
+            && ($activity->type === 'presentation' || ! in_array($activity->type, Activity::TEACHER_ONLY_TYPES, true));
+
+        abort_unless($viaTrilha || $viaHomework, 404);
     }
 }

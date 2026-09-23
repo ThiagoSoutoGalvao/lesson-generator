@@ -1,6 +1,7 @@
 // Student-app labels + icons for the activity types a student can be shown.
-// The teacher-only types (presentation, reading_text, essay_feedback,
-// grammar_explainer) are filtered out server-side and deliberately absent here.
+// Teacher-only types (reading_text, essay_feedback, grammar_explainer) are filtered out
+// server-side and deliberately absent here. `presentation` is the one exception — reachable
+// only via a direct Homework assignment, as a take-home reference (2026-09-24).
 
 export const ACTIVITY_META = {
     quiz:                    { label: 'Quiz',                 icon: '❓' },
@@ -23,6 +24,7 @@ export const ACTIVITY_META = {
     match_pairs:             { label: 'Match pairs',          icon: '🔗' },
     signs_notices:           { label: 'Signs & notices',      icon: '🪧' },
     picture_prompts:         { label: 'Describe the picture', icon: '📷' },
+    presentation:            { label: 'Presentation',         icon: '📽️' },
 };
 
 export function activityMeta(type) {

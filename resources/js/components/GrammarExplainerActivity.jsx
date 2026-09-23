@@ -30,7 +30,12 @@ function parseText(text, accentClass) {
     );
 }
 
-export default function GrammarExplainerActivity({ activity, onClose }) {
+// hideSave / onComplete: this became reachable by a student (2026-09-24, a teacher can hand one
+// over as a take-home reference via Homework) — the Save button and "+ Add activity" 403 for a
+// student, same as every other template's hideSave, and there was previously no finish signal at
+// all (nothing to record for a teacher's own use). Completion, no score — like the other
+// slide/reveal-through templates, it fires once the last slide is reached.
+export default function GrammarExplainerActivity({ activity, onClose, onComplete, hideSave }) {
     const navigate = useNavigate();
     const [slideIdx, setSlideIdx]         = useState(0);
     const [direction, setDirection]       = useState('next');
@@ -49,6 +54,10 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
             .then(({ data }) => setBgUrl(data.url))
             .catch(() => null);
     }, []);
+
+    useEffect(() => {
+        if (slideIdx === total - 1) onComplete?.({});
+    }, [slideIdx, total]);
 
     useEffect(() => {
         function onKey(e) {
@@ -86,7 +95,7 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
         <div className="fixed inset-0 flex flex-col z-50 print:hidden" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
@@ -105,8 +114,8 @@ export default function GrammarExplainerActivity({ activity, onClose }) {
                 </div>
                 <div className="flex items-center gap-5">
                     <DisplayControls />
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
-                    <button onClick={() => navigate('/generate')} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Generate another activity">+ Add activity</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
+                    {!hideSave && <button onClick={() => navigate('/generate')} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Generate another activity">+ Add activity</button>}
                     <button onClick={() => window.print()} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Download as PDF">⬇ PDF</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}

@@ -1329,3 +1329,48 @@ input for the students, it doesn't show the show password option. And once typed
   `http://lesson-generator.test` (Chromium only exposes it on a secure context — https or literal `localhost`), so
   the test stubs `writeText` via `addInitScript` and asserts on what it was called with, instead of reading the real
   OS clipboard. Full regression: all earlier suites + `php artisan test` still pass.
+
+## 29. Presentations as Homework references; folder-grouped assign dropdown; cross-account audit (2026-09-24)
+
+Thiago: prepared 3 "past simple" activities for a student (Ketlin), saved in a folder called "Ketlin"; only one
+assigned successfully, only 2 of the 3 showed in the assign dropdown at all, and the third (a Presentation) couldn't
+be opened by the student even once assigned. Plus: "teachers are able to assign the presentations... so students
+always have a reference," and "how can I assign these activities... It is a one-off activity built from my personal
+account."
+
+- **Presentations are now a Homework reference.** `Activity::TEACHER_ONLY_TYPES` still blocks all four types
+  (`presentation`, `reading_text`, `essay_feedback`, `grammar_explainer`) from the *automatic* trilha list — that
+  part is unchanged, on purpose (a whole trilha's decks showing up unprompted isn't what was asked for). But
+  `StudentContentController::assertVisible()` now makes one exception: a **presentation that has been explicitly
+  Homework-assigned** is visible to that student. `reading_text` / `essay_feedback` / `grammar_explainer` stay
+  blocked on every path — only presentation was asked for.
+  `GrammarExplainerActivity` (shared by Presentation) had never been reachable by a student before, so it had
+  neither `hideSave` (its Save button and "+ Add activity" would have 403'd/dead-ended for a student — same bug
+  shape as every other template's `hideSave` gap) nor an `onComplete` finish signal. Added both: masked behind
+  `hideSave`, completion (no score) fires on reaching the last slide, matching the reveal-through-to-the-end pattern
+  used elsewhere. Registered in `StudentActivityPlayer`'s `COMPONENTS`/`RECORDS_ATTEMPT`, and in
+  `student/lib/activityMeta.js` (icon 📽️, used by both the teacher's Homework panel and the student's own Progress
+  page — same file, one fix covers both).
+- **Assign dropdown now groups by folder** (`<optgroup>`, `HomeworkPanel` in `StudentsPage.jsx`) — the exact
+  workflow of building a per-student folder ("Ketlin") and picking from it now has a landmark instead of a flat
+  alphabetical list of every saved activity.
+- **The "only 2 of 3 showed" mystery is unconfirmed** — the dropdown itself has no folder or type filtering (it
+  already listed every type, presentation included), so the most likely explanation is the same class of bug logged
+  earlier this session ([[accounts_and_urls]]): the third activity landed under a *different* signed-in account
+  (personal vs the Aurora shared login) than the one open when he checked the dropdown — that account's Library and
+  Students page never see the other's activities/students, with no error to explain why. **Confirming this needs
+  read access to the account itself**, which this session doesn't have — `php artisan activities:audit
+  --folder=Ketlin` (new, read-only) lists every activity in that folder **across every account** plus who owns each
+  one, so Thiago can check from `railway ssh` directly. If an activity landed under the wrong account, the already-
+  built `activities:export --id=<id>` + Library **Import from file** moves it into the right one (§27/§28 tooling
+  reused, not rebuilt). **Assigning a personal-account activity already works as long as the teacher is signed in
+  as that same account** — `StudentController::assign()`'s ownership check is `Activity::where('user_id',
+  auth()->id())`, nothing further to build there; the friction was findability (folder grouping) and the
+  presentation block, both fixed above.
+- **Verified:** `PresentationHomeworkTest` (6 — assigned presentation visible; un-assigned stays hidden; still
+  excluded from the automatic trilha list even when trilha-matched; the other 3 teacher-only types stay blocked
+  even when homework-assigned; attempt recording; assignment by the owning teacher), `AuditActivitiesTest` (4),
+  `qa_presentation_homework.mjs` (12 browser checks — folder optgroup grouping, assigning, opening as the student
+  with Save/+Add hidden and PDF-export kept, a different un-assigned activity still 404s as a control, completion
+  marks it Done on both the teacher's and the student's own view). Full regression: `php artisan test` — same 10
+  pre-existing Breeze failures, nothing new; earlier browser suites re-run clean.

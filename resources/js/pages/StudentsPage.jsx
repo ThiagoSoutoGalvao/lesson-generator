@@ -320,6 +320,18 @@ function HomeworkPanel({ studentId }) {
         axios.delete(`/api/students/${studentId}/assignments/${assignmentId}`).catch(() => {});
     }
 
+    // Grouped by folder — a teacher building a per-student folder (e.g. the way "Ketlin" was set
+    // up) can find everything in it here instead of hunting through every activity by name.
+    // Un-foldered activities are listed first, under no group.
+    const grouped = [];
+    for (const a of library ?? []) {
+        const key = a.folder || '';
+        let g = grouped.find(g => g.folder === key);
+        if (!g) { g = { folder: key, items: [] }; grouped.push(g); }
+        g.items.push(a);
+    }
+    grouped.sort((a, b) => (a.folder === '' ? -1 : b.folder === '' ? 1 : a.folder.localeCompare(b.folder)));
+
     return (
         <div className="flex flex-col gap-4">
             <form onSubmit={assign} className="flex flex-col sm:flex-row gap-2">
@@ -331,9 +343,13 @@ function HomeworkPanel({ studentId }) {
                     <option value="" className="bg-[#1c1540]">
                         {library === null ? 'Loading your library…' : 'Choose an activity to assign…'}
                     </option>
-                    {library?.map(a => (
-                        <option key={a.id} value={a.id} className="bg-[#1c1540]">{a.name}</option>
-                    ))}
+                    {grouped.map(g => g.folder
+                        ? (
+                            <optgroup key={g.folder} label={`📁 ${g.folder}`} className="bg-[#1c1540] text-white/70">
+                                {g.items.map(a => <option key={a.id} value={a.id} className="bg-[#1c1540]">{a.name}</option>)}
+                            </optgroup>
+                        )
+                        : g.items.map(a => <option key={a.id} value={a.id} className="bg-[#1c1540]">{a.name}</option>))}
                 </select>
                 <input
                     value={note}

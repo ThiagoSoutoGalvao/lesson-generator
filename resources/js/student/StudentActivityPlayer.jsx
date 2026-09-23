@@ -24,6 +24,7 @@ import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
 import MatchPairsActivity from '@/components/MatchPairsActivity';
 import SignsNoticesActivity from '@/components/SignsNoticesActivity';
 import PicturePromptsActivity from '@/components/PicturePromptsActivity';
+import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
 
@@ -43,6 +44,7 @@ const RECORDS_ATTEMPT = new Set([
     'discussion_questions',
     'match_pairs', 'signs_notices', // scored: right first time / total
     'picture_prompts',              // completion only — speaking has no answer to check
+    'presentation',                 // completion only — a Homework reference, last slide reached
 ]);
 
 const COMPONENTS = {
@@ -66,6 +68,9 @@ const COMPONENTS = {
     match_pairs:             MatchPairsActivity,
     signs_notices:           SignsNoticesActivity,
     picture_prompts:         PicturePromptsActivity,
+    // Only reachable here via a direct Homework assignment (assertVisible blocks the trilha
+    // path) — a teacher handing over a presentation as a take-home reference.
+    presentation:            GrammarExplainerActivity,
 };
 
 function FullscreenMessage({ children, onBack }) {
