@@ -436,6 +436,9 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
   `QUEUE_CONNECTION=database`, `CACHE_STORE=database`, `FILESYSTEM_DISK=local`,
   `ANTHROPIC_API_KEY`, `UNSPLASH_ACCESS_KEY`, `OPENAI_API_KEY`,
   `LOG_LEVEL=error`, `PORT=8080`.
+- **`GENERATION_ONLY_FOR`** (optional, comma-separated emails) — when set, only those logins can call the
+  Claude-spending routes (`EnsureGenerationAllowed`); everyone else gets a "paused until credits are topped up"
+  message. Set 2026-09-28 to `t.soutogalvao@gmail.com` while the shared API credit ran low — **delete it** once topped up.
 - **`railway run` can't reach `mysql.railway.internal`** (private network only).
   Run one-off artisan commands in prod with `railway ssh "php artisan …"` — or,
   for anything with `\` namespace separators, a `/tmp/*.php` bootstrap file over

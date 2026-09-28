@@ -9,6 +9,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\StudentContentController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\TrilhaLessonBriefController;
+use App\Http\Middleware\EnsureGenerationAllowed;
 use App\Http\Middleware\EnsureStudent;
 use App\Http\Middleware\EnsureTeacher;
 use Illuminate\Support\Facades\Route;
@@ -44,11 +45,15 @@ Route::middleware('auth:web')->group(function () {
 
         Route::get('/documents', [DocumentController::class, 'index']);
         Route::post('/documents', [DocumentController::class, 'store']);
-        Route::post('/generate', [ActivityController::class, 'generate']);
-        Route::post('/presentation/generate', [ActivityController::class, 'generatePresentation']);
-        Route::post('/reading/generate', [ActivityController::class, 'generateReadingText']);
-        Route::post('/essay-feedback/generate', [ActivityController::class, 'generateEssayFeedback']);
-        Route::post('/detect-sections', [SectionController::class, 'detect']);
+
+        // Every route that spends Claude API credit — GENERATION_ONLY_FOR can pause it per login.
+        Route::middleware(EnsureGenerationAllowed::class)->group(function () {
+            Route::post('/generate', [ActivityController::class, 'generate']);
+            Route::post('/presentation/generate', [ActivityController::class, 'generatePresentation']);
+            Route::post('/reading/generate', [ActivityController::class, 'generateReadingText']);
+            Route::post('/essay-feedback/generate', [ActivityController::class, 'generateEssayFeedback']);
+            Route::post('/detect-sections', [SectionController::class, 'detect']);
+        });
 
         Route::get('/activities', [SavedActivityController::class, 'index']);
         Route::post('/activities', [SavedActivityController::class, 'store']);

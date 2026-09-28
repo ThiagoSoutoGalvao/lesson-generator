@@ -37,6 +37,8 @@ return [
 
     'anthropic' => [
         'key' => env('ANTHROPIC_API_KEY'),
+        // Comma-separated emails; when set, only these logins may generate (EnsureGenerationAllowed).
+        'only_for' => env('GENERATION_ONLY_FOR'),
     ],
 
     'unsplash' => [
