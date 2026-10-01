@@ -438,7 +438,8 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
   `LOG_LEVEL=error`, `PORT=8080`.
 - **`GENERATION_ONLY_FOR`** (optional, comma-separated emails) — when set, only those logins can call the
   Claude-spending routes (`EnsureGenerationAllowed`); everyone else gets a "paused until credits are topped up"
-  message. Set 2026-09-28 to `t.soutogalvao@gmail.com` while the shared API credit ran low — **delete it** once topped up.
+  message. Used 2026-09-28 → 2026-10-02 while the shared API credit ran low; **removed 2026-10-02** after the top-up
+  (everyone can generate). The middleware stays as an off-switch — set the variable again to re-pause.
 - **`railway run` can't reach `mysql.railway.internal`** (private network only).
   Run one-off artisan commands in prod with `railway ssh "php artisan …"` — or,
   for anything with `\` namespace separators, a `/tmp/*.php` bootstrap file over
