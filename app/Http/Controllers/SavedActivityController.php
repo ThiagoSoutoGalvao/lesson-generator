@@ -25,7 +25,10 @@ class SavedActivityController extends Controller
     }
 
     /** Fields a saved activity carries (everything except ownership). */
-    private const FIELDS = ['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'built_by'];
+    private const FIELDS = ['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'stage', 'built_by'];
+
+    /** Lesson-pack stages — the same keys as `resources/js/lib/stages.js`. */
+    private const STAGES = 'warmer,presentation,practice,production';
 
     /** Validation for one activity; $prefix is e.g. 'activities.*.' when validating a list. */
     private function activityRules(string $prefix = ''): array
@@ -40,6 +43,7 @@ class SavedActivityController extends Controller
             'lesson'  => ['nullable', 'string', 'max:255'],
             'trilha'        => ['nullable', 'string', 'in:Lights,Glow,Radiant'],
             'trilha_lesson' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'stage'         => ['nullable', 'string', 'in:' . self::STAGES],
             'built_by'      => ['nullable', 'string', 'max:100'],
         ];
 
@@ -96,21 +100,37 @@ class SavedActivityController extends Controller
     }
 
     /**
-     * Rename one of the teacher's own activities. Only the name changes — trilha, lesson, content and
-     * ownership are untouched. Whitespace is tidied the same way the Save panel does it.
+     * Rename one of the teacher's own activities, and/or set its lesson-pack stage (null clears it).
+     * Nothing else changes — trilha, lesson, content and ownership are untouched. Whitespace in a new
+     * name is tidied the same way the Save panel does it.
      *
-     * PATCH /api/activities/{activity}   { name }
+     * PATCH /api/activities/{activity}   { name?, stage? }
      */
     public function update(Request $request, Activity $activity)
     {
         abort_if($activity->user_id !== auth()->id(), 403);
 
-        $request->validate(['name' => ['required', 'string', 'max:255']]);
+        // `stage: null` is a real request (clear the stage), so "at least one field" is checked by key, not by value.
+        abort_unless($request->has('name') || $request->exists('stage'), 422, 'Nothing to update.');
 
-        $name = trim(preg_replace('/[\s\p{Z}]+/u', ' ', preg_replace('/[\x{200B}-\x{200D}\x{2060}\x{FEFF}]/u', '', $request->input('name'))));
-        abort_if($name === '', 422, 'The name cannot be empty.');
+        $request->validate([
+            'name'  => ['sometimes', 'required', 'string', 'max:255'],
+            'stage' => ['nullable', 'string', 'in:' . self::STAGES],
+        ]);
 
-        $activity->update(['name' => $name]);
+        $changes = [];
+
+        if ($request->has('name')) {
+            $name = trim(preg_replace('/[\s\p{Z}]+/u', ' ', preg_replace('/[\x{200B}-\x{200D}\x{2060}\x{FEFF}]/u', '', $request->input('name'))));
+            abort_if($name === '', 422, 'The name cannot be empty.');
+            $changes['name'] = $name;
+        }
+
+        if ($request->exists('stage')) {
+            $changes['stage'] = $request->input('stage');
+        }
+
+        $activity->update($changes);
 
         return response()->json($activity);
     }

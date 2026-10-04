@@ -55,7 +55,7 @@ class ExportActivities extends Command
             'format'      => 'lesson-generator-activities',
             'version'     => 1,
             'exported_at' => now()->toIso8601String(),
-            'activities'  => $activities->map(fn (Activity $a) => $a->only(['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'built_by']))->values()->all(),
+            'activities'  => $activities->map(fn (Activity $a) => $a->only(['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'stage', 'built_by']))->values()->all(),
         ];
 
         file_put_contents($this->argument('file'), json_encode($payload, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES));

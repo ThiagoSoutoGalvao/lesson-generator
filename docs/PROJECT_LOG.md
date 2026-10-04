@@ -1419,3 +1419,27 @@ title/rule/5 examples straight from the production activity id 180) + `qa_presen
 (5 checks confirming the desktop split is byte-for-byte unaffected). Full regression: `php artisan test`
 unaffected (frontend-only change) — same 10 pre-existing Breeze failures; `qa_presentation_homework.mjs`
 and `qa_remove_student.mjs` re-run clean.
+
+## 31. Aurora Lessons Phase 1, step 1: lesson-pack stages on activities (2026-10-04)
+
+The app is being reshaped as Aurora Lessons (concept doc for the group linked in the brief, §6). Every lesson becomes a
+lesson pack in four stages (Warmer, Presentation, Practice, Production). Step 1 only adds the stage to the data:
+
+- `activities.stage` (nullable string). Migration `2026_10_04_000001_add_stage_to_activities_table` is idempotent.
+  **Not back-filled:** NULL means "not tagged yet", and a teacher picking the stage is the review.
+- `resources/js/lib/stages.js`: `STAGES`, `STAGE_LABELS`, `defaultStage(type)` (presentation/reading → Presentation,
+  discussion/picture prompts → Production, everything else → Practice; nothing defaults to Warmer).
+  `SavedActivityController::STAGES` validates the same keys.
+- Save panel (trilha mode): a 4-button stage picker, pre-picked from the type. It's required and sent with the save.
+- `PATCH /api/activities/{id}` now takes `name` and/or `stage` (`stage: null` clears it; an empty body is a 422; a
+  rename keeps the stage).
+- Library: each trilha card has a Stage `<select>` (amber "Not set (usually X)" when untagged). With a trilha selected,
+  a Stage filter appears with a "Not set (n)" count, so the content team can work through a course.
+- `activities:export` carries `stage`; import accepts it.
+
+Production audit the same day (read-only, `activities:audit --name=LIGHTS`): Lights has 51 activities. Every lesson
+has a presentation + reading + practice + a speaking task. Missing: warmers. L08 practice is thin, #231/#232 look
+duplicated, and from ~L04 on the activities seem one lesson behind `TRILHA_TOC`. Glow and Radiant have none yet.
+
+QA: `scratchpad/qa_2026-09/qa_stage.mjs` (23 checks: save panel, API validation/clear/rename, Library select +
+filter + reload, phone width, zero console errors). `qa_rename.mjs` and `qa_save_naming.mjs` still pass.

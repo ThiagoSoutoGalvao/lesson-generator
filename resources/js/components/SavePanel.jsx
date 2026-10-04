@@ -5,6 +5,7 @@ import {
 } from '@/lib/trilhas';
 import { getLessonSession, setLessonSession } from '@/lib/lessonSession';
 import { tidyText, collapse, tidyFocus, focusHints, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
+import { STAGES, defaultStage } from '@/lib/stages';
 
 const fieldCls = 'bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full';
 const selectCls = `${fieldCls} appearance-none cursor-pointer`;
@@ -33,6 +34,8 @@ export default function SavePanel({ activity, onDone }) {
     const [lesson, setLesson]     = useState(() => (session ? String(session.lesson) : ''));
     const [focus, setFocus]       = useState('');
     const [builtBy, setBuiltBy]   = useState(() => lsGet(LS_BUILT_BY));
+    // Lesson-pack stage — pre-picked from the type (lib/stages.js); the teacher confirms or changes it.
+    const [stage, setStage]       = useState(() => defaultStage(activity.type));
 
     // Freeform mode
     const [name, setName]       = useState('');
@@ -59,7 +62,7 @@ export default function SavePanel({ activity, onDone }) {
         [trilha, lesson, activity.type, cleanFocus],
     );
 
-    const trilhaValid = trilha && lesson && cleanFocus && builtBy;
+    const trilhaValid = trilha && lesson && stage && cleanFocus && builtBy;
 
     async function handleSave(e) {
         e.preventDefault();
@@ -72,6 +75,7 @@ export default function SavePanel({ activity, onDone }) {
                 content: activity,
                 trilha,
                 trilha_lesson: Number(lesson),
+                stage,
                 built_by: builtBy,
             }
             : {
@@ -166,6 +170,27 @@ export default function SavePanel({ activity, onDone }) {
                                 </select>
                             </div>
                         </div>
+
+                        <fieldset className="flex flex-col gap-1">
+                            <legend className={`${labelCls} mb-1`}>Stage in the lesson</legend>
+                            <div className="grid grid-cols-4 gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+                                {STAGES.map(s => (
+                                    <button
+                                        key={s.key}
+                                        type="button"
+                                        aria-pressed={stage === s.key}
+                                        title={s.hint}
+                                        onClick={() => setStage(s.key)}
+                                        className={`text-xs font-semibold py-1.5 rounded-md transition-colors cursor-pointer ${
+                                            stage === s.key ? 'bg-blue-600 text-white' : 'text-white/55 hover:text-white'
+                                        }`}
+                                    >
+                                        {s.label}
+                                    </button>
+                                ))}
+                            </div>
+                            <p className="text-white/40 text-[11px]">{STAGES.find(s => s.key === stage)?.hint}</p>
+                        </fieldset>
 
                         <div className="flex flex-col gap-1">
                             <div className="flex items-baseline justify-between gap-2">

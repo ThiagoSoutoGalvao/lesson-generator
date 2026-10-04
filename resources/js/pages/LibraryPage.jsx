@@ -26,6 +26,7 @@ import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
 import Spinner from '@/components/Spinner';
 import { TRILHAS, TRILHA_NAMES, TRILHA_TOC, LESSON_SLOTS, TEACHERS, TYPE_LABELS as NAME_TYPE_LABELS, composeActivityName } from '@/lib/trilhas';
 import { tidyText, tidyFocus, focusHints, suggestName, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
+import { STAGES, STAGE_LABELS, defaultStage } from '@/lib/stages';
 
 const TYPE_LABELS = {
     quiz:                     'Quiz',
@@ -289,6 +290,45 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
     );
 }
 
+// Lesson-pack stage of one trilha activity, set straight from its Library card. Untagged activities show the
+// type's usual stage as a suggestion only — nothing is saved until the teacher picks (that pick IS the review).
+function StageSelect({ activity: a, onSaved }) {
+    const [busy, setBusy] = useState(false);
+    const [err, setErr]   = useState('');
+
+    async function change(e) {
+        const stage = e.target.value || null;
+        setBusy(true); setErr('');
+        try {
+            const { data } = await axios.patch(`/api/activities/${a.id}`, { stage });
+            onSaved(data);
+        } catch {
+            setErr('Could not save the stage.');
+        } finally {
+            setBusy(false);
+        }
+    }
+
+    return (
+        <div className="flex items-center gap-2 flex-wrap">
+            <label htmlFor={`stage-${a.id}`} className="text-xs text-white/60">Stage</label>
+            <select
+                id={`stage-${a.id}`}
+                value={a.stage ?? ''}
+                onChange={change}
+                disabled={busy}
+                className={`text-xs rounded-lg px-2 py-1 border cursor-pointer disabled:opacity-50 ${
+                    a.stage ? 'bg-white/10 border-white/20 text-white' : 'bg-amber-500/15 border-amber-400/40 text-amber-200'
+                }`}
+            >
+                <option value="" className="text-black bg-white">Not set (usually {STAGE_LABELS[defaultStage(a.type)]})</option>
+                {STAGES.map(s => <option key={s.key} value={s.key} className="text-black bg-white">{s.label}</option>)}
+            </select>
+            {err && <span className="text-xs text-red-300">{err}</span>}
+        </div>
+    );
+}
+
 // Inline rename for one Library card. A trilha activity only edits its Focus — the `LIGHTS L03 · Type ·` part is rebuilt from
 // the activity's real trilha / lesson / type, so its name can't drift out of step with where students see it (and an old
 // name that broke the standard is brought back to it). A one-off edits the whole name. The box opens pre-filled with a
@@ -425,6 +465,7 @@ export default function LibraryPage() {
     const [lessonFilter, setLessonFilter] = useState('all'); // lesson number as string, or 'all'
     const [launched, setLaunched]     = useState(null);
     const [renamingId, setRenamingId] = useState(null);
+    const [stageFilter, setStageFilter] = useState('all'); // a stage key, '__none__' (not tagged yet) or 'all'
     const [loading, setLoading]       = useState(true);
     const [error, setError]           = useState(null);
 
@@ -515,6 +556,9 @@ export default function LibraryPage() {
                 if (lessonFilter !== 'all' && String(a.trilha_lesson) !== lessonFilter) return false;
             }
         }
+        if (stageFilter !== 'all') {
+            if (stageFilter === '__none__' ? a.stage : a.stage !== stageFilter) return false;
+        }
         return true;
     });
 
@@ -565,6 +609,24 @@ export default function LibraryPage() {
                     briefs={briefs}
                     onSaveBrief={handleSaveBrief}
                 />
+            )}
+
+            {/* Stage filter — for tagging a trilha's activities with their lesson-pack stage */}
+            {trilhaFilter !== 'all' && trilhaFilter !== '__none__' && (
+                <div className="flex flex-wrap gap-2 border-t border-white/10 pt-4">
+                    <span className="text-white/40 text-xs self-center mr-1">Stage:</span>
+                    <button onClick={() => setStageFilter('all')} className={filterBtnCls(stageFilter === 'all')}>
+                        All
+                    </button>
+                    {STAGES.map(s => (
+                        <button key={s.key} onClick={() => setStageFilter(s.key)} className={filterBtnCls(stageFilter === s.key)}>
+                            {s.label}
+                        </button>
+                    ))}
+                    <button onClick={() => setStageFilter('__none__')} className={filterBtnCls(stageFilter === '__none__')}>
+                        Not set ({activities.filter(a => a.trilha === trilhaFilter && !a.stage).length})
+                    </button>
+                </div>
             )}
 
             {/* Folder filter — only shown if there are any folders */}
@@ -644,6 +706,13 @@ export default function LibraryPage() {
                                     </span>
                                 )}
                             </div>
+                        )}
+
+                        {a.trilha && (
+                            <StageSelect
+                                activity={a}
+                                onSaved={updated => setActivities(prev => prev.map(x => (x.id === updated.id ? { ...x, stage: updated.stage } : x)))}
+                            />
                         )}
 
                         {a.folder && (

@@ -334,7 +334,20 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
-## 6. Next: more `/generate` formats (agreed 2026-09-20) — Homework's roadmap shipped
+## 6. Next: Aurora Lessons Phase 1 (agreed 2026-10-04)
+
+**Direction:** the app is being reshaped as **Aurora Lessons**, with the same repo and a new name. Every lesson becomes
+a **lesson pack**: Warmer → Presentation → Practice → Production, built around one core material. Aurora courses
+reuse their existing activities first, and Claude only fills empty stages. Group concept doc + plan:
+`https://claude.ai/code/artifact/a0c33e95-c83d-4af0-95b4-ba1008d43fa9`. **The pilot is Radiant**, which Thiago is writing
+now. Lights was built by another teacher and isn't reviewed yet; from ~L04 on, its activities look one lesson
+behind `TRILHA_TOC`. Phase 1 order: ✅ **1 stages in the data** (2026-10-04, `PROJECT_LOG.md` §31) → 2 "Use it!"
+target-language checklist on speaking tasks → 3 lesson-pack screen → 4 generate from the lesson's own
+presentation/reading (no PDF round trip) → 5 role-play cards → 6 lesson mode ("Teach now" plays the pack) → 7 "fill
+this stage". `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
+one. Old activities are **not** back-filled, on purpose: picking the stage is the review.
+
+### Earlier: more `/generate` formats (agreed 2026-09-20) — Homework's roadmap shipped
 
 The Aurora Student App roadmap (S1–S5) is **complete**. **S6 (monetization)
 is deferred** until real student usage exists (§4).
