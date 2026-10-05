@@ -21,6 +21,10 @@ import WordCategorisationActivity from '@/components/WordCategorisationActivity'
 import MatchPairsActivity from '@/components/MatchPairsActivity';
 import SignsNoticesActivity from '@/components/SignsNoticesActivity';
 import PicturePromptsActivity from '@/components/PicturePromptsActivity';
+import RolePlayActivity from '@/components/RolePlayActivity';
+import StoryBuilderActivity from '@/components/StoryBuilderActivity';
+import DebateActivity from '@/components/DebateActivity';
+import MiniPresentationActivity from '@/components/MiniPresentationActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
@@ -147,6 +151,27 @@ const TEMPLATES = [
         id: 'discussion_questions', label: 'Discussion Questions', goals: ['speaking'],
         blurb: 'Open questions with follow-up prompts to get students talking.',
         defaultPrompt: 'Generate 6 open-ended discussion questions on the topic, each with 2 follow-up prompts. Vary between personal, opinion and hypothetical.',
+    },
+    // Production templates (Aurora Lessons Phase 1, step 3) — each has the "Use it!" checklist; 3 cards by default.
+    {
+        id: 'role_play', label: 'Role-play Cards', goals: ['speaking'],
+        blurb: 'A situation and two roles — the student plays one, you play the other. Use it when the target language belongs in a real conversation.',
+        defaultPrompt: 'Create 3 role-play cards. Each has an everyday situation, a role for the student and a role for the teacher with details to share.',
+    },
+    {
+        id: 'story_builder', label: 'Story Builder', goals: ['speaking'],
+        blurb: 'A story title and 5–6 prompts the student turns into a story, then retells from memory. Use it for past tenses and linkers.',
+        defaultPrompt: 'Create 3 stories, each with a title and 6 short prompts in order that the student turns into a story.',
+    },
+    {
+        id: 'debate', label: 'Debate Cards', goals: ['speaking'],
+        blurb: 'An opinion statement with ideas for and against, hidden until needed. Use it when the student should argue and give reasons.',
+        defaultPrompt: 'Create 3 debate statements, each with 2 arguments for and 2 against.',
+    },
+    {
+        id: 'mini_presentation', label: 'Mini Presentation', goals: ['speaking'],
+        blurb: 'A topic and a speaking structure: prepare notes, then present from the structure alone. About 2 minutes, no timer.',
+        defaultPrompt: 'Create 3 presentation topics the student can talk about from their own life, each with 4-5 steps (hook to close).',
     },
 ];
 
@@ -335,6 +360,10 @@ export default function GeneratePage() {
     if (activity?.type === 'match_pairs')             return <MatchPairsActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'signs_notices')           return <SignsNoticesActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'picture_prompts')         return <PicturePromptsActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'role_play')               return <RolePlayActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'story_builder')           return <StoryBuilderActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'debate')                  return <DebateActivity activity={activity} onClose={handleClose} />;
+    if (activity?.type === 'mini_presentation')       return <MiniPresentationActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'grammar_explainer')       return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'presentation')            return <GrammarExplainerActivity activity={activity} onClose={handleClose} />;
     if (activity?.type === 'reading_text')            return <ReadingTextActivity activity={activity} onClose={handleClose} onDerive={(a) => { setActivity(a); setStatus('success'); }} />;

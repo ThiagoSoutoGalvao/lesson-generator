@@ -20,6 +20,10 @@ import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
 import MatchPairsActivity from '@/components/MatchPairsActivity';
 import SignsNoticesActivity from '@/components/SignsNoticesActivity';
 import PicturePromptsActivity from '@/components/PicturePromptsActivity';
+import RolePlayActivity from '@/components/RolePlayActivity';
+import StoryBuilderActivity from '@/components/StoryBuilderActivity';
+import DebateActivity from '@/components/DebateActivity';
+import MiniPresentationActivity from '@/components/MiniPresentationActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
@@ -49,6 +53,10 @@ const TYPE_LABELS = {
     match_pairs:              'Match Pairs',
     signs_notices:            'Signs & Notices',
     picture_prompts:          'Picture Prompts',
+    role_play:                'Role-play',
+    story_builder:            'Story Builder',
+    debate:                   'Debate',
+    mini_presentation:        'Mini Presentation',
     grammar_explainer:        'Grammar',
     presentation:             'Presentation',
     reading_text:             'Reading Text',
@@ -75,6 +83,10 @@ const TYPE_COLORS = {
     match_pairs:             'bg-cyan-600/80 text-white',
     signs_notices:           'bg-orange-600/80 text-white',
     picture_prompts:         'bg-sky-600/80 text-white',
+    role_play:               'bg-emerald-600/80 text-white',
+    story_builder:           'bg-emerald-700/80 text-white',
+    debate:                  'bg-teal-700/80 text-white',
+    mini_presentation:       'bg-green-700/80 text-white',
     grammar_explainer:       'bg-emerald-500/80 text-white',
     presentation:            'bg-indigo-500/80 text-white',
     reading_text:            'bg-green-600/80 text-white',
@@ -85,6 +97,7 @@ const TYPE_FILTERS = [
     'word_categorisation', 'true_false', 'mc_reading', 'read_complete', 'image_vocab_match',
     'word_formation', 'odd_one_out', 'cloze', 'open_cloze', 'mc_cloze', 'discussion_questions',
     'sentence_transformation', 'error_correction', 'match_pairs', 'signs_notices', 'picture_prompts',
+    'role_play', 'story_builder', 'debate', 'mini_presentation',
     'grammar_explainer', 'presentation', 'reading_text', 'essay_feedback',
 ];
 
@@ -535,6 +548,10 @@ export default function LibraryPage() {
         if (launched.type === 'match_pairs')             return <MatchPairsActivity {...props} />;
         if (launched.type === 'signs_notices')           return <SignsNoticesActivity {...props} />;
         if (launched.type === 'picture_prompts')         return <PicturePromptsActivity {...props} {...speaking} />;
+        if (launched.type === 'role_play')               return <RolePlayActivity {...props} {...speaking} />;
+        if (launched.type === 'story_builder')           return <StoryBuilderActivity {...props} {...speaking} />;
+        if (launched.type === 'debate')                  return <DebateActivity {...props} {...speaking} />;
+        if (launched.type === 'mini_presentation')       return <MiniPresentationActivity {...props} {...speaking} />;
         if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'presentation')            return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'reading_text')            return <ReadingTextActivity {...props} onDerive={setLaunched} />;

@@ -20,6 +20,10 @@ const DEFAULT_STAGE_BY_TYPE = {
     reading_text:            'presentation',
     discussion_questions:    'production',
     picture_prompts:         'production',
+    role_play:               'production',
+    story_builder:           'production',
+    debate:                  'production',
+    mini_presentation:       'production',
 };
 
 export function defaultStage(type) {

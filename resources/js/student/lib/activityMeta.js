@@ -24,6 +24,10 @@ export const ACTIVITY_META = {
     match_pairs:             { label: 'Match pairs',          icon: '🔗' },
     signs_notices:           { label: 'Signs & notices',      icon: '🪧' },
     picture_prompts:         { label: 'Describe the picture', icon: '📷' },
+    role_play:               { label: 'Role-play',            icon: '🎭' },
+    story_builder:           { label: 'Tell a story',         icon: '📚' },
+    debate:                  { label: 'Debate',               icon: '⚖️' },
+    mini_presentation:       { label: 'Mini presentation',    icon: '🎤' },
     presentation:            { label: 'Presentation',         icon: '📽️' },
 };
 

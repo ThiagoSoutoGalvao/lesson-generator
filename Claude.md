@@ -90,11 +90,13 @@ adjectival — the names are trademarks), and optional exam chips skip the goal 
 `ClaudeService`) — a hard-coded "Generate exactly N" out-votes the teacher's Instructions
 box, so never pin one.
 
-**20 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
+**24 generatable types:** `quiz`, `flashcards`, `unjumble`, `dialog_gap_fill`,
 `word_formation`, `true_false`, `mc_reading`, `odd_one_out`, `cloze`,
 `open_cloze`, `mc_cloze`, `read_complete`, `discussion_questions`,
 `sentence_transformation`, `error_correction`, `image_vocab_match`,
-`word_categorisation`, `match_pairs`, `signs_notices`, `picture_prompts`.
+`word_categorisation`, `match_pairs`, `signs_notices`, `picture_prompts`, and the four
+production templates `role_play`, `story_builder`, `debate`, `mini_presentation` (2026-10-05, built on
+`SpeakingActivityShell.jsx`, which owns the frame, navigation and the "Use it!" column; a template only draws one card).
 
 - **Adding a type touches ~10 places** (the batch-2 checklist): `ClaudeService` generator +
   builder (with `{$lv->rules}`), `ActivityController` (`in:` list + match arm),
@@ -342,9 +344,9 @@ reuse their existing activities first, and Claude only fills empty stages. Group
 `https://claude.ai/code/artifact/a0c33e95-c83d-4af0-95b4-ba1008d43fa9`. **The pilot is Radiant**, which Thiago is writing
 now. Lights was built by another teacher and isn't reviewed yet; from ~L04 on, its activities look one lesson
 behind `TRILHA_TOC`. Phase 1 order: ✅ **1 stages in the data** (2026-10-04, `PROJECT_LOG.md` §31) → ✅ **2 "Use it!"
-checklist** (2026-10-05, §32) → 3 production templates (role-play cards, story builder, debate cards, mini
-presentation — mocked on the canvas, 3 cards per lesson) → lesson-pack screen → 4 generate from the lesson's own
-presentation/reading (no PDF round trip) → 5 role-play cards → 6 lesson mode ("Teach now" plays the pack) → 7 "fill
+checklist** (2026-10-05, §32) → ✅ **3 production templates**: role-play cards, story builder, debate cards, mini
+presentation (2026-10-05, §33; 3 cards per lesson by default) → **next: 4 lesson-pack screen** → 5 generate from the
+lesson's own presentation/reading (no PDF round trip) → 6 lesson mode ("Teach now" plays the pack) → 7 "fill
 this stage". `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
 one. Old activities are **not** back-filled, on purpose: picking the stage is the review.
 **"Use it!"** (`UseItChecklist.jsx`): `content.targets` on speaking types (`Activity::SPEAKING_CHECK_TYPES`; new

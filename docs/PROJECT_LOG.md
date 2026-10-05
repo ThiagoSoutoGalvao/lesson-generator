@@ -1475,3 +1475,37 @@ another teacher's student). It found one real bug: the remembered student showed
 list loaded. Fixed. The existing suites pass (beginner, save naming, stage, presentation homework, display,
 level), and so do the backend checks. `regress.php` now differs for DiscussionQuestions **by design** (targets
 were added to that prompt); every other builder is still byte-identical.
+
+## 33. Aurora Lessons Phase 1, step 3: four production templates (2026-10-05)
+
+Production was the thinnest stage (only Discussion Questions and Picture Prompts), so it was built before Radiant's
+production content. All four were mocked first on the canvas (bottom row) on real Radiant lessons, then approved
+with three decisions: the checklist is visible to the student, ticks are saved, and each template has 3 cards per lesson.
+
+| Type | What the teacher sees | Content shape |
+|---|---|---|
+| `role_play` | Situation, Role A (student, coral) / Role B (teacher), **Swap roles** | `cards[{situation, role_a{name,brief}, role_b{…}}]` |
+| `story_builder` | Title + 5–6 numbered prompts, **Hide prompts** → "tell it again from memory" | `stories[{title, prompts[]}]` |
+| `debate` | Statement; FOR / AGAINST ideas, **both hidden** until revealed (student answers first) | `statements[{statement, for[], against[]}]` |
+| `mini_presentation` | **Prepare** (notes box per step) / **Present** (structure only); "about N minutes · no timer" | `topics[{title, steps[{name,hint}]}]`, `minutes` |
+
+- All four carry `targets` + `level`, sit in `Activity::SPEAKING_CHECK_TYPES` (so ticks save) and default to the
+  Production stage. In the student app they record completion only.
+- `SpeakingActivityShell.jsx` is the shared frame: header with a PRODUCTION chip, Save (passes `targets`, reports
+  the new id back), card navigation (← → keys, Back/Next/Finish), "All done", `onComplete`, and the "Use it!"
+  column. The checklist stays mounted through Finish, so the ticks survive and can be saved at the end. Each
+  card remounts per index, so card state (swapped roles, hidden prompts, notes) starts fresh.
+- `ClaudeService`: `generateRolePlay` / `generateStoryBuilder` / `generateDebate` / `generateMiniPresentation`
+  share `productionRules()` (requested count, 3 by default and 1–6; targets rule; level rules; invented names)
+  and `clip()`. Malformed cards are dropped. If none is usable, a friendly "please try generating again" (502).
+- Registered in the usual ~10 places, plus `stages.js` and `SPEAKING_CHECK_TYPES`. Format cards sit under the
+  Speaking goal. `examStyles.js` gives only "similar" exam notes (Debate ≈ Cambridge Speaking Part 4; Mini
+  presentation ≈ Cambridge Speaking Part 2 / DET Speaking Sample), so no pills.
+
+QA: `qa_production.mjs` (34 checks: format cards, every card control, ticks across cards and through Finish,
+typing in notes with no shortcut hijack, Save → Production, Library → ticks saved to a student, phone wheel-scroll,
+the student app recording completion) and `qa_production_backend.php` (12 `Http::fake` checks). Screenshot pass in
+`scratchpad/qa_2026-09/shots_production/`. The older suites pass (useit, stage, beginner, exam, batch2, backend
+checks). **Gotcha found:** a Python edit script on Windows writes CRLF, so `regress.php` flagged every builder.
+Files were re-normalised to LF; only the intended DiscussionQuestions difference remains. Not yet verified: real
+Claude output for the four new prompts (no API calls spent).

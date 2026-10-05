@@ -35,7 +35,7 @@ class SavedActivityController extends Controller
     {
         $rules = [
             'name'    => ['required', 'string', 'max:255'],
-            'type'    => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,mc_reading,image_vocab_match,odd_one_out,cloze,open_cloze,mc_cloze,read_complete,discussion_questions,sentence_transformation,error_correction,word_formation,match_pairs,signs_notices,picture_prompts,presentation,reading_text,essay_feedback'],
+            'type'    => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_categorisation,true_false,mc_reading,image_vocab_match,odd_one_out,cloze,open_cloze,mc_cloze,read_complete,discussion_questions,sentence_transformation,error_correction,word_formation,match_pairs,signs_notices,picture_prompts,role_play,story_builder,debate,mini_presentation,presentation,reading_text,essay_feedback'],
             'content' => ['required', 'array'],
             'tags'    => ['nullable', 'string', 'max:255'],
             'folder'  => ['nullable', 'string', 'max:255'],

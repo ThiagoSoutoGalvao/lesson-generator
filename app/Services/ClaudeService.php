@@ -1458,6 +1458,263 @@ Rules:
 EOT;
     }
 
+    // ------------------------------------------------------------------------------------------
+    // Production templates (Aurora Lessons Phase 1, step 3, 2026-10-05). Each is a speaking task the
+    // teacher runs live with the "Use it!" checklist (`targets`); 3 cards by default, as agreed.
+    // ------------------------------------------------------------------------------------------
+
+    /** Shared tail of every production-template prompt: card count + the checklist rule. */
+    private function productionRules(string $noun, LanguageLevel $lv): string
+    {
+        return <<<EOT
+- Generate the number of {$noun} requested in the task — 3 if none is given, never fewer than 1 or more than 6
+- "targets" is the "Use it!" checklist the teacher ticks while the student speaks: 4-6 short items of target language from the task (a structure, a phrase frame or a key word group), each under 40 characters and written the way a student would say it, e.g. "Have you ever…?", "I've never…", "If I had…, I would…", "used to + verb"
+- Every card must give the student natural reasons to use the target language
+- All language must be {$lv->cefr} level{$lv->rules}
+- Use invented names, companies and places — never real people or brands
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+    }
+
+    private function clip($value, int $max): string
+    {
+        $value = trim(preg_replace('/\s+/u', ' ', (string) $value));
+
+        return mb_strlen($value) > $max ? rtrim(mb_substr($value, 0, $max - 1)) . '…' : $value;
+    }
+
+    public function generateRolePlay(string $source, string $prompt, ?string $level = null): array
+    {
+        $lv   = LanguageLevel::from($level);
+        $data = $this->requestJson($this->buildRolePlayPrompt($this->sanitizeUtf8($source), $prompt, $lv));
+
+        $cards = [];
+        foreach ($data['cards'] ?? [] as $c) {
+            $situation = $this->clip($c['situation'] ?? '', 300);
+            $a = ['name' => $this->clip($c['role_a']['name'] ?? '', 60), 'brief' => $this->clip($c['role_a']['brief'] ?? '', 400)];
+            $b = ['name' => $this->clip($c['role_b']['name'] ?? '', 60), 'brief' => $this->clip($c['role_b']['brief'] ?? '', 400)];
+            if ($situation !== '' && $a['name'] !== '' && $a['brief'] !== '' && $b['name'] !== '' && $b['brief'] !== '') {
+                $cards[] = ['situation' => $situation, 'role_a' => $a, 'role_b' => $b];
+            }
+        }
+        if (! $cards) {
+            throw new RuntimeException('Claude did not return any usable role-play cards — please try generating again.');
+        }
+
+        return [
+            'type'    => 'role_play',
+            'topic'   => $this->clip($data['topic'] ?? '', 80),
+            'level'   => $lv->code,
+            'targets' => $this->cleanTargets($data['targets'] ?? []),
+            'cards'   => array_slice($cards, 0, 6),
+        ];
+    }
+
+    private function buildRolePlayPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "role_play",
+  "topic": "<short topic, e.g. 'Getting to know a new colleague'>",
+  "targets": ["<target language the student should use>", "<another>"],
+  "cards": [
+    {
+      "situation": "<1-2 sentences setting the scene, written to both speakers>",
+      "role_a": { "name": "<short role name, e.g. 'The new colleague'>", "brief": "<2-3 sentences: who you are and what you want to find out or achieve>" },
+      "role_b": { "name": "<short role name>", "brief": "<2-3 sentences with concrete details to share: facts, experiences, opinions>" }
+    }
+  ]
+}
+
+Rules:
+- Role A is played by the student, role B by the teacher (they can swap) — role A's brief must push the student to ask questions and react; role B's brief gives the teacher details to answer with
+- Briefs are written to the reader as "You…"
+- Every card is a different, everyday situation
+{$this->productionRules('cards', $lv)}
+EOT;
+    }
+
+    public function generateStoryBuilder(string $source, string $prompt, ?string $level = null): array
+    {
+        $lv   = LanguageLevel::from($level);
+        $data = $this->requestJson($this->buildStoryBuilderPrompt($this->sanitizeUtf8($source), $prompt, $lv));
+
+        $stories = [];
+        foreach ($data['stories'] ?? [] as $s) {
+            $title   = $this->clip($s['title'] ?? '', 80);
+            $prompts = array_values(array_filter(array_map(fn ($p) => $this->clip($p, 90), (array) ($s['prompts'] ?? [])), fn ($p) => $p !== ''));
+            if ($title !== '' && count($prompts) >= 3) {
+                $stories[] = ['title' => $title, 'prompts' => array_slice($prompts, 0, 8)];
+            }
+        }
+        if (! $stories) {
+            throw new RuntimeException('Claude did not return any usable stories — please try generating again.');
+        }
+
+        return [
+            'type'    => 'story_builder',
+            'topic'   => $this->clip($data['topic'] ?? '', 80),
+            'level'   => $lv->code,
+            'targets' => $this->cleanTargets($data['targets'] ?? []),
+            'stories' => array_slice($stories, 0, 6),
+        ];
+    }
+
+    private function buildStoryBuilderPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "story_builder",
+  "topic": "<short topic>",
+  "targets": ["<target language the student should use>", "<another>"],
+  "stories": [
+    {
+      "title": "<a story title the student tells, e.g. 'The day everything went wrong'>",
+      "prompts": ["<prompt 1>", "<prompt 2>", "<prompt 3>", "<prompt 4>", "<prompt 5>", "<prompt 6>"]
+    }
+  ]
+}
+
+Rules:
+- Each story has 5-6 prompts in order, each a short fragment (under 10 words) the student turns into full sentences — e.g. "The alarm didn't go off", "While I was running for the bus…", "…I had left my laptop at home"
+- Prompts are cues, not a finished story: leave the student room to add detail
+- Each story has a clear beginning, a problem and an ending
+{$this->productionRules('stories', $lv)}
+EOT;
+    }
+
+    public function generateDebate(string $source, string $prompt, ?string $level = null): array
+    {
+        $lv   = LanguageLevel::from($level);
+        $data = $this->requestJson($this->buildDebatePrompt($this->sanitizeUtf8($source), $prompt, $lv));
+
+        $cards = [];
+        foreach ($data['statements'] ?? [] as $s) {
+            $statement = $this->clip($s['statement'] ?? '', 200);
+            $for       = array_values(array_filter(array_map(fn ($p) => $this->clip($p, 200), (array) ($s['for'] ?? [])), fn ($p) => $p !== ''));
+            $against   = array_values(array_filter(array_map(fn ($p) => $this->clip($p, 200), (array) ($s['against'] ?? [])), fn ($p) => $p !== ''));
+            if ($statement !== '' && $for && $against) {
+                $cards[] = ['statement' => $statement, 'for' => array_slice($for, 0, 3), 'against' => array_slice($against, 0, 3)];
+            }
+        }
+        if (! $cards) {
+            throw new RuntimeException('Claude did not return any usable debate statements — please try generating again.');
+        }
+
+        return [
+            'type'       => 'debate',
+            'topic'      => $this->clip($data['topic'] ?? '', 80),
+            'level'      => $lv->code,
+            'targets'    => $this->cleanTargets($data['targets'] ?? []),
+            'statements' => array_slice($cards, 0, 6),
+        ];
+    }
+
+    private function buildDebatePrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "debate",
+  "topic": "<short topic>",
+  "targets": ["<target language the student should use>", "<another>"],
+  "statements": [
+    {
+      "statement": "<one clear, arguable opinion statement>",
+      "for": ["<an argument for>", "<another>"],
+      "against": ["<an argument against>", "<another>"]
+    }
+  ]
+}
+
+Rules:
+- Each statement is something reasonable people disagree about — never offensive, political-party or religious
+- 2 arguments for and 2 against, each one sentence, and each one uses the target language itself so it works as a model
+- Keep statements short enough to read aloud in one breath
+{$this->productionRules('statements', $lv)}
+EOT;
+    }
+
+    public function generateMiniPresentation(string $source, string $prompt, ?string $level = null): array
+    {
+        $lv   = LanguageLevel::from($level);
+        $data = $this->requestJson($this->buildMiniPresentationPrompt($this->sanitizeUtf8($source), $prompt, $lv));
+
+        $topics = [];
+        foreach ($data['topics'] ?? [] as $t) {
+            $title = $this->clip($t['title'] ?? '', 100);
+            $steps = [];
+            foreach ((array) ($t['steps'] ?? []) as $st) {
+                $name = $this->clip($st['name'] ?? '', 40);
+                $hint = $this->clip($st['hint'] ?? '', 120);
+                if ($name !== '') {
+                    $steps[] = ['name' => $name, 'hint' => $hint];
+                }
+            }
+            if ($title !== '' && count($steps) >= 3) {
+                $topics[] = ['title' => $title, 'steps' => array_slice($steps, 0, 6)];
+            }
+        }
+        if (! $topics) {
+            throw new RuntimeException('Claude did not return any usable presentation topics — please try generating again.');
+        }
+
+        return [
+            'type'    => 'mini_presentation',
+            'topic'   => $this->clip($data['topic'] ?? '', 80),
+            'level'   => $lv->code,
+            'minutes' => max(1, min(5, (int) ($data['minutes'] ?? 2))),
+            'targets' => $this->cleanTargets($data['targets'] ?? []),
+            'topics'  => array_slice($topics, 0, 6),
+        ];
+    }
+
+    private function buildMiniPresentationPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    {
+        return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "mini_presentation",
+  "topic": "<short topic>",
+  "minutes": 2,
+  "targets": ["<target language the student should use>", "<another>"],
+  "topics": [
+    {
+      "title": "<what the student presents, e.g. 'A project you'd like to run this year'>",
+      "steps": [
+        { "name": "Hook", "hint": "<what to say in this part, under 12 words>" },
+        { "name": "<step name>", "hint": "<…>" }
+      ]
+    }
+  ]
+}
+
+Rules:
+- Each topic is something the student can talk about from their own life, work or opinions — no research needed
+- 4-5 steps per topic, in speaking order, starting with a hook and ending with a close that invites a question
+- "minutes" is a suggested length (1-5), not a timer — 2 unless the task says otherwise
+{$this->productionRules('topics', $lv)}
+EOT;
+    }
+
     /** Shared Claude JSON request used by the newer generators. */
     private function requestJson(string $content): array
     {
