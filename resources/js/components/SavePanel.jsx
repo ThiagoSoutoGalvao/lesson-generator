@@ -35,7 +35,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
     const [focus, setFocus]       = useState('');
     const [builtBy, setBuiltBy]   = useState(() => lsGet(LS_BUILT_BY));
     // Lesson-pack stage — pre-picked from the type (lib/stages.js); the teacher confirms or changes it.
-    const [stage, setStage]       = useState(() => defaultStage(activity.type));
+    const [stage, setStage]       = useState(() => session?.stage ?? defaultStage(activity.type));
 
     // Freeform mode
     const [name, setName]       = useState('');

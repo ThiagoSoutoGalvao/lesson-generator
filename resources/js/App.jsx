@@ -10,6 +10,8 @@ import { DisplayProvider } from '@/hooks/useDisplay';
 import UploadPage from '@/pages/UploadPage';
 import GeneratePage from '@/pages/GeneratePage';
 import LibraryPage from '@/pages/LibraryPage';
+import LessonsPage from '@/pages/LessonsPage';
+import LessonPackPage from '@/pages/LessonPackPage';
 import PronunciationChartPage from '@/pages/PronunciationChartPage';
 import PronunciationDrillPage from '@/pages/PronunciationDrillPage';
 import DetPracticePage from '@/pages/DetPracticePage';
@@ -36,6 +38,8 @@ function TeacherApp() {
                 <Route path="/" element={<Home />} />
                 <Route path="/upload" element={<UploadPage />} />
                 <Route path="/generate" element={<GeneratePage />} />
+                <Route path="/lessons" element={<LessonsPage />} />
+                <Route path="/lessons/:trilha/:lesson" element={<LessonPackPage />} />
                 <Route path="/library" element={<LibraryPage />} />
                 <Route path="/students" element={<StudentsPage />} />
                 <Route path="/pronunciation" element={<PronunciationChartPage />} />

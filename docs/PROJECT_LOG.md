@@ -1509,3 +1509,34 @@ the student app recording completion) and `qa_production_backend.php` (12 `Http:
 checks). **Gotcha found:** a Python edit script on Windows writes CRLF, so `regress.php` flagged every builder.
 Files were re-normalised to LF; only the intended DiscussionQuestions difference remains. Not yet verified: real
 Claude output for the four new prompts (no API calls spent).
+
+## 34. Aurora Lessons Phase 1, step 4: the lesson-pack screen (2026-10-05)
+
+A course lesson can now be seen and taught as a lesson pack, using only what the Library already holds (no AI credits).
+
+- **`/lessons`** (`LessonsPage.jsx`, **Lessons** in the top nav): course pills (Lights · A1 / Glow · B1 /
+  Radiant · B2; default = the lesson session's trilha, else Radiant). Every lesson shows its first contents line,
+  a dot + count per stage, and "n not placed yet". Each row opens the pack.
+- **`/lessons/:trilha/:lesson`** (`LessonPackPage.jsx`): ← all lessons, ← L-1 / L+1 →, the level, the contents
+  (`TRILHA_TOC`) + the brief's target language / vocabulary if written. Then an amber **"Not placed yet"** box for
+  untagged activities, then the four stages (numbered, with a one-line hint, a count and "Nothing here yet." when
+  empty). Cards show type, focus (the standard name minus its `TRILHA L## · Type ·` prefix), built-by, the "Use it!"
+  target count on speaking types, **Launch**, and the **Stage** select. Changing the stage moves the card and saves.
+- **"+ Add"** stores `{trilha, lesson, stage}` in the lesson session (`setLessonSession` takes an optional stage).
+  Production opens `/generate?goal=speaking` (GeneratePage reads `?goal=`); Presentation offers "+ Presentation" /
+  "+ Reading", which open those `/upload` tabs. The "Adding to" chip names the stage, and the Save panel pre-picks
+  it. Saving clears the stage from the session (it applies to that one save).
+- **Refactor:** the Library's type → component switch moved into **`components/ActivityRenderer.jsx`**
+  (`content`, `savedId`, `onClose`, `onTargetsChange`, `onDerive`), used by the Library and the pack (and lesson mode
+  next). `StageSelect` moved to `components/StageSelect.jsx`. **Bug fixed on the way:** an activity derived from a
+  Reading Text kept the reading's Library id, so its "Use it!" ticks would have been saved against the reading;
+  `onDerive` now clears the id.
+- Library coverage grid: a new **Pack** column with "Open →" per lesson.
+
+QA: `qa_lesson_pack.mjs` (31 checks: overview counts + course switch, pack grouping, not-placed → stage, moving
+between stages, Launch/close, the speaking id, prev/next, + Add → Generate (Speaking goal, chip, Save pre-fill) →
+back in Production, + Reading, the coverage-grid link, the Library launch after the refactor, a bad lesson URL,
+phone width, zero console errors). The first run failed 13 checks only because they asserted before
+`/api/activities` answered; a `seen()` wait fixed the test, not the app. Screenshots:
+`shots_production/6-lessons.png`, `7-pack.png`. The regression suites pass (useit, production, stage, rename,
+save naming, level, presentation homework, beginner).

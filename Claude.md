@@ -345,7 +345,9 @@ reuse their existing activities first, and Claude only fills empty stages. Group
 now. Lights was built by another teacher and isn't reviewed yet; from ~L04 on, its activities look one lesson
 behind `TRILHA_TOC`. Phase 1 order: ✅ **1 stages in the data** (2026-10-04, `PROJECT_LOG.md` §31) → ✅ **2 "Use it!"
 checklist** (2026-10-05, §32) → ✅ **3 production templates**: role-play cards, story builder, debate cards, mini
-presentation (2026-10-05, §33; 3 cards per lesson by default) → **next: 4 lesson-pack screen** → 5 generate from the
+presentation (2026-10-05, §33; 3 cards per lesson by default) → ✅ **4 lesson-pack screen** (2026-10-05, §34:
+`/lessons` overview + `/lessons/:trilha/:lesson`, **Lessons** in the nav; launching goes through the shared
+`ActivityRenderer.jsx`, so reuse it rather than copying a type switch again) → **next: 5** generate from the
 lesson's own presentation/reading (no PDF round trip) → 6 lesson mode ("Teach now" plays the pack) → 7 "fill
 this stage". `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
 one. Old activities are **not** back-filled, on purpose: picking the stage is the review.

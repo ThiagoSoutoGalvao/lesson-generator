@@ -33,6 +33,7 @@ import { TRILHAS, TRILHA_LEVEL } from '@/lib/trilhas';
 import { LEVELS, DEFAULT_LEVEL, LEVEL_RANK } from '@/lib/levels';
 import { EXAMS, EXAM_ORDER, TEMPLATE_META, isDirect } from '@/lib/examStyles';
 import { getLessonSession, clearLessonSession } from '@/lib/lessonSession';
+import { STAGE_LABELS } from '@/lib/stages';
 
 // What a teacher is trying to get students to practise. This is the first choice
 // on the page — templates are shown grouped under whichever goal is picked.
@@ -226,7 +227,8 @@ export default function GeneratePage() {
     const location = useLocation();
     const [documents, setDocuments]   = useState([]);
     const [documentId, setDocumentId] = useState('');
-    const [goal, setGoal]             = useState(null);
+    // A lesson pack's "+ Add" can open this page on a goal (Production → ?goal=speaking).
+    const [goal, setGoal]             = useState(() => (GOALS.some(g => g.id === searchParams.get('goal')) ? searchParams.get('goal') : null));
     const [templateId, setTemplateId] = useState(null);
     const [exam, setExam]             = useState(null); // optional filter: 'cambridge' | 'det' | 'toefl'
     const [prompt, setPrompt]         = useState('');
@@ -383,6 +385,7 @@ export default function GeneratePage() {
                     <span className="text-[#fdb08a]">
                         Adding to: <span className="font-semibold text-white">
                             {TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha} · Lesson {lessonSession.lesson}
+                            {lessonSession.stage && ` · ${STAGE_LABELS[lessonSession.stage]}`}
                         </span>
                     </span>
                     <button type="button" onClick={handleClearSession} className="ml-auto text-[#fdb08a]/80 hover:text-white text-xs underline cursor-pointer">

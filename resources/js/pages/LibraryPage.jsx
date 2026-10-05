@@ -1,36 +1,12 @@
 import { Fragment, useEffect, useRef, useState } from 'react';
 import axios from 'axios';
-import QuizActivity from '@/components/QuizActivity';
-import FlashcardActivity from '@/components/FlashcardActivity';
-import UnjumbleActivity from '@/components/UnjumbleActivity';
-import DialogGapFillActivity from '@/components/DialogGapFillActivity';
-import WordCategorisationActivity from '@/components/WordCategorisationActivity';
-import TrueFalseActivity from '@/components/TrueFalseActivity';
-import McReadingActivity from '@/components/McReadingActivity';
-import ReadCompleteActivity from '@/components/ReadCompleteActivity';
-import ImageVocabMatchActivity from '@/components/ImageVocabMatchActivity';
-import WordFormationActivity from '@/components/WordFormationActivity';
-import OddOneOutActivity from '@/components/OddOneOutActivity';
-import ClozeActivity from '@/components/ClozeActivity';
-import OpenClozeActivity from '@/components/OpenClozeActivity';
-import McClozeActivity from '@/components/McClozeActivity';
-import DiscussionQuestionsActivity from '@/components/DiscussionQuestionsActivity';
-import SentenceTransformationActivity from '@/components/SentenceTransformationActivity';
-import ErrorCorrectionActivity from '@/components/ErrorCorrectionActivity';
-import MatchPairsActivity from '@/components/MatchPairsActivity';
-import SignsNoticesActivity from '@/components/SignsNoticesActivity';
-import PicturePromptsActivity from '@/components/PicturePromptsActivity';
-import RolePlayActivity from '@/components/RolePlayActivity';
-import StoryBuilderActivity from '@/components/StoryBuilderActivity';
-import DebateActivity from '@/components/DebateActivity';
-import MiniPresentationActivity from '@/components/MiniPresentationActivity';
-import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
-import ReadingTextActivity from '@/components/ReadingTextActivity';
-import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
+import { Link } from 'react-router-dom';
+import ActivityRenderer from '@/components/ActivityRenderer';
+import StageSelect from '@/components/StageSelect';
 import Spinner from '@/components/Spinner';
 import { TRILHAS, TRILHA_NAMES, TRILHA_TOC, LESSON_SLOTS, TEACHERS, TYPE_LABELS as NAME_TYPE_LABELS, composeActivityName } from '@/lib/trilhas';
 import { tidyText, tidyFocus, focusHints, suggestName, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
-import { STAGES, STAGE_LABELS, defaultStage } from '@/lib/stages';
+import { STAGES } from '@/lib/stages';
 
 const TYPE_LABELS = {
     quiz:                     'Quiz',
@@ -231,6 +207,7 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
                             <th key={s.key} className="text-white/55 font-medium px-1 py-1">{s.label}</th>
                         ))}
                         <th className="text-white/55 font-medium px-1 py-1">Brief</th>
+                        <th className="text-white/55 font-medium px-1 py-1">Pack</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -280,10 +257,19 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
                                             )}
                                         </button>
                                     </td>
+                                    <td className="text-center">
+                                        <Link
+                                            to={`/lessons/${trilhaName.toLowerCase()}/${n}`}
+                                            aria-label={`Open the lesson pack for lesson ${n}`}
+                                            className="inline-flex items-center justify-center h-7 px-2 rounded-md bg-white/5 text-white/80 hover:bg-white/10 border border-white/10 whitespace-nowrap"
+                                        >
+                                            Open →
+                                        </Link>
+                                    </td>
                                 </tr>
                                 {expanded && (
                                     <tr>
-                                        <td colSpan={LESSON_SLOTS.length + 2}>
+                                        <td colSpan={LESSON_SLOTS.length + 3}>
                                             <LessonBriefEditor
                                                 trilhaName={trilhaName}
                                                 lessonNum={n}
@@ -299,45 +285,6 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
                     })}
                 </tbody>
             </table>
-        </div>
-    );
-}
-
-// Lesson-pack stage of one trilha activity, set straight from its Library card. Untagged activities show the
-// type's usual stage as a suggestion only — nothing is saved until the teacher picks (that pick IS the review).
-function StageSelect({ activity: a, onSaved }) {
-    const [busy, setBusy] = useState(false);
-    const [err, setErr]   = useState('');
-
-    async function change(e) {
-        const stage = e.target.value || null;
-        setBusy(true); setErr('');
-        try {
-            const { data } = await axios.patch(`/api/activities/${a.id}`, { stage });
-            onSaved(data);
-        } catch {
-            setErr('Could not save the stage.');
-        } finally {
-            setBusy(false);
-        }
-    }
-
-    return (
-        <div className="flex items-center gap-2 flex-wrap">
-            <label htmlFor={`stage-${a.id}`} className="text-xs text-white/60">Stage</label>
-            <select
-                id={`stage-${a.id}`}
-                value={a.stage ?? ''}
-                onChange={change}
-                disabled={busy}
-                className={`text-xs rounded-lg px-2 py-1 border cursor-pointer disabled:opacity-50 ${
-                    a.stage ? 'bg-white/10 border-white/20 text-white' : 'bg-amber-500/15 border-amber-400/40 text-amber-200'
-                }`}
-            >
-                <option value="" className="text-black bg-white">Not set (usually {STAGE_LABELS[defaultStage(a.type)]})</option>
-                {STAGES.map(s => <option key={s.key} value={s.key} className="text-black bg-white">{s.label}</option>)}
-            </select>
-            {err && <span className="text-xs text-red-300">{err}</span>}
         </div>
     );
 }
@@ -522,40 +469,17 @@ export default function LibraryPage() {
     }
 
     if (launched) {
-        const props = { activity: launched, onClose: () => setLaunched(null) };
-        if (launched.type === 'quiz')                    return <QuizActivity quiz={launched} onClose={props.onClose} />;
-        if (launched.type === 'flashcards')              return <FlashcardActivity {...props} />;
-        if (launched.type === 'unjumble')                return <UnjumbleActivity {...props} />;
-        if (launched.type === 'dialog_gap_fill')         return <DialogGapFillActivity {...props} />;
-        if (launched.type === 'word_categorisation')     return <WordCategorisationActivity {...props} />;
-        if (launched.type === 'true_false')              return <TrueFalseActivity {...props} />;
-        if (launched.type === 'mc_reading')              return <McReadingActivity {...props} />;
-        if (launched.type === 'read_complete')           return <ReadCompleteActivity {...props} />;
-        if (launched.type === 'image_vocab_match')       return <ImageVocabMatchActivity {...props} />;
-        if (launched.type === 'word_formation')          return <WordFormationActivity {...props} />;
-        if (launched.type === 'odd_one_out')             return <OddOneOutActivity {...props} />;
-        if (launched.type === 'cloze')                   return <ClozeActivity {...props} />;
-        if (launched.type === 'open_cloze')              return <OpenClozeActivity {...props} />;
-        if (launched.type === 'mc_cloze')                return <McClozeActivity {...props} />;
-        // Speaking activities get the Library id, so "Use it!" ticks and target edits save against it.
-        const speaking = {
-            savedId: launchedId,
-            onTargetsChange: targets => setActivities(prev => prev.map(x => (x.id === launchedId ? { ...x, content: { ...x.content, targets } } : x))),
-        };
-        if (launched.type === 'discussion_questions')    return <DiscussionQuestionsActivity {...props} {...speaking} />;
-        if (launched.type === 'sentence_transformation') return <SentenceTransformationActivity {...props} />;
-        if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;
-        if (launched.type === 'match_pairs')             return <MatchPairsActivity {...props} />;
-        if (launched.type === 'signs_notices')           return <SignsNoticesActivity {...props} />;
-        if (launched.type === 'picture_prompts')         return <PicturePromptsActivity {...props} {...speaking} />;
-        if (launched.type === 'role_play')               return <RolePlayActivity {...props} {...speaking} />;
-        if (launched.type === 'story_builder')           return <StoryBuilderActivity {...props} {...speaking} />;
-        if (launched.type === 'debate')                  return <DebateActivity {...props} {...speaking} />;
-        if (launched.type === 'mini_presentation')       return <MiniPresentationActivity {...props} {...speaking} />;
-        if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
-        if (launched.type === 'presentation')            return <GrammarExplainerActivity {...props} />;
-        if (launched.type === 'reading_text')            return <ReadingTextActivity {...props} onDerive={setLaunched} />;
-        if (launched.type === 'essay_feedback')           return <EssayFeedbackActivity {...props} />;
+        return (
+            <ActivityRenderer
+                content={launched}
+                savedId={launchedId}
+                onClose={() => setLaunched(null)}
+                // Ticks and target edits save against this Library id; keep the local copy current too.
+                onTargetsChange={targets => setActivities(prev => prev.map(x => (x.id === launchedId ? { ...x, content: { ...x.content, targets } } : x)))}
+                // An activity derived from a Reading Text is a new, unsaved one — it must not inherit the reading's id.
+                onDerive={derived => { setLaunched(derived); setLaunchedId(null); }}
+            />
+        );
     }
 
     const hasTrilhaActivities = activities.some(a => a.trilha);

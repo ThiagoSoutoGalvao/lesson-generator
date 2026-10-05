@@ -4,6 +4,7 @@ import DisplayControls from '@/components/DisplayControls';
 const NAV_LINKS = [
     { to: '/upload',   label: 'Upload' },
     { to: '/generate', label: 'Generate' },
+    { to: '/lessons',  label: 'Lessons' },
     { to: '/library',  label: 'Library' },
     { to: '/students', label: 'Students' },
 ];
@@ -35,7 +36,7 @@ export default function Layout({ children }) {
                     </Link>
                     <nav className="flex flex-wrap items-center justify-end gap-1 text-sm">
                         {NAV_LINKS.map(({ to, label }) => {
-                            const active = location.pathname === to;
+                            const active = location.pathname === to || location.pathname.startsWith(`${to}/`);
                             return (
                                 <Link
                                     key={to}

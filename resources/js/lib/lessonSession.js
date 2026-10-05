@@ -17,9 +17,11 @@ export function getLessonSession() {
     }
 }
 
-export function setLessonSession(trilha, lesson) {
+// `stage` (optional) is the lesson-pack stage a "+ Add" button came from: the Save panel pre-picks it.
+// Saving an activity calls this again without one, so it applies to that one save only.
+export function setLessonSession(trilha, lesson, stage = null) {
     try {
-        localStorage.setItem(KEY, JSON.stringify({ trilha, lesson }));
+        localStorage.setItem(KEY, JSON.stringify(stage ? { trilha, lesson, stage } : { trilha, lesson }));
     } catch { /* ignore */ }
 }
 
