@@ -349,8 +349,8 @@ presentation (2026-10-05, §33; 3 cards per lesson by default) → ✅ **4 lesso
 `/lessons` overview + `/lessons/:trilha/:lesson`, **Lessons** in the nav; launching goes through the shared
 `ActivityRenderer.jsx`, so reuse it rather than copying a type switch again) → ✅ **5 generate from the lesson's
 own presentation/reading** (2026-10-06, §35: `source_activity_id` on `/api/generate`, text read server-side by
-`App\Support\LessonMaterial`; the pack's "+ Add" uses it automatically) → **next: 6** lesson mode ("Teach now" plays the pack) → 7 "fill
-this stage". `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
+`App\Support\LessonMaterial`; the pack's "+ Add" uses it automatically) → ✅ **6 lesson mode** (2026-10-06, §36: "Teach now" on the pack → `LessonPlayer.jsx`) → **next: 7** "fill this
+stage". `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
 one. Old activities are **not** back-filled, on purpose: picking the stage is the review.
 **"Use it!"** (`UseItChecklist.jsx`): `content.targets` on speaking types (`Activity::SPEAKING_CHECK_TYPES`; new
 production templates must join it). The teacher ticks targets live and picks "Who's this with?" (sessionStorage,

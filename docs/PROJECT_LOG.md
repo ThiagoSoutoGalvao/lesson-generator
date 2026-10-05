@@ -1569,3 +1569,31 @@ long-presentation cut) and `qa_lesson_material.mjs` (18 browser checks: the pack
 the optgroups, the POST body carrying only `source_activity_id`, "+ Add" on Production, switching back to a topic,
 picking by hand, a lesson with no material, a stale id, the real 422). `qa_lesson_pack.mjs` was updated for the
 new "+ Add" URL. Regression suites pass. PHP suite: 84 tests, the only failures are the 10 known Breeze ones.
+
+## 36. Aurora Lessons Phase 1, step 6: lesson mode, "Teach now" (2026-10-06)
+
+This answers the teacher who "couldn't use it through the whole class": a course lesson now plays from warmer to
+production in one go.
+
+- **"Teach now ▶"** on the lesson pack (disabled until at least one activity is placed) swaps the page for
+  **`components/LessonPlayer.jsx`**. `lessonSequence()` orders the placed activities by stage, then by id.
+  Unplaced ones are left out, with a note on the "Up next" screen.
+- **"Up next" screen:** FIRST UP / UP NEXT · stage · n OF total, the type and the activity's focus, **Start ▶**
+  (autofocused) and **Skip**. The first screen also asks **"Who's this lesson with?"**, written to the same
+  sessionStorage key the "Use it!" checklist reads (`readLiveStudent` / `writeLiveStudent` are now exported), so
+  every checklist in the lesson is pre-set and ticks can be saved mid-lesson. The **side list** shows the whole
+  lesson by stage (✓ done / ▶ current / ○ to come); clicking an item jumps to it. **Skip does not tick.**
+- **During an activity:** it renders through the shared `ActivityRenderer`. Its own ✕ = done, then the next "Up
+  next". A **pill** (md+, bottom-left, z-60) shows "Stage · n / total", **Overview** (back to "Up next" without
+  moving on) and **Next activity →** / **Finish lesson**. It floats over whatever the activity draws there, so it's
+  faded until hovered and can shrink to a small round button (first screenshot pass: it covered the end of Picture
+  Prompts' phrase list).
+- **End:** "Lesson complete", "n of total done with <student>", where saved ticks can be found, and back to the
+  pack. **Exit lesson** works at any point. Fullscreen is document-wide, so it stays on across activities and is
+  left on exit.
+
+QA: `qa_lesson_mode.mjs` (25 checks: stage order despite seeding out of order, the side list + current marker, the
+unplaced note, the shared student, ticks saved mid-lesson, the pill (counter / shrink / Overview / Next /
+Finish), ✕ moving on, Skip not ticking, jumping back, Lesson complete, Exit, disabled with nothing placed, phone
+scroll + width). Screenshots `8-upnext.png`, `9-in-activity.png`. The pack, material, production, useit and stage
+suites pass.

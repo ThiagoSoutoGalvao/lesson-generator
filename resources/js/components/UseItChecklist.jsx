@@ -9,10 +9,10 @@ import axios from 'axios';
 
 const LIVE_STUDENT_KEY = 'aurora.liveStudent';
 
-function readLiveStudent() {
+export function readLiveStudent() {
     try { return JSON.parse(sessionStorage.getItem(LIVE_STUDENT_KEY)) || null; } catch { return null; }
 }
-function writeLiveStudent(s) {
+export function writeLiveStudent(s) {
     try {
         if (s) sessionStorage.setItem(LIVE_STUDENT_KEY, JSON.stringify(s));
         else sessionStorage.removeItem(LIVE_STUDENT_KEY);

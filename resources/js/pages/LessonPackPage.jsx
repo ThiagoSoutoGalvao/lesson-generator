@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 import ActivityRenderer from '@/components/ActivityRenderer';
+import LessonPlayer, { lessonSequence } from '@/components/LessonPlayer';
 import StageSelect from '@/components/StageSelect';
 import Spinner from '@/components/Spinner';
 import { TRILHAS, TRILHA_LEVEL, TRILHA_TOC, TYPE_LABELS } from '@/lib/trilhas';
@@ -37,6 +38,7 @@ export default function LessonPackPage() {
     const [loading, setLoading]       = useState(true);
     const [error, setError]           = useState(null);
     const [launched, setLaunched]     = useState(null); // { content, id }
+    const [teaching, setTeaching]     = useState(false); // lesson mode (step 6)
 
     useEffect(() => {
         if (!config) return;
@@ -80,6 +82,22 @@ export default function LessonPackPage() {
         .sort((x, y) => (x.stage === 'presentation' ? 0 : 1) - (y.stage === 'presentation' ? 0 : 1));
     const core      = materials[0] ?? null;
 
+    const focusOf  = a => (a.name.startsWith(`${prefix} · `) ? a.name.slice(prefix.length + 3).replace(/^[^·]+· /, '') : a.name);
+    const sequence = lessonSequence(activities);
+
+    if (teaching) {
+        return (
+            <LessonPlayer
+                title={`${config.label} · Lesson ${lesson}`}
+                items={sequence}
+                skipped={unplaced.length}
+                focusOf={focusOf}
+                onExit={() => setTeaching(false)}
+                onTargetsChange={(id, targets) => setActivities(prev => prev.map(x => (x.id === id ? { ...x, content: { ...x.content, targets } } : x)))}
+            />
+        );
+    }
+
     function add(stage, where) {
         setLessonSession(trilha, lesson, stage);
         if (where === 'presentation' || where === 'reading') { navigate('/upload', { state: { tab: where } }); return; }
@@ -104,6 +122,15 @@ export default function LessonPackPage() {
                         Level {TRILHA_LEVEL[trilha]} · {activities.length} {activities.length === 1 ? 'activity' : 'activities'}
                     </p>
                 </div>
+                <button
+                    type="button"
+                    onClick={() => setTeaching(true)}
+                    disabled={loading || sequence.length === 0}
+                    title={sequence.length === 0 ? 'Place at least one activity in a stage first' : 'Play the whole lesson, stage by stage'}
+                    className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer"
+                >
+                    Teach now ▶
+                </button>
                 <nav className="flex gap-2" aria-label="Other lessons">
                     {lesson > 1 && <Link to={`/lessons/${trilha.toLowerCase()}/${lesson - 1}`} className="lg-chip lg-chip-hover text-white/85 text-sm px-3.5 py-2 rounded-lg border">← L{lesson - 1}</Link>}
                     {lesson < config.lessons && <Link to={`/lessons/${trilha.toLowerCase()}/${lesson + 1}`} className="lg-chip lg-chip-hover text-white/85 text-sm px-3.5 py-2 rounded-lg border">L{lesson + 1} →</Link>}
