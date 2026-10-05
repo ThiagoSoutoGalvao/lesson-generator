@@ -347,8 +347,9 @@ behind `TRILHA_TOC`. Phase 1 order: ✅ **1 stages in the data** (2026-10-04, `P
 checklist** (2026-10-05, §32) → ✅ **3 production templates**: role-play cards, story builder, debate cards, mini
 presentation (2026-10-05, §33; 3 cards per lesson by default) → ✅ **4 lesson-pack screen** (2026-10-05, §34:
 `/lessons` overview + `/lessons/:trilha/:lesson`, **Lessons** in the nav; launching goes through the shared
-`ActivityRenderer.jsx`, so reuse it rather than copying a type switch again) → **next: 5** generate from the
-lesson's own presentation/reading (no PDF round trip) → 6 lesson mode ("Teach now" plays the pack) → 7 "fill
+`ActivityRenderer.jsx`, so reuse it rather than copying a type switch again) → ✅ **5 generate from the lesson's
+own presentation/reading** (2026-10-06, §35: `source_activity_id` on `/api/generate`, text read server-side by
+`App\Support\LessonMaterial`; the pack's "+ Add" uses it automatically) → **next: 6** lesson mode ("Teach now" plays the pack) → 7 "fill
 this stage". `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
 one. Old activities are **not** back-filled, on purpose: picking the stage is the review.
 **"Use it!"** (`UseItChecklist.jsx`): `content.targets` on speaking types (`Activity::SPEAKING_CHECK_TYPES`; new

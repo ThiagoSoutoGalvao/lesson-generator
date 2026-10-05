@@ -1540,3 +1540,32 @@ phone width, zero console errors). The first run failed 13 checks only because t
 `/api/activities` answered; a `seen()` wait fixed the test, not the app. Screenshots:
 `shots_production/6-lessons.png`, `7-pack.png`. The regression suites pass (useit, production, stage, rename,
 save naming, level, presentation homework, beginner).
+
+## 35. Aurora Lessons Phase 1, step 5: activities straight from the lesson's presentation / reading (2026-10-06)
+
+This removes Thiago's main complaint: to build activities on his own reading, he used to download it as a PDF,
+upload it back as a document and pick pages. Now the saved material is the source.
+
+- **API:** `/api/generate` accepts `source_activity_id` as a fourth source (exactly-one-source still holds). Only the
+  teacher's own `reading_text` / `presentation` / `grammar_explainer` is accepted; anything else is a 422 before
+  any Claude call. **`App\Support\LessonMaterial`** turns it into text. A reading becomes Title + paragraphs +
+  `Target vocabulary:` (word — definition). A presentation becomes `Slide n: title`, rule, form and `- examples`,
+  with `**` stripped. The text is capped at 12,000 chars, cut at a whole part (never mid-slide). A lead-in tells
+  Claude to practise the same language and reuse its examples and target vocabulary.
+- **Generate page:** a third source button, **"A presentation or reading"** (`LessonMaterialPicker`): a select with
+  this lesson's material first (optgroup "This lesson", from the lesson session), then everything else. One line
+  says what's used ("its text and target vocabulary" / "its rules and examples"). A stale id warns. `?from=<id>`
+  presets it (also when re-arriving on the same route).
+- **Lesson pack:** a line says what new activities are made from (the lesson's material, Presentation stage
+  first). **"+ Add"** on Warmer / Practice / Production adds `&from=<that id>` (Production keeps `goal=speaking`).
+  Reading / presentation cards get **"Make an activity from this"** (stage Practice). A lesson with no material
+  behaves as before (topic).
+- The Reading Text screen's own "make an exercise" buttons still send the paragraphs as `source_text`. They were
+  left alone; they work, and they don't need a saved id.
+
+QA: `tests/Feature/GenerateFromLessonMaterialTest.php` (7 tests, `Http::fake`: what's sent for a reading and for a
+presentation, foreign / wrong-type / empty material refused with no Claude call, still exactly one source, the
+long-presentation cut) and `qa_lesson_material.mjs` (18 browser checks: the pack line + buttons, the preset source,
+the optgroups, the POST body carrying only `source_activity_id`, "+ Add" on Production, switching back to a topic,
+picking by hand, a lesson with no material, a stale id, the real 422). `qa_lesson_pack.mjs` was updated for the
+new "+ Add" URL. Regression suites pass. PHP suite: 84 tests, the only failures are the 10 known Breeze ones.

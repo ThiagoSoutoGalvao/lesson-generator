@@ -20,6 +20,9 @@ const STAGE_HINTS = {
     production:   'The student uses the language freely.',
 };
 
+// A lesson's core material — what "+ Add" builds new activities from (step 5: no PDF round trip).
+const MATERIAL_TYPES = ['reading_text', 'presentation', 'grammar_explainer'];
+
 const SPEAKING_TYPES = ['discussion_questions', 'picture_prompts', 'role_play', 'story_builder', 'debate', 'mini_presentation'];
 
 export default function LessonPackPage() {
@@ -72,11 +75,23 @@ export default function LessonPackPage() {
     const unplaced  = activities.filter(a => !a.stage);
     const toc       = TRILHA_TOC[trilha]?.[lesson] ?? [];
     const prefix    = `${config.label} L${String(lesson).padStart(2, '0')}`; // the standard name starts "RADIANT L01 · Type · Focus"
+    // The material new activities are made from: the Presentation stage's reading / presentation first.
+    const materials = activities.filter(a => MATERIAL_TYPES.includes(a.type))
+        .sort((x, y) => (x.stage === 'presentation' ? 0 : 1) - (y.stage === 'presentation' ? 0 : 1));
+    const core      = materials[0] ?? null;
 
     function add(stage, where) {
         setLessonSession(trilha, lesson, stage);
-        if (where === 'presentation' || where === 'reading') navigate('/upload', { state: { tab: where } });
-        else navigate(stage === 'production' ? '/generate?goal=speaking' : '/generate');
+        if (where === 'presentation' || where === 'reading') { navigate('/upload', { state: { tab: where } }); return; }
+        const q = new URLSearchParams();
+        if (stage === 'production') q.set('goal', 'speaking');
+        if (core) q.set('from', String(core.id)); // made from the lesson's own material
+        navigate(`/generate${q.toString() ? `?${q}` : ''}`);
+    }
+
+    function makeFrom(material) {
+        setLessonSession(trilha, lesson, 'practice');
+        navigate(`/generate?from=${material.id}`);
     }
 
     return (
@@ -110,6 +125,12 @@ export default function LessonPackPage() {
                 </section>
             )}
 
+            {!loading && core && (
+                <p className="lg-shell-text text-white/75 text-sm -mt-2" data-testid="pack-source">
+                    New activities are made from <span className="text-white font-semibold">{core.name}</span> — you can pick another source on the Generate page.
+                </p>
+            )}
+
             {loading && <div className="flex justify-center py-10"><Spinner message="Loading the lesson…" color="text-white/70" textColor="text-white/55" /></div>}
             {error && <div className="rounded-xl bg-red-500/15 border border-red-400/30 px-4 py-3 text-sm text-red-300">{error}</div>}
 
@@ -122,7 +143,7 @@ export default function LessonPackPage() {
                                 <p className="text-amber-100/80 text-sm">Pick a stage for each one and it moves into the lesson below.</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {unplaced.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} />)}
+                                {unplaced.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} />)}
                             </div>
                         </section>
                     )}
@@ -144,7 +165,7 @@ export default function LessonPackPage() {
                                         <p className="rounded-xl border border-dashed border-white/20 text-white/50 text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {items.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} />)}
+                                            {items.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} />)}
                                         </div>
                                     )}
                                 </li>
@@ -170,7 +191,7 @@ function AddButtons({ stage, onAdd }) {
     return <button type="button" onClick={() => onAdd(stage)} className={cls}>+ Add</button>;
 }
 
-function ActivityCard({ a, prefix, onLaunch, onStage }) {
+function ActivityCard({ a, prefix, onLaunch, onStage, onMakeFrom }) {
     const focus = a.name.startsWith(`${prefix} · `) ? a.name.slice(prefix.length + 3).replace(/^[^·]+· /, '') : a.name;
     const targets = SPEAKING_TYPES.includes(a.type) ? (a.content?.targets ?? []) : null;
     return (
@@ -188,6 +209,12 @@ function ActivityCard({ a, prefix, onLaunch, onStage }) {
                 <button type="button" onClick={onLaunch} className="bg-[#e0521f] hover:bg-[#c9461a] text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">Launch</button>
                 <StageSelect activity={a} onSaved={onStage} />
             </div>
+            {onMakeFrom && (
+                <button type="button" onClick={onMakeFrom}
+                    className="self-start text-sm font-semibold text-[#ffb59a] hover:text-white underline underline-offset-2 cursor-pointer">
+                    Make an activity from this
+                </button>
+            )}
         </div>
     );
 }

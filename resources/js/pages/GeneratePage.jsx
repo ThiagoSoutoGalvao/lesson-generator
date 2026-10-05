@@ -176,6 +176,49 @@ const TEMPLATES = [
     },
 ];
 
+const MATERIAL_TYPES = ['reading_text', 'presentation', 'grammar_explainer'];
+
+// Step-3 source "A presentation or reading": the teacher's saved core material, this lesson's first.
+// The server reads its text (and a reading's target vocabulary) — nothing to download or upload.
+function LessonMaterialPicker({ materials, value, onChange, lessonSession }) {
+    if (materials === null) return <p className="text-white/50 text-sm">Loading your presentations and readings…</p>;
+    if (materials.length === 0) {
+        return <p className="text-white/60 text-sm">No saved presentations or readings yet — make one under Upload → Presentation or Reading Text, save it, and it appears here.</p>;
+    }
+    const inLesson = m => lessonSession && m.trilha === lessonSession.trilha && m.trilha_lesson === lessonSession.lesson;
+    const mine  = materials.filter(inLesson);
+    const rest  = materials.filter(m => !inLesson(m));
+    const label = m => `${m.type === 'reading_text' ? '📖' : '📽️'} ${m.name}`;
+    const picked = materials.find(m => String(m.id) === String(value));
+    return (
+        <div className="flex flex-col gap-1.5">
+            <label htmlFor="material-select" className="sr-only">Presentation or reading</label>
+            <select
+                id="material-select"
+                value={value}
+                onChange={e => onChange(e.target.value)}
+                className={`${inputCls} appearance-none cursor-pointer`}
+            >
+                <option value="" className="bg-gray-900 text-white">Choose a presentation or reading…</option>
+                {mine.length > 0 && (
+                    <optgroup label="This lesson" className="bg-gray-900 text-white">
+                        {mine.map(m => <option key={m.id} value={m.id} className="bg-gray-900 text-white">{label(m)}</option>)}
+                    </optgroup>
+                )}
+                <optgroup label={mine.length > 0 ? 'Everything else' : 'Your presentations and readings'} className="bg-gray-900 text-white">
+                    {rest.map(m => <option key={m.id} value={m.id} className="bg-gray-900 text-white">{label(m)}</option>)}
+                </optgroup>
+            </select>
+            {picked && (
+                <p className="text-white/55 text-xs">
+                    The activity is built from this {picked.type === 'reading_text' ? 'reading — its text and target vocabulary' : 'presentation — its rules and examples'}. No download needed.
+                </p>
+            )}
+            {value && !picked && <p className="text-amber-300 text-xs">That one isn’t in this account’s library — pick another.</p>}
+        </div>
+    );
+}
+
 const inputCls = 'w-full bg-white/8 border border-white/15 rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840] focus:border-transparent backdrop-blur-sm transition-colors';
 
 // Pills + "works from" tag on a format card; when the card is picked, a detail line says
@@ -232,7 +275,11 @@ export default function GeneratePage() {
     const [templateId, setTemplateId] = useState(null);
     const [exam, setExam]             = useState(null); // optional filter: 'cambridge' | 'det' | 'toefl'
     const [prompt, setPrompt]         = useState('');
-    const [sourceMode, setSourceMode] = useState('topic'); // 'topic' | 'document'
+    // 'topic' | 'document' | 'lesson' — 'lesson' = one of the teacher's saved presentations / readings, read
+    // server-side (Aurora Lessons Phase 1, step 5). A lesson pack opens this page with ?from=<id>.
+    const [sourceMode, setSourceMode] = useState(() => (searchParams.get('from') ? 'lesson' : 'topic'));
+    const [materialId, setMaterialId] = useState(() => searchParams.get('from') ?? '');
+    const [materials, setMaterials]   = useState(null); // null = not loaded yet
     const [topic, setTopic]           = useState('');
     const [pageFrom, setPageFrom]     = useState('');
     const [pageTo, setPageTo]         = useState('');
@@ -266,6 +313,19 @@ export default function GeneratePage() {
         const session = getLessonSession();
         setLessonSessionState(session);
         setLevel(TRILHA_LEVEL[session?.trilha] ?? DEFAULT_LEVEL);
+    }, [location.key]);
+
+    useEffect(() => {
+        if (sourceMode !== 'lesson' || materials !== null) return;
+        axios.get('/api/activities')
+            .then(({ data }) => setMaterials(data.filter(a => MATERIAL_TYPES.includes(a.type))))
+            .catch(() => setMaterials([]));
+    }, [sourceMode]);
+
+    // Arriving again with ?from=<id> (e.g. a second "Make an activity" from the same pack) re-points the source.
+    useEffect(() => {
+        const from = searchParams.get('from');
+        if (from) { setSourceMode('lesson'); setMaterialId(from); }
     }, [location.key]);
 
     const template     = TEMPLATES.find(t => t.id === templateId) ?? null;
@@ -304,7 +364,7 @@ export default function GeneratePage() {
 
     const canSubmit = template
         && status !== 'loading'
-        && (sourceMode === 'topic' ? topic.trim() !== '' : documentId !== '');
+        && (sourceMode === 'topic' ? topic.trim() !== '' : sourceMode === 'lesson' ? materialId !== '' : documentId !== '');
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -316,6 +376,8 @@ export default function GeneratePage() {
         const body = { type: template.type ?? template.id, prompt, level };
         if (sourceMode === 'topic') {
             body.topic = topic.trim();
+        } else if (sourceMode === 'lesson') {
+            body.source_activity_id = Number(materialId);
         } else {
             body.document_id = documentId;
             if (pageFrom) body.page_from = Number(pageFrom);
@@ -483,7 +545,7 @@ export default function GeneratePage() {
                             <div className="flex flex-col gap-2">
                                 <label className="text-sm font-medium text-white/80">{exam ? 2 : 3}. Where should the content come from?</label>
                                 <div className="flex gap-2">
-                                    {[['topic', 'A topic'], ['document', 'An uploaded document']].map(([mode, lbl]) => (
+                                    {[['topic', 'A topic'], ['lesson', 'A presentation or reading'], ['document', 'An uploaded document']].map(([mode, lbl]) => (
                                         <button
                                             key={mode}
                                             type="button"
@@ -499,7 +561,14 @@ export default function GeneratePage() {
                                     ))}
                                 </div>
 
-                                {sourceMode === 'topic' ? (
+                                {sourceMode === 'lesson' ? (
+                                    <LessonMaterialPicker
+                                        materials={materials}
+                                        value={materialId}
+                                        onChange={setMaterialId}
+                                        lessonSession={lessonSession}
+                                    />
+                                ) : sourceMode === 'topic' ? (
                                     <input
                                         type="text"
                                         value={topic}

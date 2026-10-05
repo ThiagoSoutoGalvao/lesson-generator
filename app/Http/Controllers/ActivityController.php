@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Activity;
 use App\Models\Document;
 use App\Services\ClaudeService;
+use App\Support\LessonMaterial;
 use Illuminate\Http\Request;
 
 class ActivityController extends Controller
@@ -14,20 +16,21 @@ class ActivityController extends Controller
             'document_id' => ['nullable', 'exists:documents,id'],
             'topic'       => ['nullable', 'string', 'max:200'],
             'source_text' => ['nullable', 'string', 'max:8000'],
-            'prompt'      => ['required', 'string', 'max:1000'],
+            'source_activity_id' => ['nullable', 'integer'],
+            'prompt'     => ['required', 'string', 'max:1000'],
             'type'        => ['required', 'in:quiz,flashcards,unjumble,dialog_gap_fill,word_formation,true_false,mc_reading,odd_one_out,cloze,open_cloze,mc_cloze,read_complete,discussion_questions,sentence_transformation,error_correction,image_vocab_match,word_categorisation,match_pairs,signs_notices,picture_prompts,role_play,story_builder,debate,mini_presentation'],
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
             'level'       => ['nullable', 'in:A1,A2,B1,B2'],
         ]);
 
-        $provided = collect(['document_id', 'topic', 'source_text'])
+        $provided = collect(['document_id', 'topic', 'source_text', 'source_activity_id'])
             ->filter(fn ($key) => filled($request->input($key)))
             ->values();
 
         if ($provided->count() !== 1) {
             return response()->json([
-                'message' => 'Provide exactly one source: a document, a topic, or a block of text.',
+                'message' => 'Provide exactly one source: a document, a topic, a block of text, or a lesson’s presentation or reading.',
             ], 422);
         }
 
@@ -53,6 +56,19 @@ class ActivityController extends Controller
             }
 
             $source = "Here is the course book text:\n\n{$text}";
+        } elseif ($request->filled('source_activity_id')) {
+            // A lesson's own presentation or reading, read server-side (Aurora Lessons Phase 1, step 5) —
+            // no more downloading it as a PDF and uploading it back.
+            $material = Activity::where('id', $request->source_activity_id)
+                ->where('user_id', auth()->id())
+                ->first();
+            if (! $material || ! in_array($material->type, LessonMaterial::TYPES, true)) {
+                return response()->json(['message' => 'That presentation or reading could not be found in your library.'], 422);
+            }
+            $source = LessonMaterial::sourceFor($material);
+            if ($source === null) {
+                return response()->json(['message' => 'That presentation or reading has no text to work from.'], 422);
+            }
         } elseif ($request->filled('topic')) {
             $topic  = trim($request->input('topic'));
             $source = "The activity should be about this topic: {$topic}\n\n"
