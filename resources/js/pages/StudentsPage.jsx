@@ -264,6 +264,27 @@ function StudentProgressPanel({ studentId }) {
                     })}
                 </div>
             )}
+
+            {data.speaking?.length > 0 && (
+                <div className="flex flex-col gap-1.5" aria-label="Speaking in class">
+                    <p className="font-display font-semibold text-[11px] tracking-wide uppercase text-white/40 mt-1">Speaking in class — “Use it!” ticks</p>
+                    {data.speaking.slice(0, 8).map(item => {
+                        const meta = activityMeta(item.type);
+                        const used = item.targets.filter(t => t.used).map(t => t.label);
+                        return (
+                            <div key={item.id} className="flex items-start gap-2.5 bg-white/5 rounded-xl px-3 py-2">
+                                <span className="shrink-0 text-sm">{meta.icon}</span>
+                                <span className="flex-1 min-w-0">
+                                    <span className="block text-white/85 text-xs truncate">{item.name}</span>
+                                    {used.length > 0 && <span className="block text-[#5be0a4] text-[11px] mt-0.5">✓ {used.join(' · ')}</span>}
+                                </span>
+                                <span className="text-white/35 text-[11px] shrink-0">{relativeTime(item.completed_at)}</span>
+                                <span className="text-[11px] font-display font-bold rounded-lg px-2 py-0.5 shrink-0 bg-[#3ecf8e]/15 text-[#5be0a4]">{item.used}/{item.total} used</span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }

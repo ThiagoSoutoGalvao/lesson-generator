@@ -37,6 +37,29 @@ function RecentRow({ item }) {
     );
 }
 
+// A "Use it!" check the teacher ticked live in class (Aurora Lessons Phase 1, step 2): which target
+// language the student used while speaking. Not a link — the activity may be one the student can't open
+// (a one-off the teacher ran in class), and there's nothing to redo from here.
+function SpeakingRow({ item }) {
+    const meta = activityMeta(item.type);
+    const used = item.targets.filter(t => t.used).map(t => t.label);
+    return (
+        <div className={`flex items-start gap-3 ${cardBase} p-3`}>
+            <span className="shrink-0 w-8 h-8 rounded-lg bg-[#3ecf8e]/12 text-[15px] grid place-items-center">{meta.icon}</span>
+            <span className="flex-1 min-w-0">
+                <span className="block font-display font-semibold text-[13.5px] text-white truncate">{item.name}</span>
+                <span className="block text-[11px] text-[#9384bd] mt-0.5">{relativeTime(item.completed_at)}</span>
+                {used.length > 0 && (
+                    <span className="block text-[12px] text-[#5be0a4] mt-1.5">✓ {used.join(' · ')}</span>
+                )}
+            </span>
+            <span className="shrink-0 text-[11px] font-display font-bold rounded-lg px-2 py-1 bg-[#3ecf8e]/15 text-[#5be0a4]">
+                {item.used}/{item.total} used
+            </span>
+        </div>
+    );
+}
+
 // Handed to this student directly by their teacher (Aurora Homework Phase H2)
 // — deliberately its own section, never merged into the trilha list above:
 // this wasn't built by the Aurora team for everyone on the trilha, it's
@@ -167,6 +190,17 @@ export default function ProgressPage({ user }) {
                         <div className="flex flex-col gap-2.5">
                             {data.recent.map(item => <RecentRow key={item.id} item={item} />)}
                         </div>
+                    )}
+
+                    {data.speaking?.length > 0 && (
+                        <>
+                            <p className="font-display font-semibold text-[11px] tracking-[0.13em] uppercase text-[#9384bd] mt-8 mb-3">
+                                Speaking in class
+                            </p>
+                            <div className="flex flex-col gap-2.5">
+                                {data.speaking.map(item => <SpeakingRow key={item.id} item={item} />)}
+                            </div>
+                        </>
                     )}
                 </>
             )}

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
+import UseItChecklist from '@/components/UseItChecklist';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { phrasesFor } from '@/lib/pictureFrames';
@@ -13,7 +14,7 @@ const CHIP_SIZES     = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'
 // Speaking practice with no answer to check: the teacher listens and gives live feedback,
 // so it records completion only. Students default to "I can see…"; the panel under the
 // photo offers other openers for the activity's level (see lib/pictureFrames.js).
-export default function PicturePromptsActivity({ activity, onClose, onComplete, hideSave }) {
+export default function PicturePromptsActivity({ activity, onClose, onComplete, hideSave, savedId = null, onTargetsChange }) {
     const prompts = activity.prompts;
     const total   = prompts.length;
     const phrases = phrasesFor(activity.level);
@@ -25,6 +26,9 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
     const [showSave, setShowSave] = useState(false);
     const { sizeIdx: fontSizeIdx } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    // "Use it!" targets (editable) and the Library id they save against (see DiscussionQuestionsActivity).
+    const [targets, setTargets]   = useState(activity.targets ?? []);
+    const [activityId, setActivityId] = useState(savedId);
 
     const current = prompts[index];
 
@@ -77,7 +81,7 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
     return (
         <div className="fixed inset-0 flex flex-col z-50" style={{ background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' }}>
 
-            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={{ ...activity, targets }} onSaved={a => setActivityId(a.id)} onDone={() => setShowSave(false)} />}
 
             <div className="relative z-10 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 sm:px-8 py-4">
                 <span className="text-white/70 text-sm font-medium capitalize">{activity.topic} · Picture {index + 1} / {total}</span>
@@ -97,9 +101,12 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
                 </div>
             </div>
 
+            {/* Picture + the "Use it!" checklist: side by side from md up, each column scrolling on its own;
+                stacked on a phone, where the OUTER box scrolls (the split-screen scroll trap, Claude.md §8). */}
+            <div className="relative z-10 flex-1 min-h-0 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
             {/* Top-aligned + scrollable, not centred — photo, question, openers and the phrase
                 panel together can be taller than a phone; nothing may end up out of reach. */}
-            <div className="relative z-10 flex-1 flex flex-col items-center px-4 sm:px-8 gap-5 overflow-y-auto py-6">
+            <div className="shrink-0 md:shrink md:flex-1 md:min-h-0 flex flex-col items-center px-4 sm:px-8 gap-5 md:overflow-y-auto py-6">
                 <div className="w-full max-w-3xl flex flex-col gap-5">
                     {photo ? (
                         <img src={photo} alt={current.keyword} className="w-full max-h-[45vh] object-cover rounded-2xl shadow-2xl" />
@@ -145,6 +152,14 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
                         </button>
                     </div>
                 </div>
+            </div>
+            <div className="shrink-0 md:w-80 md:min-h-0 md:overflow-y-auto px-4 md:pl-0 md:pr-8 pb-6 md:py-6 flex flex-col">
+                <UseItChecklist
+                    targets={targets}
+                    savedId={activityId}
+                    onTargetsChange={next => { setTargets(next); onTargetsChange?.(next); }}
+                />
+            </div>
             </div>
         </div>
     );

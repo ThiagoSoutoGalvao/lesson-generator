@@ -464,6 +464,7 @@ export default function LibraryPage() {
     const [trilhaFilter, setTrilhaFilter] = useState('all'); // 'all' | 'Lights' | 'Glow' | 'Radiant' | '__none__'
     const [lessonFilter, setLessonFilter] = useState('all'); // lesson number as string, or 'all'
     const [launched, setLaunched]     = useState(null);
+    const [launchedId, setLaunchedId] = useState(null);
     const [renamingId, setRenamingId] = useState(null);
     const [stageFilter, setStageFilter] = useState('all'); // a stage key, '__none__' (not tagged yet) or 'all'
     const [loading, setLoading]       = useState(true);
@@ -523,12 +524,17 @@ export default function LibraryPage() {
         if (launched.type === 'cloze')                   return <ClozeActivity {...props} />;
         if (launched.type === 'open_cloze')              return <OpenClozeActivity {...props} />;
         if (launched.type === 'mc_cloze')                return <McClozeActivity {...props} />;
-        if (launched.type === 'discussion_questions')    return <DiscussionQuestionsActivity {...props} />;
+        // Speaking activities get the Library id, so "Use it!" ticks and target edits save against it.
+        const speaking = {
+            savedId: launchedId,
+            onTargetsChange: targets => setActivities(prev => prev.map(x => (x.id === launchedId ? { ...x, content: { ...x.content, targets } } : x))),
+        };
+        if (launched.type === 'discussion_questions')    return <DiscussionQuestionsActivity {...props} {...speaking} />;
         if (launched.type === 'sentence_transformation') return <SentenceTransformationActivity {...props} />;
         if (launched.type === 'error_correction')        return <ErrorCorrectionActivity {...props} />;
         if (launched.type === 'match_pairs')             return <MatchPairsActivity {...props} />;
         if (launched.type === 'signs_notices')           return <SignsNoticesActivity {...props} />;
-        if (launched.type === 'picture_prompts')         return <PicturePromptsActivity {...props} />;
+        if (launched.type === 'picture_prompts')         return <PicturePromptsActivity {...props} {...speaking} />;
         if (launched.type === 'grammar_explainer')       return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'presentation')            return <GrammarExplainerActivity {...props} />;
         if (launched.type === 'reading_text')            return <ReadingTextActivity {...props} onDerive={setLaunched} />;
@@ -731,7 +737,7 @@ export default function LibraryPage() {
 
                         <div className="flex gap-2 pt-1">
                             <button
-                                onClick={() => setLaunched(a.content)}
+                                onClick={() => { setLaunched(a.content); setLaunchedId(a.id); }}
                                 className="flex-1 bg-[#e0521f] hover:bg-[#c9461a] text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer border border-[#e0521f]"
                             >
                                 Launch

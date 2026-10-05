@@ -41,7 +41,7 @@ class StudentContentController extends Controller
 
         // Latest attempt per activity for this student (plus a count for the
         // progress page later). One query for the whole trilha.
-        $attempts = ActivityAttempt::query()
+        $attempts = ActivityAttempt::ownPractice()
             ->where('student_id', $student->id)
             ->whereIn('activity_id', $activities->pluck('id'))
             ->orderBy('completed_at')

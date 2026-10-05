@@ -25,7 +25,7 @@ class StudentProgressService
             ->whereNotNull('trilha_lesson')
             ->get(['id', 'trilha_lesson']);
 
-        $attempts = ActivityAttempt::where('student_id', $student->id)
+        $attempts = ActivityAttempt::ownPractice()->where('student_id', $student->id)
             ->whereIn('activity_id', $activities->pluck('id'))
             ->get(['activity_id']);
 
@@ -42,7 +42,7 @@ class StudentProgressService
             ->sortBy('lesson')
             ->values();
 
-        $recent = ActivityAttempt::where('student_id', $student->id)
+        $recent = ActivityAttempt::ownPractice()->where('student_id', $student->id)
             ->whereIn('activity_id', $activities->pluck('id'))
             ->with('activity:id,name,type,trilha_lesson')
             ->orderByDesc('completed_at')
@@ -59,6 +59,26 @@ class StudentProgressService
                 'completed_at'  => $a->completed_at,
             ]);
 
+        // "Use it!" checks the teacher ticked live in class — any activity, trilha or not. Shown on
+        // their own, never counted as "done": doing it in class with the teacher is not homework.
+        $speaking = ActivityAttempt::speakingChecks()->where('student_id', $student->id)
+            ->with('activity:id,name,type')
+            ->orderByDesc('completed_at')
+            ->limit(self::RECENT_LIMIT)
+            ->get()
+            ->filter(fn (ActivityAttempt $a) => $a->activity !== null)
+            ->map(fn (ActivityAttempt $a) => [
+                'id'           => $a->id,
+                'activity_id'  => $a->activity_id,
+                'name'         => $a->activity->name,
+                'type'         => $a->activity->type,
+                'used'         => $a->score,
+                'total'        => $a->max_score,
+                'targets'      => $a->answers['targets'] ?? [],
+                'completed_at' => $a->completed_at,
+            ])
+            ->values();
+
         return [
             'trilha'           => $student->trilha,
             'activities_total' => $activities->count(),
@@ -66,6 +86,7 @@ class StudentProgressService
             'total_attempts'   => $attempts->count(),
             'lessons'          => $lessons,
             'recent'           => $recent,
+            'speaking'         => $speaking,
         ];
     }
 }

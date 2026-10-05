@@ -615,7 +615,27 @@ EOT;
             throw new RuntimeException('Claude returned invalid JSON: ' . $text);
         }
 
+        $data['targets'] = $this->cleanTargets($data['targets'] ?? []);
+
         return $data;
+    }
+
+    /**
+     * The "Use it!" checklist Claude writes for a speaking activity (Aurora Lessons Phase 1, step 2):
+     * trimmed, de-duplicated, at most 6 items of at most 80 characters. Never throws — a missing
+     * list just means the teacher adds targets by hand.
+     */
+    private function cleanTargets($targets): array
+    {
+        $clean = [];
+        foreach ((array) $targets as $t) {
+            $t = trim(preg_replace('/\s+/u', ' ', (string) $t));
+            if ($t !== '' && mb_strlen($t) <= 80 && ! in_array($t, $clean, true)) {
+                $clean[] = $t;
+            }
+        }
+
+        return array_slice($clean, 0, 6);
     }
 
     private function buildDiscussionQuestionsPrompt(string $source, string $prompt, LanguageLevel $lv): string
@@ -630,6 +650,7 @@ Return a JSON object with EXACTLY this structure:
   "type": "discussion_questions",
   "topic": "<short topic description>",
   "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic, e.g. 'two people talking cafe table' or 'students discussing classroom group'>",
+  "targets": ["<target language the student should use while answering>", "<another>"],
   "questions": [
     {
       "question": "<an open-ended discussion question>",
@@ -644,7 +665,9 @@ Rules:
 - Each question should invite students to share opinions, experiences, or ideas related to the text
 - Each question must have exactly 2 follow-up prompts — short phrases to keep the conversation going (e.g. "Why do you think so?", "Can you give an example?", "Have you ever experienced this?")
 - Questions should be {$lv->cefr} level and feel natural in conversation, not academic
-- Vary the type: some personal ("Have you ever…?"), some opinion ("Do you think…?"), some hypothetical ("What would you do if…?"){$lv->rules}
+- Vary the type: some personal ("Have you ever…?"), some opinion ("Do you think…?"), some hypothetical ("What would you do if…?")
+- "targets" is the "Use it!" checklist the teacher ticks while the student speaks: 4-6 short items of target language from the task (a structure, a phrase frame or a key word group), each under 40 characters and written the way a student would say it, e.g. "Have you ever…?", "I've never…", "If I had…, I would…", "used to + verb"
+- Write the questions so that answering them naturally calls for the target language{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
@@ -1395,6 +1418,7 @@ EOT;
         $data['type']    = 'picture_prompts';
         $data['level']   = $lv->code; // the screen shows the opener bank for this level
         $data['prompts'] = array_slice($prompts, 0, 6);
+        $data['targets'] = $this->cleanTargets($data['targets'] ?? []);
 
         return $data;
     }
@@ -1410,6 +1434,7 @@ Return a JSON object with EXACTLY this structure:
 {
   "type": "picture_prompts",
   "topic": "<short topic, e.g. 'A day at the beach'>",
+  "targets": ["<target language the student should use while describing>", "<another>"],
   "prompts": [
     {
       "keyword": "<3-6 word Unsplash search phrase for a photo that shows people doing something in a clear setting, e.g. 'family picnic park sunny day' or 'friends cooking dinner kitchen'>",
@@ -1426,7 +1451,9 @@ Rules:
 - Each starter is a natural way to begin a sentence about the photo and ends with "…" (for example "It looks like they are …" or "In the background, there is …")
 - NEVER use "I can see" or "I see" in a starter — students over-use it, so give them different ways in
 - Vary the starters within a prompt: one about what is happening, one about the setting or objects, one giving a guess or an opinion
-- Starters must be {$lv->cefr} level language{$lv->rules}
+- Starters must be {$lv->cefr} level language
+- "targets" is the "Use it!" checklist the teacher ticks while the student speaks: 4-6 short items of target language from the task (a structure, a phrase frame or a key word group), each under 40 characters and written the way a student would say it, e.g. "Have you ever…?", "I've never…", "If I had…, I would…", "used to + verb"
+{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }

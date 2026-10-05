@@ -142,6 +142,67 @@ class StudentController extends Controller
     }
 
     /**
+     * Record a "Use it!" speaking check the teacher ticked live in class (Aurora Lessons Phase 1, step 2):
+     * which target-language items the student used during one speaking activity. Stored as an attempt
+     * with `recorded_by` set — score = items used, max_score = items on the list — so it reaches the
+     * progress screens without ever counting as the student's own (homework) practice.
+     *
+     * POST  /api/students/{student}/speaking-checks             { activity_id, targets: [{label, used}] }
+     * PATCH /api/students/{student}/speaking-checks/{attempt}    { targets }   (more ticks later in the same lesson)
+     */
+    public function recordSpeaking(User $student, Request $request)
+    {
+        $this->guardTeacher();
+        $this->guardOwnStudent($student);
+
+        $data = $request->validate(['activity_id' => ['required', 'integer']] + $this->speakingTargetRules());
+
+        $activity = Activity::where('id', $data['activity_id'])->where('user_id', auth()->id())->first();
+        abort_unless($activity && in_array($activity->type, Activity::SPEAKING_CHECK_TYPES, true), 404);
+
+        $attempt = ActivityAttempt::create($this->speakingCheckFields($data['targets']) + [
+            'student_id'   => $student->id,
+            'activity_id'  => $activity->id,
+            'recorded_by'  => auth()->id(),
+            'completed_at' => now(),
+        ]);
+
+        return response()->json(['id' => $attempt->id, 'used' => $attempt->score, 'total' => $attempt->max_score], 201);
+    }
+
+    public function updateSpeaking(User $student, ActivityAttempt $attempt, Request $request)
+    {
+        $this->guardTeacher();
+        $this->guardOwnStudent($student);
+        abort_unless($attempt->student_id === $student->id && $attempt->recorded_by === auth()->id(), 404);
+
+        $data = $request->validate($this->speakingTargetRules());
+        $attempt->update($this->speakingCheckFields($data['targets']) + ['completed_at' => now()]);
+
+        return response()->json(['id' => $attempt->id, 'used' => $attempt->score, 'total' => $attempt->max_score]);
+    }
+
+    private function speakingTargetRules(): array
+    {
+        return [
+            'targets'         => ['required', 'array', 'min:1', 'max:12'],
+            'targets.*.label' => ['required', 'string', 'max:120'],
+            'targets.*.used'  => ['required', 'boolean'],
+        ];
+    }
+
+    private function speakingCheckFields(array $targets): array
+    {
+        $targets = array_map(fn ($t) => ['label' => trim($t['label']), 'used' => (bool) $t['used']], $targets);
+
+        return [
+            'score'     => count(array_filter($targets, fn ($t) => $t['used'])),
+            'max_score' => count($targets),
+            'answers'   => ['kind' => 'speaking_check', 'targets' => $targets],
+        ];
+    }
+
+    /**
      * This student's assigned activities (Phase H2). Same builder the
      * student's own GET /api/student/homework uses.
      *

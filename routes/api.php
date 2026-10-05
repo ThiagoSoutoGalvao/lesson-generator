@@ -39,6 +39,8 @@ Route::middleware('auth:web')->group(function () {
         Route::patch('/students/{student}', [StudentController::class, 'update']);
         Route::delete('/students/{student}', [StudentController::class, 'destroy']);
         Route::get('/students/{student}/progress', [StudentController::class, 'progress']);
+        Route::post('/students/{student}/speaking-checks', [StudentController::class, 'recordSpeaking']);
+        Route::patch('/students/{student}/speaking-checks/{attempt}', [StudentController::class, 'updateSpeaking']);
         Route::get('/students/{student}/assignments', [StudentController::class, 'assignments']);
         Route::post('/students/{student}/assignments', [StudentController::class, 'assign']);
         Route::delete('/students/{student}/assignments/{assignment}', [StudentController::class, 'unassign']);

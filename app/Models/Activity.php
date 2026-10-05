@@ -16,5 +16,11 @@ class Activity extends Model
      * (`StudentContentController::assertVisible()`, 2026-09-24) — the other three stay blocked
      * on every path.
      */
+    /**
+     * Speaking tasks that carry a "Use it!" checklist (`content.targets`, a list of target-language
+     * strings) the teacher ticks live (Aurora Lessons Phase 1, step 2). New production templates join here.
+     */
+    public const SPEAKING_CHECK_TYPES = ['discussion_questions', 'picture_prompts'];
+
     public const TEACHER_ONLY_TYPES = ['presentation', 'reading_text', 'essay_feedback', 'grammar_explainer'];
 }

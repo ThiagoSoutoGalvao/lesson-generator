@@ -1443,3 +1443,35 @@ duplicated, and from ~L04 on the activities seem one lesson behind `TRILHA_TOC`.
 
 QA: `scratchpad/qa_2026-09/qa_stage.mjs` (23 checks: save panel, API validation/clear/rename, Library select +
 filter + reload, phone width, zero console errors). `qa_rename.mjs` and `qa_save_naming.mjs` still pass.
+
+## 32. Aurora Lessons Phase 1, step 2: the "Use it!" checklist (2026-10-05)
+
+Production now produces data. Decided with Thiago: the checklist is **visible to the student** (screen-shared),
+**ticks are saved to the student's progress**, and the teacher picks the student with **"Who's this with?"**.
+
+- **Targets** live in `content.targets` (strings) on `Activity::SPEAKING_CHECK_TYPES` (`discussion_questions`,
+  `picture_prompts` for now; the four new production templates join it). `ClaudeService` asks for 4–6 targets in
+  both prompts and `cleanTargets()` trims, de-duplicates and caps them. A missing list never fails a generation.
+  `PATCH /api/activities/{id}` accepts `targets` (speaking types only; the rest of the content is untouched).
+- **`UseItChecklist.jsx`**, used by both components as a right-hand column from `md` up and stacked under the
+  activity on a phone. The outer box scrolls on mobile, so it avoids the split-screen scroll trap; this was
+  checked with real wheel scrolling. Teacher view: tick buttons with a count, "Who's this with?" (own active
+  students, remembered in `sessionStorage` `aurora.liveStudent` for the tab; a student the login doesn't have is
+  forgotten), "Save to X's progress" → "Update X's progress" (same record), Edit the list, Hide. Student app:
+  read-only "Try to use".
+- A freshly generated activity has no id until it's saved. `SavePanel` gained `onSaved`, so the ticks can be saved
+  right after saving from Generate. The Library passes `savedId` + `onTargetsChange`.
+- **Storage:** `activity_attempts.recorded_by` (nullable FK, migration `2026_10_05_000001`).
+  `POST /api/students/{student}/speaking-checks` (score = used, max_score = items,
+  `answers = {kind: 'speaking_check', targets}`) and `PATCH …/speaking-checks/{attempt}`. Teacher + own student
+  + own speaking activity only.
+- **Kept apart from homework:** `ActivityAttempt::ownPractice()` now filters every own-practice query (progress
+  done/recent/total, lesson badges, homework done). `StudentProgressService` returns a separate `speaking` list
+  (any activity, trilha or not), shown as **"Speaking in class"** on the teacher's Progress & Homework panel and
+  on the student's Progress page.
+
+QA: `scratchpad/qa_2026-09/qa_useit.mjs` (36 checks) + `qa_speaking_users.php` (a teacher, their own student, and
+another teacher's student). It found one real bug: the remembered student showed as "Nobody" until the student
+list loaded. Fixed. The existing suites pass (beginner, save naming, stage, presentation homework, display,
+level), and so do the backend checks. `regress.php` now differs for DiscussionQuestions **by design** (targets
+were added to that prompt); every other builder is still byte-identical.

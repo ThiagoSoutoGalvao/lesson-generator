@@ -2,13 +2,14 @@ import { useEffect, useState } from 'react';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
+import UseItChecklist from '@/components/UseItChecklist';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 
 const FONT_SIZES = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
 const FOLLOW_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
-export default function DiscussionQuestionsActivity({ activity, onClose, onComplete, hideSave }) {
+export default function DiscussionQuestionsActivity({ activity, onClose, onComplete, hideSave, savedId = null, onTargetsChange }) {
     const [index, setIndex]           = useState(0);
     const [bgUrl, setBgUrl]           = useState(null);
     const [showSave, setShowSave]     = useState(false);
@@ -16,6 +17,10 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
     const [displayQuestion, setDisplayQuestion] = useState(activity.questions[0]?.question ?? '');
     const [followUps, setFollowUps]         = useState(activity.questions[0]?.follow_ups ?? []);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    // "Use it!" targets (editable) and the Library id they save against — set by the Library launch, or by
+    // saving this freshly generated activity from the Save panel.
+    const [targets, setTargets]   = useState(activity.targets ?? []);
+    const [activityId, setActivityId] = useState(savedId);
 
     const questions = activity.questions;
     const current   = questions[index];
@@ -65,7 +70,7 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/40" />
 
-            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={{ ...activity, targets }} onSaved={a => setActivityId(a.id)} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
@@ -87,10 +92,12 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
                 </div>
             </div>
 
-            {/* Question */}
+            {/* Question + the "Use it!" checklist. Side by side from md up (each column scrolls on its own);
+                stacked on a phone, where the OUTER box scrolls — the split-screen scroll trap (Claude.md §8). */}
+            <div className="relative z-10 flex-1 min-h-0 flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
             {/* Top-aligned + scrollable, not centered — several follow-up
                 chips can't push Prev/Next off-screen on a phone. */}
-            <div className="relative z-10 flex-1 flex flex-col items-center px-8 gap-8 overflow-y-auto py-8">
+            <div className="shrink-0 md:shrink md:flex-1 md:min-h-0 flex flex-col items-center px-8 gap-8 md:overflow-y-auto py-8">
                 <div className="max-w-3xl w-full flex flex-col items-center gap-6 text-center">
                     <p className="text-white/40 text-xs uppercase tracking-widest">Discuss</p>
                     <h2 className={`${FONT_SIZES[fontSizeIdx]} font-bold leading-snug ${textColor}`}>{displayQuestion}</h2>
@@ -113,6 +120,14 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
                     <button onClick={next} disabled={index === total - 1}
                         className="bg-blue-600 hover:bg-blue-700 disabled:opacity-30 disabled:cursor-default text-white font-semibold px-6 py-3 rounded-xl text-base transition-colors cursor-pointer">Next →</button>
                 </div>
+            </div>
+            <div className="shrink-0 md:w-80 md:min-h-0 md:overflow-y-auto px-6 md:pl-0 md:pr-8 pb-8 md:py-8 flex flex-col">
+                <UseItChecklist
+                    targets={targets}
+                    savedId={activityId}
+                    onTargetsChange={next => { setTargets(next); onTargetsChange?.(next); }}
+                />
+            </div>
             </div>
         </div>
     );

@@ -100,22 +100,25 @@ class SavedActivityController extends Controller
     }
 
     /**
-     * Rename one of the teacher's own activities, and/or set its lesson-pack stage (null clears it).
-     * Nothing else changes — trilha, lesson, content and ownership are untouched. Whitespace in a new
-     * name is tidied the same way the Save panel does it.
+     * Rename one of the teacher's own activities, set its lesson-pack stage (null clears it), and/or
+     * replace a speaking activity's "Use it!" targets (`content.targets`). Nothing else changes — trilha,
+     * lesson, the rest of the content and ownership are untouched. Whitespace in a new name is tidied
+     * the same way the Save panel does it.
      *
-     * PATCH /api/activities/{activity}   { name?, stage? }
+     * PATCH /api/activities/{activity}   { name?, stage?, targets? }
      */
     public function update(Request $request, Activity $activity)
     {
         abort_if($activity->user_id !== auth()->id(), 403);
 
         // `stage: null` is a real request (clear the stage), so "at least one field" is checked by key, not by value.
-        abort_unless($request->has('name') || $request->exists('stage'), 422, 'Nothing to update.');
+        abort_unless($request->has('name') || $request->exists('stage') || $request->has('targets'), 422, 'Nothing to update.');
 
         $request->validate([
-            'name'  => ['sometimes', 'required', 'string', 'max:255'],
-            'stage' => ['nullable', 'string', 'in:' . self::STAGES],
+            'name'      => ['sometimes', 'required', 'string', 'max:255'],
+            'stage'     => ['nullable', 'string', 'in:' . self::STAGES],
+            'targets'   => ['sometimes', 'array', 'max:12'],
+            'targets.*' => ['string', 'max:80'],
         ]);
 
         $changes = [];
@@ -128,6 +131,15 @@ class SavedActivityController extends Controller
 
         if ($request->exists('stage')) {
             $changes['stage'] = $request->input('stage');
+        }
+
+        if ($request->has('targets')) {
+            abort_unless(in_array($activity->type, Activity::SPEAKING_CHECK_TYPES, true), 422, 'This activity has no "Use it!" checklist.');
+            $targets = array_values(array_unique(array_filter(array_map(
+                fn ($t) => trim(preg_replace('/\s+/u', ' ', (string) $t)),
+                $request->input('targets', []),
+            ), fn ($t) => $t !== '')));
+            $changes['content'] = array_merge($activity->content ?? [], ['targets' => $targets]);
         }
 
         $activity->update($changes);

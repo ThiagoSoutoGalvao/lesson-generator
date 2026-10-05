@@ -26,7 +26,7 @@ class StudentHomeworkService
             ->orderByDesc('created_at')
             ->get();
 
-        $doneActivityIds = ActivityAttempt::where('student_id', $student->id)
+        $doneActivityIds = ActivityAttempt::ownPractice()->where('student_id', $student->id)
             ->whereIn('activity_id', $assignments->pluck('activity_id'))
             ->distinct()
             ->pluck('activity_id');

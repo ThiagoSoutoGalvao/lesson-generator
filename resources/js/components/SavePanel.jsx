@@ -21,7 +21,7 @@ function lsSet(key, value) {
     try { localStorage.setItem(key, value); } catch { /* ignore */ }
 }
 
-export default function SavePanel({ activity, onDone }) {
+export default function SavePanel({ activity, onDone, onSaved }) {
     const [mode, setMode] = useState('trilha'); // 'trilha' | 'freeform'
     const [status, setStatus] = useState('idle');
     const [errorMsg, setErrorMsg] = useState('');
@@ -88,7 +88,8 @@ export default function SavePanel({ activity, onDone }) {
             };
 
         try {
-            await axios.post('/api/activities', payload);
+            const { data } = await axios.post('/api/activities', payload);
+            onSaved?.(data);
             if (mode === 'trilha') {
                 lsSet(LS_TRILHA, trilha);
                 lsSet(LS_BUILT_BY, builtBy);

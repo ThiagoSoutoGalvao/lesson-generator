@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -14,13 +15,25 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class ActivityAttempt extends Model
 {
     protected $fillable = [
-        'student_id', 'activity_id', 'score', 'max_score', 'answers', 'completed_at',
+        'student_id', 'activity_id', 'score', 'max_score', 'answers', 'recorded_by', 'completed_at',
     ];
 
     protected $casts = [
         'answers'      => 'array',
         'completed_at' => 'datetime',
     ];
+
+    /** The student's own practice — excludes "Use it!" checks a teacher recorded live (`recorded_by` set). */
+    public function scopeOwnPractice(Builder $query): Builder
+    {
+        return $query->whereNull('recorded_by');
+    }
+
+    /** "Use it!" speaking checks a teacher ticked live in class. */
+    public function scopeSpeakingChecks(Builder $query): Builder
+    {
+        return $query->whereNotNull('recorded_by');
+    }
 
     public function student(): BelongsTo
     {
