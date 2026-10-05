@@ -5,8 +5,10 @@ import ActivityRenderer from '@/components/ActivityRenderer';
 import LessonPlayer, { lessonSequence } from '@/components/LessonPlayer';
 import StageSelect from '@/components/StageSelect';
 import Spinner from '@/components/Spinner';
-import { TRILHAS, TRILHA_LEVEL, TRILHA_TOC, TYPE_LABELS } from '@/lib/trilhas';
+import { TRILHAS, TRILHA_LEVEL, TRILHA_TOC, TYPE_LABELS, composeActivityName } from '@/lib/trilhas';
 import { STAGES } from '@/lib/stages';
+import { pickFill, FILLABLE_STAGES } from '@/lib/fillStage';
+import { tidyFocus } from '@/lib/naming';
 import { setLessonSession } from '@/lib/lessonSession';
 
 // One course lesson as a lesson pack (Aurora Lessons Phase 1, step 4): the lesson's contents, then its saved
@@ -39,6 +41,7 @@ export default function LessonPackPage() {
     const [error, setError]           = useState(null);
     const [launched, setLaunched]     = useState(null); // { content, id }
     const [teaching, setTeaching]     = useState(false); // lesson mode (step 6)
+    const [filling, setFilling]       = useState({});    // stage → 'busy' | error message (step 7)
 
     useEffect(() => {
         if (!config) return;
@@ -107,6 +110,39 @@ export default function LessonPackPage() {
         navigate(`/generate${q.toString() ? `?${q}` : ''}`);
     }
 
+    // "Suggest one with Claude" (step 7): pick a template for this stage + level, generate it from the lesson's
+    // material (or its contents), and save it into the stage HIDDEN from students until the teacher approves it.
+    async function fill(stage) {
+        const pick = pickFill(stage, TRILHA_LEVEL[trilha], activities.map(a => a.type));
+        if (!pick) return;
+        setFilling(f => ({ ...f, [stage]: 'busy' }));
+        try {
+            const body = { type: pick.type, prompt: pick.prompt, level: TRILHA_LEVEL[trilha] };
+            if (core) body.source_activity_id = core.id;
+            else body.topic = (toc.slice(0, 2).join('; ') || `${config.label} lesson ${lesson}`).slice(0, 200);
+            const { data: content } = await axios.post('/api/generate', body);
+
+            const words = tidyFocus(content.topic || content.title || toc[0] || TYPE_LABELS[pick.type] || '').split(' ');
+            const focus = words.slice(0, 6).join(' ') || 'Suggested';
+            let builtBy = null;
+            try { builtBy = localStorage.getItem('aurora.save.builtBy') || null; } catch { /* ignore */ }
+            const { data: saved } = await axios.post('/api/activities', {
+                name: composeActivityName({ trilha, lesson, type: pick.type, focus }),
+                type: pick.type, content, trilha, trilha_lesson: lesson, stage, built_by: builtBy,
+                student_visible: false,
+            });
+            setActivities(prev => [...prev, saved]);
+            setFilling(f => ({ ...f, [stage]: undefined }));
+        } catch (err) {
+            setFilling(f => ({ ...f, [stage]: err.response?.data?.message ?? 'Claude could not make one this time. Please try again.' }));
+        }
+    }
+
+    const approve = async a => {
+        const { data } = await axios.patch(`/api/activities/${a.id}`, { student_visible: true });
+        setActivities(prev => prev.map(x => (x.id === a.id ? { ...x, student_visible: data.student_visible } : x)));
+    };
+
     function makeFrom(material) {
         setLessonSession(trilha, lesson, 'practice');
         navigate(`/generate?from=${material.id}`);
@@ -170,7 +206,7 @@ export default function LessonPackPage() {
                                 <p className="text-amber-100/80 text-sm">Pick a stage for each one and it moves into the lesson below.</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {unplaced.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} />)}
+                                {unplaced.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} />)}
                             </div>
                         </section>
                     )}
@@ -189,10 +225,12 @@ export default function LessonPackPage() {
                                         <AddButtons stage={st.key} onAdd={add} />
                                     </div>
                                     {items.length === 0 ? (
-                                        <p className="rounded-xl border border-dashed border-white/20 text-white/50 text-sm px-4 py-4">Nothing here yet.</p>
+                                        FILLABLE_STAGES.includes(st.key)
+                                            ? <SuggestBox stage={st.key} state={filling[st.key]} pick={pickFill(st.key, TRILHA_LEVEL[trilha], activities.map(a => a.type))} source={core?.name} onFill={() => fill(st.key)} />
+                                            : <p className="rounded-xl border border-dashed border-white/20 text-white/50 text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {items.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} />)}
+                                            {items.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} />)}
                                         </div>
                                     )}
                                 </li>
@@ -201,6 +239,24 @@ export default function LessonPackPage() {
                     </ol>
                 </>
             )}
+        </div>
+    );
+}
+
+function SuggestBox({ state, pick, source, onFill }) {
+    const busy = state === 'busy';
+    const error = state && state !== 'busy' ? state : null;
+    const label = pick ? (TYPE_LABELS[pick.type] ?? pick.type) : '';
+    return (
+        <div className="rounded-xl border border-dashed border-white/25 px-4 py-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3" data-testid="suggest-box">
+            <p className="text-white/60 text-sm flex-1">
+                Nothing here yet. Suggested: <span className="text-white font-semibold">{label}</span>, made from {source ? <span className="text-white/85">{source}</span> : 'the lesson contents'} — saved here, hidden from students until you approve it.
+            </p>
+            <button type="button" onClick={onFill} disabled={busy}
+                className="shrink-0 bg-white/10 hover:bg-white/20 disabled:opacity-60 disabled:cursor-wait border border-white/25 text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">
+                {busy ? `Making it… (${label})` : '✨ Suggest one with Claude'}
+            </button>
+            {error && <p className="text-red-300 text-sm sm:basis-full" role="alert">{error}</p>}
         </div>
     );
 }
@@ -218,7 +274,7 @@ function AddButtons({ stage, onAdd }) {
     return <button type="button" onClick={() => onAdd(stage)} className={cls}>+ Add</button>;
 }
 
-function ActivityCard({ a, prefix, onLaunch, onStage, onMakeFrom }) {
+function ActivityCard({ a, prefix, onLaunch, onStage, onMakeFrom, onApprove }) {
     const focus = a.name.startsWith(`${prefix} · `) ? a.name.slice(prefix.length + 3).replace(/^[^·]+· /, '') : a.name;
     const targets = SPEAKING_TYPES.includes(a.type) ? (a.content?.targets ?? []) : null;
     return (
@@ -229,6 +285,12 @@ function ActivityCard({ a, prefix, onLaunch, onStage, onMakeFrom }) {
                 {a.built_by && <span className="text-[11px] text-white/45">by {a.built_by}</span>}
             </div>
             <p className="text-white font-semibold leading-snug break-words">{focus}</p>
+            {a.student_visible === false && (
+                <div className="flex flex-wrap items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-400/30 px-2.5 py-1.5">
+                    <span className="text-amber-200 text-xs flex-1">Suggested — not shown to students until you approve it.</span>
+                    <button type="button" onClick={onApprove} className="text-xs font-semibold text-white bg-amber-600/80 hover:bg-amber-600 rounded-md px-2.5 py-1 cursor-pointer">Approve</button>
+                </div>
+            )}
             {targets && (
                 <p className="text-xs text-white/55">{targets.length > 0 ? `Use it!: ${targets.length} targets` : 'Use it!: no targets yet'}</p>
             )}

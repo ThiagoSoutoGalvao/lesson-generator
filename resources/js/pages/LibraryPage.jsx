@@ -655,6 +655,10 @@ export default function LibraryPage() {
                             </div>
                         )}
 
+                        {a.trilha && a.student_visible === false && (
+                            <p className="text-xs text-amber-200">Hidden from students — approve it in its lesson pack.</p>
+                        )}
+
                         {a.trilha && (
                             <StageSelect
                                 activity={a}

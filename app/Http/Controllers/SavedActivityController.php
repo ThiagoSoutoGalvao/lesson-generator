@@ -25,7 +25,7 @@ class SavedActivityController extends Controller
     }
 
     /** Fields a saved activity carries (everything except ownership). */
-    private const FIELDS = ['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'stage', 'built_by'];
+    private const FIELDS = ['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'stage', 'built_by', 'student_visible'];
 
     /** Lesson-pack stages — the same keys as `resources/js/lib/stages.js`. */
     private const STAGES = 'warmer,presentation,practice,production';
@@ -45,6 +45,9 @@ class SavedActivityController extends Controller
             'trilha_lesson' => ['nullable', 'integer', 'min:1', 'max:20'],
             'stage'         => ['nullable', 'string', 'in:' . self::STAGES],
             'built_by'      => ['nullable', 'string', 'max:100'],
+            // false = saved hidden from students — a lesson pack's "Suggest one with Claude" saves unreviewed
+            // activities this way until the teacher approves them (Aurora Lessons Phase 1, step 7).
+            'student_visible' => ['sometimes', 'boolean'],
         ];
 
         return collect($rules)->mapWithKeys(fn ($rule, $key) => [$prefix . $key => $rule])->all();
@@ -105,18 +108,19 @@ class SavedActivityController extends Controller
      * lesson, the rest of the content and ownership are untouched. Whitespace in a new name is tidied
      * the same way the Save panel does it.
      *
-     * PATCH /api/activities/{activity}   { name?, stage?, targets? }
+     * PATCH /api/activities/{activity}   { name?, stage?, targets?, student_visible? }
      */
     public function update(Request $request, Activity $activity)
     {
         abort_if($activity->user_id !== auth()->id(), 403);
 
         // `stage: null` is a real request (clear the stage), so "at least one field" is checked by key, not by value.
-        abort_unless($request->has('name') || $request->exists('stage') || $request->has('targets'), 422, 'Nothing to update.');
+        abort_unless($request->has('name') || $request->exists('stage') || $request->has('targets') || $request->has('student_visible'), 422, 'Nothing to update.');
 
         $request->validate([
             'name'      => ['sometimes', 'required', 'string', 'max:255'],
             'stage'     => ['nullable', 'string', 'in:' . self::STAGES],
+            'student_visible' => ['sometimes', 'boolean'],
             'targets'   => ['sometimes', 'array', 'max:12'],
             'targets.*' => ['string', 'max:80'],
         ]);
@@ -127,6 +131,10 @@ class SavedActivityController extends Controller
             $name = trim(preg_replace('/[\s\p{Z}]+/u', ' ', preg_replace('/[\x{200B}-\x{200D}\x{2060}\x{FEFF}]/u', '', $request->input('name'))));
             abort_if($name === '', 422, 'The name cannot be empty.');
             $changes['name'] = $name;
+        }
+
+        if ($request->has('student_visible')) {
+            $changes['student_visible'] = $request->boolean('student_visible');   // "Approve" on a suggested activity
         }
 
         if ($request->exists('stage')) {

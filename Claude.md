@@ -336,7 +336,7 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
-## 6. Next: Aurora Lessons Phase 1 (agreed 2026-10-04)
+## 6. Aurora Lessons — Phase 1 done (2026-10-04 → 06), Phase 2 next
 
 **Direction:** the app is being reshaped as **Aurora Lessons**, with the same repo and a new name. Every lesson becomes
 a **lesson pack**: Warmer → Presentation → Practice → Production, built around one core material. Aurora courses
@@ -349,8 +349,10 @@ presentation (2026-10-05, §33; 3 cards per lesson by default) → ✅ **4 lesso
 `/lessons` overview + `/lessons/:trilha/:lesson`, **Lessons** in the nav; launching goes through the shared
 `ActivityRenderer.jsx`, so reuse it rather than copying a type switch again) → ✅ **5 generate from the lesson's
 own presentation/reading** (2026-10-06, §35: `source_activity_id` on `/api/generate`, text read server-side by
-`App\Support\LessonMaterial`; the pack's "+ Add" uses it automatically) → ✅ **6 lesson mode** (2026-10-06, §36: "Teach now" on the pack → `LessonPlayer.jsx`) → **next: 7** "fill this
-stage". `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
+`App\Support\LessonMaterial`; the pack's "+ Add" uses it automatically) → ✅ **6 lesson mode** (2026-10-06, §36: "Teach now" on the pack → `LessonPlayer.jsx`) → ✅ **7 "Suggest one with Claude"** on an empty stage (2026-10-06, §37: `lib/fillStage.js`; saved with
+`student_visible = false` until the teacher presses **Approve**, so unreviewed AI content never reaches a student).
+**Phase 1 is complete.** Next: real use on Radiant for a few lessons, then Phase 2 (plan-your-own home screen,
+automatic core material, homework pack). `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
 one. Old activities are **not** back-filled, on purpose: picking the stage is the review.
 **"Use it!"** (`UseItChecklist.jsx`): `content.targets` on speaking types (`Activity::SPEAKING_CHECK_TYPES`; new
 production templates must join it). The teacher ticks targets live and picks "Who's this with?" (sessionStorage,

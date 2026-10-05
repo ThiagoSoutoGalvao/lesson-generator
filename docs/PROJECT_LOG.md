@@ -1597,3 +1597,38 @@ unplaced note, the shared student, ticks saved mid-lesson, the pill (counter / s
 Finish), ✕ moving on, Skip not ticking, jumping back, Lesson complete, Exit, disabled with nothing placed, phone
 scroll + width). Screenshots `8-upnext.png`, `9-in-activity.png`. The pack, material, production, useit and stage
 suites pass.
+
+## 37. Aurora Lessons Phase 1, step 7: "Suggest one with Claude" (2026-10-06) — Phase 1 complete
+
+An empty Warmer / Practice / Production stage in a lesson pack can be filled in one click.
+
+- **`lib/fillStage.js` `pickFill(stage, level, existingTypes)`:** the agreed level × stage table. Bands: A1/A2 low,
+  B1 mid, B2 high. Warmer low = picture prompts / image match / flashcards; mid/high = discussion / picture prompts
+  / odd one out. Practice low = match pairs / quiz / unjumble / cloze; mid = cloze / quiz / error correction /
+  dialog; high = open cloze / transformation / word formation / error correction. Production low = picture prompts
+  / role play; mid = role play / story / discussion; high = debate / role play / story / mini presentation. A type
+  the lesson already has (any stage, placed or not) is skipped. Warmers get their own short "warm-up" prompts.
+- **The pack's empty-stage box:** "Suggested: <Type>, made from <material | the lesson contents> — saved here,
+  hidden from students until you approve it" + **✨ Suggest one with Claude** ("Making it… (Type)" while busy; an
+  error shows in place, with retry). It generates with the course level, from the lesson's material
+  (`source_activity_id`) or else the first two contents lines as the topic. Then it **saves** into that stage with
+  the standard name (focus = the content's topic, ≤ 6 words, tidied), `built_by` = the remembered teacher, and
+  **`student_visible: false`**.
+- **Review gate:** a hidden card shows "Suggested — not shown to students until you approve it" + **Approve**
+  (`PATCH { student_visible: true }`, owner only). Library cards say "Hidden from students — approve it in its
+  lesson pack". `SavedActivityController` accepts `student_visible` (`sometimes|boolean`, never null) on save and
+  PATCH; normal saves are still visible by default. Lesson mode includes suggestions (the teacher may use them in
+  class).
+- `trilhas.js` `TYPE_LABELS` gained `open_cloze`, `mc_cloze`, `mc_reading`, `read_complete`. Without them,
+  composed names read "open_cloze" (several Lights names like `LIGHTS L03 · mc_cloze · …` came from this). Rename
+  now rebuilds those prefixes with the proper label.
+
+QA: `tests/Feature/SuggestedActivityTest.php` (3: hidden from the student's lessons and the activity endpoint
+until approved; normal saves still visible; only the owner approves) and `qa_fill_stage.mjs` (19: picks per stage
+× level incl. skipping an existing type, busy label, body = type/level/material/warm-up prompt, saved name/stage/
+hidden/built-by, Approve, a 502 shows in place and saves nothing, the no-material topic, an A1 course, Teach now
+includes them). Regression suites pass; PHP 87 tests, only the 10 known Breeze failures.
+
+**Phase 1 (steps 1–7, §31–§37) is complete:** stages, the "Use it!" checklist, four production templates, the
+lesson pack, generating from a lesson's own material, lesson mode and suggestions. Agreed next: use it on Radiant
+for real before starting Phase 2.
