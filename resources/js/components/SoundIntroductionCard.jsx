@@ -19,7 +19,7 @@ export default function SoundIntroductionCard() {
     const atEnd = index === soundCards.length - 1;
 
     function backToPronunciation() {
-        navigate('/upload', { state: { tab: 'pronunciation' } });
+        navigate('/practice', { state: { tab: 'pronunciation' } });
     }
 
     function goPrev() { setIndex(i => Math.max(0, i - 1)); }
@@ -67,7 +67,7 @@ export default function SoundIntroductionCard() {
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
-                    <button onClick={backToPronunciation} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer" title="Back to Upload (Esc)">✕</button>
+                    <button onClick={backToPronunciation} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer" title="Back to Practice (Esc)">✕</button>
                 </div>
             </div>
 

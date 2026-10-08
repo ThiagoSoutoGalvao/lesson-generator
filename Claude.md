@@ -117,8 +117,13 @@ production templates `role_play`, `story_builder`, `debate`, `mini_presentation`
 - `section_focus` (the old Vocabulary/Grammar/Listening/Reading pills) was
   **removed entirely** in Phase T. `detectSections` / `SectionController` /
   `/api/detect-sections` still exist but are unused by the frontend.
+- **Menu (2026-10-08):** Materials · Generate · Lessons · Library · Students · Practice. **Materials** is the
+  page at `/upload` (route kept): Presentation · Reading Text · Course book (PDF) · Essay Feedback. **Audio
+  transcription is hidden** (`AudioUploader` still in the file, one line to bring back). **Practice** (`/practice`,
+  `PracticeHubPage.jsx`) holds the Pronunciation / DET / Cambridge launchers; every drill's Back goes there (old
+  `/upload` + practice-tab links redirect).
 - **Presentation** and **Reading Text** are separate tools with their own
-  `/upload` tabs and endpoints (`/api/presentation/generate`,
+  Materials tabs and endpoints (`/api/presentation/generate`,
   `/api/reading/generate`) — not part of the `/generate` type list. A line on
   `/generate` points to them.
 - `grammar_explainer` was retired (superseded by Presentation). Legacy saved ones

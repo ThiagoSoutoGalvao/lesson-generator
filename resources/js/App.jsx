@@ -8,6 +8,7 @@ import ErrorBoundary from '@/components/ErrorBoundary';
 import EnvBadge from '@/components/EnvBadge';
 import { DisplayProvider } from '@/hooks/useDisplay';
 import UploadPage from '@/pages/UploadPage';
+import PracticeHubPage from '@/pages/PracticeHubPage';
 import GeneratePage from '@/pages/GeneratePage';
 import LibraryPage from '@/pages/LibraryPage';
 import LessonsPage from '@/pages/LessonsPage';
@@ -37,6 +38,7 @@ function TeacherApp() {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/upload" element={<UploadPage />} />
+                <Route path="/practice" element={<PracticeHubPage />} />
                 <Route path="/generate" element={<GeneratePage />} />
                 <Route path="/lessons" element={<LessonsPage />} />
                 <Route path="/lessons/:trilha/:lesson" element={<LessonPackPage />} />

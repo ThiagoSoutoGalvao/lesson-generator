@@ -48,7 +48,7 @@ export default function HomophonesDrill() {
     const [result, setResult] = useState(null);
 
     function backToPronunciation() {
-        navigate('/upload', { state: { tab: 'pronunciation' } });
+        navigate('/practice', { state: { tab: 'pronunciation' } });
     }
 
     function startMode(m) {
@@ -104,7 +104,7 @@ export default function HomophonesDrill() {
                     <button
                         onClick={phase === 'select' ? backToPronunciation : () => setPhase('select')}
                         className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer"
-                        title={phase === 'select' ? 'Back to Upload (Esc)' : 'Back to groups (Esc)'}
+                        title={phase === 'select' ? 'Back to Practice (Esc)' : 'Back to groups (Esc)'}
                     >
                         ✕
                     </button>

@@ -44,7 +44,7 @@ const DRILLS = {
     'genre': GenreDrill,
 };
 
-const DEFAULT_BACK_TO = { path: '/upload', state: { tab: 'cambridge' } };
+const DEFAULT_BACK_TO = { path: '/practice', state: { tab: 'cambridge' } };
 
 // `backTo` lets whoever renders this route say where its own "Back" button (and every
 // leaf drill's) should go — the teacher's Upload page by default, or the student's

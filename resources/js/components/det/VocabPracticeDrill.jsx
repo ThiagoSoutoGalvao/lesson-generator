@@ -48,7 +48,7 @@ export default function VocabPracticeDrill() {
 
     useEffect(() => () => clearTimeout(timerRef.current), []);
 
-    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
+    const backTo = usePracticeBack({ path: '/practice', state: { tab: 'det' } });
     function backToDetTab() {
         navigate(backTo.path, { state: backTo.state });
     }

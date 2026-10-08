@@ -24,7 +24,7 @@ export default function KeyWordTransformationDrill({ level = 'b2' }) {
     const [sessionKey, setSessionKey] = useState(0);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
-    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'cambridge' } });
+    const backTo = usePracticeBack({ path: '/practice', state: { tab: 'cambridge' } });
     function backToTab() {
         navigate(backTo.path, { state: backTo.state });
     }

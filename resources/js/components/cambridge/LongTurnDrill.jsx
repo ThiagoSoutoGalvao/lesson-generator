@@ -12,7 +12,7 @@ export default function LongTurnDrill() {
     const [items, setItems] = useState(null);
     const batches = groupByBatch(longTurnItems);
 
-    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'cambridge' } });
+    const backTo = usePracticeBack({ path: '/practice', state: { tab: 'cambridge' } });
     function backToTab() {
         navigate(backTo.path, { state: backTo.state });
     }

@@ -44,7 +44,7 @@ export default function FillBlankDrill() {
     const [difficulty, setDifficulty] = useState('all');
     const [sessionItems, setSessionItems] = useState(fillBlankItems);
 
-    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
+    const backTo = usePracticeBack({ path: '/practice', state: { tab: 'det' } });
     function backToDetTab() {
         navigate(backTo.path, { state: backTo.state });
     }

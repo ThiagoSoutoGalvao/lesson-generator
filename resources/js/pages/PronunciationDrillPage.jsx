@@ -22,7 +22,7 @@ export default function PronunciationDrillPage() {
     const navigate = useNavigate();
 
     function backToPronunciation() {
-        navigate('/upload', { state: { tab: 'pronunciation' } });
+        navigate('/practice', { state: { tab: 'pronunciation' } });
     }
 
     if (type === 'sound-introduction') {

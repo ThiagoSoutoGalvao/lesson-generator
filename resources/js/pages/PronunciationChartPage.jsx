@@ -70,7 +70,7 @@ export default function PronunciationChartPage() {
     }
 
     function backToPronunciation() {
-        navigate('/upload', { state: { tab: 'pronunciation' } });
+        navigate('/practice', { state: { tab: 'pronunciation' } });
     }
 
     useEffect(() => {
@@ -98,7 +98,7 @@ export default function PronunciationChartPage() {
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>
                         {isFullscreen ? '⊡' : '⛶'}
                     </button>
-                    <button onClick={backToPronunciation} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer" title="Back to Upload (Esc)">✕</button>
+                    <button onClick={backToPronunciation} className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer" title="Back to Practice (Esc)">✕</button>
                 </div>
             </div>
 

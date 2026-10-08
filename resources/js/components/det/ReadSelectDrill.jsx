@@ -34,7 +34,7 @@ export default function ReadSelectDrill() {
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const [difficulty, setDifficulty] = useState(AVAILABLE_DIFFICULTIES[0]);
 
-    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
+    const backTo = usePracticeBack({ path: '/practice', state: { tab: 'det' } });
     function backToDetTab() {
         navigate(backTo.path, { state: backTo.state });
     }

@@ -1643,5 +1643,14 @@ for real before starting Phase 2.
   library actually holds, with counts (no count while loading).
 - QA: `qa_delete_filter.mjs` (12 checks, incl. no browser dialogs and the cascade). Pack, fill-stage, rename and
   stage suites pass.
-- Still under discussion: reorganising the crowded Upload page (8 tabs). Thiago never uses audio transcription and
-  questions the practice modes.
+- **Upload → Materials + Practice** (decided with Thiago the same day). The Upload page had 8 tabs. It's now
+  **Materials** (route `/upload` kept): Presentation · Reading Text · Course book (PDF) · Essay Feedback,
+  Presentation first. **Audio is hidden**: nobody used it, and it would confuse first users. The component stays,
+  one line to bring back. The Pronunciation / DET / Cambridge launchers moved unchanged into
+  **`PracticeHubPage.jsx`** at **`/practice`** (new menu item, the same name students see). They were kept, not
+  removed: students use them from home, they're curated exam-format sets plus pronunciation audio (no template
+  covers that), and they cost little to keep. All 30 drill Back links (`usePracticeBack` fallbacks + pronunciation
+  `navigate`s) now go to `/practice` with the tab; old `/upload` + practice-tab links redirect; "Back to Upload"
+  titles became "Back to Practice". QA: `qa_materials_practice.mjs` (21 checks, incl. opening drills and their
+  Back at runtime, since the launchers moved between files). `qa_a2.mjs` now opens the teacher launcher at
+  `/practice` (55 pass).

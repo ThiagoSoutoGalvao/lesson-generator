@@ -31,7 +31,7 @@ const DRILLS = {
     'interactive-speaking': InteractiveSpeakingDrill,
 };
 
-const DEFAULT_BACK_TO = { path: '/upload', state: { tab: 'det' } };
+const DEFAULT_BACK_TO = { path: '/practice', state: { tab: 'det' } };
 
 // `backTo` lets whoever renders this route say where its own "Back" button (and every
 // leaf drill's) should go — the teacher's Upload page by default, or the student's

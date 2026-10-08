@@ -11,7 +11,8 @@ import { createContext, useContext } from 'react';
 // once, at the top of the tree, based on which shell rendered them.
 export const PracticeBackContext = createContext(null);
 
-// `fallback` reproduces the pre-H1 default ({ path: '/upload', state: { tab } })
+// `fallback` is the teacher's default ({ path: '/practice', state: { tab } } since 2026-10-08, when the practice
+// launchers moved off the Upload page)
 // so a drill rendered with no provider (e.g. in isolation, tests) keeps working.
 export function usePracticeBack(fallback) {
     return useContext(PracticeBackContext) ?? fallback;

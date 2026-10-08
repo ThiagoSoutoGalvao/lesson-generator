@@ -2,11 +2,12 @@ import { Link, useLocation } from 'react-router-dom';
 import DisplayControls from '@/components/DisplayControls';
 
 const NAV_LINKS = [
-    { to: '/upload',   label: 'Upload' },
+    { to: '/upload',   label: 'Materials' },
     { to: '/generate', label: 'Generate' },
     { to: '/lessons',  label: 'Lessons' },
     { to: '/library',  label: 'Library' },
     { to: '/students', label: 'Students' },
+    { to: '/practice', label: 'Practice' },
 ];
 
 // "Aurora Night" — the deep half of the brand gradient as the ground for every

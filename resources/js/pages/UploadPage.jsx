@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '@/components/Spinner';
 import { A2_PARTS } from '@/lib/cambridgeLevels';
@@ -689,226 +689,39 @@ function AudioUploader() {
     );
 }
 
-// ─── Pronunciation Tab ────────────────────────────────────────────────────────
-
-function PronunciationLauncher() {
-    const navigate = useNavigate();
-
-    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
-
-    return (
-        <div className="flex flex-col gap-4">
-            <button
-                onClick={() => navigate('/pronunciation')}
-                className="w-full py-8 rounded-2xl bg-teal-600 hover:bg-teal-700 border border-teal-500 text-white font-bold text-xl transition-all cursor-pointer hover:scale-[1.01]"
-            >
-                🔤 Phonemic Chart
-            </button>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <button onClick={() => navigate('/pronunciation/drill/phoneme')} className={drillButtonCls}>
-                    Phoneme Drill
-                </button>
-                <button onClick={() => navigate('/pronunciation/drill/ed-endings')} className={drillButtonCls}>
-                    -ed Endings
-                </button>
-                <button onClick={() => navigate('/pronunciation/drill/sound-introduction')} className={drillButtonCls}>
-                    Sound Introduction
-                </button>
-                <button onClick={() => navigate('/pronunciation/drill/word-stress')} className={drillButtonCls}>
-                    Word Stress
-                </button>
-                <button onClick={() => navigate('/pronunciation/drill/homophones')} className={drillButtonCls}>
-                    Homophones
-                </button>
-                <button onClick={() => navigate('/pronunciation/drill/silent-letters')} className={drillButtonCls}>
-                    Silent Letters
-                </button>
-            </div>
-        </div>
-    );
-}
-
-// ─── DET Practice Tab ──────────────────────────────────────────────────────────
-
-function DetPracticeLauncher() {
-    const navigate = useNavigate();
-
-    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
-
-    return (
-        <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4">
-                <p className="lg-shell-text text-white/75 text-xs font-medium">
-                    DET-format reading and vocabulary practice — no scoring, teacher-controlled pace.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onClick={() => navigate('/det/practice/read-select')} className={drillButtonCls}>
-                        Read and Select
-                    </button>
-                    <button onClick={() => navigate('/det/practice/fill-blank')} className={drillButtonCls}>
-                        Fill in the Blanks
-                    </button>
-                    <button onClick={() => navigate('/det/practice/read-complete')} className={drillButtonCls}>
-                        Read and Complete
-                    </button>
-                    <button onClick={() => navigate('/det/practice/interactive-reading')} className={drillButtonCls}>
-                        Interactive Reading
-                    </button>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-                <p className="lg-shell-text text-white/75 text-xs font-medium">
-                    Speaking practice — no timer, no recording, you run it live — plus a quick vocabulary check-in.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onClick={() => navigate('/det/practice/read-then-speak')} className={drillButtonCls}>
-                        Read, Then Speak
-                    </button>
-                    <button onClick={() => navigate('/det/practice/speak-about-photo')} className={drillButtonCls}>
-                        Speak About the Photo
-                    </button>
-                    <button onClick={() => navigate('/det/practice/interactive-speaking')} className={drillButtonCls}>
-                        Interactive Speaking
-                    </button>
-                    <button onClick={() => navigate('/det/practice/vocab-practice')} className={drillButtonCls}>
-                        Vocabulary Practice
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
-// ─── Cambridge Practice Tab ────────────────────────────────────────────────────
-
-function CambridgePracticeLauncher() {
-    const navigate = useNavigate();
-
-    const drillButtonCls = 'py-6 px-4 rounded-2xl lg-surface lg-surface-hover border text-white text-base font-semibold transition-all cursor-pointer hover:scale-[1.02]';
-
-    return (
-        <div className="flex flex-col gap-6">
-            <div className="flex flex-col gap-4">
-                <p className="font-display lg-shell-text text-white text-2xl font-bold">A2 easy start</p>
-                <p className="lg-shell-text text-white/75 text-xs font-medium -mt-2">
-                    The same Reading &amp; Use of English task styles, written at A2: short texts, everyday topics. Original content; no official score, no recording.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {A2_PARTS.map(part => (
-                        <button key={part.type} onClick={() => navigate(`/cambridge/a2/${part.type}`)} className={drillButtonCls}>
-                            {part.label}
-                        </button>
-                    ))}
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-4">
-                <p className="font-display lg-shell-text text-white text-2xl font-bold">B2 First</p>
-                <p className="lg-shell-text text-white/75 text-xs font-medium -mt-2">
-                    Cambridge-style practice. Original content, not real exam material; no official score, no recording.
-                </p>
-
-                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Reading &amp; Use of English</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onClick={() => navigate('/cambridge/practice/word-formation')} className={drillButtonCls}>
-                        Word Formation
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/key-word-transformation')} className={drillButtonCls}>
-                        Key Word Transformation
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/mc-cloze')} className={drillButtonCls}>
-                        Multiple-Choice Cloze
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/open-cloze')} className={drillButtonCls}>
-                        Open Cloze
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/mc-reading')} className={drillButtonCls}>
-                        Multiple Choice Reading
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/multiple-matching')} className={drillButtonCls}>
-                        Multiple Matching
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/gapped-text')} className={drillButtonCls}>
-                        Gapped Text
-                    </button>
-                </div>
-
-                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Writing — the student writes on paper or their own doc, no capture, no auto-checking</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onClick={() => navigate('/cambridge/practice/essay')} className={drillButtonCls}>
-                        Essay
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/genre')} className={drillButtonCls}>
-                        Genre Choice
-                    </button>
-                </div>
-
-                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Speaking — no timer, no recording, you run it live</p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onClick={() => navigate('/cambridge/practice/interview')} className={drillButtonCls}>
-                        Interview
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/long-turn')} className={drillButtonCls}>
-                        Individual Long Turn
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/collaborative')} className={drillButtonCls}>
-                        Collaborative Task
-                    </button>
-                    <button onClick={() => navigate('/cambridge/practice/discussion')} className={drillButtonCls}>
-                        Discussion
-                    </button>
-                </div>
-            </div>
-
-            <div className="flex flex-col gap-4 border-t border-white/10 pt-6">
-                <p className="font-display lg-shell-text text-white text-2xl font-bold">C1 Advanced</p>
-                <p className="lg-shell-text text-white/75 text-xs font-medium -mt-2">
-                    Harder, C1-level practice — currently just one part while B2 First is being validated with real students.
-                </p>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    <button onClick={() => navigate('/cambridge/practice/cross-text-matching')} className={drillButtonCls}>
-                        Cross-Text Multiple Matching
-                    </button>
-                </div>
-            </div>
-        </div>
-    );
-}
-
 // ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function UploadPage() {
     const location = useLocation();
-    const [tab, setTab] = useState(location.state?.tab ?? 'pdf');
+    // Old links (and bookmarks) to the practice tabs now land on the Practice page.
+    const practiceTab = ['pronunciation', 'det', 'cambridge'].includes(location.state?.tab) ? location.state.tab : null;
+    const [tab, setTab] = useState(practiceTab ? 'presentation' : (location.state?.tab ?? 'presentation'));
 
+    if (practiceTab) return <Navigate to="/practice" state={{ tab: practiceTab }} replace />;
+
+    // Materials (2026-10-08): the lesson's core material first. Audio transcription is hidden — nobody used it
+    // and it confused first-time users; `AudioUploader` stays below so it can come back as one line here.
+    // Pronunciation / DET / Cambridge moved to their own Practice page (PracticeHubPage).
     const tabs = [
-        { id: 'pdf',          label: '📄 PDF',          active: 'bg-[#fc6840]/30 border-[#fc6840]/60 text-[#ffd9c4]' },
-        { id: 'audio',        label: '🎧 Audio',        active: 'bg-purple-500/30 border-purple-400/60 text-purple-100' },
-        { id: 'presentation', label: '🎞 Presentation',  active: 'bg-indigo-500/30 border-indigo-400/60 text-indigo-100' },
-        { id: 'reading',       label: '📖 Reading Text',  active: 'bg-emerald-500/30 border-emerald-400/60 text-emerald-100' },
-        { id: 'essay',         label: '✍️ Essay Feedback', active: 'bg-fuchsia-500/30 border-fuchsia-400/60 text-fuchsia-100' },
-        { id: 'pronunciation', label: '🔊 Pronunciation', active: 'bg-teal-500/30 border-teal-400/60 text-teal-100' },
-        { id: 'det',           label: '🎯 DET Practice',  active: 'bg-amber-500/30 border-amber-400/60 text-amber-100' },
-        { id: 'cambridge',     label: '🎓 Cambridge',     active: 'bg-rose-500/30 border-rose-400/60 text-rose-100' },
+        { id: 'presentation', label: '🎞 Presentation',      active: 'bg-indigo-500/30 border-indigo-400/60 text-indigo-100' },
+        { id: 'reading',      label: '📖 Reading Text',      active: 'bg-emerald-500/30 border-emerald-400/60 text-emerald-100' },
+        { id: 'pdf',          label: '📄 Course book (PDF)', active: 'bg-[#fc6840]/30 border-[#fc6840]/60 text-[#ffd9c4]' },
+        { id: 'essay',        label: '✍️ Essay Feedback',    active: 'bg-fuchsia-500/30 border-fuchsia-400/60 text-fuchsia-100' },
     ];
 
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
             <div>
-                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Upload Content</h2>
-                <p className="lg-shell-text text-white/70 mt-1 text-sm">Upload a PDF or audio file, create a presentation or reading text from any topic, or practice pronunciation and DET question types.</p>
+                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Materials</h2>
+                <p className="lg-shell-text text-white/70 mt-1 text-sm">Make a lesson’s presentation or reading text, upload a course book, or get feedback on a student’s essay.</p>
             </div>
 
-            {/* Tab switcher — sized to content (not flex-1) so a 7-tab row never
-                squeezes a button narrower than its own label; wraps to a second
-                row instead of forcing the icon onto its own line. */}
             <div className="flex flex-wrap gap-2">
                 {tabs.map(t => (
                     <button
                         key={t.id}
                         onClick={() => setTab(t.id)}
+                        aria-pressed={tab === t.id}
                         className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer whitespace-nowrap ${
                             tab === t.id
                                 ? t.active
@@ -920,14 +733,11 @@ export default function UploadPage() {
                 ))}
             </div>
 
-            {tab === 'pdf'          && <PdfUploader />}
-            {tab === 'audio'        && <AudioUploader />}
             {tab === 'presentation' && <PresentationGenerator />}
-            {tab === 'reading'       && <ReadingTextGenerator />}
-            {tab === 'essay'         && <EssayFeedbackGenerator />}
-            {tab === 'pronunciation' && <PronunciationLauncher />}
-            {tab === 'det'           && <DetPracticeLauncher />}
-            {tab === 'cambridge'     && <CambridgePracticeLauncher />}
+            {tab === 'reading'      && <ReadingTextGenerator />}
+            {tab === 'pdf'          && <PdfUploader />}
+            {tab === 'essay'        && <EssayFeedbackGenerator />}
+            {tab === 'audio'        && <AudioUploader />}
         </div>
     );
 }

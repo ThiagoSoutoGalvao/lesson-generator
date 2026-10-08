@@ -133,7 +133,7 @@ export default function InteractiveReadingDrill() {
     const [sessionKey, setSessionKey] = useState(0);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
-    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
+    const backTo = usePracticeBack({ path: '/practice', state: { tab: 'det' } });
     function backToDetTab() {
         navigate(backTo.path, { state: backTo.state });
     }

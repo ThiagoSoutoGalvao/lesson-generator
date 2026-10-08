@@ -46,7 +46,7 @@ export default function EdEndingsDrill() {
     const [showRule, setShowRule] = useState(false);
 
     function backToPronunciation() {
-        navigate('/upload', { state: { tab: 'pronunciation' } });
+        navigate('/practice', { state: { tab: 'pronunciation' } });
     }
 
     function startMode(m) {
@@ -116,7 +116,7 @@ export default function EdEndingsDrill() {
                     <button
                         onClick={phase === 'select' ? backToPronunciation : () => setPhase('select')}
                         className="text-white/40 hover:text-white text-sm transition-colors cursor-pointer"
-                        title={phase === 'select' ? 'Back to Upload (Esc)' : 'Back to options (Esc)'}
+                        title={phase === 'select' ? 'Back to Practice (Esc)' : 'Back to options (Esc)'}
                     >
                         ✕
                     </button>

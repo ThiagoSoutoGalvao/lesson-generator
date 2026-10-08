@@ -35,7 +35,7 @@ export default function SpeakingPromptDrill({
     const [phase, setPhase] = useState(items[0]?.prep ? 'prep' : 'prompt'); // prep | prompt | done
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
-    const backTo = usePracticeBack({ path: '/upload', state: { tab: 'det' } });
+    const backTo = usePracticeBack({ path: '/practice', state: { tab: 'det' } });
     function backToDetTab() {
         navigate(backTo.path, { state: backTo.state });
     }
