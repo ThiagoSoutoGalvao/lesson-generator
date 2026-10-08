@@ -1447,7 +1447,10 @@ Return a JSON object with EXACTLY this structure:
 Rules:
 - Generate the number of prompts requested in the task — 4 if none is given, never fewer than 2 or more than 6
 - Each keyword must describe a photo with people, an activity and a clear setting, so a stock-photo search returns something there is plenty to talk about — a different scene for every prompt
-- The question is short and open (what / who / where), never yes/no
+- The photo is found by searching the keyword alone, so it may only name things a camera can see: who (e.g. "colleagues", "two women"), what they are doing, and where. No city or country names, and no abstract words (culture, balance, success, satisfaction, remote, flexible) — those match unrelated photos
+- When the topic is abstract, pick a concrete scene that shows it (for workplace culture: "colleagues laughing meeting office table") and ask about what is visible first
+- The question must be answerable by looking at a photo of the keyword: start from the people, what they are doing or how they seem, then invite a guess or an opinion. Never ask about something the photo cannot show (e.g. "What kind of workplace culture does this photo suggest?" is too abstract; "How do these colleagues seem to get on, and would you like to work here?" works)
+- The question is short and open (what / who / where / how), never yes/no
 - Each starter is a natural way to begin a sentence about the photo and ends with "…" (for example "It looks like they are …" or "In the background, there is …")
 - NEVER use "I can see" or "I see" in a starter — students over-use it, so give them different ways in
 - Vary the starters within a prompt: one about what is happening, one about the setting or objects, one giving a guess or an opinion
