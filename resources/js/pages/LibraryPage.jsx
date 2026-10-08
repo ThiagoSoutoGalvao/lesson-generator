@@ -483,6 +483,7 @@ export default function LibraryPage() {
     }
 
     const hasTrilhaActivities = activities.some(a => a.trilha);
+    const typeCounts = activities.reduce((n, a) => ({ ...n, [a.type]: (n[a.type] ?? 0) + 1 }), {});
 
     function selectTrilha(t) {
         setTrilhaFilter(t);
@@ -519,13 +520,21 @@ export default function LibraryPage() {
                 <ImportActivities onDone={reloadLists} />
             </div>
 
-            {/* Type filter */}
-            <div className="flex flex-wrap gap-2">
-                {TYPE_FILTERS.map(f => (
-                    <button key={f} onClick={() => setTypeFilter(f)} className={filterBtnCls(typeFilter === f)}>
-                        {f === 'all' ? 'All types' : TYPE_LABELS[f]}
-                    </button>
-                ))}
+            {/* Type filter — a dropdown of only the types this library actually holds (it used to be a row of
+                ~30 buttons for every type, which crowded the top of the page). */}
+            <div className="flex items-center gap-2">
+                <label htmlFor="type-filter" className="text-white/40 text-xs">Type:</label>
+                <select
+                    id="type-filter"
+                    value={typeFilter}
+                    onChange={e => setTypeFilter(e.target.value)}
+                    className="lg-chip text-white text-sm rounded-lg px-3 py-1.5 border cursor-pointer"
+                >
+                    <option value="all" className="text-black bg-white">{loading ? 'All types' : `All types (${activities.length})`}</option>
+                    {TYPE_FILTERS.filter(f => f !== 'all' && typeCounts[f]).map(f => (
+                        <option key={f} value={f} className="text-black bg-white">{TYPE_LABELS[f] ?? f} ({typeCounts[f]})</option>
+                    ))}
+                </select>
             </div>
 
             {/* Trilha filter — only shown once at least one trilha activity has been saved */}

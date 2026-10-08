@@ -1632,3 +1632,16 @@ includes them). Regression suites pass; PHP 87 tests, only the 10 known Breeze f
 **Phase 1 (steps 1–7, §31–§37) is complete:** stages, the "Use it!" checklist, four production templates, the
 lesson pack, generating from a lesson's own material, lesson mode and suggestions. Agreed next: use it on Radiant
 for real before starting Phase 2.
+
+## 38. Feedback from Thiago's first walk-through (2026-10-08)
+
+- **Delete in the lesson pack:** each card has a quiet "Delete". It's confirmed **inside the card** (no browser
+  dialog), and the confirmation says students' results for it and any homework assignment of it go too (the
+  `activity_attempts` / `student_assignments` FKs cascade). An emptied stage goes back to offering a suggestion.
+  Lessons themselves can't be deleted: they're the course's fixed numbered lessons.
+- **Library type filter:** the row of ~30 type buttons is now one **Type** dropdown that lists only the types the
+  library actually holds, with counts (no count while loading).
+- QA: `qa_delete_filter.mjs` (12 checks, incl. no browser dialogs and the cascade). Pack, fill-stage, rename and
+  stage suites pass.
+- Still under discussion: reorganising the crowded Upload page (8 tabs). Thiago never uses audio transcription and
+  questions the practice modes.

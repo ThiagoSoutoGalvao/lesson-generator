@@ -138,6 +138,12 @@ export default function LessonPackPage() {
         }
     }
 
+    // Deleting is for good: the database also drops students' results for it and any homework assignment of it.
+    const remove = async a => {
+        await axios.delete(`/api/activities/${a.id}`);
+        setActivities(prev => prev.filter(x => x.id !== a.id));
+    };
+
     const approve = async a => {
         const { data } = await axios.patch(`/api/activities/${a.id}`, { student_visible: true });
         setActivities(prev => prev.map(x => (x.id === a.id ? { ...x, student_visible: data.student_visible } : x)));
@@ -206,7 +212,7 @@ export default function LessonPackPage() {
                                 <p className="text-amber-100/80 text-sm">Pick a stage for each one and it moves into the lesson below.</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {unplaced.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} />)}
+                                {unplaced.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} />)}
                             </div>
                         </section>
                     )}
@@ -230,7 +236,7 @@ export default function LessonPackPage() {
                                             : <p className="rounded-xl border border-dashed border-white/20 text-white/50 text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {items.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} />)}
+                                            {items.map(a => <ActivityCard key={a.id} a={a} prefix={prefix} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} />)}
                                         </div>
                                     )}
                                 </li>
@@ -274,7 +280,9 @@ function AddButtons({ stage, onAdd }) {
     return <button type="button" onClick={() => onAdd(stage)} className={cls}>+ Add</button>;
 }
 
-function ActivityCard({ a, prefix, onLaunch, onStage, onMakeFrom, onApprove }) {
+function ActivityCard({ a, prefix, onLaunch, onStage, onMakeFrom, onApprove, onDelete }) {
+    const [confirming, setConfirming] = useState(false);
+    const [deleteError, setDeleteError] = useState('');
     const focus = a.name.startsWith(`${prefix} · `) ? a.name.slice(prefix.length + 3).replace(/^[^·]+· /, '') : a.name;
     const targets = SPEAKING_TYPES.includes(a.type) ? (a.content?.targets ?? []) : null;
     return (
@@ -298,6 +306,21 @@ function ActivityCard({ a, prefix, onLaunch, onStage, onMakeFrom, onApprove }) {
                 <button type="button" onClick={onLaunch} className="bg-[#e0521f] hover:bg-[#c9461a] text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">Launch</button>
                 <StageSelect activity={a} onSaved={onStage} />
             </div>
+            {confirming ? (
+                <div role="alertdialog" aria-label={`Delete ${focus}?`} className="rounded-lg bg-red-500/10 border border-red-400/35 px-3 py-2.5 flex flex-col gap-2">
+                    <p className="text-red-100 text-sm">Delete “{focus}” for good? Students’ results for it and any homework assignment of it go too.</p>
+                    <div className="flex gap-2">
+                        <button type="button" onClick={async () => { try { await onDelete(); } catch { setDeleteError('Could not delete it. Please try again.'); } }}
+                            className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md px-3 py-1.5 cursor-pointer">Delete</button>
+                        <button type="button" onClick={() => { setConfirming(false); setDeleteError(''); }}
+                            className="text-sm text-white/80 hover:text-white px-3 py-1.5 cursor-pointer">Keep it</button>
+                    </div>
+                    {deleteError && <p className="text-red-300 text-xs">{deleteError}</p>}
+                </div>
+            ) : (
+                <button type="button" onClick={() => setConfirming(true)}
+                    className="self-end -mt-1 text-xs text-white/45 hover:text-red-300 cursor-pointer">Delete</button>
+            )}
             {onMakeFrom && (
                 <button type="button" onClick={onMakeFrom}
                     className="self-start text-sm font-semibold text-[#ffb59a] hover:text-white underline underline-offset-2 cursor-pointer">
