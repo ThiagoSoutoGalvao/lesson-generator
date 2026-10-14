@@ -8,21 +8,26 @@ use Illuminate\Support\Facades\Http;
 
 class BackgroundController extends Controller
 {
+    private const RANKED_SEARCH_SINCE = '2026-10-09 00:00:00';
+
     public function fetch(Request $request)
     {
         $topic = $request->query('topic', 'education');
 
+        // Rows cached before the ranked search (2026-10-09) hold /photos/random's loose matches,
+        // and a keyword is cached forever — so those are looked up again instead of reused.
         $cached = ImageCache::where('keyword', $topic)->first();
-        if ($cached) {
+        if ($cached && $cached->updated_at?->gte(self::RANKED_SEARCH_SINCE)) {
             return response()->json(['url' => $cached->url]);
         }
 
         $url = $this->fetchFromUnsplash($topic);
 
-        ImageCache::firstOrCreate(
-            ['keyword' => $topic],
-            ['url'     => $url]
-        );
+        // updated_at set by hand: a re-fetch that lands on the same photo must still count as fresh.
+        $row = ImageCache::firstOrNew(['keyword' => $topic]);
+        $row->url        = $url;
+        $row->updated_at = now();
+        $row->save();
 
         return response()->json(['url' => $url]);
     }
@@ -35,12 +40,16 @@ class BackgroundController extends Controller
             // /photos/random matched loosely — one word of "employees working together open plan
             // office Tokyo" was enough, and a Picture Prompt got a Tokyo street with cyclists.
             // Ranked search, then the closest description, keeps the photo on the phrase.
-            $url = $this->searchUnsplash($topic, $key);
+            [$url, $score] = $this->searchUnsplash($topic, $key);
 
-            // A long phrase can return nothing at all; retry with its first three words.
+            // A long phrase can return nothing, or only photos that miss most of it; retry with
+            // its first three words and keep whichever photo's description is closer.
             $short = implode(' ', array_slice(preg_split('/\s+/', trim($topic)), 0, 3));
-            if (! $url && $short !== trim($topic)) {
-                $url = $this->searchUnsplash($short, $key);
+            if ($short !== trim($topic) && (! $url || $score * 2 < count($this->words($topic)))) {
+                [$shortUrl, $shortScore] = $this->searchUnsplash($short, $key, $topic);
+                if ($shortUrl && (! $url || $shortScore > $score)) {
+                    $url = $shortUrl;
+                }
             }
 
             if ($url) {
@@ -51,8 +60,11 @@ class BackgroundController extends Controller
         return 'https://picsum.photos/seed/' . rawurlencode($topic) . '/1920/1080';
     }
 
-    /** Of the top 10 results, the one whose description shares the most words with the query. */
-    private function searchUnsplash(string $query, string $key): ?string
+    /**
+     * Of the top 10 results, the one whose description shares the most words with the query.
+     * Returns [url|null, words shared with the topic].
+     */
+    private function searchUnsplash(string $query, string $key, ?string $scoreAgainst = null): array
     {
         $response = Http::get('https://api.unsplash.com/search/photos', [
             'query'          => $query,
@@ -63,7 +75,7 @@ class BackgroundController extends Controller
         ]);
 
         $results = $response->failed() ? [] : (array) $response->json('results', []);
-        $words   = $this->words($query);
+        $words   = $this->words($scoreAgainst ?? $query);
 
         $best      = null;
         $bestScore = -1;
@@ -76,7 +88,7 @@ class BackgroundController extends Controller
             }
         }
 
-        return $best;
+        return [$best, max($bestScore, 0)];
     }
 
     /** Lower-case words of 3+ letters, with a plural "s" dropped, so "offices" meets "office". */

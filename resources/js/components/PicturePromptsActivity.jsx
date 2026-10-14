@@ -109,7 +109,9 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
             <div className="shrink-0 md:shrink md:flex-1 md:min-h-0 flex flex-col items-center px-4 sm:px-8 gap-5 md:overflow-y-auto py-6">
                 <div className="w-full max-w-3xl flex flex-col gap-5">
                     {photo ? (
-                        <img src={photo} alt={current.keyword} className="w-full max-h-[45vh] object-cover rounded-2xl shadow-2xl" />
+                        // Whole photo, never cropped: object-cover in a wide 45vh strip kept only the middle
+                        // band, so a building under construction became a sky with a crane tip.
+                        <img src={photo} alt={current.keyword} className="block mx-auto w-auto max-w-full max-h-[45vh] object-contain rounded-2xl shadow-2xl" />
                     ) : (
                         <div className={`w-full aspect-video max-h-[45vh] rounded-2xl bg-white/10 flex items-center justify-center text-white/40 text-sm ${photo === undefined ? 'animate-pulse' : ''}`}>
                             {photo === null ? 'The photo could not be loaded' : ''}
