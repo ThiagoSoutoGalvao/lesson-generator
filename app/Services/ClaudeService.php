@@ -29,11 +29,7 @@ class ClaudeService
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -107,11 +103,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -138,11 +130,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -201,11 +189,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -263,11 +247,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -340,11 +320,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -406,11 +382,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -469,11 +441,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -534,11 +502,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -609,11 +573,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         $data['targets'] = $this->cleanTargets($data['targets'] ?? []);
 
@@ -694,11 +654,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -759,11 +715,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         $passage = is_string($data['passage'] ?? null) ? trim($data['passage']) : '';
 
@@ -1736,11 +1688,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -1765,11 +1713,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -1828,11 +1772,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         return $data;
     }
@@ -1897,11 +1837,7 @@ EOT;
         $this->throwIfFailed($response);
 
         $text = $response->json('content.0.text');
-        $data = json_decode($text, true);
-
-        if (json_last_error() !== JSON_ERROR_NONE) {
-            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
-        }
+        $data = $this->decodeJson($text);
 
         $data['mistakes'] = array_values(array_filter($data['mistakes'] ?? [], function ($item) use ($essayText) {
             $original   = $item['original']   ?? '';
@@ -2000,6 +1936,74 @@ EOT;
         };
 
         throw new RuntimeException($message);
+    }
+
+    /**
+     * Decode Claude's JSON reply. Claude copies source text into string values
+     * verbatim, and a straight double quote in that text ("travel techs") comes
+     * back unescaped, which breaks the whole reply — so on a failed decode the
+     * stray quotes are escaped and the decode is tried once more.
+     */
+    private function decodeJson(?string $text): array
+    {
+        $data = json_decode((string) $text, true);
+
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            $data = json_decode($this->escapeStrayQuotes((string) $text), true);
+        }
+
+        if (json_last_error() !== JSON_ERROR_NONE || ! is_array($data)) {
+            throw new RuntimeException('Claude returned invalid JSON: ' . $text);
+        }
+
+        return $data;
+    }
+
+    /**
+     * Inside a JSON string, a `"` only really closes it when what follows is
+     * structure: `:` `}` `]`, the end of the text, or a `,` leading to the next
+     * key / value (`"` `{` `[`). Any other `"` is a quote from the text — escape it.
+     */
+    private function escapeStrayQuotes(string $text): string
+    {
+        $out = '';
+        $len = strlen($text);
+        $inString = false;
+
+        for ($i = 0; $i < $len; $i++) {
+            $ch = $text[$i];
+
+            if ($inString && $ch === '\\') {
+                $out .= $ch . ($text[$i + 1] ?? '');
+                $i++;
+                continue;
+            }
+
+            if ($ch !== '"') {
+                $out .= $ch;
+                continue;
+            }
+
+            if (! $inString) {
+                $inString = true;
+                $out .= $ch;
+                continue;
+            }
+
+            $rest = ltrim(substr($text, $i + 1));
+            $next = $rest[0] ?? '';
+            $closes = $next === '' || $next === ':' || $next === '}' || $next === ']'
+                || ($next === ',' && in_array(ltrim(substr($rest, 1))[0] ?? '', ['"', '{', '['], true));
+
+            if ($closes) {
+                $inString = false;
+                $out .= $ch;
+            } else {
+                $out .= '\\"';
+            }
+        }
+
+        return $out;
     }
 
     private function sanitizeUtf8(string $text): string
