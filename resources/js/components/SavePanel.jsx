@@ -123,9 +123,11 @@ export default function SavePanel({ activity, onDone, onSaved }) {
 
     return (
         <div className="absolute inset-x-0 top-0 z-20 flex justify-center pt-4 px-4">
+            {/* Never taller than the screen: it sits over a full-screen activity that doesn't scroll, so on a short
+                window the Save button would otherwise end up below the edge, out of reach. */}
             <form
                 onSubmit={handleSave}
-                className="bg-gray-900/95 backdrop-blur border border-white/20 rounded-2xl px-6 py-5 shadow-2xl flex flex-col gap-3.5 w-full max-w-md"
+                className="bg-gray-900/95 backdrop-blur border border-white/20 rounded-2xl px-6 py-5 shadow-2xl flex flex-col gap-3.5 w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain"
             >
                 {/* Mode toggle */}
                 <div className="flex gap-1 bg-white/5 border border-white/10 rounded-lg p-1">

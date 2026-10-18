@@ -1691,3 +1691,7 @@ couldn't be put into it. Mockup agreed first: `https://claude.ai/artifact/KfG1oC
   known Breeze failures. Already failing before this change, and unchanged by it: `qa_batch2`'s "Library labels the
   new types" check; `qa_import_trilha` needs an export file in Downloads.
   Herd was not running, so the suites ran against `php -S 127.0.0.1:8124 -t public`; `qa_lesson_parts.mjs` reads `QA_BASE`.
+- **Fix (2026-10-19):** the Save panel's new "Lesson of the unit" row made it taller than a ~600px-high window, and the
+  panel sits over a full-screen activity that doesn't scroll, so Save was out of reach (found by Thiago saving a
+  Reading Text). The form is now capped at `100dvh - 2rem` and scrolls inside. `qa_save_panel_short.mjs` (8 checks,
+  real wheel gesture, quiz + Reading Text at 1280×560) fails on the old code and passes on the fix.
