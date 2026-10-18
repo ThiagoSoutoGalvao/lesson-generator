@@ -1654,3 +1654,40 @@ for real before starting Phase 2.
   titles became "Back to Practice". QA: `qa_materials_practice.mjs` (21 checks, incl. opening drills and their
   Back at runtime, since the launchers moved between files). `qa_a2.mjs` now opens the teacher launcher at
   `/practice` (55 pass).
+
+## 39. Units of three lessons (1A / 1B / 1C) + "From Library" (2026-10-18)
+
+Thiago found Radiant lessons went too fast, so each numbered lesson becomes a **unit taught over three lessons**,
+like course books do (1A, 1B, 1C). Teachers had also complained that activities made before the lesson structure
+couldn't be put into it. Mockup agreed first: `https://claude.ai/artifact/KfG1oCovXq4xwCgu2Vybap`.
+
+- **Decided with Thiago:** all units get three lessons. **Old activities count as lesson A**, so a finished course
+  (one teacher has finished Glow) stays complete as it is; B and C fill up when a teacher gets to them. Bringing an
+  existing activity in is **always a copy**: the original stays where it was, so an older one-off can still be
+  homework or an extra.
+- **Data:** `activities.trilha_part` (char 1, nullable; NULL = A, nothing back-filled) and
+  `trilha_lesson_briefs.part_plans` (JSON, one plan line per lesson). Allowed letters: `parts` in `lib/trilhas.js`
+  (all three courses) ↔ `SavedActivityController::PARTS`. Dropping `parts` from a course goes back to one lesson
+  per unit.
+- **Names:** `composeActivityName` takes `part` → `RADIANT L01B · Cloze · Focus`. Old names keep `L01`;
+  `focusFromName()` reads either. Moving a card to another lesson rebuilds a standard name; Library Rename keeps the
+  activity's own letter.
+- **Lesson pack** (`/lessons/:trilha/:unit?part=B`): heading "Unit n", three tabs with counts + plan line, each tab is
+  its own pack (stages, Not placed yet, Suggest, Teach `1B` now). Core material = this lesson's first, then the unit's.
+  Cards get a **Lesson** select (PATCH `trilha_part`, only for an activity in a course lesson). Each stage has
+  **+ From Library** → `LibraryPicker.jsx` (search, filters: not in a lesson / other lessons of this course / other
+  courses) → `POST /api/activities/{id}/copy` (owner only; copies content, author, visibility).
+- **Elsewhere:** Save panel has a "Lesson of the unit" A/B/C picker (pre-picked from the pack via the lesson
+  session's new `part`); Generate's chip says "Lesson 1B"; the Lessons overview lists units with `1A: n · 1B: n ·
+  1C: n`; Library cards say `L01B`; `activities:export` carries the part. **Student:** `/api/student/lessons` items
+  carry `part`; the lesson page splits into 1A/1B/1C sections with done counts **only once two lessons have
+  activities** (a one-lesson unit looks as before). Progress still counts per unit.
+- **Limit (unchanged):** the picker lists only the signed-in login's activities. A teacher's personal-login work
+  still needs `activities:export` + Import. The cross-account copy wasn't requested.
+- QA: `qa_lesson_parts.mjs` (46 checks: API rules, overview, tabs, plan, picker copy + filters + search, originals
+  untouched, move + rename, + Add → Generate → Save carrying 1B, Library label, Glow, 390px, student sections).
+  Updated labels in `qa_lesson_pack` / `qa_lesson_mode` / `qa_fill_stage` / `qa_lesson_material` / `qa_production` /
+  `qa_save_naming`, all passing; `qa_stage`, `qa_rename`, `qa_useit`, `qa_presentation_homework` pass. PHP: only the 10
+  known Breeze failures. Already failing before this change, and unchanged by it: `qa_batch2`'s "Library labels the
+  new types" check; `qa_import_trilha` needs an export file in Downloads.
+  Herd was not running, so the suites ran against `php -S 127.0.0.1:8124 -t public`; `qa_lesson_parts.mjs` reads `QA_BASE`.

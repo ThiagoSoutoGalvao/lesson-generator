@@ -65,9 +65,33 @@ function Practice({ n }) {
             </div>
         );
     }
+    // A unit taught over several lessons (1A / 1B / 1C) is split into one section each — but only once more than
+    // one of them has activities, so a unit that is still one lesson looks exactly as before.
+    const groups = [...new Set(items.map(i => i.part ?? 'A'))].sort();
+    if (groups.length < 2) {
+        return (
+            <div className="flex flex-col gap-2.5">
+                {items.map(item => <ActivityRow key={item.id} item={item} />)}
+            </div>
+        );
+    }
     return (
-        <div className="flex flex-col gap-2.5">
-            {items.map(item => <ActivityRow key={item.id} item={item} />)}
+        <div className="flex flex-col gap-6">
+            {groups.map(g => {
+                const mine = items.filter(i => (i.part ?? 'A') === g);
+                const done = mine.filter(i => i.done).length;
+                return (
+                    <section key={g} aria-label={`Lesson ${n}${g}`} className="flex flex-col gap-2.5" data-testid="student-part">
+                        <div className="flex items-baseline justify-between">
+                            <h2 className="font-display font-bold text-[18px] text-white">{n}{g}</h2>
+                            <span className={`text-[12px] font-display font-semibold ${done === mine.length ? 'text-[#5be0a4]' : 'text-[#9384bd]'}`}>
+                                {done === mine.length ? 'Done ✓' : `${done} / ${mine.length}`}
+                            </span>
+                        </div>
+                        {mine.map(item => <ActivityRow key={item.id} item={item} />)}
+                    </section>
+                );
+            })}
         </div>
     );
 }

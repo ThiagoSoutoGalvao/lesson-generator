@@ -17,11 +17,12 @@ export function getLessonSession() {
     }
 }
 
-// `stage` (optional) is the lesson-pack stage a "+ Add" button came from: the Save panel pre-picks it.
-// Saving an activity calls this again without one, so it applies to that one save only.
-export function setLessonSession(trilha, lesson, stage = null) {
+// `part` is the lesson of the unit (A / B / C) the teacher is on; `stage` (optional) is the lesson-pack stage a
+// "+ Add" button came from: the Save panel pre-picks it. Saving an activity calls this again without a stage, so
+// the stage applies to that one save only.
+export function setLessonSession(trilha, lesson, stage = null, part = null) {
     try {
-        localStorage.setItem(KEY, JSON.stringify(stage ? { trilha, lesson, stage } : { trilha, lesson }));
+        localStorage.setItem(KEY, JSON.stringify({ trilha, lesson, ...(part ? { part } : {}), ...(stage ? { stage } : {}) }));
     } catch { /* ignore */ }
 }
 

@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import axios from 'axios';
 import {
-    TRILHAS, TRILHA_NAMES, TEACHERS, TYPE_LABELS, composeActivityName,
+    TRILHAS, TRILHA_NAMES, TEACHERS, TYPE_LABELS, composeActivityName, trilhaParts,
 } from '@/lib/trilhas';
 import { getLessonSession, setLessonSession } from '@/lib/lessonSession';
 import { tidyText, collapse, tidyFocus, focusHints, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
@@ -32,6 +32,8 @@ export default function SavePanel({ activity, onDone, onSaved }) {
     const session = getLessonSession();
     const [trilha, setTrilha]     = useState(() => session?.trilha ?? lsGet(LS_TRILHA));
     const [lesson, setLesson]     = useState(() => (session ? String(session.lesson) : ''));
+    // Which lesson of the unit (1A / 1B / 1C) — from the lesson pack the teacher came from, else A.
+    const [part, setPart]         = useState(() => session?.part ?? 'A');
     const [focus, setFocus]       = useState('');
     const [builtBy, setBuiltBy]   = useState(() => lsGet(LS_BUILT_BY));
     // Lesson-pack stage — pre-picked from the type (lib/stages.js); the teacher confirms or changes it.
@@ -50,6 +52,8 @@ export default function SavePanel({ activity, onDone, onSaved }) {
 
     const typeLabel = TYPE_LABELS[activity.type] ?? activity.type;
     const lessonCount = trilha ? TRILHAS[trilha].lessons : 0;
+    const parts = trilhaParts(trilha);
+    const savedPart = parts.includes(part) ? part : null;
 
     // What is saved is the tidied Focus (single spaces, no underscores or " · ", sentence case) — see lib/naming.js.
     const cleanFocus  = useMemo(() => tidyFocus(focus), [focus]);
@@ -58,8 +62,8 @@ export default function SavePanel({ activity, onDone, onSaved }) {
     const cleanName   = tidyText(name);
 
     const composedName = useMemo(
-        () => composeActivityName({ trilha, lesson, type: activity.type, focus: cleanFocus }),
-        [trilha, lesson, activity.type, cleanFocus],
+        () => composeActivityName({ trilha, lesson, part: savedPart, type: activity.type, focus: cleanFocus }),
+        [trilha, lesson, savedPart, activity.type, cleanFocus],
     );
 
     const trilhaValid = trilha && lesson && stage && cleanFocus && builtBy;
@@ -75,6 +79,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                 content: activity,
                 trilha,
                 trilha_lesson: Number(lesson),
+                trilha_part: savedPart,
                 stage,
                 built_by: builtBy,
             }
@@ -93,7 +98,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
             if (mode === 'trilha') {
                 lsSet(LS_TRILHA, trilha);
                 lsSet(LS_BUILT_BY, builtBy);
-                setLessonSession(trilha, Number(lesson));
+                setLessonSession(trilha, Number(lesson), null, savedPart);
             }
             setStatus('saved');
             setTimeout(onDone, 1200);
@@ -156,7 +161,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                                 </select>
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label className={labelCls}>Lesson</label>
+                                <label className={labelCls}>{parts.length ? 'Unit' : 'Lesson'}</label>
                                 <select
                                     value={lesson}
                                     onChange={e => setLesson(e.target.value)}
@@ -166,11 +171,32 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                                 >
                                     <option value="" className="bg-gray-900">—</option>
                                     {Array.from({ length: lessonCount }, (_, i) => i + 1).map(n => (
-                                        <option key={n} value={n} className="bg-gray-900">Lesson {n}</option>
+                                        <option key={n} value={n} className="bg-gray-900">{parts.length ? 'Unit' : 'Lesson'} {n}</option>
                                     ))}
                                 </select>
                             </div>
                         </div>
+
+                        {parts.length > 0 && (
+                            <fieldset className="flex flex-col gap-1">
+                                <legend className={`${labelCls} mb-1`}>Lesson of the unit</legend>
+                                <div className="grid grid-cols-3 gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+                                    {parts.map(p => (
+                                        <button
+                                            key={p}
+                                            type="button"
+                                            aria-pressed={part === p}
+                                            onClick={() => setPart(p)}
+                                            className={`text-xs font-semibold py-1.5 rounded-md transition-colors cursor-pointer ${
+                                                part === p ? 'bg-blue-600 text-white' : 'text-white/55 hover:text-white'
+                                            }`}
+                                        >
+                                            {lesson || '#'}{p}
+                                        </button>
+                                    ))}
+                                </div>
+                            </fieldset>
+                        )}
 
                         <fieldset className="flex flex-col gap-1">
                             <legend className={`${labelCls} mb-1`}>Stage in the lesson</legend>

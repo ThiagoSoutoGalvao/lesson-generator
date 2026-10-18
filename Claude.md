@@ -356,7 +356,7 @@ presentation (2026-10-05, §33; 3 cards per lesson by default) → ✅ **4 lesso
 own presentation/reading** (2026-10-06, §35: `source_activity_id` on `/api/generate`, text read server-side by
 `App\Support\LessonMaterial`; the pack's "+ Add" uses it automatically) → ✅ **6 lesson mode** (2026-10-06, §36: "Teach now" on the pack → `LessonPlayer.jsx`) → ✅ **7 "Suggest one with Claude"** on an empty stage (2026-10-06, §37: `lib/fillStage.js`; saved with
 `student_visible = false` until the teacher presses **Approve**, so unreviewed AI content never reaches a student).
-**Phase 1 is complete.** Next: real use on Radiant for a few lessons, then Phase 2 (plan-your-own home screen,
+**Phase 1 is complete.** **Units of three lessons** (2026-10-18, §39): every course unit is taught as 1A / 1B / 1C — `activities.trilha_part` (NULL = A, so old work stays put), tabs on the pack, `L01B` names, **+ From Library** always *copies* (`LibraryPicker.jsx`, `POST /api/activities/{id}/copy`). Next: real use on Radiant for a few lessons, then Phase 2 (plan-your-own home screen,
 automatic core material, homework pack). `activities.stage` (`lib/stages.js` ↔ `SavedActivityController::STAGES`) is NULL until a teacher picks
 one. Old activities are **not** back-filled, on purpose: picking the stage is the review.
 **"Use it!"** (`UseItChecklist.jsx`): `content.targets` on speaking types (`Activity::SPEAKING_CHECK_TYPES`; new

@@ -37,7 +37,7 @@ class StudentContentController extends Controller
             ->whereNotNull('trilha_lesson')
             ->orderBy('trilha_lesson')
             ->orderBy('created_at')
-            ->get(['id', 'name', 'type', 'trilha_lesson']);
+            ->get(['id', 'name', 'type', 'trilha_lesson', 'trilha_part']);
 
         // Latest attempt per activity for this student (plus a count for the
         // progress page later). One query for the whole trilha.
@@ -58,6 +58,7 @@ class StudentContentController extends Controller
                     'id'         => $a->id,
                     'name'       => $a->name,
                     'type'       => $a->type,
+                    'part'       => $a->trilha_part ?? 'A',   // 1A / 1B / 1C; saved before the split = A
                     'done'       => $mine !== null,
                     'last_score' => $latest?->score,
                     'last_max'   => $latest?->max_score,

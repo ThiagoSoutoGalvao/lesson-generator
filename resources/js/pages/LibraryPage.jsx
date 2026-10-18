@@ -295,7 +295,7 @@ function TrilhaCoverageGrid({ trilhaName, activities, lessonFilter, onSelectLess
 // SUGGESTED tidy-up of the old name (camelCase split, underscores → spaces) that the teacher checks — nothing is applied silently.
 function RenameActivity({ activity: a, onSaved, onCancel }) {
     const structured = Boolean(a.trilha);
-    const prefix = structured ? composeActivityName({ trilha: a.trilha, lesson: a.trilha_lesson, type: a.type, focus: '' }) : '';
+    const prefix = structured ? composeActivityName({ trilha: a.trilha, lesson: a.trilha_lesson, part: a.trilha_part, type: a.type, focus: '' }) : '';
     const original = structured && a.name.startsWith(`${prefix} · `) ? a.name.slice(prefix.length + 3) : a.name;
     const suggested = suggestName(original, { sentence: structured });
 
@@ -304,7 +304,7 @@ function RenameActivity({ activity: a, onSaved, onCancel }) {
     const [err, setErr]     = useState('');
 
     const clean     = structured ? tidyFocus(value) : tidyText(value);
-    const finalName = structured ? composeActivityName({ trilha: a.trilha, lesson: a.trilha_lesson, type: a.type, focus: clean }) : clean;
+    const finalName = structured ? composeActivityName({ trilha: a.trilha, lesson: a.trilha_lesson, part: a.trilha_part, type: a.type, focus: clean }) : clean;
     const hints     = structured ? focusHints(value, { typeLabel: NAME_TYPE_LABELS[a.type] ?? a.type }) : [];
     const changed   = clean && finalName !== a.name;
 
@@ -648,7 +648,7 @@ export default function LibraryPage() {
                             <div className="flex gap-2 flex-wrap">
                                 {a.trilha && (
                                     <span className={`text-xs font-semibold text-white px-2.5 py-1 rounded-full ${TRILHAS[a.trilha]?.accent ?? 'bg-white/8'}`}>
-                                        {TRILHAS[a.trilha]?.label ?? a.trilha}{a.trilha_lesson ? ` · L${String(a.trilha_lesson).padStart(2, '0')}` : ''}
+                                        {TRILHAS[a.trilha]?.label ?? a.trilha}{a.trilha_lesson ? ` · L${String(a.trilha_lesson).padStart(2, '0')}${a.trilha_part ?? ''}` : ''}
                                     </span>
                                 )}
                                 {a.book && (

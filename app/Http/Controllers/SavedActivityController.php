@@ -25,10 +25,13 @@ class SavedActivityController extends Controller
     }
 
     /** Fields a saved activity carries (everything except ownership). */
-    private const FIELDS = ['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'stage', 'built_by', 'student_visible'];
+    private const FIELDS = ['name', 'type', 'content', 'tags', 'folder', 'book', 'lesson', 'trilha', 'trilha_lesson', 'trilha_part', 'stage', 'built_by', 'student_visible'];
 
     /** Lesson-pack stages — the same keys as `resources/js/lib/stages.js`. */
     private const STAGES = 'warmer,presentation,practice,production';
+
+    /** The lessons of a course unit — the same letters as `parts` in `resources/js/lib/trilhas.js`. */
+    private const PARTS = 'A,B,C';
 
     /** Validation for one activity; $prefix is e.g. 'activities.*.' when validating a list. */
     private function activityRules(string $prefix = ''): array
@@ -43,6 +46,8 @@ class SavedActivityController extends Controller
             'lesson'  => ['nullable', 'string', 'max:255'],
             'trilha'        => ['nullable', 'string', 'in:Lights,Glow,Radiant'],
             'trilha_lesson' => ['nullable', 'integer', 'min:1', 'max:20'],
+            // Which lesson of the unit (1A / 1B / 1C); NULL counts as A.
+            'trilha_part'   => ['nullable', 'string', 'in:' . self::PARTS],
             'stage'         => ['nullable', 'string', 'in:' . self::STAGES],
             'built_by'      => ['nullable', 'string', 'max:100'],
             // false = saved hidden from students — a lesson pack's "Suggest one with Claude" saves unreviewed
@@ -103,23 +108,24 @@ class SavedActivityController extends Controller
     }
 
     /**
-     * Rename one of the teacher's own activities, set its lesson-pack stage (null clears it), and/or
-     * replace a speaking activity's "Use it!" targets (`content.targets`). Nothing else changes — trilha,
-     * lesson, the rest of the content and ownership are untouched. Whitespace in a new name is tidied
-     * the same way the Save panel does it.
+     * Rename one of the teacher's own activities, set its lesson-pack stage (null clears it), move it to
+     * another lesson of its unit (`trilha_part`, A / B / C), and/or replace a speaking activity's "Use it!"
+     * targets (`content.targets`). Nothing else changes — trilha, unit, the rest of the content and
+     * ownership are untouched. Whitespace in a new name is tidied the same way the Save panel does it.
      *
-     * PATCH /api/activities/{activity}   { name?, stage?, targets?, student_visible? }
+     * PATCH /api/activities/{activity}   { name?, stage?, trilha_part?, targets?, student_visible? }
      */
     public function update(Request $request, Activity $activity)
     {
         abort_if($activity->user_id !== auth()->id(), 403);
 
         // `stage: null` is a real request (clear the stage), so "at least one field" is checked by key, not by value.
-        abort_unless($request->has('name') || $request->exists('stage') || $request->has('targets') || $request->has('student_visible'), 422, 'Nothing to update.');
+        abort_unless($request->has('name') || $request->exists('stage') || $request->has('trilha_part') || $request->has('targets') || $request->has('student_visible'), 422, 'Nothing to update.');
 
         $request->validate([
             'name'      => ['sometimes', 'required', 'string', 'max:255'],
             'stage'     => ['nullable', 'string', 'in:' . self::STAGES],
+            'trilha_part' => ['sometimes', 'required', 'string', 'in:' . self::PARTS],
             'student_visible' => ['sometimes', 'boolean'],
             'targets'   => ['sometimes', 'array', 'max:12'],
             'targets.*' => ['string', 'max:80'],
@@ -141,6 +147,11 @@ class SavedActivityController extends Controller
             $changes['stage'] = $request->input('stage');
         }
 
+        if ($request->has('trilha_part')) {
+            abort_if($activity->trilha_lesson === null, 422, 'Only an activity in a course lesson can move to another lesson.');
+            $changes['trilha_part'] = $request->input('trilha_part');
+        }
+
         if ($request->has('targets')) {
             abort_unless(in_array($activity->type, Activity::SPEAKING_CHECK_TYPES, true), 422, 'This activity has no "Use it!" checklist.');
             $targets = array_values(array_unique(array_filter(array_map(
@@ -153,6 +164,33 @@ class SavedActivityController extends Controller
         $activity->update($changes);
 
         return response()->json($activity);
+    }
+
+    /**
+     * "+ From Library" on a lesson pack: a COPY of one of the teacher's own activities, placed in a course
+     * lesson + stage. The original stays exactly where it was — an older one-off can still be set as homework
+     * or used as an extra, and an activity already in another lesson keeps its place there. The copy keeps the
+     * original's content, author and visibility (an unapproved suggestion stays hidden from students).
+     *
+     * POST /api/activities/{activity}/copy   { name, trilha, trilha_lesson, trilha_part, stage }
+     */
+    public function copy(Request $request, Activity $activity)
+    {
+        abort_if($activity->user_id !== auth()->id(), 403);
+
+        $data = $request->validate([
+            'name'          => ['required', 'string', 'max:255'],
+            'trilha'        => ['required', 'string', 'in:Lights,Glow,Radiant'],
+            'trilha_lesson' => ['required', 'integer', 'min:1', 'max:20'],
+            'trilha_part'   => ['required', 'string', 'in:' . self::PARTS],
+            'stage'         => ['required', 'string', 'in:' . self::STAGES],
+        ]);
+
+        $copy = $activity->replicate(['folder', 'book', 'lesson']);
+        $copy->fill($data);
+        $copy->save();
+
+        return response()->json($copy, 201);
     }
 
     public function destroy(Activity $activity)

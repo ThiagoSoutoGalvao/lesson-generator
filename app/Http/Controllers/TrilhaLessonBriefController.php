@@ -21,8 +21,15 @@ class TrilhaLessonBriefController extends Controller
             'vocabulary'      => ['nullable', 'string', 'max:5000'],
             'level_notes'     => ['nullable', 'string', 'max:5000'],
             'source'          => ['nullable', 'string', 'max:2000'],
+            // One plan line per lesson of the unit (1A / 1B / 1C), edited on the lesson pack.
+            'part_plans'      => ['sometimes', 'nullable', 'array'],
+            'part_plans.*'    => ['nullable', 'string', 'max:300'],
             'updated_by'      => ['nullable', 'string', 'max:100'],
         ]);
+
+        if (isset($data['part_plans'])) {
+            $data['part_plans'] = array_intersect_key($data['part_plans'], array_flip(['A', 'B', 'C']));
+        }
 
         $brief = TrilhaLessonBrief::updateOrCreate(
             [

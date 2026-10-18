@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '@/components/Spinner';
-import { TRILHAS, TRILHA_NAMES, TRILHA_LEVEL, TRILHA_TOC } from '@/lib/trilhas';
+import { TRILHAS, TRILHA_NAMES, TRILHA_LEVEL, TRILHA_TOC, trilhaParts, partOf } from '@/lib/trilhas';
 import { STAGES } from '@/lib/stages';
 import { getLessonSession } from '@/lib/lessonSession';
 
@@ -24,12 +24,15 @@ export default function LessonsPage() {
     }, []);
 
     const config = TRILHAS[trilha];
+    const parts  = trilhaParts(trilha);
 
     return (
         <div className="flex flex-col gap-6">
             <div>
                 <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Lessons</h2>
-                <p className="lg-shell-text text-white/75 mt-1 text-sm">Each lesson in four stages: Warmer → Presentation → Practice → Production.</p>
+                <p className="lg-shell-text text-white/75 mt-1 text-sm">
+                    {parts.length ? `Each unit is ${parts.length} lessons (1A, 1B, 1C…), each in` : 'Each lesson in'} four stages: Warmer → Presentation → Practice → Production.
+                </p>
             </div>
 
             <div className="flex flex-wrap gap-2" role="group" aria-label="Course">
@@ -54,7 +57,7 @@ export default function LessonsPage() {
             {!loading && !error && (
                 <div className="lg-surface border rounded-2xl overflow-hidden">
                     <div className="hidden sm:grid grid-cols-[1fr_repeat(4,5.5rem)] gap-2 px-5 py-3 text-[11px] uppercase tracking-wide text-white/50 border-b border-white/10">
-                        <span>Lesson</span>
+                        <span>{parts.length ? 'Unit' : 'Lesson'}</span>
                         {STAGES.map(s => <span key={s.key} className="text-center">{s.label}</span>)}
                     </div>
                     <ul aria-label={`${config.label} lessons`}>
@@ -69,8 +72,13 @@ export default function LessonsPage() {
                                         className="grid grid-cols-1 sm:grid-cols-[1fr_repeat(4,5.5rem)] gap-2 items-center px-5 py-3.5 hover:bg-white/5"
                                     >
                                         <span className="min-w-0">
-                                            <span className="text-white font-semibold">Lesson {n}</span>
+                                            <span className="text-white font-semibold">{parts.length ? 'Unit' : 'Lesson'} {n}</span>
                                             {topic && <span className="block text-white/60 text-sm truncate">{topic}</span>}
+                                            {parts.length > 0 && (
+                                                <span className="block text-white/55 text-xs" data-testid="unit-parts">
+                                                    {parts.map(p => `${n}${p}: ${mine.filter(a => partOf(a) === p).length}`).join(' · ')}
+                                                </span>
+                                            )}
                                             {unplaced > 0 && <span className="text-amber-200 text-xs">{unplaced} not placed yet</span>}
                                         </span>
                                         <span className="flex sm:contents gap-3">

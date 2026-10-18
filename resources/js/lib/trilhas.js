@@ -1,12 +1,28 @@
-// Shared config for the Aurora trilha workflow — used by SavePanel and LibraryPage.
+// Shared config for the Aurora trilha workflow — used by SavePanel, LibraryPage and the lesson packs.
+
+// Each numbered unit is taught over three lessons, 1A / 1B / 1C (2026-10-18). An activity saved
+// before the split has no part and counts as lesson A, so a finished course keeps everything where
+// it was; B and C fill up when a teacher gets to them. Drop `parts` from a course to go back to one
+// lesson per unit (the server-side list is SavedActivityController::PARTS).
+const PARTS = ['A', 'B', 'C'];
 
 export const TRILHAS = {
-    Lights:  { label: 'LIGHTS',  lessons: 8,  accent: 'bg-sky-500/80'  },
-    Glow:    { label: 'GLOW',    lessons: 8,  accent: 'bg-amber-500/80' },
-    Radiant: { label: 'RADIANT', lessons: 12, accent: 'bg-rose-500/80'  },
+    Lights:  { label: 'LIGHTS',  lessons: 8,  parts: PARTS, accent: 'bg-sky-500/80'  },
+    Glow:    { label: 'GLOW',    lessons: 8,  parts: PARTS, accent: 'bg-amber-500/80' },
+    Radiant: { label: 'RADIANT', lessons: 12, parts: PARTS, accent: 'bg-rose-500/80'  },
 };
 
 export const TRILHA_NAMES = Object.keys(TRILHAS);
+
+/** The lessons of one unit for a course: ['A', 'B', 'C'], or [] when it has one lesson per unit. */
+export function trilhaParts(trilha) {
+    return TRILHAS[trilha]?.parts ?? [];
+}
+
+/** Which lesson of its unit an activity is in — saved before the split (no part) means A. */
+export function partOf(activity) {
+    return activity.trilha_part ?? 'A';
+}
 
 // The level /generate pre-selects while a teacher is adding to a trilha lesson (see
 // `lib/levels.js`). Lights is for real beginners (confirmed by its teachers); Glow and
@@ -201,11 +217,16 @@ export const LESSON_SLOTS = [
     { key: 'speaking',     label: 'Speaking',     types: ['discussion_questions', 'picture_prompts', 'role_play', 'story_builder', 'debate', 'mini_presentation'] },
 ];
 
-// "LIGHTS L03 · Quiz · Present continuous & everyday verbs"
-export function composeActivityName({ trilha, lesson, type, focus }) {
+// "LIGHTS L03 · Quiz · Present continuous & everyday verbs"; with a part, "RADIANT L01B · Cloze · …".
+export function composeActivityName({ trilha, lesson, part, type, focus }) {
     const t = TRILHAS[trilha]?.label ?? (trilha ?? '').toUpperCase();
-    const l = lesson ? `L${String(lesson).padStart(2, '0')}` : '';
+    const l = lesson ? `L${String(lesson).padStart(2, '0')}${part ?? ''}` : '';
     const typeLabel = TYPE_LABELS[type] ?? type;
     const f = (focus ?? '').trim();
     return [`${t} ${l}`.trim(), typeLabel, f].filter(Boolean).join(' · ');
+}
+
+// The Focus of a standard name ("RADIANT L01B · Cloze · Have you ever" → "Have you ever"); any other name comes back whole.
+export function focusFromName(name) {
+    return String(name ?? '').replace(/^[A-Z]+ L\d{2}[A-Z]? · [^·]+ · /, '');
 }

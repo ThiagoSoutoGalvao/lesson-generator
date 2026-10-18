@@ -61,6 +61,7 @@ Route::middleware('auth:web')->group(function () {
         Route::post('/activities', [SavedActivityController::class, 'store']);
         Route::post('/activities/import', [SavedActivityController::class, 'import']);
         Route::patch('/activities/{activity}', [SavedActivityController::class, 'update']);
+        Route::post('/activities/{activity}/copy', [SavedActivityController::class, 'copy']);
         Route::delete('/activities/{activity}', [SavedActivityController::class, 'destroy']);
         Route::get('/folders', [SavedActivityController::class, 'folders']);
 
