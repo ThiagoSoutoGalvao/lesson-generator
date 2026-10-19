@@ -1942,14 +1942,21 @@ EOT;
      * Decode Claude's JSON reply. Claude copies source text into string values
      * verbatim, and a straight double quote in that text ("travel techs") comes
      * back unescaped, which breaks the whole reply — so on a failed decode the
-     * stray quotes are escaped and the decode is tried once more.
+     * stray quotes are escaped and the decode is tried once more. A trailing
+     * comma before `]` / `}` ("…sleep in?", ],) is dropped first — it also
+     * makes the closing quote before it look stray.
      */
     private function decodeJson(?string $text): array
     {
         $data = json_decode((string) $text, true);
 
         if (json_last_error() !== JSON_ERROR_NONE) {
-            $data = json_decode($this->escapeStrayQuotes((string) $text), true);
+            $fixed = preg_replace('/,(\s*[\]}])/', '$1', (string) $text);
+            $data = json_decode($fixed, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                $data = json_decode($this->escapeStrayQuotes($fixed), true);
+            }
         }
 
         if (json_last_error() !== JSON_ERROR_NONE || ! is_array($data)) {
