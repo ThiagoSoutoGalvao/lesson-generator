@@ -143,6 +143,7 @@ class ActivityController extends Controller
             'vocabulary' => ['nullable', 'string', 'max:500'],
             'paragraphs' => ['nullable', 'integer', 'min:1', 'max:10'],
             'extra'      => ['nullable', 'string', 'max:3000'],
+            'level'      => ['nullable', 'in:A1,A2,B1,B2'],
         ]);
 
         try {
@@ -150,7 +151,8 @@ class ActivityController extends Controller
                 $request->topic,
                 $request->input('vocabulary', ''),
                 (int) $request->input('paragraphs', 3),
-                $request->input('extra', '')
+                $request->input('extra', ''),
+                $request->input('level')
             );
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

@@ -1694,8 +1694,10 @@ EOT;
         return $data;
     }
 
-    public function generateReadingText(string $topic, string $vocabulary = '', int $paragraphs = 3, string $extra = ''): array
+    public function generateReadingText(string $topic, string $vocabulary = '', int $paragraphs = 3, string $extra = '', ?string $level = null): array
     {
+        $lv = LanguageLevel::from($level);
+
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
@@ -1706,7 +1708,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildReadingTextPrompt($topic, $vocabulary, $paragraphs, $extra),
+                    'content' => $this->buildReadingTextPrompt($topic, $vocabulary, $paragraphs, $extra, $lv),
                 ],
             ],
         ]);
@@ -1715,19 +1717,22 @@ EOT;
 
         $text = $response->json('content.0.text');
         $data = $this->decodeJson($text);
+        $data['level'] = $lv->code;
 
         return $data;
     }
 
-    private function buildReadingTextPrompt(string $topic, string $vocabulary, int $paragraphs, string $extra): string
+    private function buildReadingTextPrompt(string $topic, string $vocabulary, int $paragraphs, string $extra, LanguageLevel $lv): string
     {
+        // Shorter paragraphs below B1; B1 keeps the original "3 to 6".
+        $sentences = match ($lv->code) { 'A1' => '2 to 4', 'A2' => '3 to 5', default => '3 to 6' };
         $vocabSection = $vocabulary
             ? "\nTarget vocabulary to naturally include in the text: {$vocabulary}. Use every one of these words or phrases at least once, in natural context."
             : "\nSelect 6 to 10 useful vocabulary words or phrases from the text you write, to be listed as a glossary.";
         $extraSection = $extra ? "\nExtra instructions: {$extra}" : '';
 
         return <<<EOT
-Write a reading text for B1-B2 English learners about the following topic: {$topic}{$vocabSection}{$extraSection}
+Write a reading text for {$lv->cefr} English learners about the following topic: {$topic}{$vocabSection}{$extraSection}
 
 Return a JSON object with EXACTLY this structure:
 {
@@ -1739,17 +1744,17 @@ Return a JSON object with EXACTLY this structure:
     "<paragraph 2 text>"
   ],
   "vocabulary": [
-    { "word": "<a target vocabulary word or phrase, exactly as it appears in the paragraphs above>", "definition": "<a clear, simple B1-B2 definition>" }
+    { "word": "<a target vocabulary word or phrase, exactly as it appears in the paragraphs above>", "definition": "<a clear, simple {$lv->cefr} definition>" }
   ]
 }
 
 Rules:
 - Generate EXACTLY {$paragraphs} paragraph(s) — do not generate more or fewer
-- Each paragraph should be 3 to 6 sentences long and flow naturally as a coherent text, not a disconnected list of sentences
+- Each paragraph should be {$sentences} sentences long and flow naturally as a coherent text, not a disconnected list of sentences
 - The "word" field in each vocabulary entry MUST appear verbatim (same spelling, any capitalization) somewhere in the paragraphs text, so it can be highlighted
 - Provide between 5 and 10 vocabulary entries total
-- Definitions must be simple and clear for B1-B2 learners, avoiding complex words in the definition itself
-- Return ONLY the raw JSON object — no markdown backticks, no explanation
+- Definitions must be simple and clear for {$lv->cefr} learners, avoiding complex words in the definition itself
+- Return ONLY the raw JSON object — no markdown backticks, no explanation{$lv->rules}
 EOT;
     }
 

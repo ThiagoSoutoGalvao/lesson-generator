@@ -3,6 +3,7 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Spinner from '@/components/Spinner';
 import { A2_PARTS } from '@/lib/cambridgeLevels';
+import { LEVELS, DEFAULT_LEVEL } from '@/lib/levels';
 
 // ─── Presentation Tab ─────────────────────────────────────────────────────────
 
@@ -118,6 +119,7 @@ function ReadingTextGenerator() {
     const [vocabulary, setVocabulary] = useState('');
     const [extra, setExtra]           = useState('');
     const [paragraphs, setParagraphs] = useState(3);
+    const [level, setLevel]           = useState(DEFAULT_LEVEL);
     const [status, setStatus]         = useState('idle');
     const [errorMsg, setErrorMsg]     = useState('');
 
@@ -131,6 +133,7 @@ function ReadingTextGenerator() {
                 vocabulary: vocabulary.trim() || undefined,
                 extra:      extra.trim() || undefined,
                 paragraphs,
+                level,
             });
             navigate('/generate', { state: { activity: data } });
         } catch (err) {
@@ -170,6 +173,32 @@ function ReadingTextGenerator() {
                     disabled={status === 'loading'}
                 />
                 <p className="text-white/40 text-xs">Leave blank and Claude will pick useful vocabulary from the text itself.</p>
+            </div>
+
+            <div className="flex flex-col gap-1.5">
+                <span id="reading-level-label" className="text-sm font-medium text-white/80">
+                    Level <span className="text-white/40 font-normal ml-1">— how simple to keep the language</span>
+                </span>
+                <div className="grid grid-cols-4 gap-1.5 max-w-md" role="group" aria-labelledby="reading-level-label">
+                    {LEVELS.map(l => (
+                        <button
+                            key={l.id}
+                            type="button"
+                            onClick={() => setLevel(l.id)}
+                            disabled={status === 'loading'}
+                            aria-pressed={level === l.id}
+                            className={`flex flex-col items-center gap-0.5 py-2 rounded-xl border transition-colors cursor-pointer disabled:opacity-40 ${
+                                level === l.id
+                                    ? 'bg-emerald-500 border-emerald-400 text-white'
+                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
+                            }`}
+                        >
+                            <span className="text-sm font-semibold">{l.label}</span>
+                            <span className={`text-[10px] ${level === l.id ? 'text-white/90' : 'text-white/45'}`}>{l.name}</span>
+                        </button>
+                    ))}
+                </div>
+                <p className="text-white/40 text-xs">{LEVELS.find(l => l.id === level)?.say}</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
