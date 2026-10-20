@@ -1665,6 +1665,7 @@ Return a JSON object with EXACTLY this structure:
 Rules:
 - Each topic is something the student can talk about from their own life, work or opinions — no research needed
 - 4-5 steps per topic, in speaking order, starting with a hook and ending with a close that invites a question
+- The middle steps follow the topic's own natural order: a routine or a day goes in time order (waking up, morning, work or school, evening, bed), a story or experience goes in the order it happened, a process in the order it is done. Never jump ahead (e.g. work before getting up)
 - "minutes" is a suggested length (1-5), not a timer — 2 unless the task says otherwise
 {$this->productionRules('topics', $lv)}
 EOT;
