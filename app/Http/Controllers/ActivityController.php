@@ -141,8 +141,8 @@ class ActivityController extends Controller
         $request->validate([
             'topic'      => ['required', 'string', 'max:200'],
             'vocabulary' => ['nullable', 'string', 'max:500'],
-            'paragraphs' => ['nullable', 'integer', 'min:1', 'max:8'],
-            'extra'      => ['nullable', 'string', 'max:1000'],
+            'paragraphs' => ['nullable', 'integer', 'min:1', 'max:10'],
+            'extra'      => ['nullable', 'string', 'max:3000'],
         ]);
 
         try {
@@ -164,7 +164,7 @@ class ActivityController extends Controller
         $request->validate([
             'essay_text'   => ['required', 'string', 'max:8000'],
             'student_name' => ['nullable', 'string', 'max:100'],
-            'extra'        => ['nullable', 'string', 'max:1000'],
+            'extra'        => ['nullable', 'string', 'max:3000'],
         ]);
 
         try {
