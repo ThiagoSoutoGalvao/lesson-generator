@@ -43,6 +43,11 @@ so the level goes in the instructions.
 
 If he asks for a field a tool doesn't have, say so and put the content where it will actually reach Claude.
 
+**Length limits** are enforced server-side — read the `max:` rules in `app/Http/Controllers/ActivityController.php`
+(as of 2026-11-02: Topic ≤ 200 on every tool, Target vocabulary ≤ 500, Extra instructions ≤ 3000, the /generate
+Instructions box ≤ 1000). **Count the characters of every block before handing it over** and stay well under. Keep the
+Topic a short title + one-line premise; plot details, twists and endings go in Extra instructions.
+
 ## 3. Suggest, then hand over
 
 - **Suggestions:** 2–3 options, each with a topic, the target language and a one-line pitch; recommend one
