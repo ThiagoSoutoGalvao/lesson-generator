@@ -5,8 +5,11 @@ import DisplayControls from '@/components/DisplayControls';
 import UseItChecklist from '@/components/UseItChecklist';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightPhoto, LightProgress, LIGHT } from '@/components/light/LightFrame';
 
 const FONT_SIZES = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
+const LIGHT_SIZES = ['text-[22px] sm:text-2xl', 'text-2xl sm:text-3xl', 'text-[24px] sm:text-[36px]', 'text-[28px] sm:text-[42px]', 'text-[32px] sm:text-[50px]'];
 const FOLLOW_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
 export default function DiscussionQuestionsActivity({ activity, onClose, onComplete, hideSave, savedId = null, onTargetsChange }) {
@@ -17,6 +20,7 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
     const [displayQuestion, setDisplayQuestion] = useState(activity.questions[0]?.question ?? '');
     const [followUps, setFollowUps]         = useState(activity.questions[0]?.follow_ups ?? []);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below
     // "Use it!" targets (editable) and the Library id they save against — set by the Library launch, or by
     // saving this freshly generated activity from the Save panel.
     const [targets, setTargets]   = useState(activity.targets ?? []);
@@ -66,11 +70,62 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' };
 
+    const checklist = (
+        <UseItChecklist
+            targets={targets}
+            savedId={activityId}
+            onTargetsChange={next => { setTargets(next); onTargetsChange?.(next); }}
+        />
+    );
+    const savePanel = !hideSave && showSave
+        ? <SavePanel activity={{ ...activity, targets }} onSaved={a => setActivityId(a.id)} onDone={() => setShowSave(false)} />
+        : null;
+
+    // Aurora Business light layout: the photo as a band above the question (never behind it), "Use it!" on the right.
+    if (light) {
+        return (
+            <LightFrame
+                eyebrow="Discussion" title={activity.topic || 'Discuss'}
+                extra={<span className="hidden sm:flex"><LightProgress index={index} total={total} /></span>}
+                onSave={hideSave ? null : () => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                overlay={savePanel}
+            >
+                <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-7 flex flex-col md:flex-row gap-5 sm:gap-7">
+                    <div className="flex-1 min-w-0 flex flex-col gap-4 sm:gap-5">
+                        <LightPhoto url={bgUrl} className="h-[150px] sm:h-[200px]" />
+                        <section className={`${LIGHT.card} p-5 sm:p-9 flex flex-col gap-5`} aria-label="Question">
+                            <p className={LIGHT.eyebrow}><span className="sm:hidden">Question {index + 1} of {total} · </span>Discuss</p>
+                            <h1 className={`font-display ${LIGHT_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{displayQuestion}</h1>
+                            {followUps.length > 0 && (
+                                <div className="flex flex-col gap-2">
+                                    <p className="text-[14px] font-semibold text-[#4A5163]">Follow-up questions — tap one to ask it</p>
+                                    <div className="flex flex-wrap gap-2.5">
+                                        {followUps.map((fu, i) => (
+                                            <button key={i} type="button" onClick={() => promoteFollowUp(fu)}
+                                                className={`text-left px-4 py-2.5 rounded-xl bg-[#F6F7F9] border border-[#DDE1E8] hover:bg-[#FDEEE7] hover:border-[#E0521F] ${FOLLOW_SIZES[fontSizeIdx]} cursor-pointer`}>
+                                                {fu}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                            <div className="flex flex-wrap justify-end gap-3 pt-1">
+                                {index > 0 && <button type="button" onClick={prev} className={LIGHT.secondary}>← Previous</button>}
+                                <button type="button" onClick={next} disabled={index === total - 1} className={LIGHT.primary}>{index === total - 1 ? 'Last question' : 'Next question'}</button>
+                            </div>
+                        </section>
+                    </div>
+                    <div className="md:w-[340px] md:shrink-0 flex flex-col">{checklist}</div>
+                </div>
+            </LightFrame>
+        );
+    }
+
     return (
         <div className="fixed inset-0 flex flex-col z-50" style={bgStyle}>
             <div className="absolute inset-0 bg-black/40" />
 
-            {!hideSave && showSave && <SavePanel activity={{ ...activity, targets }} onSaved={a => setActivityId(a.id)} onDone={() => setShowSave(false)} />}
+            {savePanel}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4">
@@ -122,11 +177,7 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
                 </div>
             </div>
             <div className="shrink-0 md:w-80 md:min-h-0 md:overflow-y-auto px-6 md:pl-0 md:pr-8 pb-8 md:py-8 flex flex-col">
-                <UseItChecklist
-                    targets={targets}
-                    savedId={activityId}
-                    onTargetsChange={next => { setTargets(next); onTargetsChange?.(next); }}
-                />
+                {checklist}
             </div>
             </div>
         </div>

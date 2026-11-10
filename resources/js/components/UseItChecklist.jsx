@@ -25,11 +25,11 @@ export default function UseItChecklist({ targets = [], savedId = null, onTargets
     if (isStudentApp()) {
         if (targets.length === 0) return null;
         return (
-            <aside aria-label="Try to use" className="rounded-2xl bg-black/35 border border-white/15 backdrop-blur-sm p-4 flex flex-col gap-2">
-                <p className="font-display font-semibold text-white text-lg">Try to use</p>
+            <aside aria-label="Try to use" className="rounded-2xl bg-ui-box border border-ui-line backdrop-blur-sm p-4 flex flex-col gap-2">
+                <p className="font-display font-semibold text-ui-ink text-lg">Try to use</p>
                 <ul className="flex flex-col gap-1.5">
                     {targets.map(t => (
-                        <li key={t} className="text-white/90 text-base rounded-xl border border-dashed border-white/25 px-3 py-2">{t}</li>
+                        <li key={t} className="text-ui-ink text-base rounded-xl border border-dashed border-ui-line px-3 py-2">{t}</li>
                     ))}
                 </ul>
             </aside>
@@ -132,9 +132,9 @@ function TeacherChecklist({ targets, savedId, onTargetsChange }) {
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-expanded="false"
-                className="self-start rounded-xl bg-black/40 border border-white/20 text-white text-sm font-semibold px-4 py-2.5 cursor-pointer hover:bg-black/55"
+                className="self-start rounded-xl bg-ui-box border border-ui-line text-ui-ink text-sm font-semibold px-4 py-2.5 cursor-pointer hover:bg-ui-well"
             >
-                Use it! {targets.length > 0 && <span className="text-[#5be0a4]">{usedCount} / {targets.length}</span>}
+                Use it! {targets.length > 0 && <span className="text-ui-good">{usedCount} / {targets.length}</span>}
             </button>
         );
     }
@@ -144,20 +144,20 @@ function TeacherChecklist({ targets, savedId, onTargetsChange }) {
     const canSave = Boolean(student && savedId && targets.length > 0 && dirty && status !== 'saving');
 
     return (
-        <aside aria-label="Use it! checklist" className="rounded-2xl bg-black/40 border border-white/15 backdrop-blur-sm p-4 flex flex-col gap-3 text-white">
+        <aside aria-label="Use it! checklist" className="rounded-2xl bg-ui-box border border-ui-line backdrop-blur-sm p-4 flex flex-col gap-3 text-ui-ink">
             <div className="flex items-center gap-2">
                 <p className="font-display font-semibold text-lg flex-1">Use it!</p>
-                {targets.length > 0 && <p className="text-sm font-bold text-[#5be0a4] tabular-nums" data-testid="useit-count">{usedCount} / {targets.length}</p>}
+                {targets.length > 0 && <p className="text-sm font-bold text-ui-good tabular-nums" data-testid="useit-count">{usedCount} / {targets.length}</p>}
                 <button type="button" onClick={() => setOpen(false)} aria-expanded="true" aria-label="Hide the checklist"
-                    className="text-white/50 hover:text-white text-sm px-2 py-1 cursor-pointer">Hide</button>
+                    className="text-ui-faint hover:text-ui-ink text-sm px-2 py-1 cursor-pointer">Hide</button>
             </div>
 
-            <label className="flex flex-col gap-1 text-xs text-white/60">
+            <label className="flex flex-col gap-1 text-xs text-ui-muted">
                 Who’s this with?
                 <select
                     value={student ? String(student.id) : ''}
                     onChange={pickStudent}
-                    className="bg-white/10 border border-white/20 text-white rounded-lg px-2.5 py-2 text-sm cursor-pointer"
+                    className="bg-ui-field border border-ui-line text-ui-ink rounded-lg px-2.5 py-2 text-sm cursor-pointer"
                 >
                     <option value="" className="text-black bg-white">Nobody — don’t save</option>
                     {/* The remembered student shows straight away, before (or even without) the list loading —
@@ -171,7 +171,7 @@ function TeacherChecklist({ targets, savedId, onTargetsChange }) {
 
             {editing ? (
                 <form onSubmit={saveTargets} className="flex flex-col gap-2">
-                    <label htmlFor="useit-targets" className="text-xs text-white/60">One item per line — a structure, a phrase or a word group</label>
+                    <label htmlFor="useit-targets" className="text-xs text-ui-muted">One item per line — a structure, a phrase or a word group</label>
                     <textarea
                         id="useit-targets"
                         value={draft}
@@ -179,22 +179,22 @@ function TeacherChecklist({ targets, savedId, onTargetsChange }) {
                         rows={6}
                         autoFocus
                         placeholder={'Have you ever…?\nI’ve never…'}
-                        className="bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm"
+                        className="bg-ui-field border border-ui-line text-ui-ink placeholder:text-ui-faint rounded-lg px-3 py-2 text-sm"
                     />
-                    {editErr && <p className="text-red-300 text-xs">{editErr}</p>}
+                    {editErr && <p className="text-ui-danger text-xs">{editErr}</p>}
                     <div className="flex gap-2 justify-end">
-                        <button type="button" onClick={() => setEditing(false)} className="text-white/60 hover:text-white text-sm px-3 py-2 cursor-pointer">Cancel</button>
-                        <button type="submit" className="bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">Save list</button>
+                        <button type="button" onClick={() => setEditing(false)} className="text-ui-muted hover:text-ui-ink text-sm px-3 py-2 cursor-pointer">Cancel</button>
+                        <button type="submit" className="bg-[#e0521f] hover:bg-[#c9461a] text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">Save list</button>
                     </div>
                 </form>
             ) : targets.length === 0 ? (
                 <button type="button" onClick={startEdit}
-                    className="rounded-xl border border-dashed border-white/30 text-white/80 hover:text-white text-sm px-3 py-3 cursor-pointer">
+                    className="rounded-xl border border-dashed border-ui-line text-ui-muted hover:text-ui-ink text-sm px-3 py-3 cursor-pointer">
                     + Add the target language to listen for
                 </button>
             ) : (
                 <>
-                    <p className="text-xs text-white/55">Tick each one when the student uses it.</p>
+                    <p className="text-xs text-ui-faint">Tick each one when the student uses it.</p>
                     <div className="flex flex-col gap-1.5">
                         {targets.map((t, i) => (
                             <button
@@ -203,7 +203,7 @@ function TeacherChecklist({ targets, savedId, onTargetsChange }) {
                                 aria-pressed={used.has(i)}
                                 onClick={() => toggle(i)}
                                 className={`flex items-center gap-2.5 text-left min-h-11 px-3 py-2 rounded-xl text-[15px] cursor-pointer transition-colors ${
-                                    used.has(i) ? 'bg-[#1f5c45] border border-[#3fae82] text-white' : 'border border-dashed border-white/30 text-white/90 hover:bg-white/5'
+                                    used.has(i) ? 'bg-ui-good-bg border-2 border-ui-good-line text-ui-ink font-semibold' : 'border border-dashed border-ui-line text-ui-ink hover:bg-ui-well'
                                 }`}
                             >
                                 <span className="w-4 shrink-0 font-bold">{used.has(i) ? '✓' : ''}</span>
@@ -216,18 +216,18 @@ function TeacherChecklist({ targets, savedId, onTargetsChange }) {
                         type="button"
                         onClick={save}
                         disabled={!canSave}
-                        className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-xl cursor-pointer"
+                        className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-ui-well disabled:text-ui-faint disabled:cursor-not-allowed text-white text-sm font-semibold px-4 py-2.5 rounded-xl cursor-pointer"
                     >
                         {status === 'saving' ? 'Saving…' : name ? `${attemptId ? 'Update' : 'Save to'} ${name}’s progress` : 'Save to progress'}
                     </button>
-                    <p className="text-xs text-white/55 -mt-1" role="status">
-                        {status === 'error' ? <span className="text-red-300">Could not save. Please try again.</span>
+                    <p className="text-xs text-ui-faint -mt-1" role="status">
+                        {status === 'error' ? <span className="text-ui-danger">Could not save. Please try again.</span>
                             : !savedId ? 'Save the activity to the Library first to record ticks.'
                             : !student ? 'Pick a student to save the ticks.'
                             : attemptId && !dirty ? `Saved — ${usedCount} of ${targets.length} used.`
                             : null}
                     </p>
-                    <button type="button" onClick={startEdit} className="self-start text-xs text-white/50 hover:text-white underline cursor-pointer">Edit the list</button>
+                    <button type="button" onClick={startEdit} className="self-start text-xs text-ui-faint hover:text-ui-ink underline cursor-pointer">Edit the list</button>
                 </>
             )}
         </aside>

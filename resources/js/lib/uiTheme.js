@@ -38,3 +38,8 @@ export function useIsLightUi() {
         () => false,
     );
 }
+
+/** The Display panel's text colour (white, yellow…) on the dark theme; Aurora indigo on the light one. */
+export function useInkColor(textColor) {
+    return useIsLightUi() ? 'text-ui-ink' : textColor;
+}

@@ -129,7 +129,9 @@ Homework is hidden inside the Progress tab.
 - [x] Add the three modules as courses (config + server lists + tables of contents) — flex days not modelled yet
 - [x] Light theme: shared pieces — tokens, page frame, Lessons overview, lesson pack, Teach now, Library picker
 - [x] Light templates: Quiz
-- [ ] Light templates: the rest First Steps Unit 1 uses (speaking shell + role-play, Reading Text, Presentation, flashcards / match pairs…)
+- [x] Light templates: speaking — Role-play, Story builder, Debate, Mini presentation, Discussion, Picture prompts + "Use it!"
+- [ ] Light templates: Reading Text, Presentation (1A), then flashcards / match pairs / other practice types
+- [ ] Role-play cards: "You can say…" sentence starters for A2 (in the mockup; needs a generator + data change)
 - [ ] Clean Aurora Business student app (homework first)
 - [ ] Plan First Steps Unit 1 (1A/1B/1C) with `/plan-lesson`, build it in the light templates it uses
 - [ ] "Use it!" per student, Writing goal
@@ -142,6 +144,15 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+
+- **2026-11-10** — **Light theme, step 2: the speaking templates.** `SpeakingActivityShell` (Role-play, Story
+  builder, Debate, Mini presentation) has a light layout — card left, "Use it!" right, stacked on a phone — and
+  the four cards, Discussion questions, Picture prompts (whole photo on its own panel) and the "Use it!"
+  checklist follow the `ui-*` tokens. `useInkColor()` (lib/uiTheme.js) keeps text indigo on light screens even
+  if the Display panel has white/yellow chosen. Checks: `qa_light_speaking.mjs` (40, incl. ticks saved to a
+  student, phone scroll); old `qa_production` 44, `_tmp_qa_useit` 36, `_tmp_qa_lesson_mode` 25 pass.
+  `qa_batch2`'s "Library labels the new types" fails **before and after** this change (an old test, not the
+  theme). Still local, not pushed.
 
 - **2026-11-10** — **Light theme, step 1.** How it works: `ui-*` colour tokens in `app.css` (`text-ui-ink`,
   `bg-ui-card`, `border-ui-line`…) are the old dark look by default and turn light when `<html data-ui="light">`

@@ -28,6 +28,9 @@
     --color-ui-well: var(--ui-well);
     --color-ui-field: var(--ui-field);
     --color-ui-panel: var(--ui-panel);
+    --color-ui-box: var(--ui-box);
+    --color-ui-good-bg: var(--ui-good-bg);
+    --color-ui-good-line: var(--ui-good-line);
     --color-ui-accent: var(--ui-accent);
     --color-ui-sel: var(--ui-sel);
     --color-ui-sel-line: var(--ui-sel-line);
@@ -600,6 +603,9 @@ body.tf-active main .text-xs {
     --ui-well: rgba(0, 0, 0, .2);
     --ui-field: rgba(255, 255, 255, .1);
     --ui-panel: #241a5c;
+    --ui-box: rgba(0, 0, 0, .32);
+    --ui-good-bg: #1f5c45;
+    --ui-good-line: #3fae82;
     --ui-accent: #ffb59a;
     --ui-sel: rgba(252, 104, 64, .2);
     --ui-sel-line: #fc6840;
@@ -619,6 +625,9 @@ body.tf-active main .text-xs {
     --ui-well: #F6F7F9;
     --ui-field: #FFFFFF;
     --ui-panel: #FFFFFF;
+    --ui-box: #FFFFFF;
+    --ui-good-bg: #E5F4EC;
+    --ui-good-line: #1E7A4C;
     --ui-accent: #9A3412;
     --ui-sel: #FDEEE7;
     --ui-sel-line: #E0521F;

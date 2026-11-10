@@ -1727,3 +1727,16 @@ Plan, decisions and the running log live in `AuroraBusiness.md`. This step only 
 - Checks: `qa_light_theme.mjs` (20: light on/off per course, colours, a wrong answer → score 1 of 2, phone width, no
   console errors); `_tmp_qa_lesson_pack` 32, `_tmp_qa_lesson_mode` 25, `_tmp_qa_fill_stage` 19, `_tmp_qa_useit` 36,
   `qa_lesson_parts` 46 all pass against `php artisan serve --port=8124`.
+
+## 42. Aurora Business light theme, step 2: the speaking templates (2026-11-10)
+
+- `SpeakingActivityShell` renders on `LightFrame` when `useIsLightUi()` (card column + a 340px "Use it!" column);
+  `RolePlay`, `StoryBuilder`, `Debate`, `MiniPresentation` cards and `UseItChecklist` now use `ui-*` tokens (new:
+  `ui-box`, `ui-good-bg`, `ui-good-line`), so they follow the theme with no light branch of their own.
+  `DiscussionQuestions` and `PicturePrompts` (own frames) got a light render; Picture prompts keeps the photo
+  `object-contain` (the crop fix). `useInkColor(textColor)` in `lib/uiTheme.js`.
+- Small dark-look changes: the Use it! "Save list" button and the Mini presentation's current-step pill are coral.
+- Checks: `qa_light_speaking.mjs` 40; `qa_production` 44 (the `_tmp_` copy is stale — old "Hook notes" label),
+  `_tmp_qa_useit` 36, `_tmp_qa_lesson_mode` 25. `qa_batch2` "Library labels the new types" fails on the code
+  before this step too — pre-existing.
+- Not done: role-play "You can say…" starters (mockup) need a generator/data change.

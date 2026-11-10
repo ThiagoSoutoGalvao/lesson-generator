@@ -3,6 +3,8 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import UseItChecklist from '@/components/UseItChecklist';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
 
 // The frame shared by the production templates (Aurora Lessons Phase 1, step 3): Role-play cards, Story
 // builder, Debate cards, Mini presentation. It owns the header, the Save panel, card-by-card navigation, the
@@ -24,6 +26,7 @@ export default function SpeakingActivityShell({
     const [targets, setTargets]   = useState(activity.targets ?? []);
     const [activityId, setActivityId] = useState(savedId);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below; each card's classes follow the ui-* tokens
 
     useEffect(() => {
         function onKey(e) {
@@ -48,9 +51,59 @@ export default function SpeakingActivityShell({
         else setIndex(i => i + 1);
     }
 
+    const checklist = (
+        <UseItChecklist
+            targets={targets}
+            savedId={activityId}
+            onTargetsChange={list => { setTargets(list); onTargetsChange?.(list); }}
+        />
+    );
+    const savePanel = !hideSave && showSave
+        ? <SavePanel activity={{ ...activity, targets }} onSaved={a => setActivityId(a.id)} onDone={() => setShowSave(false)} />
+        : null;
+
+    // Aurora Business light layout (mockup "Activity · Role-play card"): the card on the left, "Use it!" on the right.
+    if (light) {
+        return (
+            <LightFrame
+                eyebrow={`${label} · Production`} title={activity.topic || label}
+                extra={<span className="hidden sm:flex"><LightProgress index={index} total={total} label={itemNoun} /></span>}
+                onSave={hideSave ? null : () => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                overlay={savePanel}
+            >
+                <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-7 flex flex-col md:flex-row gap-5 sm:gap-7">
+                    <div className="flex-1 min-w-0 flex flex-col gap-5">
+                        {finished ? (
+                            <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="All done">
+                                <p className={LIGHT.eyebrow}>{label}</p>
+                                <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">All done!</h1>
+                                <p className="text-[19px] text-[#4A5163]">All {total} {total === 1 ? itemNoun.toLowerCase() : `${itemNoun.toLowerCase()}s`} done. Save the ticks before you close.</p>
+                                <div className="flex flex-wrap justify-center gap-3 mt-2">
+                                    <button type="button" onClick={() => { setIndex(0); setFinished(false); }} className={LIGHT.primary}>Start over</button>
+                                    {onClose && <button type="button" onClick={onClose} className={LIGHT.secondary}>Close</button>}
+                                </div>
+                            </section>
+                        ) : (
+                            <>
+                                <p className={`${LIGHT.eyebrow} sm:hidden`}>{itemNoun} {index + 1} of {total}</p>
+                                <div key={index} className="flex flex-col gap-5">{renderItem(items[index], index)}</div>
+                                <div className="flex flex-wrap items-center justify-end gap-3">
+                                    {index > 0 && <button type="button" onClick={() => setIndex(i => i - 1)} className={LIGHT.secondary}>Back</button>}
+                                    <button type="button" onClick={next} className={LIGHT.primary}>{index + 1 >= total ? 'Finish' : nextLabel}</button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                    {/* Same element in both states, so the ticks survive "Finish". */}
+                    <div className="md:w-[340px] md:shrink-0 flex flex-col">{checklist}</div>
+                </div>
+            </LightFrame>
+        );
+    }
+
     return (
         <div className="fixed inset-0 flex flex-col z-50" style={{ background: GRADIENT }}>
-            {!hideSave && showSave && <SavePanel activity={{ ...activity, targets }} onSaved={a => setActivityId(a.id)} onDone={() => setShowSave(false)} />}
+            {savePanel}
 
             <div className="relative z-10 flex flex-wrap items-center justify-between gap-x-4 gap-y-2 px-6 sm:px-8 py-4">
                 <div className="flex items-center gap-3 min-w-0">
@@ -100,11 +153,7 @@ export default function SpeakingActivityShell({
                 </div>
                 {/* Same element in both states, so the ticks survive "Finish" — the natural moment to save them. */}
                 <div className="shrink-0 md:w-80 md:min-h-0 md:overflow-y-auto px-4 md:pl-0 md:pr-8 pb-6 md:py-6 flex flex-col">
-                    <UseItChecklist
-                        targets={targets}
-                        savedId={activityId}
-                        onTargetsChange={list => { setTargets(list); onTargetsChange?.(list); }}
-                    />
+                    {checklist}
                 </div>
             </div>
         </div>
