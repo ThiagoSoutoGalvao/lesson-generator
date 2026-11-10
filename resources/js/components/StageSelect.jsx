@@ -24,20 +24,20 @@ export default function StageSelect({ activity: a, onSaved }) {
 
     return (
         <div className="flex items-center gap-2 flex-wrap">
-            <label htmlFor={`stage-${a.id}`} className="text-xs text-white/60">Stage</label>
+            <label htmlFor={`stage-${a.id}`} className="text-xs text-ui-muted">Stage</label>
             <select
                 id={`stage-${a.id}`}
                 value={a.stage ?? ''}
                 onChange={change}
                 disabled={busy}
                 className={`text-xs rounded-lg px-2 py-1 border cursor-pointer disabled:opacity-50 ${
-                    a.stage ? 'bg-white/10 border-white/20 text-white' : 'bg-amber-500/15 border-amber-400/40 text-amber-200'
+                    a.stage ? 'bg-ui-field border-ui-line text-ui-ink' : 'bg-ui-warn-bg border-ui-warn-line text-ui-warn'
                 }`}
             >
                 <option value="" className="text-black bg-white">Not set (usually {STAGE_LABELS[defaultStage(a.type)]})</option>
                 {STAGES.map(s => <option key={s.key} value={s.key} className="text-black bg-white">{s.label}</option>)}
             </select>
-            {err && <span className="text-xs text-red-300">{err}</span>}
+            {err && <span className="text-xs text-ui-danger">{err}</span>}
         </div>
     );
 }

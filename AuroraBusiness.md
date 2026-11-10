@@ -127,7 +127,9 @@ Homework is hidden inside the Progress tab.
 - [x] Layout mockup, approved with coral
 - [x] Decide: inside lesson-generator, names, pilot module
 - [x] Add the three modules as courses (config + server lists + tables of contents) — flex days not modelled yet
-- [ ] Light theme: shared pieces
+- [x] Light theme: shared pieces — tokens, page frame, Lessons overview, lesson pack, Teach now, Library picker
+- [x] Light templates: Quiz
+- [ ] Light templates: the rest First Steps Unit 1 uses (speaking shell + role-play, Reading Text, Presentation, flashcards / match pairs…)
 - [ ] Clean Aurora Business student app (homework first)
 - [ ] Plan First Steps Unit 1 (1A/1B/1C) with `/plan-lesson`, build it in the light templates it uses
 - [ ] "Use it!" per student, Writing goal
@@ -140,6 +142,16 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+
+- **2026-11-10** — **Light theme, step 1.** How it works: `ui-*` colour tokens in `app.css` (`text-ui-ink`,
+  `bg-ui-card`, `border-ui-line`…) are the old dark look by default and turn light when `<html data-ui="light">`
+  is set. `lib/uiTheme.js`: a screen calls `useLightUi(isLightCourse(trilha))`, so only Aurora Business courses
+  turn light. Converted: page frame (`Layout`: white header, dark logo), Lessons overview, lesson pack, Teach
+  now player, Library picker, stage dropdown, the "Aa" button (its text-colour swatches are hidden in light).
+  Light templates are drawn with `components/light/LightFrame.jsx` (header, photo panel, buttons); **Quiz** is
+  the first one (photo beside the question, a band above it on a phone). Not converted yet: every other
+  template, the student app. Checks: `scratchpad/qa_2026-09/qa_light_theme.mjs` (20) + the old lesson
+  suites (158) still pass. Still local, not pushed.
 
 - **2026-11-10** — The three modules exist in the app as courses: `FirstSteps`, `EverydayBusiness`,
   `TakeTheLead` (16 units × A/B/C, levels A2 / B1 / B2, a table of contents per unit from the plan).

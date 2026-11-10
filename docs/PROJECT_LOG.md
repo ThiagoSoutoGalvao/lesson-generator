@@ -1708,3 +1708,22 @@ Plan, decisions and the running log live in `AuroraBusiness.md`. This step only 
 - `focusFromName()` accepted only one-word course labels; it now accepts "FIRST STEPS L01B · …".
 - Checks: `tests/Feature/AuroraBusinessCoursesTest.php` (3) + `scratchpad/qa_2026-09/qa_business_courses.mjs` (21,
   overview, pack, Library chip, a First Steps student). Full suite: only the 10 known Breeze failures.
+
+## 41. Aurora Business light theme, step 1: tokens, teacher pages, Quiz (2026-11-10)
+
+- `ui-*` tokens (`@theme inline` colours + `.ui-card` / `.ui-chip` / `.ui-shell-text` in `app.css`): dark values by
+  default (≈ the old `lg-*` / white-on-dark classes), light values under `:root[data-ui="light"]`.
+  `lib/uiTheme.js` — `useLightUi(on)` holds `data-ui="light"` on `<html>` while mounted; `useIsLightUi()` reads it;
+  `isLightCourse(trilha)` = `TRILHAS[t].program === 'business'`.
+- Converted to tokens (dark look unchanged apart from tiny opacity rounding): `Layout`, `LessonsPage`,
+  `LessonPackPage`, `LessonPlayer`, `LibraryPicker`, `StageSelect`, `DisplayControls` (nav trigger; a `light`
+  trigger for light activity headers; text-colour swatches hidden while light; `--tf-color` forced to ink).
+- `components/light/LightFrame.jsx`: `LightFrame` (header + scroll body, `data-ui-screen="light"`), `LightProgress`,
+  `LightPhoto`, `LIGHT` class set. `QuizActivity` renders `LightQuiz` when the light theme is on — same state,
+  scoring and `onComplete`.
+- **Pattern for the next templates:** keep the dark render as is; add a `Light…` render on `LightFrame` when
+  `useIsLightUi()` is true. Activities launched from a business pack inherit the theme; the student app still
+  needs `useLightUi` in `StudentShell` for business students.
+- Checks: `qa_light_theme.mjs` (20: light on/off per course, colours, a wrong answer → score 1 of 2, phone width, no
+  console errors); `_tmp_qa_lesson_pack` 32, `_tmp_qa_lesson_mode` 25, `_tmp_qa_fill_stage` 19, `_tmp_qa_useit` 36,
+  `qa_lesson_parts` 46 all pass against `php artisan serve --port=8124`.

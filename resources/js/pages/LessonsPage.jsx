@@ -5,6 +5,7 @@ import Spinner from '@/components/Spinner';
 import { TRILHAS, TRILHA_NAMES, TRILHA_LEVEL, TRILHA_TOC, trilhaParts, partOf } from '@/lib/trilhas';
 import { STAGES } from '@/lib/stages';
 import { getLessonSession } from '@/lib/lessonSession';
+import { useLightUi, isLightCourse } from '@/lib/uiTheme';
 
 // Every lesson of a course at a glance (Aurora Lessons Phase 1, step 4): which of the four stages already
 // has an activity, and how many activities still have no stage. Each row opens that lesson's pack.
@@ -25,12 +26,13 @@ export default function LessonsPage() {
 
     const config = TRILHAS[trilha];
     const parts  = trilhaParts(trilha);
+    useLightUi(isLightCourse(trilha)); // Aurora Business courses use the light theme
 
     return (
         <div className="flex flex-col gap-6">
             <div>
-                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Lessons</h2>
-                <p className="lg-shell-text text-white/75 mt-1 text-sm">
+                <h2 className="font-display ui-shell-text text-3xl font-bold text-ui-ink">Lessons</h2>
+                <p className="ui-shell-text text-ui-muted mt-1 text-sm">
                     {parts.length ? `Each unit is ${parts.length} lessons (1A, 1B, 1C…), each in` : 'Each lesson in'} four stages: Warmer → Presentation → Practice → Production.
                 </p>
             </div>
@@ -43,7 +45,7 @@ export default function LessonsPage() {
                         aria-pressed={t === trilha}
                         onClick={() => setParams({ trilha: t })}
                         className={`px-4 py-1.5 rounded-lg text-sm font-medium border cursor-pointer ${
-                            t === trilha ? 'bg-[#e0521f] border-[#e0521f] text-white' : 'lg-chip lg-chip-hover text-white/75 hover:text-white'
+                            t === trilha ? 'bg-[#e0521f] border-[#e0521f] text-white' : 'ui-chip ui-chip-hover text-ui-muted hover:text-ui-ink'
                         }`}
                     >
                         {TRILHAS[t].label} <span className="opacity-70">· {TRILHA_LEVEL[t]}</span>
@@ -51,12 +53,12 @@ export default function LessonsPage() {
                 ))}
             </div>
 
-            {loading && <div className="flex justify-center py-10"><Spinner message="Loading…" color="text-white/70" textColor="text-white/55" /></div>}
-            {error && <div className="rounded-xl bg-red-500/15 border border-red-400/30 px-4 py-3 text-sm text-red-300">{error}</div>}
+            {loading && <div className="flex justify-center py-10"><Spinner message="Loading…" color="text-ui-muted" textColor="text-ui-faint" /></div>}
+            {error && <div className="rounded-xl bg-ui-danger-bg border border-ui-danger-line px-4 py-3 text-sm text-ui-danger">{error}</div>}
 
             {!loading && !error && (
-                <div className="lg-surface border rounded-2xl overflow-hidden">
-                    <div className="hidden sm:grid grid-cols-[1fr_repeat(4,5.5rem)] gap-2 px-5 py-3 text-[11px] uppercase tracking-wide text-white/50 border-b border-white/10">
+                <div className="ui-card border rounded-2xl overflow-hidden">
+                    <div className="hidden sm:grid grid-cols-[1fr_repeat(4,5.5rem)] gap-2 px-5 py-3 text-[11px] uppercase tracking-wide text-ui-faint border-b border-ui-line">
                         <span>{parts.length ? 'Unit' : 'Lesson'}</span>
                         {STAGES.map(s => <span key={s.key} className="text-center">{s.label}</span>)}
                     </div>
@@ -66,29 +68,29 @@ export default function LessonsPage() {
                             const unplaced = mine.filter(a => !a.stage).length;
                             const topic = TRILHA_TOC[trilha]?.[n]?.[0];
                             return (
-                                <li key={n} className="border-b border-white/8 last:border-b-0">
+                                <li key={n} className="border-b border-ui-line last:border-b-0">
                                     <Link
                                         to={`/lessons/${trilha.toLowerCase()}/${n}`}
-                                        className="grid grid-cols-1 sm:grid-cols-[1fr_repeat(4,5.5rem)] gap-2 items-center px-5 py-3.5 hover:bg-white/5"
+                                        className="grid grid-cols-1 sm:grid-cols-[1fr_repeat(4,5.5rem)] gap-2 items-center px-5 py-3.5 hover:bg-ui-well"
                                     >
                                         <span className="min-w-0">
-                                            <span className="text-white font-semibold">{parts.length ? 'Unit' : 'Lesson'} {n}</span>
-                                            {topic && <span className="block text-white/60 text-sm truncate">{topic}</span>}
+                                            <span className="text-ui-ink font-semibold">{parts.length ? 'Unit' : 'Lesson'} {n}</span>
+                                            {topic && <span className="block text-ui-muted text-sm truncate">{topic}</span>}
                                             {parts.length > 0 && (
-                                                <span className="block text-white/55 text-xs" data-testid="unit-parts">
+                                                <span className="block text-ui-faint text-xs" data-testid="unit-parts">
                                                     {parts.map(p => `${n}${p}: ${mine.filter(a => partOf(a) === p).length}`).join(' · ')}
                                                 </span>
                                             )}
-                                            {unplaced > 0 && <span className="text-amber-200 text-xs">{unplaced} not placed yet</span>}
+                                            {unplaced > 0 && <span className="text-ui-warn text-xs">{unplaced} not placed yet</span>}
                                         </span>
                                         <span className="flex sm:contents gap-3">
                                             {STAGES.map(s => {
                                                 const count = mine.filter(a => a.stage === s.key).length;
                                                 return (
                                                     <span key={s.key} className="flex sm:justify-center items-center gap-1.5 text-xs" title={`${s.label}: ${count}`}>
-                                                        <span className={`w-3 h-3 rounded-full ${count ? 'bg-[#5be0a4]' : 'border border-white/30'}`} aria-hidden="true" />
-                                                        <span className="sm:hidden text-white/60">{s.label}</span>
-                                                        <span className="text-white/70">{count || ''}</span>
+                                                        <span className={`w-3 h-3 rounded-full ${count ? 'bg-ui-good' : 'border border-ui-faint'}`} aria-hidden="true" />
+                                                        <span className="sm:hidden text-ui-muted">{s.label}</span>
+                                                        <span className="text-ui-muted">{count || ''}</span>
                                                         <span className="sr-only">{s.label}: {count}</span>
                                                     </span>
                                                 );

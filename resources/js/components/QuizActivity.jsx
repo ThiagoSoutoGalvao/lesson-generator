@@ -4,10 +4,15 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightPhoto, LightProgress, LIGHT } from '@/components/light/LightFrame';
 
 const LABELS = ['A', 'B', 'C', 'D'];
 const FONT_SIZES   = ['text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl'];
 const OPTION_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
+// Light layout (Aurora Business): the question is 34px at the default size, answers 22px.
+const LIGHT_Q_SIZES   = ['text-[22px] sm:text-2xl', 'text-2xl sm:text-[28px]', 'text-[23px] sm:text-[34px]', 'text-[27px] sm:text-[40px]', 'text-[31px] sm:text-[48px]'];
+const LIGHT_OPT_SIZES = ['text-base', 'text-lg', 'text-[19px] sm:text-[22px]', 'text-[22px] sm:text-[26px]', 'text-[26px] sm:text-[30px]'];
 
 export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -18,6 +23,7 @@ export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
     const [showSave, setShowSave]         = useState(false);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below
 
     const question       = quiz.questions[currentIndex];
     const total          = quiz.questions.length;
@@ -77,6 +83,18 @@ export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
     const bgStyle = bgUrl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' };
+
+    if (light) {
+        return (
+            <LightQuiz
+                quiz={quiz} question={question} index={currentIndex} total={total} score={score}
+                selected={selectedAnswer} answered={answered} finished={finished} photo={bgUrl} sizeIdx={fontSizeIdx}
+                onAnswer={handleAnswer} onNext={handleNext} onPrev={handlePrev} onRestart={handleRestart} onClose={onClose}
+                onSave={hideSave ? null : () => setShowSave(true)} saving={!hideSave && showSave} onSaved={() => setShowSave(false)}
+                isFullscreen={isFullscreen} onFullscreen={toggleFullscreen}
+            />
+        );
+    }
 
     if (finished) {
         const pct = Math.round((score / total) * 100);
@@ -174,5 +192,81 @@ export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
                 </div>
             </div>
         </div>
+    );
+}
+
+// Aurora Business light layout (AuroraBusiness.md §4, mockup "Activity · Quiz"): the photo in its own panel beside
+// the question (a band above it on a phone), the question on a white card, coral Next. Same state as the dark one.
+function LightQuiz({ quiz, question, index, total, score, selected, answered, finished, photo, sizeIdx,
+    onAnswer, onNext, onPrev, onRestart, onClose, onSave, saving, onSaved, isFullscreen, onFullscreen }) {
+    const frame = {
+        eyebrow: 'Quiz', title: quiz.topic || quiz.title || 'Choose the right answer',
+        onSave, isFullscreen, onFullscreen, onClose,
+        overlay: saving ? <SavePanel activity={quiz} onDone={onSaved} /> : null,
+    };
+
+    if (finished) {
+        const pct = Math.round((score / total) * 100);
+        return (
+            <LightFrame {...frame}>
+                <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
+                    <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                        <p className={LIGHT.eyebrow}>Quiz complete</p>
+                        <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">You scored {score} out of {total}</h1>
+                        <p className="text-[20px] text-[#4A5163]">{pct}%</p>
+                        <div className="flex flex-wrap justify-center gap-3 mt-2">
+                            <button type="button" onClick={onRestart} className={LIGHT.primary}>Play again</button>
+                            {onClose && <button type="button" onClick={onClose} className={LIGHT.secondary}>Close</button>}
+                        </div>
+                    </section>
+                </div>
+            </LightFrame>
+        );
+    }
+
+    const right = answered && question.answers[selected]?.correct;
+    const correctText = question.answers.find(a => a.correct)?.text;
+    return (
+        <LightFrame {...frame} extra={<span className="hidden sm:flex"><LightProgress index={index} total={total} /></span>}>
+            <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col lg:flex-row gap-4 sm:gap-8">
+                <LightPhoto url={photo} className="h-[150px] sm:h-[220px] lg:h-auto lg:min-h-[480px] lg:w-[420px] lg:shrink-0" />
+
+                <section className={`${LIGHT.card} flex-1 min-w-0 p-5 sm:p-10 flex flex-col gap-5 sm:gap-6`} aria-label="Question">
+                    <p className={LIGHT.eyebrow}><span className="sm:hidden">Question {index + 1} of {total} · </span>{quiz.instruction || 'Choose the right answer'}</p>
+                    <h1 className={`font-display ${LIGHT_Q_SIZES[sizeIdx]} font-semibold leading-snug`}>{question.question}</h1>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
+                        {question.answers.map((answer, i) => {
+                            let box = 'border border-[#DDE1E8] bg-white hover:bg-[#F6F7F9] font-medium';
+                            let chip = 'bg-[#F1F2F5] text-[#4A5163]';
+                            if (answered && answer.correct) { box = LIGHT.right; chip = LIGHT.rightChip; }
+                            else if (answered && selected === i) { box = LIGHT.wrong; chip = LIGHT.wrongChip; }
+                            else if (answered) box = 'border border-[#DDE1E8] bg-white opacity-70';
+                            return (
+                                <button key={i} type="button" onClick={() => onAnswer(i)} disabled={answered}
+                                    className={`${box} ${LIGHT_OPT_SIZES[sizeIdx]} min-h-14 sm:min-h-[76px] w-full text-left flex items-center gap-4 px-4 sm:px-5 py-3 rounded-[14px] text-[#271D62] ${answered ? 'cursor-default' : 'cursor-pointer'}`}>
+                                    <span className={`${chip} shrink-0 w-8 h-8 sm:w-9 sm:h-9 rounded-[10px] grid place-items-center text-[14px] sm:text-[16px] font-semibold`}>{LABELS[i]}</span>
+                                    <span className="min-w-0 break-words">{answer.text}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {answered && (
+                        <p role="status" className={`rounded-xl px-4 sm:px-5 py-3.5 text-[17px] sm:text-[20px] leading-snug ${right ? 'bg-[#E5F4EC] text-[#14532D]' : 'bg-[#FDECEA] text-[#7F1D1D]'}`}>
+                            {right ? 'Right!' : `Not quite. The answer is “${correctText}”.`}
+                        </p>
+                    )}
+
+                    <div className="mt-auto flex flex-wrap items-center justify-end gap-3 pt-2">
+                        {index > 0 && <button type="button" onClick={onPrev} className={LIGHT.secondary}>← Previous</button>}
+                        <button type="button" onClick={onNext} disabled={!answered} className={LIGHT.primary}>
+                            {!answered ? 'Choose an answer' : index + 1 >= total ? 'See results' : 'Next question'}
+                        </button>
+                    </div>
+                    <p className="sr-only" aria-live="polite">Score {score} of {total}</p>
+                </section>
+            </div>
+        </LightFrame>
     );
 }

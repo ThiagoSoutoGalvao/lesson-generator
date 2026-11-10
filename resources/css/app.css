@@ -16,6 +16,30 @@
         'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
+/* ── UI theme tokens (Aurora Business light theme, AuroraBusiness.md §4) ──
+   A screen written with these (text-ui-ink, bg-ui-card, border-ui-line…) looks like the old "Aurora Night"
+   shell by default, and turns light when <html data-ui="light"> is set (lib/uiTheme.js — an Aurora Business
+   course switches it on). Values are at the end of this file. */
+@theme inline {
+    --color-ui-ink: var(--ui-ink);
+    --color-ui-muted: var(--ui-muted);
+    --color-ui-faint: var(--ui-faint);
+    --color-ui-line: var(--ui-line);
+    --color-ui-well: var(--ui-well);
+    --color-ui-field: var(--ui-field);
+    --color-ui-panel: var(--ui-panel);
+    --color-ui-accent: var(--ui-accent);
+    --color-ui-sel: var(--ui-sel);
+    --color-ui-sel-line: var(--ui-sel-line);
+    --color-ui-good: var(--ui-good);
+    --color-ui-warn: var(--ui-warn);
+    --color-ui-warn-bg: var(--ui-warn-bg);
+    --color-ui-warn-line: var(--ui-warn-line);
+    --color-ui-danger: var(--ui-danger);
+    --color-ui-danger-bg: var(--ui-danger-bg);
+    --color-ui-danger-line: var(--ui-danger-line);
+}
+
 @theme inline {
     --font-heading: var(--font-sans);
     --font-sans: 'Inter Variable', sans-serif;
@@ -564,3 +588,58 @@ body.tf-active main .text-xs {
 :root[data-app-font="lexend"] body {
     font-family: 'Lexend', ui-sans-serif, system-ui, sans-serif;
 }
+
+/* ── UI theme values (see the @theme block at the top) ──
+   Default = "Aurora Night" (white text on the dark indigo shell). `data-ui="light"` on <html> = the Aurora Business
+   light theme: white cards, Aurora indigo text, coral accent, no glass (AuroraBusiness.md §4). */
+:root {
+    --ui-ink: #ffffff;
+    --ui-muted: rgba(255, 255, 255, .72);
+    --ui-faint: rgba(255, 255, 255, .5);
+    --ui-line: rgba(255, 255, 255, .14);
+    --ui-well: rgba(0, 0, 0, .2);
+    --ui-field: rgba(255, 255, 255, .1);
+    --ui-panel: #241a5c;
+    --ui-accent: #ffb59a;
+    --ui-sel: rgba(252, 104, 64, .2);
+    --ui-sel-line: #fc6840;
+    --ui-good: #5be0a4;
+    --ui-warn: #fde68a;
+    --ui-warn-bg: rgba(245, 158, 11, .1);
+    --ui-warn-line: rgba(251, 191, 36, .4);
+    --ui-danger: #fca5a5;
+    --ui-danger-bg: rgba(239, 68, 68, .1);
+    --ui-danger-line: rgba(248, 113, 113, .35);
+}
+:root[data-ui="light"] {
+    --ui-ink: #271D62;
+    --ui-muted: #4A5163;
+    --ui-faint: #5B6472;
+    --ui-line: #DDE1E8;
+    --ui-well: #F6F7F9;
+    --ui-field: #FFFFFF;
+    --ui-panel: #FFFFFF;
+    --ui-accent: #9A3412;
+    --ui-sel: #FDEEE7;
+    --ui-sel-line: #E0521F;
+    --ui-good: #1E7A4C;
+    --ui-warn: #92400E;
+    --ui-warn-bg: #FFF7E6;
+    --ui-warn-line: #F5C77E;
+    --ui-danger: #B42318;
+    --ui-danger-bg: #FDECEA;
+    --ui-danger-line: #F3B8B2;
+}
+
+/* Cards / chips / page text that follow the theme: the dark ones are .lg-surface / .lg-chip / .lg-shell-text. */
+.ui-card { background: rgba(39, 29, 98, .5); -webkit-backdrop-filter: blur(22px) saturate(1.3); backdrop-filter: blur(22px) saturate(1.3); border-color: rgba(255, 255, 255, .12); }
+.ui-chip { background: rgba(30, 22, 74, .5); -webkit-backdrop-filter: blur(16px) saturate(1.25); backdrop-filter: blur(16px) saturate(1.25); border-color: rgba(255, 255, 255, .12); }
+.ui-chip-hover:hover { background: rgba(44, 33, 100, .62); border-color: rgba(255, 255, 255, .2); }
+.ui-shell-text { text-shadow: 0 1px 2px rgba(8, 5, 24, .75), 0 2px 16px rgba(8, 5, 24, .5); }
+:root[data-ui="light"] .ui-card { background: #FFFFFF; -webkit-backdrop-filter: none; backdrop-filter: none; border-color: #DDE1E8; }
+:root[data-ui="light"] .ui-chip { background: #FFFFFF; -webkit-backdrop-filter: none; backdrop-filter: none; border-color: #DDE1E8; }
+:root[data-ui="light"] .ui-chip-hover:hover { background: #F1F2F5; border-color: #C6CCD6; }
+:root[data-ui="light"] .ui-shell-text { text-shadow: none; }
+:root[data-ui="light"] body { background: #F6F7F9; }
+/* The Display panel's text colour (white / yellow…) is for dark screens; on the light theme page text stays ink. */
+:root[data-ui="light"] { --tf-color: var(--ui-ink) !important; }

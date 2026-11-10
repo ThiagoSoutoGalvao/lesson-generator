@@ -5,6 +5,7 @@ import { readLiveStudent, writeLiveStudent } from '@/components/UseItChecklist';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { STAGES } from '@/lib/stages';
 import { TYPE_LABELS } from '@/lib/trilhas';
+import { useIsLightUi } from '@/lib/uiTheme';
 
 // Lesson mode — "Teach now" (Aurora Lessons Phase 1, step 6). Plays a lesson pack's placed activities in
 // stage order (Warmer → Presentation → Practice → Production): an "Up next" screen, the activity fullscreen,
@@ -32,6 +33,7 @@ export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExi
     // The pill floats over whatever the activity draws at the bottom-left; it can shrink to a small button.
     const [pillSmall, setPillSmall] = useState(false);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // an Aurora Business pack: light ground and header
 
     useEffect(() => {
         axios.get('/api/students').then(({ data }) => setStudents(data.filter(s => s.is_active !== false))).catch(() => null);
@@ -95,12 +97,12 @@ export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExi
     }
 
     return (
-        <div className="fixed inset-0 z-50 flex flex-col text-white" style={{ background: GRADIENT }}>
-            <header className="flex flex-wrap items-center gap-x-4 gap-y-2 px-6 sm:px-8 py-4">
-                <span className="text-[11px] font-bold tracking-[0.12em] text-[#ffb59a] bg-[#e0521f]/20 px-2.5 py-1 rounded-full">LESSON MODE</span>
+        <div className="fixed inset-0 z-50 flex flex-col text-ui-ink" style={{ background: light ? '#F6F7F9' : GRADIENT }}>
+            <header className={`flex flex-wrap items-center gap-x-4 gap-y-2 px-6 sm:px-8 py-4 ${light ? 'bg-white border-b border-ui-line mb-4' : ''}`}>
+                <span className="text-[11px] font-bold tracking-[0.12em] text-ui-accent bg-ui-sel px-2.5 py-1 rounded-full">LESSON MODE</span>
                 <h1 className="font-display text-lg font-semibold flex-1 min-w-0 truncate">{title}</h1>
-                <button type="button" onClick={toggleFullscreen} className="text-white/60 hover:text-white text-sm cursor-pointer">{isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>
-                <button type="button" onClick={exit} className="text-white/80 hover:text-white text-sm border border-white/25 rounded-lg px-3 py-1.5 cursor-pointer">Exit lesson</button>
+                <button type="button" onClick={toggleFullscreen} className="text-ui-muted hover:text-ui-ink text-sm cursor-pointer">{isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}</button>
+                <button type="button" onClick={exit} className="text-ui-ink text-sm border border-ui-line hover:bg-ui-well rounded-lg px-3 py-1.5 cursor-pointer">Exit lesson</button>
             </header>
 
             <div className="flex-1 min-h-0 flex flex-col md:flex-row gap-6 px-6 sm:px-8 pb-8 overflow-y-auto md:overflow-hidden">
@@ -108,24 +110,24 @@ export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExi
                     {phase === 'done' ? (
                         <div className="text-center flex flex-col items-center gap-5 py-10">
                             <h2 className="text-5xl font-bold">Lesson complete</h2>
-                            <p className="text-white/70 text-lg">{done.size} of {items.length} activities done{student ? ` with ${student.name}` : ''}.</p>
-                            {student && <p className="text-white/55 text-sm max-w-md">Anything you saved from a “Use it!” checklist is on {student.name}’s Progress & Homework panel.</p>}
+                            <p className="text-ui-muted text-lg">{done.size} of {items.length} activities done{student ? ` with ${student.name}` : ''}.</p>
+                            {student && <p className="text-ui-faint text-sm max-w-md">Anything you saved from a “Use it!” checklist is on {student.name}’s Progress & Homework panel.</p>}
                             <button type="button" onClick={exit} autoFocus className="bg-[#e0521f] hover:bg-[#c9461a] text-white font-semibold px-8 py-3 rounded-xl text-lg cursor-pointer">Back to the lesson pack</button>
                         </div>
                     ) : current && (
                         <section aria-label="Up next" className="w-full max-w-2xl flex flex-col gap-6 py-6">
-                            <p className="text-white/55 text-xs font-bold tracking-[0.14em]">
+                            <p className="text-ui-faint text-xs font-bold tracking-[0.14em]">
                                 {index === 0 && done.size === 0 ? 'FIRST UP' : 'UP NEXT'} · {STAGE_LABEL[current.stage].toUpperCase()} · {index + 1} OF {items.length}
                             </p>
                             <div>
-                                <p className="text-white/60 text-sm uppercase tracking-wide font-semibold">{TYPE_LABELS[current.type] ?? current.type}</p>
+                                <p className="text-ui-muted text-sm uppercase tracking-wide font-semibold">{TYPE_LABELS[current.type] ?? current.type}</p>
                                 <h2 className="font-display text-4xl sm:text-5xl font-bold leading-tight mt-1">{focusOf(current)}</h2>
                             </div>
                             {index === 0 && done.size === 0 && (
-                                <label className="flex flex-col gap-1.5 text-sm text-white/70 max-w-xs">
+                                <label className="flex flex-col gap-1.5 text-sm text-ui-muted max-w-xs">
                                     Who’s this lesson with?
                                     <select value={student ? String(student.id) : ''} onChange={pickStudent}
-                                        className="bg-white/10 border border-white/20 text-white rounded-lg px-3 py-2.5 text-base cursor-pointer">
+                                        className="bg-ui-field border border-ui-line text-ui-ink rounded-lg px-3 py-2.5 text-base cursor-pointer">
                                         <option value="" className="text-black bg-white">Nobody — don’t save ticks</option>
                                         {student && !students.some(s => s.id === student.id) && <option value={student.id} className="text-black bg-white">{student.name}</option>}
                                         {students.map(s => <option key={s.id} value={s.id} className="text-black bg-white">{s.name}</option>)}
@@ -138,23 +140,23 @@ export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExi
                                     Start ▶
                                 </button>
                                 <button type="button" onClick={() => advance(false)}
-                                    className="text-white/70 hover:text-white border border-white/20 px-5 py-3.5 rounded-xl cursor-pointer">
+                                    className="text-ui-muted hover:text-ui-ink border border-ui-line bg-ui-field px-5 py-3.5 rounded-xl cursor-pointer">
                                     Skip
                                 </button>
                             </div>
-                            {skipped > 0 && <p className="text-amber-200/80 text-sm">{skipped} {skipped === 1 ? 'activity has' : 'activities have'} no stage yet and {skipped === 1 ? 'isn’t' : 'aren’t'} in this lesson.</p>}
+                            {skipped > 0 && <p className="text-ui-warn text-sm">{skipped} {skipped === 1 ? 'activity has' : 'activities have'} no stage yet and {skipped === 1 ? 'isn’t' : 'aren’t'} in this lesson.</p>}
                         </section>
                     )}
                 </main>
 
-                <aside aria-label="The whole lesson" className="shrink-0 md:w-80 md:min-h-0 md:overflow-y-auto rounded-2xl bg-black/25 border border-white/12 p-4 flex flex-col gap-4">
+                <aside aria-label="The whole lesson" className="shrink-0 md:w-80 md:min-h-0 md:overflow-y-auto rounded-2xl ui-card border p-4 flex flex-col gap-4">
                     {STAGES.map(st => {
                         const rows = items.map((a, i) => ({ a, i })).filter(({ a }) => a.stage === st.key);
                         return (
                             <div key={st.key}>
-                                <p className="text-white/50 text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5">{st.label}</p>
+                                <p className="text-ui-faint text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5">{st.label}</p>
                                 {rows.length === 0 ? (
-                                    <p className="text-white/35 text-sm">—</p>
+                                    <p className="text-ui-faint text-sm">—</p>
                                 ) : (
                                     <ol className="flex flex-col gap-1">
                                         {rows.map(({ a, i }) => {
@@ -163,11 +165,11 @@ export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExi
                                             return (
                                                 <li key={a.id}>
                                                     <button type="button" onClick={() => jump(i)} aria-current={isCurrent ? 'step' : undefined}
-                                                        className={`w-full text-left flex items-start gap-2.5 rounded-lg px-2.5 py-2 cursor-pointer ${isCurrent ? 'bg-white/12' : 'hover:bg-white/6'}`}>
-                                                        <span className={`shrink-0 w-5 text-center font-bold ${isDone ? 'text-[#5be0a4]' : isCurrent ? 'text-[#ffb59a]' : 'text-white/35'}`}>{isDone ? '✓' : isCurrent ? '▶' : '○'}</span>
+                                                        className={`w-full text-left flex items-start gap-2.5 rounded-lg px-2.5 py-2 cursor-pointer ${isCurrent ? 'bg-ui-sel' : 'hover:bg-ui-well'}`}>
+                                                        <span className={`shrink-0 w-5 text-center font-bold ${isDone ? 'text-ui-good' : isCurrent ? 'text-ui-accent' : 'text-ui-faint'}`}>{isDone ? '✓' : isCurrent ? '▶' : '○'}</span>
                                                         <span className="min-w-0">
-                                                            <span className={`block text-sm leading-snug ${isDone ? 'text-white/55' : 'text-white'}`}>{focusOf(a)}</span>
-                                                            <span className="block text-[11px] text-white/45">{TYPE_LABELS[a.type] ?? a.type}</span>
+                                                            <span className={`block text-sm leading-snug ${isDone ? 'text-ui-faint' : 'text-ui-ink'}`}>{focusOf(a)}</span>
+                                                            <span className="block text-[11px] text-ui-faint">{TYPE_LABELS[a.type] ?? a.type}</span>
                                                         </span>
                                                     </button>
                                                 </li>

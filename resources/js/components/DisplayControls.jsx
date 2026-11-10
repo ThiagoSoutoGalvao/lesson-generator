@@ -4,6 +4,7 @@ import {
     useDisplay, TEXT_COLORS, SIZE_STEPS, FONTS,
     MIN_BRIGHTNESS, DEFAULT_BRIGHTNESS,
 } from '@/hooks/useDisplay';
+import { useIsLightUi } from '@/lib/uiTheme';
 
 const SIZE_PREVIEW = ['text-[11px]', 'text-xs', 'text-sm', 'text-base', 'text-lg'];
 const FONT_PREVIEW = {
@@ -19,8 +20,12 @@ const FONT_PREVIEW = {
 // All of it reads/writes the persisted DisplayProvider state.
 // `colors={false}` hides the text-colour swatches — for screens whose text colours carry meaning
 // (right / wrong / selected), where a user-picked colour would fight them.
-export default function DisplayControls({ variant = 'activity', className = '', colors = true }) {
+// `light` = the trigger sits on a light-theme activity header (Aurora Business). In the light theme the text-colour
+// swatches are hidden too: white or yellow text on a white card would be unreadable.
+export default function DisplayControls({ variant = 'activity', className = '', colors = true, light = false }) {
     const d = useDisplay();
+    const lightUi = useIsLightUi();
+    if (lightUi) colors = false;
     const [open, setOpen] = useState(false);
     const triggerRef = useRef(null);
     const panelRef = useRef(null);
@@ -49,10 +54,12 @@ export default function DisplayControls({ variant = 'activity', className = '', 
 
     const nav = variant === 'nav';
     const triggerCls = nav
-        ? `flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-white/70 hover:text-white transition-colors cursor-pointer ${
-            open ? 'bg-white/15 border-white/25' : 'bg-white/8 border-white/12'}`
-        : `flex items-center gap-1.5 text-sm transition-colors cursor-pointer ${
-            open ? 'text-white' : 'text-white/50 hover:text-white'}`;
+        ? `flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border text-ui-muted hover:text-ui-ink transition-colors cursor-pointer bg-ui-field ${
+            open ? 'border-ui-sel-line' : 'border-ui-line'}`
+        : light
+            ? `flex items-center justify-center gap-1.5 h-11 min-w-11 px-3 rounded-[10px] border border-[#DDE1E8] bg-white text-[#271D62] text-[17px] font-semibold cursor-pointer hover:bg-[#F1F2F5] ${open ? 'ring-2 ring-[#E0521F]' : ''}`
+            : `flex items-center gap-1.5 text-sm transition-colors cursor-pointer ${
+                open ? 'text-white' : 'text-white/50 hover:text-white'}`;
 
     return (
         <div className={`relative ${className}`}>
@@ -64,7 +71,7 @@ export default function DisplayControls({ variant = 'activity', className = '', 
                 title="Display settings"
                 aria-expanded={open}
             >
-                <span className={nav ? 'text-[13px] font-semibold leading-none' : 'text-base font-semibold leading-none'}>Aa</span>
+                <span className={nav ? 'text-[13px] font-semibold leading-none' : light ? 'leading-none' : 'text-base font-semibold leading-none'}>Aa</span>
                 {d.isCustom && <span className="w-1.5 h-1.5 rounded-full bg-[#fc6840]" />}
             </button>
 

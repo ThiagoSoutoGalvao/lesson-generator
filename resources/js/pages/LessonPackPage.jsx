@@ -11,6 +11,7 @@ import { STAGES } from '@/lib/stages';
 import { pickFill, FILLABLE_STAGES } from '@/lib/fillStage';
 import { tidyFocus } from '@/lib/naming';
 import { setLessonSession } from '@/lib/lessonSession';
+import { useLightUi, isLightCourse } from '@/lib/uiTheme';
 
 // One course lesson as a lesson pack (Aurora Lessons Phase 1, step 4): the lesson's contents, then its saved
 // activities under Warmer → Presentation → Practice → Production. Nothing is generated here — it shows what
@@ -41,6 +42,7 @@ export default function LessonPackPage() {
     const [params, setParams] = useSearchParams();
     const part     = parts.length ? (parts.includes(params.get('part')) ? params.get('part') : parts[0]) : null;
     const code     = `${lesson}${part ?? ''}`; // "1B" — the lesson's short name
+    useLightUi(isLightCourse(trilha)); // Aurora Business courses use the light theme
 
     const [activities, setActivities] = useState([]); // the whole unit; `here` below is this tab's part of it
     const [library, setLibrary]       = useState([]); // every activity of the account, for "+ From Library"
@@ -67,9 +69,9 @@ export default function LessonPackPage() {
 
     if (!config || !Number.isInteger(lesson) || lesson < 1 || lesson > config.lessons) {
         return (
-            <div className="lg-shell-text text-white/80 py-20 text-center">
+            <div className="ui-shell-text text-ui-muted py-20 text-center">
                 <p className="text-lg">That lesson doesn’t exist.</p>
-                <Link to="/lessons" className="text-[#fc6840] underline text-sm">See all lessons</Link>
+                <Link to="/lessons" className="text-ui-accent underline text-sm">See all lessons</Link>
             </div>
         );
     }
@@ -192,9 +194,9 @@ export default function LessonPackPage() {
         <div className="flex flex-col gap-6">
             <div className="flex flex-wrap items-end gap-4">
                 <div className="flex-1 min-w-0">
-                    <Link to={`/lessons?trilha=${trilha}`} className="lg-shell-text text-white/70 hover:text-white text-sm">← All {config.label} {part ? 'units' : 'lessons'}</Link>
-                    <h2 className="font-display lg-shell-text text-3xl font-bold text-white mt-1">{config.label} · {part ? 'Unit' : 'Lesson'} {lesson}</h2>
-                    <p className="lg-shell-text text-white/75 text-sm mt-1">
+                    <Link to={`/lessons?trilha=${trilha}`} className="ui-shell-text text-ui-muted hover:text-ui-ink text-sm">← All {config.label} {part ? 'units' : 'lessons'}</Link>
+                    <h2 className="font-display ui-shell-text text-3xl font-bold text-ui-ink mt-1">{config.label} · {part ? 'Unit' : 'Lesson'} {lesson}</h2>
+                    <p className="ui-shell-text text-ui-muted text-sm mt-1">
                         Level {TRILHA_LEVEL[trilha]}{part && ` · ${parts.length} lessons`} · {activities.length} {activities.length === 1 ? 'activity' : 'activities'}
                     </p>
                 </div>
@@ -203,28 +205,28 @@ export default function LessonPackPage() {
                     onClick={() => setTeaching(true)}
                     disabled={loading || sequence.length === 0}
                     title={sequence.length === 0 ? 'Place at least one activity in a stage first' : 'Play the whole lesson, stage by stage'}
-                    className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-white/10 disabled:text-white/40 disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer"
+                    className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-ui-well disabled:text-ui-faint disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer"
                 >
                     {part ? `Teach ${code} now ▶` : 'Teach now ▶'}
                 </button>
                 <nav className="flex gap-2" aria-label="Other lessons">
-                    {lesson > 1 && <Link to={`/lessons/${trilha.toLowerCase()}/${lesson - 1}`} className="lg-chip lg-chip-hover text-white/85 text-sm px-3.5 py-2 rounded-lg border">← {part ? 'Unit ' : 'L'}{lesson - 1}</Link>}
-                    {lesson < config.lessons && <Link to={`/lessons/${trilha.toLowerCase()}/${lesson + 1}`} className="lg-chip lg-chip-hover text-white/85 text-sm px-3.5 py-2 rounded-lg border">{part ? 'Unit ' : 'L'}{lesson + 1} →</Link>}
+                    {lesson > 1 && <Link to={`/lessons/${trilha.toLowerCase()}/${lesson - 1}`} className="ui-chip ui-chip-hover text-ui-ink text-sm px-3.5 py-2 rounded-lg border">← {part ? 'Unit ' : 'L'}{lesson - 1}</Link>}
+                    {lesson < config.lessons && <Link to={`/lessons/${trilha.toLowerCase()}/${lesson + 1}`} className="ui-chip ui-chip-hover text-ui-ink text-sm px-3.5 py-2 rounded-lg border">{part ? 'Unit ' : 'L'}{lesson + 1} →</Link>}
                 </nav>
             </div>
 
             {(toc.length > 0 || brief?.target_language || brief?.vocabulary) && (
-                <section className="lg-surface border rounded-2xl p-5 flex flex-col gap-3" aria-label="Lesson contents">
+                <section className="ui-card border rounded-2xl p-5 flex flex-col gap-3" aria-label="Lesson contents">
                     {toc.length > 0 && (
                         <div>
-                            <p className="text-white/50 text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5">{part ? 'Unit contents' : 'Contents'}</p>
-                            <ul className="text-white/90 text-sm flex flex-col gap-1 list-disc pl-5">
+                            <p className="text-ui-faint text-[11px] font-bold tracking-[0.12em] uppercase mb-1.5">{part ? 'Unit contents' : 'Contents'}</p>
+                            <ul className="text-ui-ink text-sm flex flex-col gap-1 list-disc pl-5">
                                 {toc.map(item => <li key={item}>{item}</li>)}
                             </ul>
                         </div>
                     )}
-                    {brief?.target_language && <p className="text-sm text-white/85"><span className="text-white/50">Target language:</span> {brief.target_language}</p>}
-                    {brief?.vocabulary && <p className="text-sm text-white/85"><span className="text-white/50">Vocabulary:</span> {brief.vocabulary}</p>}
+                    {brief?.target_language && <p className="text-sm text-ui-ink"><span className="text-ui-faint">Target language:</span> {brief.target_language}</p>}
+                    {brief?.vocabulary && <p className="text-sm text-ui-ink"><span className="text-ui-faint">Vocabulary:</span> {brief.vocabulary}</p>}
                 </section>
             )}
 
@@ -235,12 +237,12 @@ export default function LessonPackPage() {
                         const selected = p === part;
                         return (
                             <button key={p} type="button" aria-pressed={selected} onClick={() => pickPart(p)} data-testid="part-tab"
-                                className={`text-left rounded-2xl px-4 py-3 border-2 cursor-pointer text-white ${selected ? 'bg-[#fc6840]/20 border-[#fc6840]' : 'lg-surface border-white/12 hover:border-white/25'}`}>
+                                className={`text-left rounded-2xl px-4 py-3 border-2 cursor-pointer text-ui-ink ${selected ? 'bg-ui-sel border-ui-sel-line' : 'ui-card hover:border-ui-faint'}`}>
                                 <span className="flex items-baseline justify-between gap-2">
                                     <span className="font-display text-xl font-bold">{lesson}{p}</span>
-                                    <span className="text-white/70 text-sm">{count} {count === 1 ? 'activity' : 'activities'}</span>
+                                    <span className="text-ui-muted text-sm">{count} {count === 1 ? 'activity' : 'activities'}</span>
                                 </span>
-                                <span className="block text-white/75 text-sm mt-1 truncate">{brief?.part_plans?.[p] || (count ? ' ' : 'Not started')}</span>
+                                <span className="block text-ui-muted text-sm mt-1 truncate">{brief?.part_plans?.[p] || (count ? ' ' : 'Not started')}</span>
                             </button>
                         );
                     })}
@@ -250,21 +252,21 @@ export default function LessonPackPage() {
             {part && <PlanLine key={code} code={code} plan={plan} onSave={savePlan} />}
 
             {!loading && core && (
-                <p className="lg-shell-text text-white/75 text-sm -mt-2" data-testid="pack-source">
-                    New activities are made from <span className="text-white font-semibold">{core.name}</span> — you can pick another source on the Generate page.
+                <p className="ui-shell-text text-ui-muted text-sm -mt-2" data-testid="pack-source">
+                    New activities are made from <span className="text-ui-ink font-semibold">{core.name}</span> — you can pick another source on the Generate page.
                 </p>
             )}
 
-            {loading && <div className="flex justify-center py-10"><Spinner message="Loading the lesson…" color="text-white/70" textColor="text-white/55" /></div>}
-            {error && <div className="rounded-xl bg-red-500/15 border border-red-400/30 px-4 py-3 text-sm text-red-300">{error}</div>}
+            {loading && <div className="flex justify-center py-10"><Spinner message="Loading the lesson…" color="text-ui-muted" textColor="text-ui-faint" /></div>}
+            {error && <div className="rounded-xl bg-ui-danger-bg border border-ui-danger-line px-4 py-3 text-sm text-ui-danger">{error}</div>}
 
             {!loading && !error && (
                 <>
                     {unplaced.length > 0 && (
-                        <section aria-label="Not placed yet" className="rounded-2xl border border-amber-400/40 bg-amber-500/10 p-5 flex flex-col gap-3">
+                        <section aria-label="Not placed yet" className="rounded-2xl border border-ui-warn-line bg-ui-warn-bg p-5 flex flex-col gap-3">
                             <div>
-                                <h3 className="font-display text-lg font-semibold text-amber-200">Not placed yet ({unplaced.length})</h3>
-                                <p className="text-amber-100/80 text-sm">Pick a stage for each one and it moves into the lesson below.</p>
+                                <h3 className="font-display text-lg font-semibold text-ui-warn">Not placed yet ({unplaced.length})</h3>
+                                <p className="text-ui-warn text-sm">Pick a stage for each one and it moves into the lesson below.</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                 {unplaced.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} />)}
@@ -276,19 +278,19 @@ export default function LessonPackPage() {
                         {STAGES.map((st, i) => {
                             const items = here.filter(a => a.stage === st.key);
                             return (
-                                <li key={st.key} aria-label={st.label} className="lg-surface border rounded-2xl p-5 flex flex-col gap-3">
+                                <li key={st.key} aria-label={st.label} className="ui-card border rounded-2xl p-5 flex flex-col gap-3">
                                     <div className="flex flex-wrap items-start gap-3">
-                                        <span className="shrink-0 w-8 h-8 rounded-full bg-[#fc6840]/20 text-[#ffb59a] font-bold grid place-items-center">{i + 1}</span>
+                                        <span className="shrink-0 w-8 h-8 rounded-full bg-ui-sel text-ui-accent font-bold grid place-items-center">{i + 1}</span>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-display text-lg font-semibold text-white">{st.label} <span className="text-white/45 text-sm font-normal">· {items.length}</span></h3>
-                                            <p className="text-white/60 text-sm">{STAGE_HINTS[st.key]}</p>
+                                            <h3 className="font-display text-lg font-semibold text-ui-ink">{st.label} <span className="text-ui-faint text-sm font-normal">· {items.length}</span></h3>
+                                            <p className="text-ui-muted text-sm">{STAGE_HINTS[st.key]}</p>
                                         </div>
                                         <AddButtons stage={st.key} onAdd={add} onPick={() => setPicking(st.key)} />
                                     </div>
                                     {items.length === 0 ? (
                                         FILLABLE_STAGES.includes(st.key)
                                             ? <SuggestBox stage={st.key} state={filling[st.key]} pick={pickFill(st.key, TRILHA_LEVEL[trilha], here.map(a => a.type))} source={core?.name} onFill={() => fill(st.key)} />
-                                            : <p className="rounded-xl border border-dashed border-white/20 text-white/50 text-sm px-4 py-4">Nothing here yet.</p>
+                                            : <p className="rounded-xl border border-dashed border-ui-line text-ui-faint text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {items.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} />)}
@@ -321,21 +323,21 @@ function SuggestBox({ state, pick, source, onFill }) {
     const error = state && state !== 'busy' ? state : null;
     const label = pick ? (TYPE_LABELS[pick.type] ?? pick.type) : '';
     return (
-        <div className="rounded-xl border border-dashed border-white/25 px-4 py-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3" data-testid="suggest-box">
-            <p className="text-white/60 text-sm flex-1">
-                Nothing here yet. Suggested: <span className="text-white font-semibold">{label}</span>, made from {source ? <span className="text-white/85">{source}</span> : 'the lesson contents'} — saved here, hidden from students until you approve it.
+        <div className="rounded-xl border border-dashed border-ui-line px-4 py-4 flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3" data-testid="suggest-box">
+            <p className="text-ui-muted text-sm flex-1">
+                Nothing here yet. Suggested: <span className="text-ui-ink font-semibold">{label}</span>, made from {source ? <span className="text-ui-ink">{source}</span> : 'the lesson contents'} — saved here, hidden from students until you approve it.
             </p>
             <button type="button" onClick={onFill} disabled={busy}
-                className="shrink-0 bg-white/10 hover:bg-white/20 disabled:opacity-60 disabled:cursor-wait border border-white/25 text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">
+                className="shrink-0 bg-ui-field hover:bg-ui-well disabled:opacity-60 disabled:cursor-wait border border-ui-line text-ui-ink text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">
                 {busy ? `Making it… (${label})` : '✨ Suggest one with Claude'}
             </button>
-            {error && <p className="text-red-300 text-sm sm:basis-full" role="alert">{error}</p>}
+            {error && <p className="text-ui-danger text-sm sm:basis-full" role="alert">{error}</p>}
         </div>
     );
 }
 
 function AddButtons({ stage, onAdd, onPick }) {
-    const cls = 'text-sm font-semibold px-3.5 py-2 rounded-lg border border-white/20 text-white/90 hover:text-white hover:bg-white/10 cursor-pointer';
+    const cls = 'text-sm font-semibold px-3.5 py-2 rounded-lg border border-ui-line bg-ui-field text-ui-ink hover:bg-ui-well cursor-pointer';
     return (
         <div className="flex flex-wrap gap-2">
             {stage === 'presentation' ? (
@@ -346,7 +348,7 @@ function AddButtons({ stage, onAdd, onPick }) {
             ) : (
                 <button type="button" onClick={() => onAdd(stage)} className={cls}>+ Add</button>
             )}
-            <button type="button" onClick={onPick} className="text-sm font-semibold px-3.5 py-2 rounded-lg border border-[#fc6840]/65 bg-[#fc6840]/15 text-white hover:bg-[#fc6840]/25 cursor-pointer">
+            <button type="button" onClick={onPick} className="text-sm font-semibold px-3.5 py-2 rounded-lg border border-ui-sel-line bg-ui-sel text-ui-ink hover:opacity-90 cursor-pointer">
                 + From Library
             </button>
         </div>
@@ -376,22 +378,22 @@ function PlanLine({ code, plan, onSave }) {
     if (editing) {
         return (
             <form onSubmit={submit} className="flex flex-wrap items-center gap-2" aria-label={`Plan for ${code}`}>
-                <label htmlFor="part-plan" className="text-white/55 text-[11px] font-bold tracking-[0.12em] uppercase">Plan for {code}</label>
+                <label htmlFor="part-plan" className="text-ui-faint text-[11px] font-bold tracking-[0.12em] uppercase">Plan for {code}</label>
                 <input id="part-plan" value={value} onChange={e => setValue(e.target.value)} maxLength={300} autoFocus autoComplete="off"
                     onKeyDown={e => { if (e.key === 'Escape') { setEditing(false); setValue(plan); } }}
                     placeholder="e.g. Controlled practice: ever / never"
-                    className="flex-1 min-w-[14rem] bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#fc6840]" />
+                    className="flex-1 min-w-[14rem] bg-ui-field border border-ui-line text-ui-ink placeholder:text-ui-faint rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#fc6840]" />
                 <button type="submit" disabled={busy} className="bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-60 text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">Save</button>
-                <button type="button" onClick={() => { setEditing(false); setValue(plan); }} className="text-white/70 hover:text-white text-sm px-2 py-2 cursor-pointer">Cancel</button>
-                {err && <span className="text-red-300 text-xs basis-full">{err}</span>}
+                <button type="button" onClick={() => { setEditing(false); setValue(plan); }} className="text-ui-muted hover:text-ui-ink text-sm px-2 py-2 cursor-pointer">Cancel</button>
+                {err && <span className="text-ui-danger text-xs basis-full">{err}</span>}
             </form>
         );
     }
     return (
-        <p className="lg-shell-text flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/80 -mt-1" data-testid="part-plan">
-            <span className="text-white/55 text-[11px] font-bold tracking-[0.12em] uppercase">Plan for {code}</span>
-            <span className={plan ? '' : 'text-white/50'}>{plan || 'No plan written yet.'}</span>
-            <button type="button" onClick={() => { setValue(plan); setEditing(true); }} className="text-[#ffb59a] hover:text-white underline underline-offset-2 cursor-pointer">{plan ? 'Edit plan' : 'Write one'}</button>
+        <p className="ui-shell-text flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ui-ink -mt-1" data-testid="part-plan">
+            <span className="text-ui-faint text-[11px] font-bold tracking-[0.12em] uppercase">Plan for {code}</span>
+            <span className={plan ? '' : 'text-ui-faint'}>{plan || 'No plan written yet.'}</span>
+            <button type="button" onClick={() => { setValue(plan); setEditing(true); }} className="text-ui-accent hover:text-ui-ink underline underline-offset-2 cursor-pointer">{plan ? 'Edit plan' : 'Write one'}</button>
         </p>
     );
 }
@@ -414,12 +416,12 @@ function PartSelect({ a, parts, lesson, onMove }) {
 
     return (
         <div className="flex items-center gap-2 flex-wrap">
-            <label htmlFor={`part-${a.id}`} className="text-xs text-white/60">Lesson</label>
+            <label htmlFor={`part-${a.id}`} className="text-xs text-ui-muted">Lesson</label>
             <select id={`part-${a.id}`} value={partOf(a)} onChange={change} disabled={busy}
-                className="text-xs rounded-lg px-2 py-1 border cursor-pointer disabled:opacity-50 bg-white/10 border-white/20 text-white">
+                className="text-xs rounded-lg px-2 py-1 border cursor-pointer disabled:opacity-50 bg-ui-field border-ui-line text-ui-ink">
                 {parts.map(p => <option key={p} value={p} className="text-black bg-white">{lesson}{p}</option>)}
             </select>
-            {err && <span className="text-xs text-red-300">{err}</span>}
+            {err && <span className="text-xs text-ui-danger">{err}</span>}
         </div>
     );
 }
@@ -430,21 +432,21 @@ function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom,
     const focus = focusFromName(a.name);
     const targets = SPEAKING_TYPES.includes(a.type) ? (a.content?.targets ?? []) : null;
     return (
-        <div className="rounded-xl bg-black/20 border border-white/12 p-4 flex flex-col gap-2.5" data-testid="pack-activity">
+        <div className="rounded-xl bg-ui-well border border-ui-line p-4 flex flex-col gap-2.5" data-testid="pack-activity">
             <div className="flex items-start gap-2">
-                <span className="text-[11px] font-semibold uppercase tracking-wide text-white/55 shrink-0 mt-0.5">{TYPE_LABELS[a.type] ?? a.type}</span>
+                <span className="text-[11px] font-semibold uppercase tracking-wide text-ui-faint shrink-0 mt-0.5">{TYPE_LABELS[a.type] ?? a.type}</span>
                 <span className="flex-1" />
-                {a.built_by && <span className="text-[11px] text-white/45">by {a.built_by}</span>}
+                {a.built_by && <span className="text-[11px] text-ui-faint">by {a.built_by}</span>}
             </div>
-            <p className="text-white font-semibold leading-snug break-words">{focus}</p>
+            <p className="text-ui-ink font-semibold leading-snug break-words">{focus}</p>
             {a.student_visible === false && (
-                <div className="flex flex-wrap items-center gap-2 rounded-lg bg-amber-500/10 border border-amber-400/30 px-2.5 py-1.5">
-                    <span className="text-amber-200 text-xs flex-1">Suggested — not shown to students until you approve it.</span>
+                <div className="flex flex-wrap items-center gap-2 rounded-lg bg-ui-warn-bg border border-ui-warn-line px-2.5 py-1.5">
+                    <span className="text-ui-warn text-xs flex-1">Suggested — not shown to students until you approve it.</span>
                     <button type="button" onClick={onApprove} className="text-xs font-semibold text-white bg-amber-600/80 hover:bg-amber-600 rounded-md px-2.5 py-1 cursor-pointer">Approve</button>
                 </div>
             )}
             {targets && (
-                <p className="text-xs text-white/55">{targets.length > 0 ? `Use it!: ${targets.length} targets` : 'Use it!: no targets yet'}</p>
+                <p className="text-xs text-ui-faint">{targets.length > 0 ? `Use it!: ${targets.length} targets` : 'Use it!: no targets yet'}</p>
             )}
             <div className="flex flex-wrap items-center gap-3 pt-0.5">
                 <button type="button" onClick={onLaunch} className="bg-[#e0521f] hover:bg-[#c9461a] text-white text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">Launch</button>
@@ -452,23 +454,23 @@ function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom,
                 {parts.length > 0 && <PartSelect a={a} parts={parts} lesson={lesson} onMove={onMove} />}
             </div>
             {confirming ? (
-                <div role="alertdialog" aria-label={`Delete ${focus}?`} className="rounded-lg bg-red-500/10 border border-red-400/35 px-3 py-2.5 flex flex-col gap-2">
-                    <p className="text-red-100 text-sm">Delete “{focus}” for good? Students’ results for it and any homework assignment of it go too.</p>
+                <div role="alertdialog" aria-label={`Delete ${focus}?`} className="rounded-lg bg-ui-danger-bg border border-ui-danger-line px-3 py-2.5 flex flex-col gap-2">
+                    <p className="text-ui-danger text-sm">Delete “{focus}” for good? Students’ results for it and any homework assignment of it go too.</p>
                     <div className="flex gap-2">
                         <button type="button" onClick={async () => { try { await onDelete(); } catch { setDeleteError('Could not delete it. Please try again.'); } }}
                             className="text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-md px-3 py-1.5 cursor-pointer">Delete</button>
                         <button type="button" onClick={() => { setConfirming(false); setDeleteError(''); }}
-                            className="text-sm text-white/80 hover:text-white px-3 py-1.5 cursor-pointer">Keep it</button>
+                            className="text-sm text-ui-muted hover:text-ui-ink px-3 py-1.5 cursor-pointer">Keep it</button>
                     </div>
-                    {deleteError && <p className="text-red-300 text-xs">{deleteError}</p>}
+                    {deleteError && <p className="text-ui-danger text-xs">{deleteError}</p>}
                 </div>
             ) : (
                 <button type="button" onClick={() => setConfirming(true)}
-                    className="self-end -mt-1 text-xs text-white/45 hover:text-red-300 cursor-pointer">Delete</button>
+                    className="self-end -mt-1 text-xs text-ui-faint hover:text-ui-danger cursor-pointer">Delete</button>
             )}
             {onMakeFrom && (
                 <button type="button" onClick={onMakeFrom}
-                    className="self-start text-sm font-semibold text-[#ffb59a] hover:text-white underline underline-offset-2 cursor-pointer">
+                    className="self-start text-sm font-semibold text-ui-accent hover:text-ui-ink underline underline-offset-2 cursor-pointer">
                     Make an activity from this
                 </button>
             )}
