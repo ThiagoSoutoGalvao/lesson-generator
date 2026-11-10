@@ -6,6 +6,11 @@ import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import Spinner from '@/components/Spinner';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
+
+// Light layout: 20px reading text at the default size (18px on a phone).
+const LIGHT_PARA_SIZES = ['text-base', 'text-[17px] sm:text-lg', 'text-lg sm:text-[20px]', 'text-[20px] sm:text-[23px]', 'text-[22px] sm:text-[27px]'];
 
 // "Make an exercise from this text" — each turns the reading passage into a
 // different activity via /api/generate with the passage as `source_text`.
@@ -59,6 +64,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const [deriving, setDeriving]       = useState(null);   // label being generated
     const [deriveError, setDeriveError] = useState('');
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below
 
     const paragraphs = activity.paragraphs ?? [];
     const vocabulary = activity.vocabulary ?? [];
@@ -99,6 +105,89 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const bgStyle = bgUrl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: 'linear-gradient(135deg, #1e3a5f 0%, #0f2027 100%)' };
+
+    // Print-only view — light/printer-friendly, natural page flow (both themes).
+    const printView = (
+        <div className="read-print-root" style={{ display: 'none' }}>
+            <p className="read-print-meta">Reading text — {activity.topic}</p>
+            {paragraphs.map((p, i) => (
+                <p key={i} className="read-print-paragraph">{highlightVocab(p, vocabWords)}</p>
+            ))}
+            {vocabulary.length > 0 && (
+                <div className="read-print-vocab">
+                    <p className="read-print-vocab-label">Vocabulary</p>
+                    {vocabulary.map((v, i) => (
+                        <p key={i} className="read-print-vocab-item">
+                            <span className="read-print-vocab-word">{v.word}</span> — {v.definition}
+                        </p>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+
+    // Aurora Business light layout: the photo as a band above the text, the passage on a white card in a
+    // comfortable reading column, the vocabulary on its own card below.
+    if (light) {
+        const tool = `${LIGHT.iconBtn} hidden md:grid`;
+        return (
+            <>
+                <div className="print:hidden">
+                    <LightFrame
+                        eyebrow={`Reading text · ${paragraphs.length} paragraph${paragraphs.length === 1 ? '' : 's'}`} title={activity.topic}
+                        extra={<>
+                            {vocabulary.length > 0 && <button type="button" onClick={() => setShowVocab(v => !v)} className={LIGHT.iconBtn} title="Toggle vocabulary (V)">{showVocab ? 'Hide words' : 'Words'}</button>}
+                            <button type="button" onClick={() => window.print()} className={tool} title="Download as PDF">PDF</button>
+                        </>}
+                        onSave={() => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                        overlay={<>
+                            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+                            {deriving && (
+                                <div className="absolute inset-0 z-30 bg-white/85 flex items-center justify-center">
+                                    <Spinner message={`Building your ${deriving}… this can take up to 20 seconds`} color="text-[#E0521F]" textColor="text-[#4A5163]" />
+                                </div>
+                            )}
+                        </>}
+                    >
+                        <div className="max-w-[860px] mx-auto px-4 sm:px-8 py-4 sm:py-7 flex flex-col gap-4 sm:gap-5">
+                            {canDerive && (
+                                <div className="flex flex-wrap items-center gap-2">
+                                    <span className="text-[14px] font-semibold text-[#4A5163] mr-1">Make an exercise from this text:</span>
+                                    {DERIVE_OPTIONS.map(opt => (
+                                        <button key={opt.type + opt.label} type="button" onClick={() => handleDerive(opt)} disabled={deriving !== null}
+                                            className="min-h-11 text-[15px] font-semibold bg-white hover:bg-[#FDEEE7] border border-[#DDE1E8] hover:border-[#E0521F] disabled:opacity-50 rounded-xl px-4 cursor-pointer">
+                                            {opt.label}
+                                        </button>
+                                    ))}
+                                    {deriveError && <span className="text-[#B42318] text-sm basis-full" role="alert">{deriveError}</span>}
+                                </div>
+                            )}
+                            <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px]" />
+                            <article className={`${LIGHT.card} px-5 py-6 sm:px-12 sm:py-10 flex flex-col gap-5`} aria-label="Reading text">
+                                {paragraphs.map((p, i) => (
+                                    <p key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7]`}>{highlightVocab(p, vocabWords)}</p>
+                                ))}
+                            </article>
+                            {showVocab && vocabulary.length > 0 && (
+                                <section className={`${LIGHT.card} px-5 py-5 sm:px-10 sm:py-7`} aria-label="Vocabulary">
+                                    <p className={`${LIGHT.eyebrow} mb-4`}>Vocabulary</p>
+                                    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
+                                        {vocabulary.map((v, i) => (
+                                            <div key={i} className={`${GLOSSARY_SIZES[fontSizeIdx]} leading-snug`}>
+                                                <dt className="inline font-bold">{v.word}</dt>
+                                                <dd className="inline text-[#4A5163]"> — {v.definition}</dd>
+                                            </div>
+                                        ))}
+                                    </dl>
+                                </section>
+                            )}
+                        </div>
+                    </LightFrame>
+                </div>
+                {printView}
+            </>
+        );
+    }
 
     return (
       <>
@@ -188,23 +277,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
             </div>
         </div>
 
-        {/* Print-only view — light/printer-friendly, natural page flow */}
-        <div className="read-print-root" style={{ display: 'none' }}>
-            <p className="read-print-meta">Reading text — {activity.topic}</p>
-            {paragraphs.map((p, i) => (
-                <p key={i} className="read-print-paragraph">{highlightVocab(p, vocabWords)}</p>
-            ))}
-            {vocabulary.length > 0 && (
-                <div className="read-print-vocab">
-                    <p className="read-print-vocab-label">Vocabulary</p>
-                    {vocabulary.map((v, i) => (
-                        <p key={i} className="read-print-vocab-item">
-                            <span className="read-print-vocab-word">{v.word}</span> — {v.definition}
-                        </p>
-                    ))}
-                </div>
-            )}
-        </div>
+        {printView}
       </>
     );
 }

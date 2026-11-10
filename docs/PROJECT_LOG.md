@@ -1740,3 +1740,12 @@ Plan, decisions and the running log live in `AuroraBusiness.md`. This step only 
   `_tmp_qa_useit` 36, `_tmp_qa_lesson_mode` 25. `qa_batch2` "Library labels the new types" fails on the code
   before this step too — pre-existing.
 - Not done: role-play "You can say…" starters (mockup) need a generator/data change.
+
+## 43. Aurora Business light theme, step 3: Reading Text + Presentation (2026-11-10)
+
+- `ReadingTextActivity` and `GrammarExplainerActivity` (Presentation) render on `LightFrame` when light. The print
+  views were pulled into a `printView` const shared by both themes. Presentation in light uses one accent (coral,
+  `#9A3412` for `**bold**`) instead of the per-slide `ACCENT` colours; the dark render is unchanged.
+- Light Reading Text drops the header "+ Add activity" link (the pack's own "+ Add" covers it).
+- Checks: `qa_light_materials.mjs` 22; `_tmp_qa_lesson_material` 18, `_tmp_qa_presentation_homework` 12,
+  `qa_presentation_mobile` 9, `qa_reading_level` 9.

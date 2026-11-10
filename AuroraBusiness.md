@@ -130,7 +130,9 @@ Homework is hidden inside the Progress tab.
 - [x] Light theme: shared pieces — tokens, page frame, Lessons overview, lesson pack, Teach now, Library picker
 - [x] Light templates: Quiz
 - [x] Light templates: speaking — Role-play, Story builder, Debate, Mini presentation, Discussion, Picture prompts + "Use it!"
-- [ ] Light templates: Reading Text, Presentation (1A), then flashcards / match pairs / other practice types
+- [x] Light templates: Reading Text, Presentation (1A)
+- [ ] Light templates: the other practice types (flashcards, match pairs, gap-fills…) as units need them
+- [ ] Clean Aurora Business student app (homework first) — turns the light theme on for business students
 - [ ] Role-play cards: "You can say…" sentence starters for A2 (in the mockup; needs a generator + data change)
 - [ ] Clean Aurora Business student app (homework first)
 - [ ] Plan First Steps Unit 1 (1A/1B/1C) with `/plan-lesson`, build it in the light templates it uses
@@ -144,6 +146,14 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+
+- **2026-11-10** — **Light theme, step 3: Reading Text and Presentation.** Reading Text: photo band, the passage
+  on a white card in an 860px column (20px text), vocabulary on its own card, "Make an exercise from this
+  text" as buttons (the derived activity opens light too). Presentation: one coral accent instead of a colour
+  per slide, rule on a tinted card, examples on white cards, photo above the examples, slide dots. Both keep
+  their PDF print views. Checks: `qa_light_materials.mjs` (22, incl. the phone wheel-scroll to Next slide);
+  old `_tmp_qa_lesson_material` 18, `_tmp_qa_presentation_homework` 12, `qa_presentation_mobile` 9,
+  `qa_reading_level` 9 pass. Still local, not pushed.
 
 - **2026-11-10** — **Light theme, step 2: the speaking templates.** `SpeakingActivityShell` (Role-play, Story
   builder, Debate, Mini presentation) has a light layout — card left, "Use it!" right, stacked on a phone — and

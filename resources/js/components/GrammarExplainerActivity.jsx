@@ -5,8 +5,11 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
 
 const TITLE_SIZES   = ['text-3xl',  'text-4xl',  'text-5xl',  'text-6xl',  'text-7xl'];
+const LIGHT_TITLE_SIZES = ['text-2xl', 'text-[26px] sm:text-3xl', 'text-[28px] sm:text-[40px]', 'text-[32px] sm:text-[48px]', 'text-[36px] sm:text-[56px]'];
 const RULE_SIZES    = ['text-base', 'text-lg',   'text-xl',   'text-2xl',  'text-3xl'];
 const FORM_SIZES    = ['text-sm',   'text-base', 'text-lg',   'text-xl',   'text-2xl'];
 const EXAMPLE_SIZES = ['text-sm',   'text-base', 'text-lg',   'text-xl',   'text-2xl'];
@@ -43,6 +46,7 @@ export default function GrammarExplainerActivity({ activity, onClose, onComplete
     const [showSave, setShowSave]         = useState(false);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below
 
     const slides = activity.slides;
     const slide  = slides[slideIdx];
@@ -89,6 +93,94 @@ export default function GrammarExplainerActivity({ activity, onClose, onComplete
     const bgStyle = bgUrl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }
         : { background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)' };
+
+    // Print-only view — all slides rendered, one per page (both themes).
+    const printView = (
+        <div className="pres-print-root" style={{ display: 'none' }}>
+            {slides.map((s, i) => {
+                const a = ACCENT[s.color] ?? ACCENT.blue;
+                return (
+                    <div key={i} className="pres-print-slide">
+                        <p className="pres-print-meta">{activity.topic} · slide {i + 1} of {total}</p>
+                        <h2 className={`pres-print-title ${a.text}`}>{s.title}</h2>
+                        <div className="pres-print-rule">{parseText(s.rule, a.text)}</div>
+                        {s.form && (
+                            <div className="pres-print-form">
+                                <p className="pres-print-form-label">Form</p>
+                                <p className="pres-print-form-text">{parseText(s.form, a.text)}</p>
+                            </div>
+                        )}
+                        <div className="pres-print-examples">
+                            {s.examples.map((ex, j) => (
+                                <div key={j} className="pres-print-example">
+                                    <span className={`pres-print-example-num ${a.text}`}>{j + 1}.</span>
+                                    <span className="pres-print-example-text">{parseText(ex, a.text)}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                );
+            })}
+        </div>
+    );
+
+    // Aurora Business light layout: one accent (coral) instead of a colour per slide; the rule on a tinted card,
+    // the form on grey, examples on white cards; the photo sits above the examples, never behind the text.
+    if (light) {
+        const strong = 'text-[#9A3412]';
+        return (
+            <>
+                <div className="print:hidden">
+                    <LightFrame
+                        eyebrow={`Presentation · slide ${slideIdx + 1} of ${total}`} title={activity.topic}
+                        extra={<button type="button" onClick={() => window.print()} className={`${LIGHT.iconBtn} hidden md:grid`} title="Download as PDF">PDF</button>}
+                        onSave={hideSave ? null : () => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                        overlay={!hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null}
+                    >
+                        <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-7 flex flex-col gap-5">
+                            <nav className="flex flex-wrap items-center gap-1.5" aria-label="Slides">
+                                {slides.map((s, i) => (
+                                    <button key={i} type="button" onClick={() => goTo(i)} aria-label={`Slide ${i + 1}: ${s.title}`} aria-current={i === slideIdx ? 'step' : undefined}
+                                        className="h-6 grid place-items-center cursor-pointer px-0.5">
+                                        <span className={`block h-2 rounded-full transition-all duration-300 ${i === slideIdx ? 'w-7 bg-[#E0521F]' : i < slideIdx ? 'w-2.5 bg-[#F4A98C]' : 'w-2.5 bg-[#C6CCD6] hover:bg-[#9AA3B2]'}`} />
+                                    </button>
+                                ))}
+                            </nav>
+                            <div key={`${slideIdx}-${direction}`} className={`slide-content flex flex-col md:flex-row gap-5 sm:gap-7 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}>
+                                <div className="md:w-[54%] shrink-0 flex flex-col gap-4 sm:gap-5">
+                                    <h1 className={`stagger-block font-display ${LIGHT_TITLE_SIZES[fontSizeIdx]} font-semibold leading-tight`}>{slide.title}</h1>
+                                    <div className="stagger-block rounded-2xl bg-[#FDEEE7] border border-[#F4C3AE] px-5 sm:px-7 py-5">
+                                        <p className={`${RULE_SIZES[fontSizeIdx]} leading-relaxed`}>{parseText(slide.rule, strong)}</p>
+                                    </div>
+                                    {slide.form && (
+                                        <div className="stagger-block rounded-2xl bg-white border border-[#DDE1E8] px-5 sm:px-7 py-4">
+                                            <p className={`${LIGHT.eyebrow} mb-2`}>Form</p>
+                                            <p className={`${FORM_SIZES[fontSizeIdx]} font-mono leading-relaxed`}>{parseText(slide.form, strong)}</p>
+                                        </div>
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0 flex flex-col gap-3">
+                                    <LightPhoto url={bgUrl} className="stagger-block h-[120px] sm:h-[170px] shrink-0" />
+                                    <p className={`stagger-block ${LIGHT.eyebrow}`}>Examples</p>
+                                    {slide.examples.map((ex, i) => (
+                                        <div key={i} className="stagger-block rounded-2xl bg-white border border-[#DDE1E8] px-5 sm:px-6 py-4 flex items-baseline gap-3">
+                                            <span className="text-[#9A3412] font-bold text-[15px] shrink-0">{i + 1}.</span>
+                                            <p className={`${EXAMPLE_SIZES[fontSizeIdx]} leading-relaxed`}>{parseText(ex, strong)}</p>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="flex flex-wrap justify-end gap-3">
+                                <button type="button" onClick={handlePrev} disabled={slideIdx === 0} className={`${LIGHT.secondary} disabled:opacity-40 disabled:cursor-default`}>← Previous</button>
+                                <button type="button" onClick={handleNext} disabled={slideIdx === total - 1} className={LIGHT.primary}>{slideIdx === total - 1 ? 'Last slide' : 'Next slide'}</button>
+                            </div>
+                        </div>
+                    </LightFrame>
+                </div>
+                {printView}
+            </>
+        );
+    }
 
     return (
       <>
@@ -198,38 +290,7 @@ export default function GrammarExplainerActivity({ activity, onClose, onComplete
             </div>
         </div>
 
-        {/* Print-only view — all slides rendered, one per page */}
-        <div className="pres-print-root" style={{ display: 'none' }}>
-            {slides.map((s, i) => {
-                const a = ACCENT[s.color] ?? ACCENT.blue;
-                return (
-                    <div key={i} className="pres-print-slide">
-                        <p className="pres-print-meta">{activity.topic} · slide {i + 1} of {total}</p>
-                        <h2 className={`pres-print-title ${a.text}`}>{s.title}</h2>
-
-                        <div className="pres-print-rule">
-                            {parseText(s.rule, a.text)}
-                        </div>
-
-                        {s.form && (
-                            <div className="pres-print-form">
-                                <p className="pres-print-form-label">Form</p>
-                                <p className="pres-print-form-text">{parseText(s.form, a.text)}</p>
-                            </div>
-                        )}
-
-                        <div className="pres-print-examples">
-                            {s.examples.map((ex, j) => (
-                                <div key={j} className="pres-print-example">
-                                    <span className={`pres-print-example-num ${a.text}`}>{j + 1}.</span>
-                                    <span className="pres-print-example-text">{parseText(ex, a.text)}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                );
-            })}
-        </div>
+        {printView}
       </>
     );
 }
