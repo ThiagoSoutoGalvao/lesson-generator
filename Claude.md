@@ -341,14 +341,15 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
-## 5b. Aurora Business — NEXT (planned 2026-11-09/10, nothing built yet)
+## 5b. Aurora Business — ACTIVE (planned 2026-11-09/10; modules exist as courses, light theme next)
 
 Small-group (3–4) Business English course **inside this app**: three 6-month modules **First Steps (A2) /
 Everyday Business (B1) / Take the Lead (B1+/B2)**, 16 units × A/B/C + 4 flex days, 60 min twice a week. Own
 **light, coral theme** (no glass, photos never behind text, phone-first) and a **clean student app from day one**
 (homework first, no 25-drill list). Pilot = First Steps Unit 1. **Everything — decisions, unit lists, layout
 tokens, plan and the "done so far" log — is in `AuroraBusiness.md`; read it first and add a dated log line when
-something finishes.**
+something finishes.** Courses are listed in **two places only**: `TRILHAS` (+ `TRILHA_LEVEL`, `TRILHA_TOC`) in
+`lib/trilhas.js` and `App\Support\Trilhas::NAMES` on the server — a new course goes in both.
 
 ---
 

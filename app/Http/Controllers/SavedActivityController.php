@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Activity;
+use App\Support\Trilhas;
 use Illuminate\Http\Request;
 
 class SavedActivityController extends Controller
@@ -44,7 +45,7 @@ class SavedActivityController extends Controller
             'folder'  => ['nullable', 'string', 'max:255'],
             'book'    => ['nullable', 'string', 'max:255'],
             'lesson'  => ['nullable', 'string', 'max:255'],
-            'trilha'        => ['nullable', 'string', 'in:Lights,Glow,Radiant'],
+            'trilha'        => ['nullable', 'string', Trilhas::rule()],
             'trilha_lesson' => ['nullable', 'integer', 'min:1', 'max:20'],
             // Which lesson of the unit (1A / 1B / 1C); NULL counts as A.
             'trilha_part'   => ['nullable', 'string', 'in:' . self::PARTS],
@@ -180,7 +181,7 @@ class SavedActivityController extends Controller
 
         $data = $request->validate([
             'name'          => ['required', 'string', 'max:255'],
-            'trilha'        => ['required', 'string', 'in:Lights,Glow,Radiant'],
+            'trilha'        => ['required', 'string', Trilhas::rule()],
             'trilha_lesson' => ['required', 'integer', 'min:1', 'max:20'],
             'trilha_part'   => ['required', 'string', 'in:' . self::PARTS],
             'stage'         => ['required', 'string', 'in:' . self::STAGES],

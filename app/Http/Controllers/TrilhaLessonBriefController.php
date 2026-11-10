@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\TrilhaLessonBrief;
+use App\Support\Trilhas;
 use Illuminate\Http\Request;
 
 class TrilhaLessonBriefController extends Controller
@@ -15,7 +16,7 @@ class TrilhaLessonBriefController extends Controller
     public function upsert(Request $request)
     {
         $data = $request->validate([
-            'trilha'          => ['required', 'string', 'in:Lights,Glow,Radiant'],
+            'trilha'          => ['required', 'string', Trilhas::rule()],
             'trilha_lesson'   => ['required', 'integer', 'min:1', 'max:20'],
             'target_language' => ['nullable', 'string', 'max:5000'],
             'vocabulary'      => ['nullable', 'string', 'max:5000'],

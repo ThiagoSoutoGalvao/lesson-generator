@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Models\User;
 use App\Support\Credentials;
+use App\Support\Trilhas;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Hash;
 
@@ -18,7 +19,7 @@ class CreateStudent extends Command
     protected $signature = 'student:create
                             {--name= : Student full name}
                             {--email= : Student login email}
-                            {--trilha= : Lights|Glow|Radiant}
+                            {--trilha= : Lights|Glow|Radiant|FirstSteps|EverydayBusiness|TakeTheLead}
                             {--teacher= : Email of the owning teacher account}
                             {--password= : Set non-interactively (may land in shell history)}';
 
@@ -28,15 +29,15 @@ class CreateStudent extends Command
     {
         $name   = $this->option('name') ?: $this->ask('Student name');
         $email  = Credentials::email($this->option('email') ?: $this->ask('Student email'));
-        $trilha = ucfirst(strtolower($this->option('trilha') ?: $this->choice('Trilha', ['Lights', 'Glow', 'Radiant'])));
+        $trilha = Trilhas::match($this->option('trilha') ?: $this->choice('Trilha', Trilhas::NAMES));
         $teacherEmail = strtolower(trim($this->option('teacher') ?: $this->ask('Owning teacher email')));
 
         if (! filter_var($email, FILTER_VALIDATE_EMAIL)) {
             $this->error('Invalid student email.');
             return self::FAILURE;
         }
-        if (! in_array($trilha, ['Lights', 'Glow', 'Radiant'], true)) {
-            $this->error('Trilha must be Lights, Glow or Radiant.');
+        if ($trilha === null) {
+            $this->error('Trilha must be one of: ' . implode(', ', Trilhas::NAMES) . '.');
             return self::FAILURE;
         }
         if (User::where('email', $email)->exists()) {

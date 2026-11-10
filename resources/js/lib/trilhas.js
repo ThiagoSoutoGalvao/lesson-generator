@@ -10,6 +10,12 @@ export const TRILHAS = {
     Lights:  { label: 'LIGHTS',  lessons: 8,  parts: PARTS, accent: 'bg-sky-500/80'  },
     Glow:    { label: 'GLOW',    lessons: 8,  parts: PARTS, accent: 'bg-amber-500/80' },
     Radiant: { label: 'RADIANT', lessons: 12, parts: PARTS, accent: 'bg-rose-500/80'  },
+    // Aurora Business (AuroraBusiness.md, 2026-11-10): three 6-month modules for small groups, 16 units each.
+    // The four flex days per module (review days, final day) are not lessons here yet. Keep the keys in step
+    // with App\Support\Trilhas::NAMES on the server.
+    FirstSteps:       { label: 'FIRST STEPS',       lessons: 16, parts: PARTS, accent: 'bg-orange-600/80', program: 'business' },
+    EverydayBusiness: { label: 'EVERYDAY BUSINESS', lessons: 16, parts: PARTS, accent: 'bg-orange-700/80', program: 'business' },
+    TakeTheLead:      { label: 'TAKE THE LEAD',     lessons: 16, parts: PARTS, accent: 'bg-red-700/80',    program: 'business' },
 };
 
 export const TRILHA_NAMES = Object.keys(TRILHAS);
@@ -28,7 +34,10 @@ export function partOf(activity) {
 // `lib/levels.js`). Lights is for real beginners (confirmed by its teachers); Glow and
 // Radiant sit close to B1 and B2 (Thiago, 2026-09-21) — approximate, and the teacher
 // can change the level for any single activity.
-export const TRILHA_LEVEL = { Lights: 'A1', Glow: 'B1', Radiant: 'B2' };
+export const TRILHA_LEVEL = {
+    Lights: 'A1', Glow: 'B1', Radiant: 'B2',
+    FirstSteps: 'A2', EverydayBusiness: 'B1', TakeTheLead: 'B2',
+};
 
 // Verbatim table-of-contents per lesson, taken from the PDFs in `trilhas/`.
 // Shown read-only in the Library coverage-grid brief panel so teachers don't
@@ -170,6 +179,61 @@ export const TRILHA_TOC = {
             'Project management: how to analyze material, gather information, make and deliver a presentation',
         ],
     },
+    // Aurora Business — from the course plan doc (AuroraBusiness.md §1). First line = the unit and its goal.
+    FirstSteps: {
+        1:  ["Hello, I'm… — introduce myself, my job and my company", 'Language: be, possessive adjectives, a / an with jobs', 'Vocabulary: jobs, departments', 'Simulation: first day — meet the team'],
+        2:  ['My company — say what my company does and where it is', 'Language: present simple, there is / there are', 'Vocabulary: industries, products, places', 'Simulation: show a visitor around the company'],
+        3:  ['My workday — describe my routine and schedule', 'Language: frequency adverbs, telling the time', 'Vocabulary: daily tasks, office routines', 'Simulation: compare schedules to find a free slot'],
+        4:  ['Numbers and prices — give and check numbers, dates, prices, emails', 'Language: numbers, dates, spelling aloud', 'Vocabulary: currencies, @ / dot / dash', "Simulation: take down a client's contact details"],
+        5:  ['Around the office — ask where things are and what people can do', "Language: prepositions of place, can / can't", 'Vocabulary: furniture, equipment, rooms', 'Simulation: help a new colleague find things'],
+        6:  ['Arranging a meeting — suggest, accept and change a meeting time', 'Language: Are you free on…?, How about…?, days and times', 'Vocabulary: calendar words', 'Simulation: book a meeting with three busy colleagues'],
+        7:  ['Simple emails — write a short email to ask or confirm something', "Language: greetings and sign-offs, I'd like to…, Could you…?", 'Vocabulary: email phrases', 'Simulation: reply to a meeting invitation'],
+        8:  ['Phone basics — make a call and take a simple message', "Language: Can I speak to…?, I'll call back, spelling", 'Vocabulary: phone phrases', 'Simulation: take a message for a colleague'],
+        9:  ['Last week at work — talk about what I did', 'Language: past simple (regular and irregular), time expressions', 'Vocabulary: work verbs', 'Simulation: Monday catch-up — what happened last week'],
+        10: ['Products and services — describe and compare products', 'Language: adjectives, comparatives, superlatives', 'Vocabulary: size, price, quality', 'Simulation: choose a supplier from three options'],
+        11: ['Business travel — check in at the airport and the hotel', "Language: requests with can / could, I'd like", 'Vocabulary: travel, hotel', 'Simulation: travel day — airport, taxi, hotel'],
+        12: ['Eating out with clients — order and make small talk over a meal', 'Language: would like, offers, some / any', 'Vocabulary: food, restaurant', 'Simulation: lunch with a visiting client'],
+        13: ['Plans and next steps — talk about plans and arrangements', 'Language: going to, present continuous for future, will for offers', 'Vocabulary: project words', "Simulation: plan next month's team event"],
+        14: ['Rules and tasks — explain what people must and should do', "Language: have to / don't have to, should", 'Vocabulary: company rules', 'Simulation: explain the rules to a new employee'],
+        15: ['Small problems — report a problem and apologise', "Language: I'm sorry, but…, I'll… for promises", 'Vocabulary: late, broken, wrong, missing', 'Simulation: a client calls — the delivery is late'],
+        16: ['My experience — talk about my experience in a short interview', 'Language: present perfect (intro), ever / never', 'Vocabulary: CV words, skills', 'Simulation: short job interview'],
+    },
+    EverydayBusiness: {
+        1:  ['Networking and small talk — start, keep up and end a conversation with a new contact', 'Language: question forms, follow-up questions', 'Vocabulary: small-talk topics, safe and unsafe topics', 'Simulation: conference coffee break'],
+        2:  ["My role and my company — describe my responsibilities and my company's structure", 'Language: present simple vs. continuous, be responsible for, report to', 'Vocabulary: roles, org chart', 'Simulation: introduce your team to a new partner'],
+        3:  ['Email essentials — write a clear request and a polite follow-up', 'Language: indirect questions, I was wondering if…, formal vs. neutral register', 'Vocabulary: email structure, subject lines', "Simulation: chase a colleague who hasn't replied"],
+        4:  ['Chat and messaging — write short, clear messages on Teams or Slack', 'Language: short forms, imperatives softened with please / could', 'Vocabulary: FYI, ASAP, EOD', 'Simulation: sort out a problem in a team chat'],
+        5:  ['Video calls — start a call, ask for clarification and handle tech problems', 'Language: Sorry, you broke up, Could you repeat that?, Let me share my screen', 'Vocabulary: call vocabulary', 'Simulation: a weekly call where everything goes wrong'],
+        6:  ['Phone calls — make and return calls and leave a voicemail', "Language: I'm calling about…, Could you ask her to…?", 'Vocabulary: phone phrases, spelling, numbers', 'Simulation: leave a voicemail, then return the call'],
+        7:  ['Taking part in meetings — give updates and ask questions in a meeting', 'Language: present perfect for news, Just to add…', 'Vocabulary: agenda, action point, minutes', 'Simulation: a team meeting with an agenda'],
+        8:  ['Opinions — agree and disagree politely', "Language: softening (I'm not sure that…, I see your point, but…)", 'Vocabulary: opinion phrases', 'Simulation: decide where to hold the team event'],
+        9:  ['Presenting: structure — open, organise and close a short talk', 'Language: signposting (First…, Moving on to…, To sum up…)', 'Vocabulary: presentation phrases', 'Simulation: 3-minute talk about your own job'],
+        10: ['Data and trends — describe graphs, numbers and changes', 'Language: rise / fall / remain, sharply / slightly, past simple', 'Vocabulary: trends, percentages', "Simulation: present last quarter's results"],
+        11: ['Customers and complaints — handle a complaint and keep the customer', "Language: apologising, I'll make sure…, will for promises", 'Vocabulary: customer service', 'Simulation: an unhappy customer on the phone'],
+        12: ['Problem solving — suggest and compare solutions', 'Language: What if we…?, We could…, first conditional', 'Vocabulary: problems and solutions', 'Simulation: fix a supply problem as a team'],
+        13: ['Project updates — report progress and delays', 'Language: present perfect vs. past simple, already / yet / still', 'Vocabulary: milestone, on track, behind schedule', 'Simulation: weekly status meeting'],
+        14: ['Deadlines and priorities — prioritise, delegate and say no politely', "Language: need to, I'm afraid I can't…, Could you take care of…?", 'Vocabulary: workload, priorities', 'Simulation: too much work — share the tasks'],
+        15: ['Negotiation basics — make an offer, a counter-offer and a compromise', 'Language: first and second conditional, If you…, we could…', 'Vocabulary: price, terms, discount', 'Simulation: agree a price with a supplier'],
+        16: ['Pulling it together — run a short project from start to finish', "Language: review of the module's language", 'Vocabulary: review', 'Simulation: kick-off meeting for a new project'],
+    },
+    TakeTheLead: {
+        1:  ['Pitching an idea — pitch an idea in two minutes', 'Language: Imagine if…, What this means for you is…, rhetorical questions', 'Vocabulary: benefits, value, impact', 'Simulation: elevator pitch to a director'],
+        2:  ['Persuasive presentations — build a talk that ends in a decision', 'Language: emphasis (What we really need is…), rule of three', 'Vocabulary: persuasion', 'Simulation: present a proposal and ask for approval'],
+        3:  ['Tough questions — handle Q&A, including hostile or off-topic questions', "Language: That's a good question, buying time, deflecting politely", 'Vocabulary: Q&A phrases', 'Simulation: Q&A after a presentation'],
+        4:  ['Chairing meetings — open, steer and close a meeting', "Language: Let's hear from…, Can we get back to…?", 'Vocabulary: chairing language', 'Simulation: chair a meeting that keeps going off topic'],
+        5:  ['Decision-making — weigh options and reach a team decision', 'Language: second conditional, On the one hand…, modals of deduction', 'Vocabulary: pros and cons, risk', 'Simulation: choose a new office location'],
+        6:  ['Negotiation strategy — prepare and run a negotiation', 'Language: conditionals, hedging (We might be able to…), bargaining phrases', 'Vocabulary: terms, concessions, BATNA', 'Simulation: renew a contract with a key client'],
+        7:  ['Handling conflict — calm a conflict and find common ground', 'Language: diplomatic language, It seems to me that…, past modals', 'Vocabulary: conflict words', 'Simulation: two team members disagree on priorities'],
+        8:  ['Feedback — give and receive feedback constructively', 'Language: softeners, It might be worth…, situation–behaviour–impact', 'Vocabulary: performance words', 'Simulation: a feedback conversation with a team member'],
+        9:  ['Coaching and delegating — delegate a task and coach someone through it', 'Language: What would you do if…?, have / get something done', 'Vocabulary: management words', 'Simulation: hand over a project to a junior colleague'],
+        10: ['Working across cultures — adapt my style to people from other cultures', 'Language: indirect vs. direct language, softening', 'Vocabulary: culture, etiquette', 'Simulation: a call with partners from two countries'],
+        11: ['Writing reports — write a clear short report', 'Language: passive voice, however / therefore / as a result', 'Vocabulary: report structure', 'Simulation: write a one-page report on a project'],
+        12: ['Writing proposals — write a persuasive proposal', 'Language: formal register, We propose that…, nominalisation', 'Vocabulary: proposal structure', 'Simulation: write and defend a proposal'],
+        13: ['Career moves — do an interview and present myself on LinkedIn', 'Language: present perfect continuous, talking about achievements', 'Vocabulary: career, skills', 'Simulation: a competency-based interview'],
+        14: ["Communicating change — announce a change and handle reactions", "Language: We're going to…, reassuring language, future continuous", 'Vocabulary: change management', 'Simulation: announce a reorganisation to the team'],
+        15: ['Crisis communication — respond to a crisis clearly and calmly', 'Language: passive for neutral statements, third conditional', 'Vocabulary: PR, crisis', 'Simulation: a press or client statement after a problem'],
+        16: ['Strategy — discuss strategy and long-term goals', 'Language: future perfect, By next year we will have…', 'Vocabulary: strategy, growth', "Simulation: plan the company's next year"],
+    },
 };
 
 // Aurora teachers — used for the "Built by" field on a shared login.
@@ -227,6 +291,7 @@ export function composeActivityName({ trilha, lesson, part, type, focus }) {
 }
 
 // The Focus of a standard name ("RADIANT L01B · Cloze · Have you ever" → "Have you ever"); any other name comes back whole.
+// A course label can be several words ("FIRST STEPS L01A · Quiz · …").
 export function focusFromName(name) {
-    return String(name ?? '').replace(/^[A-Z]+ L\d{2}[A-Z]? · [^·]+ · /, '');
+    return String(name ?? '').replace(/^[A-Z]+(?: [A-Z]+)* L\d{2}[A-Z]? · [^·]+ · /, '');
 }

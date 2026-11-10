@@ -126,7 +126,7 @@ Homework is hidden inside the Progress tab.
 - [x] Research + course plan doc
 - [x] Layout mockup, approved with coral
 - [x] Decide: inside lesson-generator, names, pilot module
-- [ ] Add the three modules as courses (config + server lists + tables of contents)
+- [x] Add the three modules as courses (config + server lists + tables of contents) — flex days not modelled yet
 - [ ] Light theme: shared pieces
 - [ ] Clean Aurora Business student app (homework first)
 - [ ] Plan First Steps Unit 1 (1A/1B/1C) with `/plan-lesson`, build it in the light templates it uses
@@ -140,6 +140,11 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+
+- **2026-11-10** — The three modules exist in the app as courses: `FirstSteps`, `EverydayBusiness`,
+  `TakeTheLead` (16 units × A/B/C, levels A2 / B1 / B2, a table of contents per unit from the plan).
+  They appear on Lessons, Library, Save, Students and the student app. Still in the **old dark look**;
+  the light theme is the next step. Server list: `App\Support\Trilhas`. Details: `docs/PROJECT_LOG.md` §40.
 
 - **2026-11-10** — Module names changed to First Steps / Everyday Business / Take the Lead in
   the plan doc and the mockup. Decided: inside lesson-generator, with a clean student app from

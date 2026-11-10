@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\StudentHomeworkService;
 use App\Services\StudentProgressService;
 use App\Support\Credentials;
+use App\Support\Trilhas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -54,7 +55,7 @@ class StudentController extends Controller
         $data = $request->validate([
             'name'     => ['required', 'string', 'max:100'],
             'email'    => ['required', 'email', 'max:255', 'unique:users,email'],
-            'trilha'   => ['required', Rule::in(['Lights', 'Glow', 'Radiant'])],
+            'trilha'   => ['required', Rule::in(Trilhas::NAMES)],
             'password' => ['required', 'string', 'min:8', 'max:100'],
         ]);
 
@@ -89,7 +90,7 @@ class StudentController extends Controller
         }
 
         $data = $request->validate([
-            'trilha'    => ['sometimes', Rule::in(['Lights', 'Glow', 'Radiant'])],
+            'trilha'    => ['sometimes', Rule::in(Trilhas::NAMES)],
             'is_active' => ['sometimes', 'boolean'],
             'password'  => ['sometimes', 'string', 'min:8', 'max:100'],
         ]);

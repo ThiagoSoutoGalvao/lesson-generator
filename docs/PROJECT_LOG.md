@@ -1695,3 +1695,16 @@ couldn't be put into it. Mockup agreed first: `https://claude.ai/artifact/KfG1oC
   panel sits over a full-screen activity that doesn't scroll, so Save was out of reach (found by Thiago saving a
   Reading Text). The form is now capped at `100dvh - 2rem` and scrolls inside. `qa_save_panel_short.mjs` (8 checks,
   real wheel gesture, quiz + Reading Text at 1280×560) fails on the old code and passes on the fix.
+
+## 40. Aurora Business: the three modules as courses (2026-11-10)
+
+Plan, decisions and the running log live in `AuroraBusiness.md`. This step only makes the modules exist as courses.
+- `FirstSteps` / `EverydayBusiness` / `TakeTheLead` (labels FIRST STEPS / EVERYDAY BUSINESS / TAKE THE LEAD) added to
+  `TRILHAS` in `lib/trilhas.js`: 16 units × A/B/C, `program: 'business'` (for the light theme / clean student app later),
+  levels A2 / B1 / B2 in `TRILHA_LEVEL`, a 4-line table of contents per unit (goal · language · vocabulary · simulation)
+  in `TRILHA_TOC`. The four flex days per module are not lessons yet.
+- The server's six hard-coded `Lights,Glow,Radiant` lists (SavedActivity ×2, Student ×2, TrilhaLessonBrief,
+  `student:create`) now read one list, `App\Support\Trilhas::NAMES`. `student:create --trilha` accepts "first steps".
+- `focusFromName()` accepted only one-word course labels; it now accepts "FIRST STEPS L01B · …".
+- Checks: `tests/Feature/AuroraBusinessCoursesTest.php` (3) + `scratchpad/qa_2026-09/qa_business_courses.mjs` (21,
+  overview, pack, Library chip, a First Steps student). Full suite: only the 10 known Breeze failures.
