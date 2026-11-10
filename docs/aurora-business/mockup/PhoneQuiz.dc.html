@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Student app quiz</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#271D62;text-decoration:none}a:hover{color:#1B1446}
+</style>
+</helmet>
+<div style="width: 390px; height: 844px; box-sizing: border-box; background: #F6F7F9; font-family: Inter, system-ui, sans-serif; color: #271D62; display: flex; flex-direction: column">
+
+<header style="flex: 0 0 auto; box-sizing: border-box; background: #FFFFFF; border-bottom: 1px solid #DDE1E8; padding: 12px 16px; display: flex; flex-direction: column; gap: 10px">
+<div style="display: flex; align-items: center; gap: 10px">
+<a href="PhoneLessons.dc.html" aria-label="Back" style="width: 44px; height: 44px; border-radius: 10px; border: 1px solid #DDE1E8; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"></path></svg></a>
+<div style="display: flex; flex-direction: column; min-width: 0">
+<span style="font-size: 12px; font-weight: 600; color: #4A5163; text-transform: uppercase; letter-spacing: 0.04em">Unit 1B · Homework</span>
+<span style="font-size: 16px; font-weight: 600">Jobs and companies</span>
+</div>
+<button aria-label="Display settings" style="margin-left: auto; height: 44px; min-width: 44px; border-radius: 10px; border: 1px solid #DDE1E8; background: #FFFFFF; color: #271D62; font-family: Inter, sans-serif; font-weight: 600; font-size: 16px">Aa</button>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; font-size: 13px; color: #4A5163; font-weight: 500">
+<div style="flex: 1 1 auto; height: 6px; border-radius: 3px; background: #E6E9EE; overflow: hidden"><div style="height: 6px; background: {{accent}}; width: {{progress}}"></div></div>
+<span>{{num}} / 3</span>
+</div>
+</header>
+
+<div style="flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 16px; display: flex; flex-direction: column; gap: 16px">
+<div style="height: 150px; flex: 0 0 150px; border-radius: 14px; background: #E9ECF1; border: 1px solid #DDE1E8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #4A5163; font-size: 14px; font-weight: 500; text-align: center; padding: 0 16px"><svg aria-hidden="true" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="M21 16l-5-5-9 9"></path></svg>Photo: {{photo}}</div>
+<div style="background: #FFFFFF; border: 1px solid #DDE1E8; border-radius: 14px; padding: 20px 18px; display: flex; flex-direction: column; gap: 16px">
+<span style="font-size: 13px; font-weight: 600; color: #4A5163; text-transform: uppercase; letter-spacing: 0.05em">Choose the right word</span>
+<h1 style="margin: 0; font-family: Poppins, Inter, sans-serif; font-size: 23px; font-weight: 600; line-height: 1.35">{{question}}</h1>
+<div style="display: flex; flex-direction: column; gap: 10px">
+<sc-for list="{{options}}" as="opt" hint-placeholder-count="4">
+<button onClick="{{opt.pick}}" style="{{opt.style}}"><span style="{{opt.letterStyle}}">{{opt.letter}}</span><span>{{opt.text}}</span></button>
+</sc-for>
+</div>
+<sc-if value="{{answered}}" hint-placeholder-val="{{ false }}">
+<div style="{{feedbackStyle}}">{{feedback}}</div>
+</sc-if>
+</div>
+</div>
+
+<div style="flex: 0 0 auto; padding: 12px 16px 20px; background: #FFFFFF; border-top: 1px solid #DDE1E8">
+<button onClick="{{next}}" style="width: 100%; height: 54px; border: none; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 18px; font-weight: 600">{{nextLabel}}</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"enum","options":["Aurora coral","Business navy"],"default":"Aurora coral"},"$preview":{"width":390,"height":844}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { q: 0, picked: null }; }
+renderVals() {
+var navy = this.props.accent === 'Business navy';
+var accent = navy ? '#1F3A68' : '#E0521F';
+var qs = [
+{ q: 'Maria works with numbers. She’s ___ accountant.', opts: ['a', 'an', 'the', 'no word'], a: 1, why: 'Use an before a vowel sound: an accountant.', photo: 'an accountant at her desk' },
+{ q: 'Tom ___ the new sales manager.', opts: ['am', 'is', 'are', 'be'], a: 1, why: 'He / she / it → is.', photo: 'a new colleague meeting the team' },
+{ q: 'I work ___ the marketing department.', opts: ['on', 'at', 'in', 'to'], a: 2, why: 'We work in a department, at a company.', photo: 'a marketing team in a meeting' }
+];
+var cur = qs[this.state.q];
+var picked = this.state.picked;
+var answered = picked !== null;
+var self = this;
+var letters = ['A', 'B', 'C', 'D'];
+var base = 'min-height: 56px; width: 100%; text-align: left; display: flex; align-items: center; gap: 14px; padding: 0 16px; border-radius: 12px; font-family: Inter, sans-serif; font-size: 19px; color: #271D62; cursor: pointer; ';
+var lsBase = 'flex: 0 0 30px; height: 30px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 600; ';
+var options = cur.opts.map(function (t, i) {
+var style = base + 'border: 1px solid #DDE1E8; background: #FFFFFF; font-weight: 500;';
+var ls = lsBase + 'background: #F1F2F5; color: #4A5163;';
+if (answered && i === cur.a) { style = base + 'border: 2px solid #1E7A4C; background: #E5F4EC; font-weight: 600;'; ls = lsBase + 'background: #1E7A4C; color: #FFFFFF;'; }
+else if (answered && i === picked) { style = base + 'border: 2px solid #B42318; background: #FDECEA; font-weight: 600;'; ls = lsBase + 'background: #B42318; color: #FFFFFF;'; }
+return { text: t, letter: letters[i], style: style, letterStyle: ls, pick: function () { if (self.state.picked === null) self.setState({ picked: i }); } };
+});
+var right = answered && picked === cur.a;
+return {
+accent: accent,
+num: this.state.q + 1,
+progress: Math.round((this.state.q + (answered ? 1 : 0)) / 3 * 100) + '%',
+question: cur.q,
+photo: cur.photo,
+options: options,
+answered: answered,
+feedback: (right ? 'Right! ' : 'Not quite. ') + cur.why,
+feedbackStyle: 'border-radius: 12px; padding: 14px 16px; font-size: 17px; line-height: 1.4; background: ' + (right ? '#E5F4EC' : '#FDECEA') + '; color: ' + (right ? '#14532D' : '#7F1D1D') + ';',
+nextLabel: this.state.q === 2 && answered ? 'Start again' : (answered ? 'Next' : 'Choose an answer'),
+next: function () { if (self.state.q === 2 && self.state.picked !== null) { self.setState({ q: 0, picked: null }); } else if (self.state.picked !== null) { self.setState({ q: self.state.q + 1, picked: null }); } }
+};
+}
+}
+</script>
+</body>
+</html>

@@ -341,6 +341,17 @@ TEFL groups, `STRIPE_KEY`/`STRIPE_SECRET` on Railway. Marketing:
 
 ---
 
+## 5b. Aurora Business — NEXT (planned 2026-11-09/10, nothing built yet)
+
+Small-group (3–4) Business English course **inside this app**: three 6-month modules **First Steps (A2) /
+Everyday Business (B1) / Take the Lead (B1+/B2)**, 16 units × A/B/C + 4 flex days, 60 min twice a week. Own
+**light, coral theme** (no glass, photos never behind text, phone-first) and a **clean student app from day one**
+(homework first, no 25-drill list). Pilot = First Steps Unit 1. **Everything — decisions, unit lists, layout
+tokens, plan and the "done so far" log — is in `AuroraBusiness.md`; read it first and add a dated log line when
+something finishes.**
+
+---
+
 ## 6. Aurora Lessons — Phase 1 done (2026-10-04 → 06), Phase 2 next
 
 **Direction:** the app is being reshaped as **Aurora Lessons**, with the same repo and a new name. Every lesson becomes
@@ -652,6 +663,7 @@ B2 student), not more building — see `AuroraHomework.md` §6. Phase 11
 | `PronunciationFeature.md` | Pronunciation spec + future-topics catalog (§9–12) |
 | `AuroraStudentApp.md` | Student-app roadmap (S1–S5, complete) and the mobile-first principle |
 | `AuroraHomework.md` | Homework/assignment roadmap — H1+H2 complete, §6 |
+| `AuroraBusiness.md` | Aurora Business course: decisions, units, light-theme tokens, plan + "done so far" log; mockup in `docs/aurora-business/` |
 | `CambridgePracticeMode.md` / `CambridgeResearch.md` | Cambridge spec / research |
 | `# DET Practice Mode — Feature Roadmap.md` | DET spec |
 | `AuroraBranding.md` | Aurora palette / fonts / logo assets / Drive locations |

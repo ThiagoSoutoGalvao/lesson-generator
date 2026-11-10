@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Quiz activity</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+<style>
+body{margin:0}
+a{color:#271D62}a:hover{color:#1B1446}
+</style>
+</helmet>
+<div style="width: 1280px; height: 800px; box-sizing: border-box; background: #F6F7F9; font-family: Inter, system-ui, sans-serif; color: #271D62; display: flex; flex-direction: column">
+
+<header style="height: 72px; flex: 0 0 72px; box-sizing: border-box; background: #FFFFFF; border-bottom: 1px solid #DDE1E8; display: flex; align-items: center; gap: 16px; padding: 0 32px">
+<img src="/_blob/55892dfe5b463c7b0a46f37197e2217c" alt="" style="height: 36px; width: 36px; object-fit: contain">
+<div style="display: flex; flex-direction: column">
+<span style="font-size: 13px; font-weight: 600; color: #4A5163; letter-spacing: 0.04em; text-transform: uppercase">First Steps · Unit 1B</span>
+<span style="font-family: Poppins, Inter, sans-serif; font-size: 19px; font-weight: 600">Hello, I'm… — jobs and companies</span>
+</div>
+<div style="margin-left: auto; display: flex; align-items: center; gap: 12px">
+<span style="font-size: 16px; color: #4A5163; font-weight: 500">Question {{num}} of 3</span>
+<div style="width: 160px; height: 8px; border-radius: 4px; background: #E6E9EE; overflow: hidden"><div style="height: 8px; background: {{accent}}; width: {{progress}}"></div></div>
+<button aria-label="Display settings" style="height: 44px; min-width: 44px; border-radius: 10px; border: 1px solid #DDE1E8; background: #FFFFFF; color: #271D62; font-family: Inter, sans-serif; font-weight: 600; font-size: 17px">Aa</button>
+<button aria-label="Close" style="height: 44px; width: 44px; border-radius: 10px; border: 1px solid #DDE1E8; background: #FFFFFF; color: #271D62; display: flex; align-items: center; justify-content: center"><svg aria-hidden="true" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"></path></svg></button>
+</div>
+</header>
+
+<main style="flex: 1 1 auto; min-height: 0; display: flex; gap: 32px; padding: 32px">
+<section style="flex: 0 0 420px; display: flex; flex-direction: column; gap: 12px">
+<div style="flex: 1 1 auto; border-radius: 16px; background: #E9ECF1; border: 1px solid #DDE1E8; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; color: #4A5163; padding: 24px; text-align: center">
+<svg aria-hidden="true" width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"></rect><circle cx="9" cy="10" r="2"></circle><path d="M21 16l-5-5-9 9"></path></svg>
+<span style="font-size: 17px; font-weight: 500">Photo: {{photo}}</span>
+<span style="font-size: 14px">Business photo from Unsplash, chosen per question</span>
+</div>
+<span style="font-size: 14px; color: #4A5163">The photo sets the scene. The question never sits on top of it.</span>
+</section>
+
+<section style="flex: 1 1 auto; min-width: 0; background: #FFFFFF; border: 1px solid #DDE1E8; border-radius: 16px; padding: 40px 44px; display: flex; flex-direction: column; gap: 24px; overflow-y: auto">
+<p style="margin: 0; font-size: 15px; font-weight: 600; color: #4A5163; text-transform: uppercase; letter-spacing: 0.05em">Choose the right word</p>
+<h1 style="margin: 0; font-family: Poppins, Inter, sans-serif; font-size: 34px; font-weight: 600; line-height: 1.3">{{question}}</h1>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px">
+<sc-for list="{{options}}" as="opt" hint-placeholder-count="4">
+<button onClick="{{opt.pick}}" style="{{opt.style}}"><span style="{{opt.letterStyle}}">{{opt.letter}}</span><span>{{opt.text}}</span></button>
+</sc-for>
+</div>
+<sc-if value="{{answered}}" hint-placeholder-val="{{ false }}">
+<div style="{{feedbackStyle}}">{{feedback}}</div>
+</sc-if>
+<div style="margin-top: auto; display: flex; justify-content: flex-end">
+<button onClick="{{next}}" style="height: 56px; padding: 0 32px; border: none; border-radius: 12px; background: {{accent}}; color: #FFFFFF; font-family: Inter, sans-serif; font-size: 19px; font-weight: 600">{{nextLabel}}</button>
+</div>
+</section>
+</main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"accent":{"editor":"enum","options":["Aurora coral","Business navy"],"default":"Aurora coral"},"$preview":{"width":1280,"height":800}}'>
+class Component extends DCLogic {
+constructor(props) { super(props); this.state = { q: 0, picked: null }; }
+renderVals() {
+var navy = this.props.accent === 'Business navy';
+var accent = navy ? '#1F3A68' : '#E0521F';
+var tint = navy ? '#E8EEF7' : '#FDEEE7';
+var qs = [
+{ q: 'Maria works with numbers. She’s ___ accountant.', opts: ['a', 'an', 'the', 'no word'], a: 1, why: 'Use an before a vowel sound: an accountant, an engineer.', photo: 'an accountant at her desk' },
+{ q: 'Tom ___ the new sales manager.', opts: ['am', 'is', 'are', 'be'], a: 1, why: 'He / she / it → is. Tom is the new sales manager.', photo: 'a new colleague meeting the team' },
+{ q: 'Hi, I’m Ana. I work ___ the marketing department.', opts: ['on', 'at', 'in', 'to'], a: 2, why: 'We work in a department, and at a company.', photo: 'a marketing team in a meeting room' }
+];
+var cur = qs[this.state.q];
+var picked = this.state.picked;
+var answered = picked !== null;
+var self = this;
+var letters = ['A', 'B', 'C', 'D'];
+var base = 'min-height: 76px; text-align: left; display: flex; align-items: center; gap: 16px; padding: 0 20px; border-radius: 14px; font-family: Inter, sans-serif; font-size: 24px; color: #271D62; cursor: pointer; ';
+var options = cur.opts.map(function (t, i) {
+var style = base + 'border: 1px solid #DDE1E8; background: #FFFFFF; font-weight: 500;';
+var ls = 'flex: 0 0 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 600; background: #F1F2F5; color: #4A5163;';
+if (answered && i === cur.a) { style = base + 'border: 2px solid #1E7A4C; background: #E5F4EC; font-weight: 600;'; ls = ls.replace('background: #F1F2F5; color: #4A5163;', 'background: #1E7A4C; color: #FFFFFF;'); }
+else if (answered && i === picked) { style = base + 'border: 2px solid #B42318; background: #FDECEA; font-weight: 600;'; ls = ls.replace('background: #F1F2F5; color: #4A5163;', 'background: #B42318; color: #FFFFFF;'); }
+return { text: t, letter: letters[i], style: style, letterStyle: ls, pick: function () { if (self.state.picked === null) self.setState({ picked: i }); } };
+});
+var right = answered && picked === cur.a;
+return {
+accent: accent,
+tint: tint,
+num: this.state.q + 1,
+progress: Math.round((this.state.q + (answered ? 1 : 0)) / 3 * 100) + '%',
+question: cur.q,
+photo: cur.photo,
+options: options,
+answered: answered,
+feedback: (right ? 'Right! ' : 'Not quite. ') + cur.why,
+feedbackStyle: 'border-radius: 12px; padding: 16px 20px; font-size: 20px; line-height: 1.4; background: ' + (right ? '#E5F4EC' : '#FDECEA') + '; color: ' + (right ? '#14532D' : '#7F1D1D') + ';',
+nextLabel: this.state.q === 2 && answered ? 'Start again' : 'Next question',
+next: function () { if (self.state.q === 2 && self.state.picked !== null) { self.setState({ q: 0, picked: null }); } else if (self.state.picked !== null) { self.setState({ q: self.state.q + 1, picked: null }); } }
+};
+}
+}
+</script>
+</body>
+</html>
