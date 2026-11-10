@@ -132,7 +132,7 @@ Homework is hidden inside the Progress tab.
 - [x] Light templates: speaking — Role-play, Story builder, Debate, Mini presentation, Discussion, Picture prompts + "Use it!"
 - [x] Light templates: Reading Text, Presentation (1A)
 - [ ] Light templates: the other practice types (flashcards, match pairs, gap-fills…) as units need them
-- [ ] Clean Aurora Business student app (homework first) — turns the light theme on for business students
+- [x] Clean Aurora Business student app — two tabs (Course, Progress), homework first, light; no Cambridge/DET
 - [ ] Role-play cards: "You can say…" sentence starters for A2 (in the mockup; needs a generator + data change)
 - [ ] Clean Aurora Business student app (homework first)
 - [ ] Plan First Steps Unit 1 (1A/1B/1C) with `/plan-lesson`, build it in the light templates it uses
@@ -146,6 +146,18 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+
+- **2026-11-10** — **Clean student app for Aurora Business students.** Decided: **two tabs only, Course and
+  Progress — no Practice tab, no Cambridge/DET** ("as clean as possible"). `StudentShell` gives a business
+  student `BusinessShell` (`student/business/BusinessPages.jsx`) with the light theme on: Course = homework
+  first (to do, with the teacher's note; "No homework right now" otherwise), course progress, the current unit
+  (the first with something left to do) with its 1A/1B/1C, then all 16 units; a unit page with "What you'll
+  learn" and each lesson's activities (names without the `FIRST STEPS L01B · Quiz ·` prefix, scores shown);
+  Progress = completed count, recent results, speaking in class, Log out. Old `/s/practice` links land on
+  Course. Lights/Glow/Radiant students keep the old app. Checks: `qa_business_student.mjs` (31, incl. a quiz
+  with one wrong answer showing 1 / 2 on the unit page and Progress); old student suites (146) pass.
+  Note: Reading Text and Presentation are teacher-only types, so students don't see 1A's reading/presentation
+  in their course (only a Presentation assigned as homework) — unchanged, decide later if they should.
 
 - **2026-11-10** — **Light theme, step 3: Reading Text and Presentation.** Reading Text: photo band, the passage
   on a white card in an 860px column (20px text), vocabulary on its own card, "Make an exercise from this

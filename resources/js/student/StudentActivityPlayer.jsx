@@ -3,6 +3,7 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import axios from 'axios';
 
 import { reloadStudentLessons } from '@/student/lib/useStudentLessons';
+import { useIsLightUi } from '@/lib/uiTheme';
 
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
@@ -83,14 +84,15 @@ const COMPONENTS = {
 };
 
 function FullscreenMessage({ children, onBack }) {
+    const light = useIsLightUi(); // Aurora Business student
     return (
-        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center text-center px-8 gap-4" style={{ background: GRADIENT }}>
-            <p className="text-white/80 text-sm max-w-xs leading-relaxed">{children}</p>
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center text-center px-8 gap-4" style={{ background: light ? '#F6F7F9' : GRADIENT }}>
+            <p className={`${light ? 'text-[#271D62] text-base' : 'text-white/80 text-sm'} max-w-xs leading-relaxed`}>{children}</p>
             <button
                 onClick={onBack}
-                className="text-[#fc6840] hover:text-white font-display font-semibold text-sm underline cursor-pointer"
+                className={`${light ? 'text-[#9A3412] hover:text-[#271D62] text-base min-h-11' : 'text-[#fc6840] hover:text-white text-sm'} font-display font-semibold underline cursor-pointer`}
             >
-                Back to my trilha
+                {light ? 'Back to my course' : 'Back to my trilha'}
             </button>
         </div>
     );
@@ -102,6 +104,7 @@ export default function StudentActivityPlayer() {
     const location = useLocation();
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
+    const light = useIsLightUi();
 
     useEffect(() => {
         let alive = true;
@@ -140,8 +143,8 @@ export default function StudentActivityPlayer() {
 
     if (!data) {
         return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: GRADIENT }}>
-                <p className="text-white/60 text-sm font-display">Loading…</p>
+            <div className="fixed inset-0 z-50 flex items-center justify-center" style={{ background: light ? '#F6F7F9' : GRADIENT }}>
+                <p className={`${light ? 'text-[#4A5163] text-base' : 'text-white/60 text-sm'} font-display`}>Loading…</p>
             </div>
         );
     }

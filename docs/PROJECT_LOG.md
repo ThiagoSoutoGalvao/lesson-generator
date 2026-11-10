@@ -1749,3 +1749,14 @@ Plan, decisions and the running log live in `AuroraBusiness.md`. This step only 
 - Light Reading Text drops the header "+ Add activity" link (the pack's own "+ Add" covers it).
 - Checks: `qa_light_materials.mjs` 22; `_tmp_qa_lesson_material` 18, `_tmp_qa_presentation_homework` 12,
   `qa_presentation_mobile` 9, `qa_reading_level` 9.
+
+## 44. Aurora Business student app: two tabs, light, homework first (2026-11-10)
+
+- `StudentShell`: `useLightUi(isLightCourse(user.trilha))` + an early `BusinessShell` for business students —
+  routes `/s`, `/s/lesson/:n`, `/s/activity/:id`, `/s/progress` only (everything else → `/s`), a white two-tab nav.
+- `student/business/BusinessPages.jsx`: `BusinessHomePage` (homework from `/api/student/homework`, the current unit
+  = first with an undone activity, 1A/1B/1C rows linking to `#part-X`, all units), `BusinessLessonPage`,
+  `BusinessProgressPage` (same `/api/student/progress` data as `ProgressPage`). No new endpoints.
+- `StudentActivityPlayer` loading / error screens follow the theme.
+- Checks: `qa_business_student.mjs` 31; `_tmp_qa_presentation_homework` 12, `_tmp_qa_useit` 36, `qa_lesson_parts` 46,
+  `qa_student_logout` 8, `qa_production` 44.
