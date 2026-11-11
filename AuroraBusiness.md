@@ -40,6 +40,12 @@ material, such as an email they must write, which is the edge over apps and big 
 | 2026-11-10 | New **light layout** ("white, clear for reading"); **coral accent** chosen; mockup approved as is |
 | 2026-11-10 | **Clean student app from day one** for Aurora Business students (not "build now, clean up later") |
 | 2026-11-10 | Module names: **First Steps / Everyday Business / Take the Lead** |
+| 2026-11-11 | **Designed for groups, always** — every template and activity must favour group work. Max **4** per group; **even numbers are better** (pair work). Nothing assumes one student + the teacher |
+| 2026-11-11 | **Pair work = a mix**: practise in Zoom breakout rooms (each student sees their own role card on the phone), then one pair performs in the main room (shared screen) |
+| 2026-11-11 | **Odd numbers**: pair tasks offer an optional third role (e.g. observer who ticks "Use it!"); the teacher can also partner the extra student — teacher chooses each class |
+| 2026-11-11 | **Practice screens (quiz, gap-fills…) = take turns**: each question goes to the next student by name; the screen shows whose turn it is |
+| 2026-11-11 | **Homework always prepares for the next lesson** (before a C lesson = prepare the simulation). Three lessons per unit stay; the weekend falls in a different place each unit and that's fine |
+| 2026-11-11 | Units are planned with the **`/plan-business-unit`** skill (whole unit, simulation first, group rules); each unit's plan is saved in `docs/aurora-business/units/` |
 
 ---
 
