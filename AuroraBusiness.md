@@ -171,6 +171,8 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   (PDF) and Essay Feedback tabs are still dark. Checks: `qa_light_forms.mjs` (17); `qa_light_theme` 20,
   `qa_light_materials` 22, lesson pack 32, lesson material 18 pass.
 - **2026-11-12** — New First Steps unit list (office survival) in `TRILHA_TOC`; writing thread rule.
+- **2026-11-12** — Light Presentation re-laid out (Thiago: empty space left of the long examples column): title across
+  the top, photo top-left growing to match the examples, rule + form under it (3bf0f87, `qa_pres_layout.mjs` 7/7).
 - **2026-11-11** — Group-first rules decided (see §2); `/plan-business-unit` skill; Unit 1 plan in
   `docs/aurora-business/units/first-steps-01.md`; local demo (`scratchpad/demo_business.php create|cleanup`).
 
