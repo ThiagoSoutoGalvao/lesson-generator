@@ -45,6 +45,8 @@ material, such as an email they must write, which is the edge over apps and big 
 | 2026-11-11 | **Odd numbers**: pair tasks offer an optional third role (e.g. observer who ticks "Use it!"); the teacher can also partner the extra student — teacher chooses each class |
 | 2026-11-11 | **Practice screens (quiz, gap-fills…) = take turns**: each question goes to the next student by name; the screen shows whose turn it is |
 | 2026-11-11 | **Homework always prepares for the next lesson** (before a C lesson = prepare the simulation). Three lessons per unit stay; the weekend falls in a different place each unit and that's fine |
+| 2026-11-11 | **A different fictional company each unit** (different environments; never a real name — some students work at CPFL). Unit 1 = Nordia Foods |
+| 2026-11-11 | **First Steps focus = office survival**: emails, short presentations, office vocabulary, scheduling meetings. Company types / industries move to the later modules |
 | 2026-11-11 | Units are planned with the **`/plan-business-unit`** skill (whole unit, simulation first, group rules); each unit's plan is saved in `docs/aurora-business/units/` |
 
 ---

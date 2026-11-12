@@ -30,13 +30,18 @@ those rules; if they disagree, the decisions table wins — and fix this file.
    the next unit's topic. One ~10-minute activity per class, in the student app.
 5. **60 minutes.** Budget roughly: warmer 5–10 · input 15–20 · practice 15–20 · production 15–20. Usually
    3–5 activities per lesson, never more than fits.
-6. **One cast per unit.** The 1A core material introduces the people and the company; 1B and 1C reuse
-   them (the quiz asks about them, the role-play casts them). First Steps uses **Nordia Foods**, a small food
-   company in Natal (Ana — accountant, Bruno — sales manager, Carla — marketing assistant, Diego — IT
-   engineer) unless Thiago changes it.
-7. **Threads in every unit:** one typical Brazilian mistake (false friends, "I have 30 years", missing
+6. **One cast per unit, a new company every unit.** The 1A core material introduces the people and the
+   company; 1B and 1C reuse them (the quiz asks about them, the role-play casts them). Each unit uses a
+   **different fictional company** in a different kind of workplace (an energy supplier, a bank, a hospital
+   office, a software house…) so students see different environments — but the work shown is **office
+   work**, not the industry itself. Never use a real company's name (some students work at CPFL — invent a
+   similar one). List the companies already used in the unit plan files and don't repeat one in a module.
+7. **First Steps = office survival.** What A2 office workers use every day: emails (send and reply),
+   short presentations, office vocabulary, scheduling meetings, calls, quick messages. Company types and
+   industries are for Everyday Business / Take the Lead.
+8. **Threads in every unit:** one typical Brazilian mistake (false friends, "I have 30 years", missing
    a / an with jobs…) and politeness vs. directness where it fits.
-8. **Real material is welcome.** Where a task can use the students' own jobs, emails or companies, say so.
+9. **Real material is welcome.** Where a task can use the students' own jobs, emails or companies, say so.
 
 ## 1. Plan the unit (before any prompt)
 
