@@ -173,6 +173,10 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 - **2026-11-12** — New First Steps unit list (office survival) in `TRILHA_TOC`; writing thread rule.
 - **2026-11-12** — Light Presentation re-laid out (Thiago: empty space left of the long examples column): title across
   the top, photo top-left growing to match the examples, rule + form under it (3bf0f87, `qa_pres_layout.mjs` 7/7).
+- **2026-11-12** — Light Match Pairs (Thiago: columns too close, a group had to scroll to see every option): full width,
+  words narrow / meanings wide with a 40–64px gap, tiles share the screen height so 8 pairs fit a 1366×768 laptop,
+  matched pairs numbered on both sides, light end screen listing the pairs (`qa_light_match_pairs.mjs` 13/13). Thiago
+  deleted the demo activities himself.
 - **2026-11-11** — Group-first rules decided (see §2); `/plan-business-unit` skill; Unit 1 plan in
   `docs/aurora-business/units/first-steps-01.md`; local demo (`scratchpad/demo_business.php create|cleanup`).
 
