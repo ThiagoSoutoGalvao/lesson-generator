@@ -47,6 +47,7 @@ material, such as an email they must write, which is the edge over apps and big 
 | 2026-11-11 | **Homework always prepares for the next lesson** (before a C lesson = prepare the simulation). Three lessons per unit stay; the weekend falls in a different place each unit and that's fine |
 | 2026-11-11 | **A different fictional company each unit** (different environments; never a real name — some students work at CPFL). Unit 1 = Nordia Foods |
 | 2026-11-11 | **First Steps focus = office survival**: emails, short presentations, office vocabulary, scheduling meetings. Company types / industries move to the later modules |
+| 2026-11-12 | New First Steps unit list approved (units 2, 4, 8, 10, 11, 12 changed — a presentations unit added). **Writing thread**: each unit ends with a short email/message homework |
 | 2026-11-11 | Units are planned with the **`/plan-business-unit`** skill (whole unit, simulation first, group rules); each unit's plan is saved in `docs/aurora-business/units/` |
 
 ---
@@ -64,11 +65,16 @@ Placement test ─┬─ A2   → First Steps        (6 months) ─┐
                 └─ B1+  → Take the Lead      (6 months) ← renew
 ```
 
-**First Steps (A2)** — 1 Hello, I'm… · 2 My company · 3 My workday · 4 Numbers and prices ·
-*Review 1* · 5 Around the office · 6 Arranging a meeting · 7 Simple emails · 8 Phone basics ·
-*Review 2* · 9 Last week at work · 10 Products and services · 11 Business travel ·
-12 Eating out with clients · *Review 3* · 13 Plans and next steps · 14 Rules and tasks ·
-15 Small problems · 16 My experience · *Final day*
+**First Steps (A2)** — office survival (changed 2026-11-12) — 1 Hello, I'm… · 2 My team and my role ·
+3 My workday · 4 Numbers, dates and contact details · *Review 1* · 5 Around the office · 6 Arranging a
+meeting · 7 Simple emails · 8 Calls and video calls · *Review 2* · 9 Last week at work · 10 A short
+presentation · 11 Quick messages · 12 Small talk at the office · *Review 3* · 13 Plans and next steps ·
+14 Rules and tasks · 15 Small problems · 16 My experience · *Final day*
+(Business travel and eating out with clients left First Steps — consider them when planning Everyday
+Business. Full wording per unit: `TRILHA_TOC.FirstSteps` in `resources/js/lib/trilhas.js`.)
+
+**Writing thread (all modules):** every unit's last homework is one short email or message that prepares
+the next lesson (e.g. after Unit 1: an email introducing yourself to your new team).
 
 **Everyday Business (B1)** — 1 Networking and small talk · 2 My role and my company ·
 3 Email essentials · 4 Chat and messaging · 5 Video calls · 6 Phone calls · 7 Taking part in
@@ -141,10 +147,11 @@ Homework is hidden inside the Progress tab.
 - [x] Light templates: Reading Text, Presentation (1A)
 - [ ] Light templates: the other practice types (flashcards, match pairs, gap-fills…) as units need them
 - [x] Clean Aurora Business student app — two tabs (Course, Progress), homework first, light; no Cambridge/DET
+- [x] Light Materials (Presentation + Reading Text tabs) and Generate page, and Library launch of a business activity
 - [ ] Role-play cards: "You can say…" sentence starters for A2 (in the mockup; needs a generator + data change)
-- [ ] Clean Aurora Business student app (homework first)
-- [ ] Plan First Steps Unit 1 (1A/1B/1C) with `/plan-lesson`, build it in the light templates it uses
-- [ ] "Use it!" per student, Writing goal
+- [ ] Plan First Steps Unit 1 (1A/1B/1C) with `/plan-business-unit`, build it — plan written, 1A reading made
+- [ ] Group-ready templates: role-play Student A / B (+ optional C) with cards on phones, "whose turn" on practice screens, group wording in Claude's prompts for business courses
+- [ ] "Use it!" per student, Writing goal (now needed for the writing thread)
 - [ ] Placement test
 - [ ] Teach the pilot with a real group, adjust, then build units at teaching pace
 
@@ -154,6 +161,18 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+
+- **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
+  view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
+  pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate
+  draw their forms light (`lib/lightForm.js` classes) and the activity they make opens light; Materials shows a
+  "Making it for: … · Change" banner like Generate's, and Reading Text starts at the course level (A2). Library
+  turns light while a business activity is launched. Dark classes for the other courses are unchanged. Course book
+  (PDF) and Essay Feedback tabs are still dark. Checks: `qa_light_forms.mjs` (17); `qa_light_theme` 20,
+  `qa_light_materials` 22, lesson pack 32, lesson material 18 pass.
+- **2026-11-12** — New First Steps unit list (office survival) in `TRILHA_TOC`; writing thread rule.
+- **2026-11-11** — Group-first rules decided (see §2); `/plan-business-unit` skill; Unit 1 plan in
+  `docs/aurora-business/units/first-steps-01.md`; local demo (`scratchpad/demo_business.php create|cleanup`).
 
 - **2026-11-10** — **Clean student app for Aurora Business students.** Decided: **two tabs only, Course and
   Progress — no Practice tab, no Cambridge/DET** ("as clean as possible"). `StudentShell` gives a business

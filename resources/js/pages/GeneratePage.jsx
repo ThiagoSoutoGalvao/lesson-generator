@@ -34,6 +34,8 @@ import { LEVELS, DEFAULT_LEVEL, LEVEL_RANK } from '@/lib/levels';
 import { EXAMS, EXAM_ORDER, TEMPLATE_META, isDirect } from '@/lib/examStyles';
 import { getLessonSession, clearLessonSession } from '@/lib/lessonSession';
 import { STAGE_LABELS } from '@/lib/stages';
+import { useLightUi, useIsLightUi, isLightCourse } from '@/lib/uiTheme';
+import { LF } from '@/lib/lightForm';
 
 // What a teacher is trying to get students to practise. This is the first choice
 // on the page — templates are shown grouped under whichever goal is picked.
@@ -181,9 +183,11 @@ const MATERIAL_TYPES = ['reading_text', 'presentation', 'grammar_explainer'];
 // Step-3 source "A presentation or reading": the teacher's saved core material, this lesson's first.
 // The server reads its text (and a reading's target vocabulary) — nothing to download or upload.
 function LessonMaterialPicker({ materials, value, onChange, lessonSession }) {
-    if (materials === null) return <p className="text-white/50 text-sm">Loading your presentations and readings…</p>;
+    const L = useIsLightUi();
+    const opt = L ? LF.option : 'bg-gray-900 text-white';
+    if (materials === null) return <p className={L ? 'text-ui-faint text-sm' : 'text-white/50 text-sm'}>Loading your presentations and readings…</p>;
     if (materials.length === 0) {
-        return <p className="text-white/60 text-sm">No saved presentations or readings yet — make one under Upload → Presentation or Reading Text, save it, and it appears here.</p>;
+        return <p className={L ? 'text-ui-muted text-sm' : 'text-white/60 text-sm'}>No saved presentations or readings yet — make one under Upload → Presentation or Reading Text, save it, and it appears here.</p>;
     }
     const inLesson = m => lessonSession && m.trilha === lessonSession.trilha && m.trilha_lesson === lessonSession.lesson;
     const mine  = materials.filter(inLesson);
@@ -197,24 +201,24 @@ function LessonMaterialPicker({ materials, value, onChange, lessonSession }) {
                 id="material-select"
                 value={value}
                 onChange={e => onChange(e.target.value)}
-                className={`${inputCls} appearance-none cursor-pointer`}
+                className={`${L ? LF.input : inputCls} appearance-none cursor-pointer`}
             >
-                <option value="" className="bg-gray-900 text-white">Choose a presentation or reading…</option>
+                <option value="" className={opt}>Choose a presentation or reading…</option>
                 {mine.length > 0 && (
-                    <optgroup label="This lesson" className="bg-gray-900 text-white">
-                        {mine.map(m => <option key={m.id} value={m.id} className="bg-gray-900 text-white">{label(m)}</option>)}
+                    <optgroup label="This lesson" className={opt}>
+                        {mine.map(m => <option key={m.id} value={m.id} className={opt}>{label(m)}</option>)}
                     </optgroup>
                 )}
-                <optgroup label={mine.length > 0 ? 'Everything else' : 'Your presentations and readings'} className="bg-gray-900 text-white">
-                    {rest.map(m => <option key={m.id} value={m.id} className="bg-gray-900 text-white">{label(m)}</option>)}
+                <optgroup label={mine.length > 0 ? 'Everything else' : 'Your presentations and readings'} className={opt}>
+                    {rest.map(m => <option key={m.id} value={m.id} className={opt}>{label(m)}</option>)}
                 </optgroup>
             </select>
             {picked && (
-                <p className="text-white/55 text-xs">
+                <p className={L ? 'text-ui-faint text-xs' : 'text-white/55 text-xs'}>
                     The activity is built from this {picked.type === 'reading_text' ? 'reading — its text and target vocabulary' : 'presentation — its rules and examples'}. No download needed.
                 </p>
             )}
-            {value && !picked && <p className="text-amber-300 text-xs">That one isn’t in this account’s library — pick another.</p>}
+            {value && !picked && <p className={L ? 'text-ui-warn text-xs' : 'text-amber-300 text-xs'}>That one isn’t in this account’s library — pick another.</p>}
         </div>
     );
 }
@@ -229,35 +233,37 @@ function TemplateMeta({ templateId, selected, level }) {
     const direct  = meta.exams.filter(x => x.kind === 'direct');
     const similar = meta.exams.filter(x => x.kind === 'similar');
     const tooLow  = LEVEL_RANK[level] < LEVEL_RANK[meta.from];
+    const L = useIsLightUi();
+    const em = L ? 'font-semibold text-[#9A3412]' : 'font-semibold text-[#fdb08a]';
 
     return (
         <>
             <span className="flex flex-wrap items-center gap-1.5 mt-1.5">
                 {direct.map(x => (
-                    <span key={x.exam} className="text-[11px] font-medium px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-white/85">
+                    <span key={x.exam} className={L ? 'text-[11px] font-medium px-2 py-0.5 rounded-full bg-ui-well border border-ui-line text-ui-muted' : 'text-[11px] font-medium px-2 py-0.5 rounded-full bg-white/10 border border-white/20 text-white/85'}>
                         {EXAMS[x.exam]}
                     </span>
                 ))}
                 <span
-                    className="ml-auto text-[11px] font-semibold tabular-nums text-[#fdb08a] border border-[#fdb08a]/45 rounded-md px-1.5 py-px"
+                    className={L ? 'ml-auto text-[11px] font-semibold tabular-nums text-[#9A3412] border border-[#F5C4AE] rounded-md px-1.5 py-px' : 'ml-auto text-[11px] font-semibold tabular-nums text-[#fdb08a] border border-[#fdb08a]/45 rounded-md px-1.5 py-px'}
                     title="Lowest level this format suits"
                 >
                     {meta.from}+
                 </span>
             </span>
             {selected && (
-                <span className="mt-2 pt-2 border-t border-white/15 text-xs leading-relaxed text-white/90 flex flex-col gap-0.5">
+                <span className={L ? 'mt-2 pt-2 border-t border-[#F5C4AE] text-xs leading-relaxed text-ui-ink flex flex-col gap-0.5' : 'mt-2 pt-2 border-t border-white/15 text-xs leading-relaxed text-white/90 flex flex-col gap-0.5'}>
                     {direct.map(x => (
-                        <span key={x.exam}><span className="font-semibold text-[#fdb08a]">Mirrors</span> · {EXAMS[x.exam]}: {x.task}</span>
+                        <span key={x.exam}><span className={em}>Mirrors</span> · {EXAMS[x.exam]}: {x.task}</span>
                     ))}
                     {similar.map(x => (
-                        <span key={x.exam}><span className="font-semibold text-[#fdb08a]">Similar skill</span> · {EXAMS[x.exam]}: {x.task}</span>
+                        <span key={x.exam}><span className={em}>Similar skill</span> · {EXAMS[x.exam]}: {x.task}</span>
                     ))}
                     {meta.exams.length === 0 && (
-                        <span><span className="font-semibold text-[#fdb08a]">General format</span> · not tied to one exam.</span>
+                        <span><span className={em}>General format</span> · not tied to one exam.</span>
                     )}
                     {tooLow && (
-                        <span className="text-[#ffd39a]">Made for {meta.from}+. At {level} it will be a stretch.</span>
+                        <span className={L ? 'text-ui-warn' : 'text-[#ffd39a]'}>Made for {meta.from}+. At {level} it will be a stretch.</span>
                     )}
                 </span>
             )}
@@ -289,6 +295,15 @@ export default function GeneratePage() {
     const [lessonSession, setLessonSessionState] = useState(() => getLessonSession());
     // Starts from the trilha's level while adding to a lesson (Lights → A1), else B1.
     const [level, setLevel] = useState(() => TRILHA_LEVEL[getLessonSession()?.trilha] ?? DEFAULT_LEVEL);
+    // Working on an Aurora Business lesson → the form and the activity it makes are drawn in the light theme.
+    const L = isLightCourse(lessonSession?.trilha);
+    useLightUi(L);
+    const lab  = L ? LF.label : 'text-sm font-medium text-white/80';
+    const hint = L ? LF.hint : 'text-white/40 font-normal ml-1';
+    const ringPick = on => on
+        ? (L ? LF.chipOn : 'bg-[#fc6840]/15 border-[#fc6840] text-white ring-2 ring-[#fc6840]/40')
+        : (L ? LF.chip : 'bg-white/5 border-white/12 text-white/70 hover:bg-white/10 hover:text-white');
+    const fillPick = (on, off) => (on ? (L ? LF.fillOn : 'bg-[#e0521f] border-[#e0521f] text-white') : (L ? LF.chip : off));
 
     useEffect(() => {
         axios.get('/api/documents')
@@ -436,33 +451,33 @@ export default function GeneratePage() {
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
             <div>
-                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Generate an Activity</h2>
-                <p className="lg-shell-text text-white/75 mt-1 text-sm">
+                <h2 className={L ? LF.title : 'font-display lg-shell-text text-3xl font-bold text-white'}>Generate an Activity</h2>
+                <p className={L ? LF.sub : 'lg-shell-text text-white/75 mt-1 text-sm'}>
                     Pick what you want students to practise, choose a format, and give it a topic.
                 </p>
             </div>
 
             {lessonSession && (
-                <div className="flex items-center gap-2 text-sm bg-[#fc6840]/15 border border-[#fc6840]/35 rounded-xl px-4 py-2.5">
-                    <span className="text-[#fdb08a]">
-                        Adding to: <span className="font-semibold text-white">
+                <div className={`flex items-center gap-2 text-sm rounded-xl px-4 py-2.5 ${L ? LF.banner : 'bg-[#fc6840]/15 border border-[#fc6840]/35'}`}>
+                    <span className={L ? '' : 'text-[#fdb08a]'}>
+                        Adding to: <span className={`font-semibold ${L ? 'text-ui-ink' : 'text-white'}`}>
                             {TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha} · Lesson {lessonSession.lesson}{lessonSession.part ?? ''}
                             {lessonSession.stage && ` · ${STAGE_LABELS[lessonSession.stage]}`}
                         </span>
                     </span>
-                    <button type="button" onClick={handleClearSession} className="ml-auto text-[#fdb08a]/80 hover:text-white text-xs underline cursor-pointer">
+                    <button type="button" onClick={handleClearSession} className={`ml-auto text-xs underline cursor-pointer ${L ? 'hover:text-ui-ink' : 'text-[#fdb08a]/80 hover:text-white'}`}>
                         Change
                     </button>
                 </div>
             )}
 
-            <div className="lg-surface border rounded-2xl p-6">
+            <div className={L ? LF.card : 'lg-surface border rounded-2xl p-6'}>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
                     {/* Optional exam filter — skips the goal step */}
                     <div className="flex flex-col gap-2">
-                        <span className="text-sm font-medium text-white/80">
-                            Preparing a student for an exam? <span className="text-white/40 font-normal ml-1">— optional, skips straight to matching formats</span>
+                        <span className={lab}>
+                            Preparing a student for an exam? <span className={hint}>— optional, skips straight to matching formats</span>
                         </span>
                         <div className="flex flex-wrap gap-2">
                             {EXAM_ORDER.map(e => (
@@ -473,17 +488,17 @@ export default function GeneratePage() {
                                     aria-pressed={exam === e}
                                     className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-medium transition-all cursor-pointer border ${
                                         exam === e
-                                            ? 'bg-[#fc6840]/15 border-[#fc6840] text-white ring-2 ring-[#fc6840]/35'
-                                            : 'bg-white/5 border-white/15 text-white/70 hover:bg-white/10 hover:text-white'
+                                            ? (L ? LF.chipOn : 'bg-[#fc6840]/15 border-[#fc6840] text-white ring-2 ring-[#fc6840]/35')
+                                            : (L ? LF.chip : 'bg-white/5 border-white/15 text-white/70 hover:bg-white/10 hover:text-white')
                                     }`}
                                 >
                                     {EXAMS[e]}
-                                    <span className={`tabular-nums text-[11px] ${exam === e ? 'text-white/85' : 'text-white/50'}`}>{examCount(e)}</span>
+                                    <span className={`tabular-nums text-[11px] ${L ? 'text-ui-faint' : exam === e ? 'text-white/85' : 'text-white/50'}`}>{examCount(e)}</span>
                                 </button>
                             ))}
                         </div>
                         {exam && examCount(exam) <= 3 && (
-                            <p className="text-xs text-white/55">
+                            <p className={L ? LF.note : 'text-xs text-white/55'}>
                                 Only {examCount(exam)} {examCount(exam) === 1 ? 'format' : 'formats'} so far. More are on the way.
                             </p>
                         )}
@@ -491,7 +506,7 @@ export default function GeneratePage() {
 
                     {/* Step 1 — goal (hidden while an exam is picked) */}
                     <div className={`${exam ? 'hidden' : 'flex'} flex-col gap-2`}>
-                        <label className="text-sm font-medium text-white/80">1. What do you want to practise?</label>
+                        <label className={lab}>1. What do you want to practise?</label>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                             {GOALS.map(g => (
                                 <button
@@ -499,13 +514,11 @@ export default function GeneratePage() {
                                     type="button"
                                     onClick={() => pickGoal(g.id)}
                                     className={`flex flex-col items-center gap-0.5 px-3 py-3 rounded-xl text-center transition-all cursor-pointer border ${
-                                        goal === g.id
-                                            ? 'bg-[#fc6840]/15 border-[#fc6840] text-white ring-2 ring-[#fc6840]/40'
-                                            : 'bg-white/5 border-white/12 text-white/70 hover:bg-white/10 hover:text-white'
+                                        ringPick(goal === g.id)
                                     }`}
                                 >
                                     <span className="text-sm font-semibold">{g.label}</span>
-                                    <span className={`text-[10px] leading-tight ${goal === g.id ? 'text-white/80' : 'text-white/40'}`}>{g.hint}</span>
+                                    <span className={`text-[10px] leading-tight ${L ? 'text-ui-faint' : goal === g.id ? 'text-white/80' : 'text-white/40'}`}>{g.hint}</span>
                                 </button>
                             ))}
                         </div>
@@ -514,7 +527,7 @@ export default function GeneratePage() {
                     {/* Step 2 — template */}
                     {showFormats && (
                         <div className="flex flex-col gap-2">
-                            <label className="text-sm font-medium text-white/80">
+                            <label className={lab}>
                                 {exam ? `Formats that mirror ${EXAMS[exam]} tasks` : '2. Choose a format'}
                             </label>
                             <div className="grid sm:grid-cols-2 items-start gap-2">
@@ -526,12 +539,12 @@ export default function GeneratePage() {
                                         aria-pressed={templateId === t.id}
                                         className={`flex flex-col gap-1 text-left px-3.5 py-3 rounded-xl transition-all cursor-pointer border ${
                                             templateId === t.id
-                                                ? 'bg-[#fc6840]/15 border-[#fc6840] ring-2 ring-[#fc6840]/40'
-                                                : 'bg-white/5 border-white/12 hover:bg-white/10'
+                                                ? (L ? LF.chipOn : 'bg-[#fc6840]/15 border-[#fc6840] ring-2 ring-[#fc6840]/40')
+                                                : (L ? LF.chip : 'bg-white/5 border-white/12 hover:bg-white/10')
                                         }`}
                                     >
-                                        <span className="text-sm font-semibold text-white">{t.label}</span>
-                                        <span className={`text-xs leading-snug ${templateId === t.id ? 'text-white/90' : 'text-white/45'}`}>{t.blurb}</span>
+                                        <span className={`text-sm font-semibold ${L ? 'text-ui-ink' : 'text-white'}`}>{t.label}</span>
+                                        <span className={`text-xs leading-snug ${L ? 'text-ui-muted' : templateId === t.id ? 'text-white/90' : 'text-white/45'}`}>{t.blurb}</span>
                                         <TemplateMeta templateId={t.id} selected={templateId === t.id} level={level} />
                                     </button>
                                 ))}
@@ -543,7 +556,7 @@ export default function GeneratePage() {
                     {template && (
                         <>
                             <div className="flex flex-col gap-2">
-                                <label className="text-sm font-medium text-white/80">{exam ? 2 : 3}. Where should the content come from?</label>
+                                <label className={lab}>{exam ? 2 : 3}. Where should the content come from?</label>
                                 <div className="flex gap-2">
                                     {[['topic', 'A topic'], ['lesson', 'A presentation or reading'], ['document', 'An uploaded document']].map(([mode, lbl]) => (
                                         <button
@@ -551,9 +564,7 @@ export default function GeneratePage() {
                                             type="button"
                                             onClick={() => setSourceMode(mode)}
                                             className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-all cursor-pointer border ${
-                                                sourceMode === mode
-                                                    ? 'bg-[#e0521f] border-[#e0521f] text-white'
-                                                    : 'bg-white/5 border-white/10 text-white/55 hover:text-white/80'
+                                                fillPick(sourceMode === mode, 'bg-white/5 border-white/10 text-white/55 hover:text-white/80')
                                             }`}
                                         >
                                             {lbl}
@@ -574,7 +585,7 @@ export default function GeneratePage() {
                                         value={topic}
                                         onChange={e => setTopic(e.target.value)}
                                         placeholder="e.g. the second conditional · daily routines · a text about recycling"
-                                        className={inputCls}
+                                        className={L ? LF.input : inputCls}
                                     />
                                 ) : (
                                     <div className="flex flex-col gap-3">
@@ -582,27 +593,27 @@ export default function GeneratePage() {
                                             <select
                                                 value={documentId}
                                                 onChange={e => { setDocumentId(e.target.value); setPageFrom(''); setPageTo(''); }}
-                                                className={`${inputCls} appearance-none pr-10 cursor-pointer`}
+                                                className={`${L ? LF.input : inputCls} appearance-none pr-10 cursor-pointer`}
                                             >
-                                                <option value="" className="bg-gray-900 text-white">Select a document…</option>
+                                                <option value="" className={L ? LF.option : 'bg-gray-900 text-white'}>Select a document…</option>
                                                 {documents.map((doc) => (
-                                                    <option key={doc.id} value={doc.id} className="bg-gray-900 text-white">
+                                                    <option key={doc.id} value={doc.id} className={L ? LF.option : 'bg-gray-900 text-white'}>
                                                         {doc.source_type === 'audio' ? '🎧 ' : ''}{doc.original_name}{doc.page_count ? ` (${doc.page_count} pages)` : ''}
                                                     </option>
                                                 ))}
                                             </select>
-                                            <svg className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg className={`pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 ${L ? 'text-ui-faint' : 'text-white/40'}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                                             </svg>
                                         </div>
                                         {pageCount && (
                                             <div className="flex items-center gap-3">
                                                 <input type="number" value={pageFrom} onChange={e => setPageFrom(e.target.value)} placeholder="From"
-                                                    className="w-24 bg-white/8 border border-white/15 rounded-xl px-3 py-2 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]" />
-                                                <span className="text-white/40 text-sm">to</span>
+                                                    className={L ? 'w-24 bg-white border border-ui-line rounded-xl px-3 py-2 text-sm text-ui-ink placeholder-[#8A93A3] focus:outline-none focus:ring-2 focus:ring-[#E0521F]/35' : 'w-24 bg-white/8 border border-white/15 rounded-xl px-3 py-2 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]'} />
+                                                <span className={L ? 'text-ui-faint text-sm' : 'text-white/40 text-sm'}>to</span>
                                                 <input type="number" value={pageTo} onChange={e => setPageTo(e.target.value)} placeholder="To"
-                                                    className="w-24 bg-white/8 border border-white/15 rounded-xl px-3 py-2 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]" />
-                                                <span className="text-white/40 text-sm">of {pageCount} — blank = whole document</span>
+                                                    className={L ? 'w-24 bg-white border border-ui-line rounded-xl px-3 py-2 text-sm text-ui-ink placeholder-[#8A93A3] focus:outline-none focus:ring-2 focus:ring-[#E0521F]/35' : 'w-24 bg-white/8 border border-white/15 rounded-xl px-3 py-2 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-[#fc6840]'} />
+                                                <span className={L ? 'text-ui-faint text-sm' : 'text-white/40 text-sm'}>of {pageCount} — blank = whole document</span>
                                             </div>
                                         )}
                                     </div>
@@ -610,8 +621,8 @@ export default function GeneratePage() {
                             </div>
 
                             <div className="flex flex-col gap-2">
-                                <span id="level-label" className="text-sm font-medium text-white/80">
-                                    Level <span className="text-white/40 font-normal ml-1">— how simple to keep the language</span>
+                                <span id="level-label" className={lab}>
+                                    Level <span className={hint}>— how simple to keep the language</span>
                                 </span>
                                 <div className="grid grid-cols-4 gap-1.5" role="group" aria-labelledby="level-label">
                                     {LEVELS.map(l => (
@@ -621,18 +632,16 @@ export default function GeneratePage() {
                                             onClick={() => setLevel(l.id)}
                                             aria-pressed={level === l.id}
                                             className={`flex flex-col items-center gap-0.5 py-2 rounded-xl border transition-all cursor-pointer ${
-                                                level === l.id
-                                                    ? 'bg-[#e0521f] border-[#e0521f] text-white'
-                                                    : 'bg-white/5 border-white/12 text-white/70 hover:bg-white/10 hover:text-white'
+                                                fillPick(level === l.id, 'bg-white/5 border-white/12 text-white/70 hover:bg-white/10 hover:text-white')
                                             }`}
                                         >
                                             <span className="text-sm font-semibold">{l.label}</span>
-                                            <span className={`text-[10px] ${level === l.id ? 'text-white/90' : 'text-white/45'}`}>{l.name}</span>
+                                            <span className={`text-[10px] ${level === l.id ? 'text-white/90' : (L ? 'text-ui-faint' : 'text-white/45')}`}>{l.name}</span>
                                         </button>
                                     ))}
                                 </div>
                                 {trilhaLevel && (
-                                    <p className="text-xs text-[#fdb08a]">
+                                    <p className={L ? 'text-xs text-[#9A3412]' : 'text-xs text-[#fdb08a]'}>
                                         {level === trilhaLevel
                                             ? `Set from ${TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha}. Change it if this lesson needs more.`
                                             : `${TRILHAS[lessonSession.trilha]?.label ?? lessonSession.trilha} suggests ${trilhaLevel}. You changed it for this activity.`}
@@ -641,22 +650,22 @@ export default function GeneratePage() {
                             </div>
 
                             <div className="flex flex-col gap-1.5">
-                                <label className="text-sm font-medium text-white/80">
-                                    Instructions <span className="text-white/40 font-normal ml-1">— edit if you want something specific</span>
+                                <label className={lab}>
+                                    Instructions <span className={hint}>— edit if you want something specific</span>
                                 </label>
                                 <textarea
                                     value={prompt}
                                     onChange={(e) => setPrompt(e.target.value)}
                                     required
                                     rows={4}
-                                    className={`${inputCls} resize-none`}
+                                    className={`${L ? LF.input : inputCls} resize-none`}
                                 />
                             </div>
 
                             <button
                                 type="submit"
                                 disabled={!canSubmit}
-                                className="self-start bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-[#e0521f]/30 disabled:cursor-default text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+                                className={`self-start ${L ? LF.primary : 'bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-[#e0521f]/30 disabled:cursor-default text-white'} text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer`}
                             >
                                 Generate
                             </button>
@@ -665,21 +674,21 @@ export default function GeneratePage() {
                 </form>
             </div>
 
-            <p className="lg-shell-text text-white/70 text-xs">
+            <p className={L ? LF.note : 'lg-shell-text text-white/70 text-xs'}>
                 Looking for a Presentation or a Reading Text? Those are on the Upload page.
             </p>
-            <p className="lg-shell-text text-white/60 text-[11px] max-w-prose">
+            <p className={L ? 'text-ui-faint text-[11px] max-w-prose' : 'lg-shell-text text-white/60 text-[11px] max-w-prose'}>
                 Exam-style means modelled on the task format. All content is original and is not affiliated with or endorsed by Cambridge University Press &amp; Assessment, ETS or Duolingo.
             </p>
 
             {status === 'loading' && (
                 <div className="flex justify-center py-8">
-                    <Spinner message="Generating your activity… this can take up to 20 seconds" color="text-[#fc6840]" textColor="text-white/60" />
+                    <Spinner message="Generating your activity… this can take up to 20 seconds" color={L ? LF.spin : 'text-[#fc6840]'} textColor={L ? LF.spinText : 'text-white/60'} />
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                <div className={L ? LF.error : 'rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300'}>
                     {errorMsg}
                 </div>
             )}

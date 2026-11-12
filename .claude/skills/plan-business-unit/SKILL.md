@@ -28,6 +28,8 @@ those rules; if they disagree, the decisions table wins — and fix this file.
 4. **Homework always prepares for the next lesson.** A → B: consolidate the input. B → C: **prepare the
    simulation** (e.g. "write 3 sentences about your job for the meeting"). C → next A: a short warm-up for
    the next unit's topic. One ~10-minute activity per class, in the student app.
+   **Writing thread:** the C → next A homework is always **one short email or message** that leads into
+   the next unit (after Unit 1: an email introducing yourself to your new team).
 5. **60 minutes.** Budget roughly: warmer 5–10 · input 15–20 · practice 15–20 · production 15–20. Usually
    3–5 activities per lesson, never more than fits.
 6. **One cast per unit, a new company every unit.** The 1A core material introduces the people and the

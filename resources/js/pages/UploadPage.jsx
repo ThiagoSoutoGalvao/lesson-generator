@@ -4,6 +4,11 @@ import axios from 'axios';
 import Spinner from '@/components/Spinner';
 import { A2_PARTS } from '@/lib/cambridgeLevels';
 import { LEVELS, DEFAULT_LEVEL } from '@/lib/levels';
+import { TRILHAS, TRILHA_LEVEL } from '@/lib/trilhas';
+import { STAGE_LABELS } from '@/lib/stages';
+import { getLessonSession, clearLessonSession } from '@/lib/lessonSession';
+import { useLightUi, useIsLightUi, isLightCourse } from '@/lib/uiTheme';
+import { LF } from '@/lib/lightForm';
 
 // ─── Presentation Tab ─────────────────────────────────────────────────────────
 
@@ -34,12 +39,15 @@ function PresentationGenerator() {
         }
     }
 
-    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-colors';
+    const L = useIsLightUi();
+    const inputCls = L ? LF.input : 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-indigo-400 focus:border-transparent transition-colors';
+    const labelCls = L ? LF.label : 'text-sm font-medium text-white/80';
+    const hintCls  = L ? LF.hint : 'text-white/40 font-normal ml-1';
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-white/80">Topic</label>
+                <label className={labelCls}>Topic</label>
                 <input
                     type="text"
                     value={topic}
@@ -52,9 +60,9 @@ function PresentationGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-white/80">
+                <label className={labelCls}>
                     Extra instructions
-                    <span className="text-white/40 font-normal ml-1">— optional</span>
+                    <span className={hintCls}>— optional</span>
                 </label>
                 <textarea
                     value={extra}
@@ -67,17 +75,18 @@ function PresentationGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-white/80">Number of slides</label>
+                <label className={labelCls}>Number of slides</label>
                 <div className="flex gap-2 flex-wrap">
                     {SLIDE_OPTIONS.map(n => (
                         <button
                             key={n}
                             onClick={() => setSlides(n)}
                             disabled={status === 'loading'}
+                            aria-pressed={slides === n}
                             className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
                                 slides === n
-                                    ? 'bg-indigo-500 border-indigo-400 text-white'
-                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
+                                    ? (L ? LF.fillOn : 'bg-indigo-500 border-indigo-400 text-white')
+                                    : (L ? LF.chip : 'lg-chip lg-chip-hover border text-white/70 hover:text-white')
                             }`}
                         >
                             {n}
@@ -89,19 +98,19 @@ function PresentationGenerator() {
             <button
                 onClick={generate}
                 disabled={!topic.trim() || status === 'loading'}
-                className="self-start bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-500/40 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+                className={`self-start ${L ? LF.primary : 'bg-indigo-500 hover:bg-indigo-600 disabled:bg-indigo-500/40 disabled:cursor-not-allowed text-white'} text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer`}
             >
                 Generate Presentation
             </button>
 
             {status === 'loading' && (
                 <div className="flex justify-center py-6">
-                    <Spinner message="Building your presentation… this takes about 20 seconds" color="text-indigo-400" textColor="text-white/60" />
+                    <Spinner message="Building your presentation… this takes about 20 seconds" color={L ? LF.spin : 'text-indigo-400'} textColor={L ? LF.spinText : 'text-white/60'} />
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                <div className={L ? LF.error : 'rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300'}>
                     {errorMsg}
                 </div>
             )}
@@ -119,7 +128,8 @@ function ReadingTextGenerator() {
     const [vocabulary, setVocabulary] = useState('');
     const [extra, setExtra]           = useState('');
     const [paragraphs, setParagraphs] = useState(3);
-    const [level, setLevel]           = useState(DEFAULT_LEVEL);
+    // Starts from the course's level while working on a lesson (First Steps → A2), like the Generate page.
+    const [level, setLevel]           = useState(() => TRILHA_LEVEL[getLessonSession()?.trilha] ?? DEFAULT_LEVEL);
     const [status, setStatus]         = useState('idle');
     const [errorMsg, setErrorMsg]     = useState('');
 
@@ -142,12 +152,19 @@ function ReadingTextGenerator() {
         }
     }
 
-    const inputCls = 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-colors';
+    const L = useIsLightUi();
+    const inputCls = L ? LF.input : 'w-full lg-chip border rounded-xl px-4 py-2.5 text-sm text-white placeholder-white/35 focus:outline-none focus:ring-2 focus:ring-emerald-400 focus:border-transparent transition-colors';
+    const labelCls = L ? LF.label : 'text-sm font-medium text-white/80';
+    const hintCls  = L ? LF.hint : 'text-white/40 font-normal ml-1';
+    const noteCls  = L ? LF.note : 'text-white/40 text-xs';
+    const pickCls  = on => on
+        ? (L ? LF.fillOn : 'bg-emerald-500 border-emerald-400 text-white')
+        : (L ? LF.chip : 'lg-chip lg-chip-hover border text-white/70 hover:text-white');
 
     return (
         <div className="flex flex-col gap-4">
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-white/80">Topic</label>
+                <label className={labelCls}>Topic</label>
                 <input
                     type="text"
                     value={topic}
@@ -160,9 +177,9 @@ function ReadingTextGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-white/80">
+                <label className={labelCls}>
                     Target vocabulary
-                    <span className="text-white/40 font-normal ml-1">— optional, comma-separated</span>
+                    <span className={hintCls}>— optional, comma-separated</span>
                 </label>
                 <input
                     type="text"
@@ -172,12 +189,12 @@ function ReadingTextGenerator() {
                     className={inputCls}
                     disabled={status === 'loading'}
                 />
-                <p className="text-white/40 text-xs">Leave blank and Claude will pick useful vocabulary from the text itself.</p>
+                <p className={noteCls}>Leave blank and Claude will pick useful vocabulary from the text itself.</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <span id="reading-level-label" className="text-sm font-medium text-white/80">
-                    Level <span className="text-white/40 font-normal ml-1">— how simple to keep the language</span>
+                <span id="reading-level-label" className={labelCls}>
+                    Level <span className={hintCls}>— how simple to keep the language</span>
                 </span>
                 <div className="grid grid-cols-4 gap-1.5 max-w-md" role="group" aria-labelledby="reading-level-label">
                     {LEVELS.map(l => (
@@ -187,33 +204,26 @@ function ReadingTextGenerator() {
                             onClick={() => setLevel(l.id)}
                             disabled={status === 'loading'}
                             aria-pressed={level === l.id}
-                            className={`flex flex-col items-center gap-0.5 py-2 rounded-xl border transition-colors cursor-pointer disabled:opacity-40 ${
-                                level === l.id
-                                    ? 'bg-emerald-500 border-emerald-400 text-white'
-                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
-                            }`}
+                            className={`flex flex-col items-center gap-0.5 py-2 rounded-xl border transition-colors cursor-pointer disabled:opacity-40 ${pickCls(level === l.id)}`}
                         >
                             <span className="text-sm font-semibold">{l.label}</span>
-                            <span className={`text-[10px] ${level === l.id ? 'text-white/90' : 'text-white/45'}`}>{l.name}</span>
+                            <span className={`text-[10px] ${level === l.id ? 'text-white/90' : (L ? 'text-ui-faint' : 'text-white/45')}`}>{l.name}</span>
                         </button>
                     ))}
                 </div>
-                <p className="text-white/40 text-xs">{LEVELS.find(l => l.id === level)?.say}</p>
+                <p className={noteCls}>{LEVELS.find(l => l.id === level)?.say}</p>
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-white/80">Number of paragraphs</label>
+                <label className={labelCls}>Number of paragraphs</label>
                 <div className="flex gap-2 flex-wrap">
                     {PARAGRAPH_OPTIONS.map(n => (
                         <button
                             key={n}
                             onClick={() => setParagraphs(n)}
                             disabled={status === 'loading'}
-                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${
-                                paragraphs === n
-                                    ? 'bg-emerald-500 border-emerald-400 text-white'
-                                    : 'lg-chip lg-chip-hover border text-white/70 hover:text-white'
-                            }`}
+                            aria-pressed={paragraphs === n}
+                            className={`px-4 py-1.5 rounded-lg text-sm font-semibold border transition-colors cursor-pointer disabled:opacity-40 ${pickCls(paragraphs === n)}`}
                         >
                             {n}
                         </button>
@@ -222,9 +232,9 @@ function ReadingTextGenerator() {
             </div>
 
             <div className="flex flex-col gap-1.5">
-                <label className="text-sm font-medium text-white/80">
+                <label className={labelCls}>
                     Extra instructions
-                    <span className="text-white/40 font-normal ml-1">— optional</span>
+                    <span className={hintCls}>— optional</span>
                 </label>
                 <textarea
                     value={extra}
@@ -239,19 +249,19 @@ function ReadingTextGenerator() {
             <button
                 onClick={generate}
                 disabled={!topic.trim() || status === 'loading'}
-                className="self-start bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/40 disabled:cursor-not-allowed text-white text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer"
+                className={`self-start ${L ? LF.primary : 'bg-emerald-500 hover:bg-emerald-600 disabled:bg-emerald-500/40 disabled:cursor-not-allowed text-white'} text-sm font-semibold px-6 py-2.5 rounded-xl transition-colors cursor-pointer`}
             >
                 Generate Reading Text
             </button>
 
             {status === 'loading' && (
                 <div className="flex justify-center py-6">
-                    <Spinner message="Writing your reading text… this takes about 20 seconds" color="text-emerald-400" textColor="text-white/60" />
+                    <Spinner message="Writing your reading text… this takes about 20 seconds" color={L ? LF.spin : 'text-emerald-400'} textColor={L ? LF.spinText : 'text-white/60'} />
                 </div>
             )}
 
             {status === 'error' && (
-                <div className="rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300">
+                <div className={L ? LF.error : 'rounded-xl bg-red-500/15 border border-red-400/30 backdrop-blur-md px-4 py-3 text-sm text-red-300'}>
                     {errorMsg}
                 </div>
             )}
@@ -726,6 +736,11 @@ export default function UploadPage() {
     const practiceTab = ['pronunciation', 'det', 'cambridge'].includes(location.state?.tab) ? location.state.tab : null;
     const [tab, setTab] = useState(practiceTab ? 'presentation' : (location.state?.tab ?? 'presentation'));
 
+    // Working on a lesson (a pack's "+ Add", or the last save): say which, and turn light for an Aurora Business course.
+    const [session, setSession] = useState(() => getLessonSession());
+    const L = isLightCourse(session?.trilha);
+    useLightUi(L);
+
     if (practiceTab) return <Navigate to="/practice" state={{ tab: practiceTab }} replace />;
 
     // Materials (2026-10-08): the lesson's core material first. Audio transcription is hidden — nobody used it
@@ -741,9 +756,24 @@ export default function UploadPage() {
     return (
         <div className="max-w-2xl mx-auto mt-4 flex flex-col gap-6">
             <div>
-                <h2 className="font-display lg-shell-text text-3xl font-bold text-white">Materials</h2>
-                <p className="lg-shell-text text-white/70 mt-1 text-sm">Make a lesson’s presentation or reading text, upload a course book, or get feedback on a student’s essay.</p>
+                <h2 className={L ? LF.title : 'font-display lg-shell-text text-3xl font-bold text-white'}>Materials</h2>
+                <p className={L ? LF.sub : 'lg-shell-text text-white/70 mt-1 text-sm'}>Make a lesson’s presentation or reading text, upload a course book, or get feedback on a student’s essay.</p>
             </div>
+
+            {session && (
+                <div className={`flex items-center gap-2 text-sm rounded-xl px-4 py-2.5 ${L ? LF.banner : 'bg-[#fc6840]/15 border border-[#fc6840]/35 text-[#fdb08a]'}`}>
+                    <span>
+                        Making it for: <span className={`font-semibold ${L ? 'text-ui-ink' : 'text-white'}`}>
+                            {TRILHAS[session.trilha]?.label ?? session.trilha} · Lesson {session.lesson}{session.part ?? ''}
+                            {session.stage && ` · ${STAGE_LABELS[session.stage]}`}
+                        </span>
+                    </span>
+                    <button type="button" onClick={() => { clearLessonSession(); setSession(null); }}
+                        className={`ml-auto text-xs underline cursor-pointer ${L ? 'hover:text-ui-ink' : 'text-[#fdb08a]/80 hover:text-white'}`}>
+                        Change
+                    </button>
+                </div>
+            )}
 
             <div className="flex flex-wrap gap-2">
                 {tabs.map(t => (
@@ -753,8 +783,8 @@ export default function UploadPage() {
                         aria-pressed={tab === t.id}
                         className={`px-4 py-2.5 rounded-xl text-sm font-semibold border transition-all cursor-pointer whitespace-nowrap ${
                             tab === t.id
-                                ? t.active
-                                : 'lg-chip lg-chip-hover text-white/60 hover:text-white/90'
+                                ? (L ? LF.chipOn : t.active)
+                                : (L ? LF.chip : 'lg-chip lg-chip-hover text-white/60 hover:text-white/90')
                         }`}
                     >
                         {t.label}

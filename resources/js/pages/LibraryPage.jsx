@@ -7,6 +7,7 @@ import Spinner from '@/components/Spinner';
 import { TRILHAS, TRILHA_NAMES, TRILHA_TOC, LESSON_SLOTS, TEACHERS, TYPE_LABELS as NAME_TYPE_LABELS, composeActivityName } from '@/lib/trilhas';
 import { tidyText, tidyFocus, focusHints, suggestName, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
 import { STAGES } from '@/lib/stages';
+import { useLightUi, isLightCourse } from '@/lib/uiTheme';
 
 const TYPE_LABELS = {
     quiz:                     'Quiz',
@@ -425,6 +426,9 @@ export default function LibraryPage() {
     const [lessonFilter, setLessonFilter] = useState('all'); // lesson number as string, or 'all'
     const [launched, setLaunched]     = useState(null);
     const [launchedId, setLaunchedId] = useState(null);
+    const [launchedTrilha, setLaunchedTrilha] = useState(null);
+    // An Aurora Business activity opens in the light theme, as it does from its lesson pack.
+    useLightUi(Boolean(launched) && isLightCourse(launchedTrilha));
     const [renamingId, setRenamingId] = useState(null);
     const [stageFilter, setStageFilter] = useState('all'); // a stage key, '__none__' (not tagged yet) or 'all'
     const [loading, setLoading]       = useState(true);
@@ -691,7 +695,7 @@ export default function LibraryPage() {
 
                         <div className="flex gap-2 pt-1">
                             <button
-                                onClick={() => { setLaunched(a.content); setLaunchedId(a.id); }}
+                                onClick={() => { setLaunched(a.content); setLaunchedId(a.id); setLaunchedTrilha(a.trilha); }}
                                 className="flex-1 bg-[#e0521f] hover:bg-[#c9461a] text-white text-sm font-semibold py-2.5 rounded-xl transition-colors cursor-pointer border border-[#e0521f]"
                             >
                                 Launch
