@@ -73,8 +73,9 @@ export function LightProgress({ index, total, label = 'Question' }) {
 /** The photo, in its own panel. No photo (offline, or none found) → a quiet grey panel, never a broken image. */
 export function LightPhoto({ url, alt = '', className = '' }) {
     return (
-        <div className={`rounded-2xl overflow-hidden border border-[#DDE1E8] bg-[#E9ECF1] ${className}`}>
-            {url ? <img src={url} alt={alt} className="w-full h-full object-cover" /> : null}
+        <div className={`relative rounded-2xl overflow-hidden border border-[#DDE1E8] bg-[#E9ECF1] ${className}`}>
+            {/* absolute: the photo never sets the panel's height, so a panel can grow to fill a column */}
+            {url ? <img src={url} alt={alt} className="absolute inset-0 w-full h-full object-cover" /> : null}
         </div>
     );
 }

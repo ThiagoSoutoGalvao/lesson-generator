@@ -125,7 +125,7 @@ export default function GrammarExplainerActivity({ activity, onClose, onComplete
     );
 
     // Aurora Business light layout: one accent (coral) instead of a colour per slide; the rule on a tinted card,
-    // the form on grey, examples on white cards; the photo sits above the examples, never behind the text.
+    // the form on grey, examples on white cards; the photo sits top-left above the rule, never behind the text.
     if (light) {
         const strong = 'text-[#9A3412]';
         return (
@@ -146,28 +146,33 @@ export default function GrammarExplainerActivity({ activity, onClose, onComplete
                                     </button>
                                 ))}
                             </nav>
-                            <div key={`${slideIdx}-${direction}`} className={`slide-content flex flex-col md:flex-row gap-5 sm:gap-7 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}>
-                                <div className="md:w-[54%] shrink-0 flex flex-col gap-4 sm:gap-5">
-                                    <h1 className={`stagger-block font-display ${LIGHT_TITLE_SIZES[fontSizeIdx]} font-semibold leading-tight`}>{slide.title}</h1>
-                                    <div className="stagger-block rounded-2xl bg-[#FDEEE7] border border-[#F4C3AE] px-5 sm:px-7 py-5">
-                                        <p className={`${RULE_SIZES[fontSizeIdx]} leading-relaxed`}>{parseText(slide.rule, strong)}</p>
+                            <div key={`${slideIdx}-${direction}`} className={`slide-content flex flex-col gap-4 sm:gap-5 ${direction === 'next' ? 'pres-enter-right' : 'pres-enter-left'}`}>
+                                <h1 className={`stagger-block font-display ${LIGHT_TITLE_SIZES[fontSizeIdx]} font-semibold leading-tight`}>{slide.title}</h1>
+                                {/* Photo top-left, growing to fill the height beside the examples, so neither column ends in
+                                    a block of empty space (2026-11-12, Thiago: the old photo-above-examples layout left the
+                                    left side empty while the examples ran down the right). */}
+                                <div className="flex flex-col md:flex-row gap-5 sm:gap-7">
+                                    <div className="md:w-[48%] shrink-0 flex flex-col gap-4 sm:gap-5">
+                                        <LightPhoto url={bgUrl} className="stagger-block h-[140px] sm:h-[190px] md:h-auto md:flex-1 md:min-h-[190px] shrink-0" />
+                                        <div className="stagger-block rounded-2xl bg-[#FDEEE7] border border-[#F4C3AE] px-5 sm:px-7 py-5">
+                                            <p className={`${RULE_SIZES[fontSizeIdx]} leading-relaxed`}>{parseText(slide.rule, strong)}</p>
+                                        </div>
+                                        {slide.form && (
+                                            <div className="stagger-block rounded-2xl bg-white border border-[#DDE1E8] px-5 sm:px-7 py-4">
+                                                <p className={`${LIGHT.eyebrow} mb-2`}>Form</p>
+                                                <p className={`${FORM_SIZES[fontSizeIdx]} font-mono leading-relaxed`}>{parseText(slide.form, strong)}</p>
+                                            </div>
+                                        )}
                                     </div>
-                                    {slide.form && (
-                                        <div className="stagger-block rounded-2xl bg-white border border-[#DDE1E8] px-5 sm:px-7 py-4">
-                                            <p className={`${LIGHT.eyebrow} mb-2`}>Form</p>
-                                            <p className={`${FORM_SIZES[fontSizeIdx]} font-mono leading-relaxed`}>{parseText(slide.form, strong)}</p>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className="flex-1 min-w-0 flex flex-col gap-3">
-                                    <LightPhoto url={bgUrl} className="stagger-block h-[120px] sm:h-[170px] shrink-0" />
-                                    <p className={`stagger-block ${LIGHT.eyebrow}`}>Examples</p>
-                                    {slide.examples.map((ex, i) => (
-                                        <div key={i} className="stagger-block rounded-2xl bg-white border border-[#DDE1E8] px-5 sm:px-6 py-4 flex items-baseline gap-3">
-                                            <span className="text-[#9A3412] font-bold text-[15px] shrink-0">{i + 1}.</span>
-                                            <p className={`${EXAMPLE_SIZES[fontSizeIdx]} leading-relaxed`}>{parseText(ex, strong)}</p>
-                                        </div>
-                                    ))}
+                                    <div className="flex-1 min-w-0 flex flex-col gap-3">
+                                        <p className={`stagger-block ${LIGHT.eyebrow}`}>Examples</p>
+                                        {slide.examples.map((ex, i) => (
+                                            <div key={i} className="stagger-block rounded-2xl bg-white border border-[#DDE1E8] px-5 sm:px-6 py-4 flex items-baseline gap-3">
+                                                <span className="text-[#9A3412] font-bold text-[15px] shrink-0">{i + 1}.</span>
+                                                <p className={`${EXAMPLE_SIZES[fontSizeIdx]} leading-relaxed`}>{parseText(ex, strong)}</p>
+                                            </div>
+                                        ))}
+                                    </div>
                                 </div>
                             </div>
                             <div className="flex flex-wrap justify-end gap-3">
