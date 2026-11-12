@@ -4,11 +4,16 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
 
 const WORD_SIZES    = ['text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl'];
 const PRON_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const DEF_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const EXAMPLE_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl',  'text-2xl'];
+const L_WORD_SIZES  = ['text-3xl', 'text-4xl', 'text-[40px] sm:text-5xl', 'text-5xl sm:text-6xl', 'text-6xl sm:text-7xl'];
+const L_DEF_SIZES   = ['text-lg', 'text-xl', 'text-xl sm:text-2xl', 'text-2xl sm:text-3xl', 'text-3xl sm:text-4xl'];
+const L_EX_SIZES    = ['text-[15px]', 'text-base', 'text-[17px] sm:text-lg', 'text-lg sm:text-xl', 'text-xl sm:text-2xl'];
 
 export default function FlashcardActivity({ activity, onClose, onComplete, hideSave }) {
     const [index, setIndex] = useState(0);
@@ -21,6 +26,7 @@ export default function FlashcardActivity({ activity, onClose, onComplete, hideS
     const [questionMode, setQuestionMode] = useState(false);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below
 
     function toggleMode() {
         setQuestionMode(m => !m);
@@ -94,6 +100,70 @@ export default function FlashcardActivity({ activity, onClose, onComplete, hideS
         setKnownIds(new Set());
         setFinished(false);
         setFlipped(false);
+    }
+
+    // Aurora Business light layout (2026-11-12): white card on the light ground, the card's photo in its own panel
+    // above it (never behind the text), one coral accent. Same deck logic, buttons and Space-to-flip as the dark one.
+    if (light) {
+        const frame = children => (
+            <LightFrame
+                eyebrow={finished ? 'Flashcards' : `Flashcards · card ${index + 1} of ${deck.length}${deck.length < total ? ' (again)' : ''} · learned ${knownIds.size} of ${total}`}
+                title={activity.topic}
+                extra={finished ? null : (
+                    <button type="button" onClick={toggleMode} aria-pressed={questionMode} title="Show the definition first"
+                        className={`${LIGHT.iconBtn} ${questionMode ? 'bg-[#FDEEE7] border-[#E0521F] text-[#9A3412] hover:bg-[#FDEEE7]' : ''}`}>
+                        {questionMode ? 'Definition → Word' : 'Word → Definition'}
+                    </button>
+                )}
+                onSave={hideSave ? null : () => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                overlay={!hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null}
+            >
+                {children}
+            </LightFrame>
+        );
+        if (finished) {
+            return frame(
+                <div className="max-w-[720px] mx-auto px-4 sm:px-8 py-8 sm:py-12 flex flex-col gap-5">
+                    <div className={`${LIGHT.card} px-6 py-8 text-center`}>
+                        <h2 className="font-display text-3xl sm:text-4xl font-semibold">All done!</h2>
+                        <p className={`${LIGHT.muted} text-lg mt-2`}>All {total} cards learned</p>
+                    </div>
+                    <div className="flex flex-wrap justify-end gap-3">
+                        <button type="button" onClick={handleRestart} className={LIGHT.secondary}>Start over</button>
+                        <button type="button" onClick={onClose} className={LIGHT.primary}>Close</button>
+                    </div>
+                </div>
+            );
+        }
+        const ex = (text) => text ? <p className={`${L_EX_SIZES[fontSizeIdx]} ${LIGHT.muted} italic text-center leading-relaxed`}>“{text}”</p> : null;
+        const word = <h2 className={`${L_WORD_SIZES[fontSizeIdx]} font-display font-semibold text-center leading-tight break-words`}>{card.word}</h2>;
+        const pron = card.pronunciation ? <p className={`${L_EX_SIZES[fontSizeIdx]} ${LIGHT.muted} text-center`}>{card.pronunciation}</p> : null;
+        const def  = <p className={`${L_DEF_SIZES[fontSizeIdx]} font-medium text-center leading-snug`}>{card.definition}</p>;
+        const face = 'absolute inset-0 rounded-3xl bg-white border border-[#DDE1E8] shadow-[0_6px_24px_rgba(39,29,98,0.08)] flex flex-col items-center justify-center gap-3 px-6 sm:px-10 overflow-y-auto';
+        const hint = (t) => <p className={LIGHT.eyebrow}>{t}</p>;
+        return frame(
+            <div className="max-w-[820px] mx-auto px-4 sm:px-8 py-4 sm:py-6 flex flex-col gap-4">
+                <div className="h-2 rounded bg-[#E6E9EE] overflow-hidden" aria-hidden="true">
+                    <div className="h-2 bg-[#1E7A4C] transition-[width] duration-300" style={{ width: `${(knownIds.size / total) * 100}%` }} />
+                </div>
+                <LightPhoto url={bgUrl} className="h-[110px] sm:h-[160px] shrink-0" />
+                <div role="button" tabIndex={0} aria-label={flipped ? 'Card back — tap to flip' : 'Card front — tap to flip'}
+                    onClick={() => setFlipped(f => !f)} className="cursor-pointer select-none" style={{ perspective: '1200px' }}>
+                    <div className="relative h-[280px] sm:h-[320px]" style={{ transformStyle: 'preserve-3d', transition: 'transform 0.5s ease', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
+                        <div className={face} style={{ backfaceVisibility: 'hidden' }}>
+                            {questionMode ? <>{hint("What's the word?")}{def}{ex(card.example)}</> : <>{hint('Tap to flip')}{word}{pron}{ex(card.example)}</>}
+                        </div>
+                        <div className={face} style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}>
+                            {questionMode ? <>{word}{pron}{ex(card.example2 || card.example)}</> : <>{def}{ex(card.example2 || card.example)}</>}
+                        </div>
+                    </div>
+                </div>
+                <div className={`flex flex-wrap justify-center gap-3 transition-opacity duration-300 ${flipped ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                    <button type="button" onClick={handleStillLearning} className={LIGHT.secondary}>↺ Still learning</button>
+                    <button type="button" onClick={handleGotIt} className="h-12 sm:h-14 px-7 sm:px-8 rounded-xl bg-[#1E7A4C] hover:bg-[#17633D] text-white font-semibold text-[17px] sm:text-[19px] cursor-pointer">✓ Got it</button>
+                </div>
+            </div>
+        );
     }
 
     if (finished) {

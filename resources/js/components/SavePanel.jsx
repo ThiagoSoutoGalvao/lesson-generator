@@ -6,10 +6,16 @@ import {
 import { getLessonSession, setLessonSession } from '@/lib/lessonSession';
 import { tidyText, collapse, tidyFocus, focusHints, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
 import { STAGES, defaultStage } from '@/lib/stages';
+import { useIsLightUi } from '@/lib/uiTheme';
 
 const fieldCls = 'bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full';
 const selectCls = `${fieldCls} appearance-none cursor-pointer`;
 const labelCls = 'text-white/70 text-xs font-medium';
+// Aurora Business light theme (2026-11-12): the same panel in white, indigo text and the coral accent — the dark one
+// looked out of place over the light screens. Dark strings above are unchanged.
+const fieldClsL = 'bg-white border border-[#C6CCD6] text-[#271D62] placeholder:text-[#8A93A3] rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E0521F]/35 focus:border-[#E0521F] w-full';
+const selectClsL = `${fieldClsL} appearance-none cursor-pointer`;
+const labelClsL = 'text-[#4A5163] text-xs font-semibold';
 
 const LS_TRILHA = 'aurora.save.trilha';
 const LS_BUILT_BY = 'aurora.save.builtBy';
@@ -22,6 +28,9 @@ function lsSet(key, value) {
 }
 
 export default function SavePanel({ activity, onDone, onSaved }) {
+    const light = useIsLightUi();
+    const k = (dark, lite) => (light ? lite : dark);
+    const fieldC = k(fieldCls, fieldClsL), selectC = k(selectCls, selectClsL), labelC = k(labelCls, labelClsL);
     const [mode, setMode] = useState('trilha'); // 'trilha' | 'freeform'
     const [status, setStatus] = useState('idle');
     const [errorMsg, setErrorMsg] = useState('');
@@ -127,17 +136,17 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                 window the Save button would otherwise end up below the edge, out of reach. */}
             <form
                 onSubmit={handleSave}
-                className="bg-gray-900/95 backdrop-blur border border-white/20 rounded-2xl px-6 py-5 shadow-2xl flex flex-col gap-3.5 w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain"
+                className={k('bg-gray-900/95 backdrop-blur border border-white/20 rounded-2xl px-6 py-5 shadow-2xl flex flex-col gap-3.5 w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain', 'bg-white border border-[#DDE1E8] text-[#271D62] rounded-2xl px-6 py-5 shadow-[0_20px_50px_rgba(39,29,98,0.25)] flex flex-col gap-3.5 w-full max-w-md max-h-[calc(100dvh-2rem)] overflow-y-auto overscroll-contain')}
             >
                 {/* Mode toggle */}
-                <div className="flex gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+                <div className={k('flex gap-1 bg-white/5 border border-white/10 rounded-lg p-1', 'flex gap-1 bg-[#F1F2F5] border border-[#DDE1E8] rounded-lg p-1')}>
                     {[['trilha', 'Trilha activity'], ['freeform', 'One-off']].map(([m, label]) => (
                         <button
                             key={m}
                             type="button"
                             onClick={() => setMode(m)}
                             className={`flex-1 text-xs font-semibold py-1.5 rounded-md transition-colors cursor-pointer ${
-                                mode === m ? 'bg-blue-600 text-white' : 'text-white/55 hover:text-white'
+                                mode === m ? k('bg-blue-600 text-white', 'bg-[#E0521F] text-white') : k('text-white/55 hover:text-white', 'text-[#4A5163] hover:text-[#271D62]')
                             }`}
                         >
                             {label}
@@ -149,31 +158,31 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                     <>
                         <div className="grid grid-cols-2 gap-2">
                             <div className="flex flex-col gap-1">
-                                <label className={labelCls}>Trilha</label>
+                                <label className={labelC}>Trilha</label>
                                 <select
                                     value={trilha}
                                     onChange={e => { setTrilha(e.target.value); setLesson(''); }}
                                     required
-                                    className={selectCls}
+                                    className={selectC}
                                 >
-                                    <option value="" className="bg-gray-900">Choose…</option>
+                                    <option value="" className={k('bg-gray-900', 'bg-white text-[#271D62]')}>Choose…</option>
                                     {TRILHA_NAMES.map(t => (
-                                        <option key={t} value={t} className="bg-gray-900">{t}</option>
+                                        <option key={t} value={t} className={k('bg-gray-900', 'bg-white text-[#271D62]')}>{t}</option>
                                     ))}
                                 </select>
                             </div>
                             <div className="flex flex-col gap-1">
-                                <label className={labelCls}>{parts.length ? 'Unit' : 'Lesson'}</label>
+                                <label className={labelC}>{parts.length ? 'Unit' : 'Lesson'}</label>
                                 <select
                                     value={lesson}
                                     onChange={e => setLesson(e.target.value)}
                                     required
                                     disabled={!trilha}
-                                    className={`${selectCls} disabled:opacity-40`}
+                                    className={`${selectC} disabled:opacity-40`}
                                 >
-                                    <option value="" className="bg-gray-900">—</option>
+                                    <option value="" className={k('bg-gray-900', 'bg-white text-[#271D62]')}>—</option>
                                     {Array.from({ length: lessonCount }, (_, i) => i + 1).map(n => (
-                                        <option key={n} value={n} className="bg-gray-900">{parts.length ? 'Unit' : 'Lesson'} {n}</option>
+                                        <option key={n} value={n} className={k('bg-gray-900', 'bg-white text-[#271D62]')}>{parts.length ? 'Unit' : 'Lesson'} {n}</option>
                                     ))}
                                 </select>
                             </div>
@@ -181,8 +190,8 @@ export default function SavePanel({ activity, onDone, onSaved }) {
 
                         {parts.length > 0 && (
                             <fieldset className="flex flex-col gap-1">
-                                <legend className={`${labelCls} mb-1`}>Lesson of the unit</legend>
-                                <div className="grid grid-cols-3 gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+                                <legend className={`${labelC} mb-1`}>Lesson of the unit</legend>
+                                <div className={k('grid grid-cols-3 gap-1 bg-white/5 border border-white/10 rounded-lg p-1', 'grid grid-cols-3 gap-1 bg-[#F1F2F5] border border-[#DDE1E8] rounded-lg p-1')}>
                                     {parts.map(p => (
                                         <button
                                             key={p}
@@ -190,7 +199,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                                             aria-pressed={part === p}
                                             onClick={() => setPart(p)}
                                             className={`text-xs font-semibold py-1.5 rounded-md transition-colors cursor-pointer ${
-                                                part === p ? 'bg-blue-600 text-white' : 'text-white/55 hover:text-white'
+                                                part === p ? k('bg-blue-600 text-white', 'bg-[#E0521F] text-white') : k('text-white/55 hover:text-white', 'text-[#4A5163] hover:text-[#271D62]')
                                             }`}
                                         >
                                             {lesson || '#'}{p}
@@ -201,8 +210,8 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                         )}
 
                         <fieldset className="flex flex-col gap-1">
-                            <legend className={`${labelCls} mb-1`}>Stage in the lesson</legend>
-                            <div className="grid grid-cols-4 gap-1 bg-white/5 border border-white/10 rounded-lg p-1">
+                            <legend className={`${labelC} mb-1`}>Stage in the lesson</legend>
+                            <div className={k('grid grid-cols-4 gap-1 bg-white/5 border border-white/10 rounded-lg p-1', 'grid grid-cols-4 gap-1 bg-[#F1F2F5] border border-[#DDE1E8] rounded-lg p-1')}>
                                 {STAGES.map(s => (
                                     <button
                                         key={s.key}
@@ -211,20 +220,20 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                                         title={s.hint}
                                         onClick={() => setStage(s.key)}
                                         className={`text-xs font-semibold py-1.5 rounded-md transition-colors cursor-pointer ${
-                                            stage === s.key ? 'bg-blue-600 text-white' : 'text-white/55 hover:text-white'
+                                            stage === s.key ? k('bg-blue-600 text-white', 'bg-[#E0521F] text-white') : k('text-white/55 hover:text-white', 'text-[#4A5163] hover:text-[#271D62]')
                                         }`}
                                     >
                                         {s.label}
                                     </button>
                                 ))}
                             </div>
-                            <p className="text-white/40 text-[11px]">{STAGES.find(s => s.key === stage)?.hint}</p>
+                            <p className={k('text-white/40 text-[11px]', 'text-[#5B6472] text-[11px]')}>{STAGES.find(s => s.key === stage)?.hint}</p>
                         </fieldset>
 
                         <div className="flex flex-col gap-1">
                             <div className="flex items-baseline justify-between gap-2">
-                                <label htmlFor="save-focus" className={labelCls}>Focus — the specific language point</label>
-                                <span className={`text-[11px] tabular-nums ${focusWords > MAX_FOCUS_WORDS ? 'text-amber-300' : 'text-white/35'}`}>
+                                <label htmlFor="save-focus" className={labelC}>Focus — the specific language point</label>
+                                <span className={`text-[11px] tabular-nums ${focusWords > MAX_FOCUS_WORDS ? k('text-amber-300', 'text-[#92400E]') : k('text-white/35', 'text-[#5B6472]')}`}>
                                     {focusWords} / {MAX_FOCUS_WORDS} words
                                 </span>
                             </div>
@@ -237,40 +246,40 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                                 autoFocus
                                 autoComplete="off"
                                 placeholder="e.g. Present continuous & everyday verbs"
-                                className={fieldCls}
+                                className={fieldC}
                             />
                             {hints.length > 0 && (
-                                <ul data-testid="focus-hints" className="text-amber-300 text-[11px] leading-snug list-disc pl-4 space-y-0.5">
+                                <ul data-testid="focus-hints" className={k('text-amber-300 text-[11px] leading-snug list-disc pl-4 space-y-0.5', 'text-[#92400E] text-[11px] leading-snug list-disc pl-4 space-y-0.5')}>
                                     {hints.map(h => <li key={h}>{h}</li>)}
                                 </ul>
                             )}
                         </div>
 
                         <div className="flex flex-col gap-1">
-                            <label className={labelCls}>Built by</label>
+                            <label className={labelC}>Built by</label>
                             <select
                                 value={builtBy}
                                 onChange={e => setBuiltBy(e.target.value)}
                                 required
-                                className={selectCls}
+                                className={selectC}
                             >
-                                <option value="" className="bg-gray-900">Choose your name…</option>
+                                <option value="" className={k('bg-gray-900', 'bg-white text-[#271D62]')}>Choose your name…</option>
                                 {TEACHERS.map(t => (
-                                    <option key={t} value={t} className="bg-gray-900">{t}</option>
+                                    <option key={t} value={t} className={k('bg-gray-900', 'bg-white text-[#271D62]')}>{t}</option>
                                 ))}
                             </select>
                         </div>
 
-                        <div className="rounded-lg bg-white/5 border border-white/10 px-3 py-2">
-                            <p className="text-white/40 text-[10px] uppercase tracking-wide mb-0.5">Saves as</p>
-                            <p className="text-white/90 text-xs font-mono break-words">
+                        <div className={k('rounded-lg bg-white/5 border border-white/10 px-3 py-2', 'rounded-lg bg-[#F6F7F9] border border-[#DDE1E8] px-3 py-2')}>
+                            <p className={k('text-white/40 text-[10px] uppercase tracking-wide mb-0.5', 'text-[#5B6472] text-[10px] uppercase tracking-wide mb-0.5')}>Saves as</p>
+                            <p className={k('text-white/90 text-xs font-mono break-words', 'text-[#271D62] text-xs font-mono break-words')}>
                                 {composedName || `${typeLabel} · …`}
                             </p>
                         </div>
                     </>
                 ) : (
                     <>
-                        <p className="text-white/45 text-xs">For experiments and non-trilha material.</p>
+                        <p className={k('text-white/45 text-xs', 'text-[#5B6472] text-xs')}>For experiments and non-trilha material.</p>
                         <input
                             value={name}
                             onChange={e => setName(e.target.value)}
@@ -278,23 +287,23 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                             autoFocus
                             autoComplete="off"
                             placeholder="Activity name"
-                            className={fieldCls}
+                            className={fieldC}
                         />
                         {cleanName && cleanName !== name && (
-                            <p className="text-white/45 text-[11px] -mt-1.5">Saves as: <span className="font-mono text-white/70">{cleanName}</span></p>
+                            <p className={k('text-white/45 text-[11px] -mt-1.5', 'text-[#5B6472] text-[11px] -mt-1.5')}>Saves as: <span className={k('font-mono text-white/70', 'font-mono text-[#271D62]')}>{cleanName}</span></p>
                         )}
                         <div className="grid grid-cols-2 gap-2">
                             <input
                                 value={book}
                                 onChange={e => setBook(e.target.value)}
                                 placeholder="Book (optional)"
-                                className={fieldCls}
+                                className={fieldC}
                             />
                             <input
                                 value={freeLesson}
                                 onChange={e => setFreeLesson(e.target.value)}
                                 placeholder="Lesson (optional)"
-                                className={fieldCls}
+                                className={fieldC}
                             />
                         </div>
                         <input
@@ -302,7 +311,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                             onChange={e => setFolder(e.target.value)}
                             list="folder-list"
                             placeholder="Folder (optional)"
-                            className={fieldCls}
+                            className={fieldC}
                         />
                         <datalist id="folder-list">
                             {folders.map(f => <option key={f} value={f} />)}
@@ -311,21 +320,21 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                 )}
 
                 {status === 'error' && (
-                    <p className="text-red-400 text-xs">{errorMsg}</p>
+                    <p className={k('text-red-400 text-xs', 'text-[#B42318] text-xs')}>{errorMsg}</p>
                 )}
 
                 <div className="flex gap-2 justify-end pt-0.5">
                     <button
                         type="button"
                         onClick={onDone}
-                        className="text-white/60 hover:text-white text-sm px-4 py-2 rounded-lg transition-colors cursor-pointer"
+                        className={k('text-white/60 hover:text-white text-sm px-4 py-2 rounded-lg transition-colors cursor-pointer', 'text-[#4A5163] hover:text-[#271D62] hover:bg-[#F1F2F5] text-sm px-4 py-2 rounded-lg transition-colors cursor-pointer')}
                     >
                         Cancel
                     </button>
                     <button
                         type="submit"
                         disabled={status === 'saving' || (mode === 'trilha' ? !trilhaValid : !cleanName)}
-                        className="bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400/30 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors cursor-pointer"
+                        className={k('bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400/30 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors cursor-pointer', 'bg-[#E0521F] hover:bg-[#C9461A] disabled:bg-[#E0521F]/40 disabled:cursor-not-allowed text-white text-sm font-semibold px-5 py-2 rounded-lg transition-colors cursor-pointer')}
                     >
                         {status === 'saving' ? 'Saving…' : 'Save'}
                     </button>

@@ -475,39 +475,42 @@
 
 /* Headings — scoped to `main` only: fullscreen activity overlays (.fixed.inset-0)
    each own their own per-activity font/color controls, and this global !important
-   rule was silently overriding all of them whenever the navbar toggle was on. */
-body.tf-active main h1,
-body.tf-active main h2 {
+   rule was silently overriding all of them whenever the navbar toggle was on.
+   :not(.fixed.inset-0 *) — those overlays render INSIDE main on /generate, so main alone did not exclude them;
+   2026-11-12 the light theme sets --tf-color to indigo and that turned the dark screens and their Save panel
+   dark-on-dark once the text size had been changed. */
+body.tf-active main h1:not(.fixed.inset-0 *),
+body.tf-active main h2:not(.fixed.inset-0 *) {
   font-size: var(--tf-size) !important;
   color: var(--tf-color) !important;
 }
 
-body.tf-active main h3 {
+body.tf-active main h3:not(.fixed.inset-0 *) {
   font-size: calc(var(--tf-size) * 0.88) !important;
   color: var(--tf-color) !important;
 }
 
 /* Body text & labels */
-body.tf-active main p,
-body.tf-active main label {
+body.tf-active main p:not(.fixed.inset-0 *),
+body.tf-active main label:not(.fixed.inset-0 *) {
   font-size: calc(var(--tf-size) * 0.78) !important;
   color: var(--tf-color) !important;
 }
 
 /* Card text / text-base elements */
-body.tf-active main .text-base {
+body.tf-active main .text-base:not(.fixed.inset-0 *) {
   font-size: calc(var(--tf-size) * 0.72) !important;
   color: var(--tf-color) !important;
 }
 
 /* Secondary text / text-sm */
-body.tf-active main .text-sm {
+body.tf-active main .text-sm:not(.fixed.inset-0 *) {
   font-size: calc(var(--tf-size) * 0.65) !important;
   color: var(--tf-color) !important;
 }
 
 /* Badges, pills, captions / text-xs */
-body.tf-active main .text-xs {
+body.tf-active main .text-xs:not(.fixed.inset-0 *) {
   font-size: calc(var(--tf-size) * 0.55) !important;
   color: var(--tf-color) !important;
 }

@@ -177,6 +177,10 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   words narrow / meanings wide with a 40–64px gap, tiles share the screen height so 8 pairs fit a 1366×768 laptop,
   matched pairs numbered on both sides, light end screen listing the pairs (`qa_light_match_pairs.mjs` 13/13). Thiago
   deleted the demo activities himself.
+- **2026-11-12** — Light **Flashcards** + light **Save panel**. Bug Thiago hit: once the Aa text size had been changed, the
+  shell text-scaling rule (body.tf-active main p…) reached fullscreen activities (they render inside main on /generate)
+  and the light theme's indigo --tf-color made dark screens and their Save panel dark-on-dark — now skips
+  .fixed.inset-0 overlays (qa_light_flashcards_save.mjs 17/17, text size raised).
 - **2026-11-11** — Group-first rules decided (see §2); `/plan-business-unit` skill; Unit 1 plan in
   `docs/aurora-business/units/first-steps-01.md`; local demo (`scratchpad/demo_business.php create|cleanup`).
 
