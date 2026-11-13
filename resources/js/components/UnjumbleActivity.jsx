@@ -4,8 +4,11 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
+const L_SIZES = ['text-[15px]', 'text-base sm:text-[17px]', 'text-[17px] sm:text-xl', 'text-lg sm:text-2xl', 'text-xl sm:text-[28px]'];
 
 function shuffle(arr) {
     const a = [...arr];
@@ -33,6 +36,7 @@ export default function UnjumbleActivity({ activity, onClose, onComplete, hideSa
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
 
     const dragRef = useRef(null);
+    const light = useIsLightUi(); // Aurora Business: the light layout below
 
     const sentence = activity.sentences[currentIndex];
     const total = activity.sentences.length;
@@ -147,6 +151,86 @@ export default function UnjumbleActivity({ activity, onClose, onComplete, hideSa
         if (checkStatus === 'wrong')    return 'bg-red-500 border-red-400 cursor-grab';
         if (checkStatus === 'revealed') return 'bg-yellow-500 border-yellow-400 cursor-default';
         return 'bg-white/25 border-white/35 hover:bg-white/35 cursor-grab';
+    }
+
+    // Aurora Business light layout (2026-11-12): split screen like Flashcards — the sentence's photo on the left in its
+    // own panel (never behind the words), the task on the right: answer box, word bank, buttons. Same logic, scoring,
+    // drag-or-tap and keys (Space next, R reveal) as the dark one.
+    if (light) {
+        const frame = children => (
+            <LightFrame
+                eyebrow={finished ? 'Unjumble' : `Unjumble · sentence ${currentIndex + 1} of ${total} · score ${score}`} title={activity.topic}
+                onSave={hideSave ? null : () => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                overlay={!hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null}
+            >
+                {children}
+            </LightFrame>
+        );
+        if (finished) {
+            return frame(
+                <div className="max-w-[720px] mx-auto px-4 sm:px-8 py-8 sm:py-12 flex flex-col gap-5">
+                    <div className={`${LIGHT.card} px-6 py-8 text-center`}>
+                        <h2 className="font-display text-3xl sm:text-4xl font-semibold">Well done!</h2>
+                        <p className={`${LIGHT.muted} text-lg mt-2`}>{score} of {total} correct</p>
+                    </div>
+                    <div className="flex flex-wrap justify-end gap-3">
+                        <button type="button" onClick={handleRestart} className={LIGHT.secondary}>Play again</button>
+                        <button type="button" onClick={onClose} className={LIGHT.primary}>Close</button>
+                    </div>
+                </div>
+            );
+        }
+        const placedCls = {
+            correct:  `${LIGHT.right} cursor-default`,
+            wrong:    `${LIGHT.wrong} cursor-grab`,
+            revealed: 'border-2 border-[#B7791F] bg-[#FFF7E6] font-semibold cursor-default',
+            idle:     'border-2 border-[#8E88B8] bg-[#F1F0F9] hover:bg-[#E6E4F3] cursor-grab',
+        }[checkStatus];
+        const status = {
+            idle:     ['Tap or drag the words into the right order', LIGHT.muted],
+            correct:  ['✓ Correct!', 'text-[#1E7A4C]'],
+            wrong:    ['✗ Not quite — try again or reveal the answer', 'text-[#B42318]'],
+            revealed: ['Here is the right sentence', 'text-[#92400E]'],
+        }[checkStatus];
+        const tile = 'px-4 sm:px-5 py-2.5 sm:py-3 rounded-xl font-semibold select-none transition-colors';
+        return frame(
+            <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-6 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-4 sm:gap-6">
+                <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px] md:h-auto md:min-h-[360px]" />
+                <div className="flex flex-col gap-4 sm:gap-5 min-w-0">
+                    <p className={`${LIGHT.eyebrow} !normal-case !tracking-normal ${status[1]}`} role="status">{status[0]}</p>
+                    <div onDragOver={(e) => e.preventDefault()} onDrop={onDropIntoPlaced}
+                        className="min-h-[96px] bg-white border-2 border-dashed border-[#C6CCD6] rounded-2xl px-4 sm:px-5 py-4 flex flex-wrap gap-2.5 sm:gap-3 items-center" aria-label="Your sentence">
+                        {placed.length === 0 && <span className={`${LIGHT.muted} text-[17px]`}>Your sentence goes here…</span>}
+                        {placed.map(t => (
+                            <button key={t.id} type="button" draggable={checkStatus === 'idle' || checkStatus === 'wrong'}
+                                onDragStart={() => onDragStart(t, 'placed')} onDragEnd={onDragEnd} onClick={() => handleUnplace(t)}
+                                className={`${tile} ${L_SIZES[fontSizeIdx]} ${placedCls}`}>{t.word}</button>
+                        ))}
+                    </div>
+                    <div onDragOver={(e) => e.preventDefault()} onDrop={onDropIntoAvailable}
+                        className="min-h-[56px] flex flex-wrap gap-2.5 sm:gap-3" aria-label="Word bank">
+                        {available.map(t => (
+                            <button key={t.id} type="button" draggable
+                                onDragStart={() => onDragStart(t, 'available')} onDragEnd={onDragEnd} onClick={() => handlePlace(t)}
+                                className={`${tile} ${L_SIZES[fontSizeIdx]} bg-white border border-[#DDE1E8] hover:border-[#E0521F] hover:bg-[#FFF8F5] cursor-grab`}>{t.word}</button>
+                        ))}
+                    </div>
+                    <div className="flex flex-wrap justify-end gap-3 mt-auto pt-2">
+                        {checkStatus === 'idle' && (<>
+                            <button type="button" onClick={handleReveal} className={LIGHT.secondary}>Reveal answer</button>
+                            <button type="button" onClick={handleCheck} disabled={!allPlaced} className={LIGHT.primary}>Check</button>
+                        </>)}
+                        {checkStatus === 'wrong' && (<>
+                            <button type="button" onClick={handleReveal} className={LIGHT.secondary}>Reveal</button>
+                            <button type="button" onClick={handleTryAgain} className={LIGHT.primary}>Try again</button>
+                        </>)}
+                        {(checkStatus === 'correct' || checkStatus === 'revealed') && (
+                            <button type="button" onClick={handleNext} className={LIGHT.primary}>{currentIndex + 1 >= total ? 'See results' : 'Next sentence'}</button>
+                        )}
+                    </div>
+                </div>
+            </div>
+        );
     }
 
     if (finished) {

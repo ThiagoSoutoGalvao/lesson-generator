@@ -181,6 +181,9 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   shell text-scaling rule (body.tf-active main p…) reached fullscreen activities (they render inside main on /generate)
   and the light theme's indigo --tf-color made dark screens and their Save panel dark-on-dark — now skips
   .fixed.inset-0 overlays (qa_light_flashcards_save.mjs 17/17, text size raised).
+- **2026-11-12** — Flashcards made split-screen (photo left, card right, same size — Thiago: the wide strip cropped the
+  photo). Light **Unjumble**, same split (photo left, task right; placed words indigo, wrong red, right green;
+  qa_light_unjumble.mjs 12/12). Still dark for business: 14 other practice types.
 - **2026-11-11** — Group-first rules decided (see §2); `/plan-business-unit` skill; Unit 1 plan in
   `docs/aurora-business/units/first-steps-01.md`; local demo (`scratchpad/demo_business.php create|cleanup`).
 
