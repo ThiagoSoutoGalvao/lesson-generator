@@ -6,7 +6,10 @@ import {
 import { getLessonSession, setLessonSession } from '@/lib/lessonSession';
 import { tidyText, collapse, tidyFocus, focusHints, wordCount, MAX_FOCUS_WORDS } from '@/lib/naming';
 import { STAGES, defaultStage } from '@/lib/stages';
-import { useIsLightUi } from '@/lib/uiTheme';
+import { useIsLightUi, isLightCourse } from '@/lib/uiTheme';
+
+// Aurora Business courses are all built by Thiago (2026-11-13), so Built by starts as him there.
+const BUSINESS_BUILDER = 'Thiago';
 
 const fieldCls = 'bg-white/10 border border-white/20 text-white placeholder:text-white/35 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 w-full';
 const selectCls = `${fieldCls} appearance-none cursor-pointer`;
@@ -44,7 +47,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
     // Which lesson of the unit (1A / 1B / 1C) — from the lesson pack the teacher came from, else A.
     const [part, setPart]         = useState(() => session?.part ?? 'A');
     const [focus, setFocus]       = useState('');
-    const [builtBy, setBuiltBy]   = useState(() => lsGet(LS_BUILT_BY));
+    const [builtBy, setBuiltBy]   = useState(() => (isLightCourse(session?.trilha ?? lsGet(LS_TRILHA)) ? BUSINESS_BUILDER : lsGet(LS_BUILT_BY)));
     // Lesson-pack stage — pre-picked from the type (lib/stages.js); the teacher confirms or changes it.
     const [stage, setStage]       = useState(() => session?.stage ?? defaultStage(activity.type));
 
@@ -161,7 +164,7 @@ export default function SavePanel({ activity, onDone, onSaved }) {
                                 <label className={labelC}>Trilha</label>
                                 <select
                                     value={trilha}
-                                    onChange={e => { setTrilha(e.target.value); setLesson(''); }}
+                                    onChange={e => { setTrilha(e.target.value); setLesson(''); if (isLightCourse(e.target.value)) setBuiltBy(BUSINESS_BUILDER); }}
                                     required
                                     className={selectC}
                                 >

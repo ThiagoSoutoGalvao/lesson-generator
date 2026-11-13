@@ -1438,10 +1438,11 @@ EOT;
         return mb_strlen($value) > $max ? rtrim(mb_substr($value, 0, $max - 1)) . '…' : $value;
     }
 
-    public function generateRolePlay(string $source, string $prompt, ?string $level = null): array
+    /** $group (Aurora Business, 2026-11-13): students play A and B in pairs, with an optional role C for a third student or the teacher. */
+    public function generateRolePlay(string $source, string $prompt, ?string $level = null, bool $group = false): array
     {
         $lv   = LanguageLevel::from($level);
-        $data = $this->requestJson($this->buildRolePlayPrompt($this->sanitizeUtf8($source), $prompt, $lv));
+        $data = $this->requestJson($this->buildRolePlayPrompt($this->sanitizeUtf8($source), $prompt, $lv, $group));
 
         $cards = [];
         foreach ($data['cards'] ?? [] as $c) {
@@ -1449,7 +1450,12 @@ EOT;
             $a = ['name' => $this->clip($c['role_a']['name'] ?? '', 60), 'brief' => $this->clip($c['role_a']['brief'] ?? '', 400)];
             $b = ['name' => $this->clip($c['role_b']['name'] ?? '', 60), 'brief' => $this->clip($c['role_b']['brief'] ?? '', 400)];
             if ($situation !== '' && $a['name'] !== '' && $a['brief'] !== '' && $b['name'] !== '' && $b['brief'] !== '') {
-                $cards[] = ['situation' => $situation, 'role_a' => $a, 'role_b' => $b];
+                $card = ['situation' => $situation, 'role_a' => $a, 'role_b' => $b];
+                $rc = ['name' => $this->clip($c['role_c']['name'] ?? '', 60), 'brief' => $this->clip($c['role_c']['brief'] ?? '', 400)];
+                if ($group && $rc['name'] !== '' && $rc['brief'] !== '') {
+                    $card['role_c'] = $rc;
+                }
+                $cards[] = $card;
             }
         }
         if (! $cards) {
@@ -1465,8 +1471,17 @@ EOT;
         ];
     }
 
-    private function buildRolePlayPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    private function buildRolePlayPrompt(string $source, string $prompt, LanguageLevel $lv, bool $group = false): string
     {
+        // Without $group the prompt is byte-identical to before (the B1 regression check).
+        $roleC = $group
+            ? ",
+      \"role_c\": { \"name\": \"<short role name>\", \"brief\": \"<2-3 sentences: an OPTIONAL third person who can join the same conversation naturally, with their own reason to speak>\" }"
+            : '';
+        $who = $group
+            ? "- This is for a small group of 2–4 adult students who work in pairs (online breakout rooms). Role A and role B are BOTH played by students, so both briefs must make the speaker ask questions AND give concrete details to answer with — the conversation goes both ways
+- role_c is OPTIONAL: for a third student (or the teacher) in a group of three. The card must still work perfectly with only A and B"
+            : "- Role A is played by the student, role B by the teacher (they can swap) — role A's brief must push the student to ask questions and react; role B's brief gives the teacher details to answer with";
         return <<<EOT
 {$source}
 
@@ -1481,13 +1496,13 @@ Return a JSON object with EXACTLY this structure:
     {
       "situation": "<1-2 sentences setting the scene, written to both speakers>",
       "role_a": { "name": "<short role name, e.g. 'The new colleague'>", "brief": "<2-3 sentences: who you are and what you want to find out or achieve>" },
-      "role_b": { "name": "<short role name>", "brief": "<2-3 sentences with concrete details to share: facts, experiences, opinions>" }
+      "role_b": { "name": "<short role name>", "brief": "<2-3 sentences with concrete details to share: facts, experiences, opinions>" }{$roleC}
     }
   ]
 }
 
 Rules:
-- Role A is played by the student, role B by the teacher (they can swap) — role A's brief must push the student to ask questions and react; role B's brief gives the teacher details to answer with
+{$who}
 - Briefs are written to the reader as "You…"
 - Every card is a different, everyday situation
 {$this->productionRules('cards', $lv)}

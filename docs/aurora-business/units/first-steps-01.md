@@ -20,6 +20,7 @@ Brazilian-mistake thread: "I am engineer" (missing a / an with jobs)
 Homework: A→B consolidate (quiz on the team profiles) · B→C prepare the simulation (write 3 sentences
 introducing yourself and your job) · C→2A writing thread: an email introducing yourself to your new team (leads into "My team and my role")
 
-App gaps: Generate + Library open business activities in the old glass look · role-play says TEACHER /
-STUDENT (needs Student A / B / optional C, cards on phones for breakout rooms) · practice screens don't show
-whose turn it is · "Use it!" ticks one student, not each · Teach now can't change the stage order
+App gaps: practice screens don't show whose turn it is · "Use it!" ticks one student, not each · Teach now can't change the stage order
+
+Fixed 2026-11-12/13: Generate + Library light; role-play is Student A / B / optional C with "Who's reading?"
+(each student sees only their own brief on their phone); Flashcards, Unjumble, Match Pairs, Save panel light.

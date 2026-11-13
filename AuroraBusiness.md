@@ -184,6 +184,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 - **2026-11-12** — Flashcards made split-screen (photo left, card right, same size — Thiago: the wide strip cropped the
   photo). Light **Unjumble**, same split (photo left, task right; placed words indigo, wrong red, right green;
   qa_light_unjumble.mjs 12/12). Still dark for business: 14 other practice types.
+- **2026-11-13** — Flashcards bigger (photo + card fill the height, buttons in a column on the right). Code backed up
+  to GitHub branch `backup/aurora-business` (not main); Unit 1 activities exported to `backups/`. **Role-play for
+  groups:** business courses send `group: true` → Claude writes Student A / B roles (both ask and answer) + an optional
+  role C; the card says STUDENT A / STUDENT B / STUDENT C OR THE TEACHER · OPTIONAL and has "Who's reading?" (Everyone /
+  I'm A / B / C — others' briefs hidden, remembered per tab) instead of Swap roles. Non-group prompt byte-identical
+  (qa_roleplay_group_backend.php 12/12); qa_light_speaking 50/50 incl. a First Steps student on a phone;
+  qa_roleplay_group_request 5/5. Built by defaults to Thiago on business courses.
 - **2026-11-11** — Group-first rules decided (see §2); `/plan-business-unit` skill; Unit 1 plan in
   `docs/aurora-business/units/first-steps-01.md`; local demo (`scratchpad/demo_business.php create|cleanup`).
 

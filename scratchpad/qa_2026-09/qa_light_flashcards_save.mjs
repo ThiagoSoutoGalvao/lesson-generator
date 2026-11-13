@@ -73,6 +73,7 @@ try {
     check('Save panel: chosen part is coral', await form.getByRole('button', { name: '1B' }).evaluate(e => getComputedStyle(e).backgroundColor) === 'rgb(224, 82, 31)');
     const optBg = await form.locator('option').first().evaluate(e => getComputedStyle(e).backgroundColor);
     check('Save panel: dropdown options white (readable)', optBg === 'rgb(255, 255, 255)', optBg);
+    check('Save panel: Built by starts as Thiago for a business course', await form.locator('select').last().inputValue() === 'Thiago');
     await p.screenshot({ path: `${SP}/shots-light/fc-save.png` });
     await ctx.close();
     // ── First Steps, phone

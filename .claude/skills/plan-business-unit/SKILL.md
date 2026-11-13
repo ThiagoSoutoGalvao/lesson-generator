@@ -81,7 +81,8 @@ say: the cast, the level, the group use (e.g. "each paragraph must make sense on
 one"), what to avoid, "use every target word at least once" when there is a vocabulary list.
 
 **Group wording in /generate prompts:** discussion questions are asked to a partner or the group ("Ask your
-partner…", "Find someone who…"); role-play cards are Student A / Student B (+ optional C); practice items are
+partner…", "Find someone who…"); role-play cards are Student A / Student B (+ optional C — the app asks Claude for it on business courses, and
+each student taps "I'm A / B / C" to see only their own brief); practice items are
 short enough to take in turns.
 
 End each step with where to save it: **course, unit, lesson (A/B/C), stage**, and what to build next.
@@ -89,8 +90,8 @@ End each step with where to save it: **course, unit, lesson (A/B/C), stage**, an
 ## 3. Keep the record
 
 After each step, tick it in the unit plan file. When the unit is built, add a dated line to §7 of
-`AuroraBusiness.md`. If a template can't do what the group rules need yet (e.g. role-play still says
-TEACHER / STUDENT), say how the teacher runs it today and list it under "App gaps" in the unit file.
+`AuroraBusiness.md`. If a template can't do what the group rules need yet (e.g. a practice screen can't show whose turn it
+is), say how the teacher runs it today and list it under "App gaps" in the unit file.
 
 ### Unit plan file template
 

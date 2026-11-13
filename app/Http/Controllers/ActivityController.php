@@ -22,6 +22,7 @@ class ActivityController extends Controller
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
             'level'       => ['nullable', 'in:A1,A2,B1,B2'],
+            'group'       => ['nullable', 'boolean'], // Aurora Business: group-of-2–4 wording (role-play only for now)
         ]);
 
         $provided = collect(['document_id', 'topic', 'source_text', 'source_activity_id'])
@@ -103,7 +104,7 @@ class ActivityController extends Controller
                 'match_pairs'             => $claude->generateMatchPairs($source, $prompt, $level),
                 'signs_notices'           => $claude->generateSignsNotices($source, $prompt, $level),
                 'picture_prompts'         => $claude->generatePicturePrompts($source, $prompt, $level),
-                'role_play'               => $claude->generateRolePlay($source, $prompt, $level),
+                'role_play'               => $claude->generateRolePlay($source, $prompt, $level, $request->boolean('group')),
                 'story_builder'           => $claude->generateStoryBuilder($source, $prompt, $level),
                 'debate'                  => $claude->generateDebate($source, $prompt, $level),
                 'mini_presentation'       => $claude->generateMiniPresentation($source, $prompt, $level),

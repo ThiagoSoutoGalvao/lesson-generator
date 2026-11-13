@@ -160,6 +160,8 @@ const TEMPLATES = [
         id: 'role_play', label: 'Role-play Cards', goals: ['speaking'],
         blurb: 'A situation and two roles — the student plays one, you play the other. Use it when the target language belongs in a real conversation.',
         defaultPrompt: 'Create 3 role-play cards. Each has an everyday situation, a role for the student and a role for the teacher with details to share.',
+        // Aurora Business (always a group of 2–4, students work in pairs): used instead of defaultPrompt there.
+        groupPrompt: 'Create 3 role-play cards for students working in pairs. Each has an everyday work situation, a role for Student A and a role for Student B, both with details to share and questions to ask, and an optional role C for a third student.',
     },
     {
         id: 'story_builder', label: 'Story Builder', goals: ['speaking'],
@@ -374,7 +376,7 @@ export default function GeneratePage() {
 
     function pickTemplate(t) {
         setTemplateId(t.id);
-        setPrompt(t.defaultPrompt);
+        setPrompt(L && t.groupPrompt ? t.groupPrompt : t.defaultPrompt);
     }
 
     const canSubmit = template
@@ -389,6 +391,7 @@ export default function GeneratePage() {
         setErrorMsg('');
 
         const body = { type: template.type ?? template.id, prompt, level };
+        if (L) body.group = true; // Aurora Business: always a group of 2–4
         if (sourceMode === 'topic') {
             body.topic = topic.trim();
         } else if (sourceMode === 'lesson') {

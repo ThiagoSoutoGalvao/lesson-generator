@@ -133,6 +133,10 @@ export default function LessonPackPage() {
         setFilling(f => ({ ...f, [stage]: 'busy' }));
         try {
             const body = { type: pick.type, prompt: pick.prompt, level: TRILHA_LEVEL[trilha] };
+            if (isLightCourse(trilha)) {
+                body.group = true; // Aurora Business: always a group of 2–4
+                if (pick.type === 'role_play') body.prompt = 'Create 3 role-play cards for students working in pairs. Each has a work situation where the lesson’s target language is needed, a role for Student A and a role for Student B, and an optional role C for a third student.';
+            }
             if (core) body.source_activity_id = core.id;
             else body.topic = (toc.slice(0, 2).join('; ') || `${config.label} lesson ${lesson}`).slice(0, 200);
             const { data: content } = await axios.post('/api/generate', body);
