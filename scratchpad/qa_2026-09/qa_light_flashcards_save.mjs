@@ -46,6 +46,10 @@ try {
     check('Flashcards: light screen', await p.locator('[data-ui-screen=light]').count() > 0);
     check('Flashcards: word in indigo on white', await color(p.locator('h2', { hasText: 'accountant' })) === INK);
     check('Flashcards: header line readable', await color(p.getByText(/card 1 of 3/i)) === 'rgb(74, 81, 99)');
+    const ph = await p.locator('[data-ui-screen=light] img[src]').last().evaluate(e => e.parentElement.getBoundingClientRect().toJSON());
+    const cd = await p.locator('[aria-label^="Card front"]').boundingBox();
+    check('Flashcards: photo left, card right', ph.x + ph.width <= cd.x, `${Math.round(ph.x + ph.width)} / ${Math.round(cd.x)}`);
+    check('Flashcards: photo and card the same size', Math.abs(ph.height - cd.height) < 3 && Math.abs(ph.width - cd.width) < 3, `${Math.round(ph.width)}×${Math.round(ph.height)} vs ${Math.round(cd.width)}×${Math.round(cd.height)}`);
     await p.screenshot({ path: `${SP}/shots-light/fc-front.png` });
     await flip(p);
     const got = await p.getByRole('button', { name: /Got it/ }).boundingBox();
