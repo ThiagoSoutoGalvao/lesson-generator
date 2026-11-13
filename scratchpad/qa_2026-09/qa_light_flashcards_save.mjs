@@ -53,6 +53,9 @@ try {
     await p.screenshot({ path: `${SP}/shots-light/fc-front.png` });
     await flip(p);
     const got = await p.getByRole('button', { name: /Got it/ }).boundingBox();
+    const cd2 = await p.locator('[aria-label^="Card back"]').boundingBox();
+    check('Flashcards: card fills most of the screen height', cd2.height >= 560, Math.round(cd2.height) + 'px of 768');
+    check('Flashcards: buttons beside the card', got.x >= cd2.x + cd2.width, Math.round(got.x) + ' / ' + Math.round(cd2.x + cd2.width));
     check('Flashcards: Got it visible without scrolling on a laptop', got && got.y + got.height <= 768, got && `${Math.round(got.y + got.height)}`);
     await p.screenshot({ path: `${SP}/shots-light/fc-back.png` });
     await p.getByRole('button', { name: /Still learning/ }).click(); await p.waitForTimeout(300);

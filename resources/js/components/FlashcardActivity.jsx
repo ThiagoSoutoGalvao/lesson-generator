@@ -142,16 +142,17 @@ export default function FlashcardActivity({ activity, onClose, onComplete, hideS
         const face = 'absolute inset-0 rounded-3xl bg-white border border-[#DDE1E8] shadow-[0_6px_24px_rgba(39,29,98,0.08)] flex flex-col items-center justify-center gap-3 px-6 sm:px-10 overflow-y-auto';
         const hint = (t) => <p className={LIGHT.eyebrow}>{t}</p>;
         return frame(
-            <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-4 sm:py-6 flex flex-col gap-4">
+            <div className="max-w-[1560px] mx-auto px-4 sm:px-8 py-4 sm:py-5 flex flex-col gap-4">
                 <div className="h-2 rounded bg-[#E6E9EE] overflow-hidden" aria-hidden="true">
                     <div className="h-2 bg-[#1E7A4C] transition-[width] duration-300" style={{ width: `${(knownIds.size / total) * 100}%` }} />
                 </div>
-                {/* Split screen (2026-11-12, Thiago): photo left, card right, the same size — the wide strip above cropped the photo. */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                {/* Split screen (2026-11-12, Thiago): photo left, card right, the same size — the wide strip above cropped the photo.
+                    Then bigger, filling the screen height, with the two buttons in a column on the right. */}
+                <div className="grid grid-cols-1 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto] gap-4 sm:gap-6">
                 <LightPhoto url={bgUrl} className="h-[180px] sm:h-[240px] md:h-auto" />
                 <div role="button" tabIndex={0} aria-label={flipped ? 'Card back — tap to flip' : 'Card front — tap to flip'}
                     onClick={() => setFlipped(f => !f)} className="cursor-pointer select-none" style={{ perspective: '1200px' }}>
-                    <div className="relative h-[280px] sm:h-[320px] md:h-[clamp(300px,calc(100dvh-280px),460px)]" style={{ transformStyle: 'preserve-3d', transition: 'transform 0.5s ease', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
+                    <div className="relative h-[280px] sm:h-[320px] md:h-[clamp(320px,calc(100dvh-150px),720px)]" style={{ transformStyle: 'preserve-3d', transition: 'transform 0.5s ease', transform: flipped ? 'rotateY(180deg)' : 'rotateY(0deg)' }}>
                         <div className={face} style={{ backfaceVisibility: 'hidden' }}>
                             {questionMode ? <>{hint("What's the word?")}{def}{ex(card.example)}</> : <>{hint('Tap to flip')}{word}{pron}{ex(card.example)}</>}
                         </div>
@@ -160,10 +161,10 @@ export default function FlashcardActivity({ activity, onClose, onComplete, hideS
                         </div>
                     </div>
                 </div>
-                </div>
-                <div className={`flex flex-wrap justify-center md:justify-end gap-3 transition-opacity duration-300 ${flipped ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
+                <div className={`flex flex-wrap md:flex-col-reverse justify-center gap-3 transition-opacity duration-300 ${flipped ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
                     <button type="button" onClick={handleStillLearning} className={LIGHT.secondary}>↺ Still learning</button>
                     <button type="button" onClick={handleGotIt} className="h-12 sm:h-14 px-7 sm:px-8 rounded-xl bg-[#1E7A4C] hover:bg-[#17633D] text-white font-semibold text-[17px] sm:text-[19px] cursor-pointer">✓ Got it</button>
+                </div>
                 </div>
             </div>
         );
