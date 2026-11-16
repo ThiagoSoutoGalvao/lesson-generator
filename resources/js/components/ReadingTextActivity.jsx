@@ -55,6 +55,34 @@ function highlightVocab(text, words) {
     });
 }
 
+// A dialogue paragraph (2026-11-16, Aurora Business interview readings): Claude writes "**Bruno:** … **Paula:** …" in one
+// paragraph, which read as one cluttered block with the ** showing. A paragraph that STARTS with a speaker label
+// ("Name:" — 1–3 capitalised words) is split into one line per speaker; every other paragraph is left as prose.
+// In both, **bold** becomes real bold instead of showing the asterisks.
+const LABEL = "[A-Z][A-Za-z.'’-]*(?: [A-Z][A-Za-z.'’-]*){0,2}";
+const STARTS_WITH_SPEAKER = new RegExp(`^${LABEL}:\\s`);
+const SPEAKER_SPLIT = new RegExp(`(?<=[.!?…)"”'’])\\s+(?=${LABEL}:\\s)`);
+
+function parseDialogue(text) {
+    // "**Bruno:**" / "**Bruno**:" / "Bruno**:**" → "Bruno:"
+    // ("**:**" first — otherwise the next pattern pairs its closing ** with the following speaker's and eats the line)
+    const clean = text
+        .replace(/\*\*:\*\*/g, ':')
+        .replace(/\*\*([^*\n]+?):\*\*|\*\*([^*\n]+?)\*\*:/g, (_, a, b) => `${a ?? b}:`)
+        .trim();
+    if (!STARTS_WITH_SPEAKER.test(clean)) return null;
+    return clean.split(SPEAKER_SPLIT).map(part => {
+        const i = part.indexOf(':');
+        return { speaker: part.slice(0, i), line: part.slice(i + 1).trim() };
+    });
+}
+
+function renderRich(text, words) {
+    return text.split(/\*\*([^*]+?)\*\*/).map((seg, i) => (
+        i % 2 ? <strong key={i} className="font-bold">{highlightVocab(seg, words)}</strong> : <span key={i}>{highlightVocab(seg, words)}</span>
+    ));
+}
+
 export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const navigate = useNavigate();
     const [bgUrl, setBgUrl]             = useState(null);
@@ -110,9 +138,11 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const printView = (
         <div className="read-print-root" style={{ display: 'none' }}>
             <p className="read-print-meta">Reading text — {activity.topic}</p>
-            {paragraphs.map((p, i) => (
-                <p key={i} className="read-print-paragraph">{highlightVocab(p, vocabWords)}</p>
-            ))}
+            {paragraphs.map((p, i) => {
+                const lines = light ? parseDialogue(p) : null;
+                if (!lines) return <p key={i} className="read-print-paragraph">{light ? renderRich(p, vocabWords) : highlightVocab(p, vocabWords)}</p>;
+                return <div key={i} className="read-print-paragraph">{lines.map((l, j) => <p key={j} style={{ margin: '0 0 0.3em' }}><strong>{l.speaker}:</strong> {renderRich(l.line, vocabWords)}</p>)}</div>;
+            })}
             {vocabulary.length > 0 && (
                 <div className="read-print-vocab">
                     <p className="read-print-vocab-label">Vocabulary</p>
@@ -164,9 +194,20 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
                             )}
                             <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px]" />
                             <article className={`${LIGHT.card} px-5 py-6 sm:px-12 sm:py-10 flex flex-col gap-5`} aria-label="Reading text">
-                                {paragraphs.map((p, i) => (
-                                    <p key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7]`}>{highlightVocab(p, vocabWords)}</p>
-                                ))}
+                                {paragraphs.map((p, i) => {
+                                    const lines = parseDialogue(p);
+                                    if (!lines) return <p key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7]`}>{renderRich(p, vocabWords)}</p>;
+                                    return (
+                                        <div key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.6] grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2`} data-dialogue>
+                                            {lines.map((l, j) => (
+                                                <p key={j} className="contents">
+                                                    <span className="font-bold text-[#E0521F] whitespace-nowrap" data-speaker>{l.speaker}:</span>
+                                                    <span>{renderRich(l.line, vocabWords)}</span>
+                                                </p>
+                                            ))}
+                                        </div>
+                                    );
+                                })}
                             </article>
                             {showVocab && vocabulary.length > 0 && (
                                 <section className={`${LIGHT.card} px-5 py-5 sm:px-10 sm:py-7`} aria-label="Vocabulary">
