@@ -61,19 +61,46 @@ function highlightVocab(text, words) {
 // In both, **bold** becomes real bold instead of showing the asterisks.
 const LABEL = "[A-Z][A-Za-z.'’-]*(?: [A-Z][A-Za-z.'’-]*){0,2}";
 const STARTS_WITH_SPEAKER = new RegExp(`^${LABEL}:\\s`);
-const SPEAKER_SPLIT = new RegExp(`(?<=[.!?…)"”'’])\\s+(?=${LABEL}:\\s)`);
+const escapeRe = s => s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-function parseDialogue(text) {
-    // "**Bruno:**" / "**Bruno**:" / "Bruno**:**" → "Bruno:"
-    // ("**:**" first — otherwise the next pattern pairs its closing ** with the following speaker's and eats the line)
-    const clean = text
+// "**Bruno:**" / "**Bruno**:" / "Bruno**:**" → "Bruno:"
+// ("**:**" first — otherwise the next pattern pairs its closing ** with the following speaker's and eats the line)
+function cleanLabels(text) {
+    return text
         .replace(/\*\*:\*\*/g, ':')
         .replace(/\*\*([^*\n]+?):\*\*|\*\*([^*\n]+?)\*\*:/g, (_, a, b) => `${a ?? b}:`)
         .trim();
+}
+
+/**
+ * The speakers of a dialogue reading: every name that starts a paragraph ("Bruno:"), plus any "Name:" used at least
+ * twice inside those paragraphs (Paula, who only ever answers — once would also catch a one-off "Nordia Foods: …").
+ */
+function dialogueSpeakers(paragraphs) {
+    const names = new Set();
+    const seen = new Map();
+    const inside = new RegExp(`(?:^|\\s)(${LABEL}):\\s`, 'g');
+    for (const p of paragraphs) {
+        const c = cleanLabels(p);
+        const m = c.match(STARTS_WITH_SPEAKER);
+        if (!m) continue;
+        names.add(m[0].slice(0, m[0].indexOf(':')));
+        for (const [, n] of c.matchAll(inside)) seen.set(n, (seen.get(n) ?? 0) + 1);
+    }
+    for (const [n, k] of seen) if (k >= 2) names.add(n);
+    return [...names];
+}
+
+// A new line starts at every known speaker's "Name:" (after any space — Claude doesn't always end the previous line
+// with . ? !), and at any other "Name:" that follows the end of a sentence.
+function parseDialogue(text, speakers = []) {
+    const clean = cleanLabels(text);
     if (!STARTS_WITH_SPEAKER.test(clean)) return null;
-    return clean.split(SPEAKER_SPLIT).map(part => {
+    const known = speakers.length ? `|\\s+(?=(?:${speakers.map(escapeRe).join('|')}):\\s)` : '';
+    const split = new RegExp(`(?<=[.!?…)"”'’])\\s+(?=${LABEL}:\\s)${known}`);
+    return clean.split(split).filter(Boolean).map(part => {
         const i = part.indexOf(':');
-        return { speaker: part.slice(0, i), line: part.slice(i + 1).trim() };
+        return { speaker: part.slice(0, i), line: part.slice(i + 1).trim().replace(/\s*[,;—–-]$/, '') }; // a stray comma / dash before the next speaker
     });
 }
 
@@ -97,6 +124,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const paragraphs = activity.paragraphs ?? [];
     const vocabulary = activity.vocabulary ?? [];
     const vocabWords  = vocabulary.map(v => v.word);
+    const speakers    = light ? dialogueSpeakers(paragraphs) : [];
     const canDerive   = typeof onDerive === 'function' && paragraphs.length > 0;
 
     async function handleDerive(opt) {
@@ -139,7 +167,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
         <div className="read-print-root" style={{ display: 'none' }}>
             <p className="read-print-meta">Reading text — {activity.topic}</p>
             {paragraphs.map((p, i) => {
-                const lines = light ? parseDialogue(p) : null;
+                const lines = light ? parseDialogue(p, speakers) : null;
                 if (!lines) return <p key={i} className="read-print-paragraph">{light ? renderRich(p, vocabWords) : highlightVocab(p, vocabWords)}</p>;
                 return <div key={i} className="read-print-paragraph">{lines.map((l, j) => <p key={j} style={{ margin: '0 0 0.3em' }}><strong>{l.speaker}:</strong> {renderRich(l.line, vocabWords)}</p>)}</div>;
             })}
@@ -195,7 +223,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
                             <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px]" />
                             <article className={`${LIGHT.card} px-5 py-6 sm:px-12 sm:py-10 flex flex-col gap-5`} aria-label="Reading text">
                                 {paragraphs.map((p, i) => {
-                                    const lines = parseDialogue(p);
+                                    const lines = parseDialogue(p, speakers);
                                     if (!lines) return <p key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7]`}>{renderRich(p, vocabWords)}</p>;
                                     return (
                                         <div key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.6] grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2`} data-dialogue>
