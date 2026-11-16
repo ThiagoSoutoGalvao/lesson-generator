@@ -31,4 +31,4 @@ App gaps: practice screens don't show whose turn it is · "Use it!" ticks one st
 
 Fixed 2026-11-12/13: Generate + Library light; role-play is Student A / B / optional C with "Who's reading?"
 (each student sees only their own brief on their phone); Flashcards, Unjumble, Match Pairs, Save panel light. 2026-11-16: Dialogue Gap-Fill light.
-Dialogue Gap-Fill always makes exactly 3 gaps (hard-coded in the prompt) — few for a group taking turns.
+Dialogue Gap-Fill now makes the number of gaps the Instructions ask for (2–8; business courses pre-fill 6).

@@ -124,6 +124,8 @@ const TEMPLATES = [
         id: 'dialog_gap_fill', label: 'Dialogue Gap-Fill', goals: ['grammar', 'speaking'],
         blurb: 'A short conversation with gaps; pick the best line from 3 options. Functional language.',
         defaultPrompt: 'Write a natural 10–12 line dialogue between two people on the topic, with 3 gaps to complete. Wrong options should be plausible but clearly not the best fit.',
+        // Aurora Business groups take turns: more gaps, so every student answers at least one (2026-11-16).
+        groupPrompt: 'Write a natural 14–16 line dialogue between two people on the topic, with 6 gaps to complete (students take turns, one gap each). Wrong options should be plausible but clearly not the best fit.',
     },
     {
         id: 'signs_notices', label: 'Signs & Notices', goals: ['reading'],

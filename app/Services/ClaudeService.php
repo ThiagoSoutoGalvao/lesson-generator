@@ -539,8 +539,8 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- The dialog must have between 8 and 14 lines total
-- Mark exactly 3 lines as blank: true — spread them throughout the dialog, not bunched at the end
+- Mark the number of lines as blank: true that the task asks for (gaps) — 3 if none is given, never fewer than 2 or more than 8 — spread them throughout the dialog, not bunched at the end
+- The dialog must have between 8 and 20 lines total, and at least twice as many lines as gaps, so every gap has context around it
 - Each blank must have exactly 3 options (one correct, two wrong)
 - Wrong options must be grammatically correct and plausible in the context, but clearly not the best fit
 - The "line" field on a blank item always contains the correct answer text
