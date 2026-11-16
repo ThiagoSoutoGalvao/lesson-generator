@@ -2,6 +2,7 @@
 
 A2 · **Can-do:** introduce myself, my job and my company · **Language:** be, possessive adjectives,
 a / an with jobs · **Vocabulary:** jobs, departments · **Simulation:** first day — meet the team
+Story: Nordia Foods is hiring — 1B Paula (receptionist at a hotel now) is interviewed by Bruno for a sales assistant job; 1C is her first day.
 Cast: Nordia Foods (small food company, Natal) — Ana (accountant, Finance), Bruno (sales manager, Sales),
 Carla (marketing assistant, Marketing), Diego (IT engineer, IT)
 Brazilian-mistake thread: "I am engineer" (missing a / an with jobs)
@@ -10,12 +11,18 @@ Brazilian-mistake thread: "I am engineer" (missing a / an with jobs)
 |---|---|---|---|---|
 | 1A | Warmer | Name + job round | Each says name + job, then asks the next student | |
 | 1A | Presentation | Reading Text: "Our team" page, 4 profiles | Jigsaw — each reads one profile, tells the group | ✅ made + saved (local) 2026-11-12 |
-| 1A | Presentation | Presentation: be + a / an + my / his / her | Teacher presents; check questions go round by name | |
-| 1A | Practice | Quiz on the profiles + grammar | Take turns | |
-| 1B | Practice | Jobs ↔ departments (Word Categorisation or Match Pairs) | Take turns | |
-| 1B | Production | Interview your partner, then introduce them to the group | Pairs in breakout rooms → report in main room | |
+| 1A | Presentation | Presentation: be + a / an + my / his / her | Teacher presents; check questions go round by name | ✅ live |
+| 1A | Practice | Quiz on the profiles + grammar | Take turns | ✅ live |
+| 1B | Warmer | Who is who at Nordia (homework check) | Round by name | |
+| 1B | Presentation | Reading Text: Paula's job interview with Bruno (8 exchanges) | Pairs read in roles, then swap; 3rd = Ana joins | prompt given 2026-11-16 |
+| 1B | Presentation | Presentation: questions with "do" (I / you) + short answers | Teacher presents; check questions go round | ✅ live (id 479) |
+| 1B | Practice | Unjumble: the interview questions | Take turns | |
+| 1B | Production | Interview your partner, then introduce them to the group | Pairs in breakout rooms → report in main room; 3rd = reporter | |
+| 1B | Backup | Quiz on the interview, or Match Pairs question ↔ answer | Take turns | |
 | 1C | Warmer | Quick review quiz | Take turns | |
 | 1C | Production | Role-play: first day — new employee / manager / optional colleague | Breakout rooms → one pair performs, others tick "Use it!" | |
+
+1C new language: first-day phrases (Nice to meet you, Welcome to the team, Let me introduce…, This is…) + the shape of an introduction email.
 
 Homework: A→B consolidate (quiz on the team profiles) · B→C prepare the simulation (write 3 sentences
 introducing yourself and your job) · C→2A writing thread: an email introducing yourself to your new team (leads into "My team and my role")
@@ -23,4 +30,5 @@ introducing yourself and your job) · C→2A writing thread: an email introducin
 App gaps: practice screens don't show whose turn it is · "Use it!" ticks one student, not each · Teach now can't change the stage order
 
 Fixed 2026-11-12/13: Generate + Library light; role-play is Student A / B / optional C with "Who's reading?"
-(each student sees only their own brief on their phone); Flashcards, Unjumble, Match Pairs, Save panel light.
+(each student sees only their own brief on their phone); Flashcards, Unjumble, Match Pairs, Save panel light. 2026-11-16: Dialogue Gap-Fill light.
+Dialogue Gap-Fill always makes exactly 3 gaps (hard-coded in the prompt) — few for a group taking turns.

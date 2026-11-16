@@ -191,6 +191,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   I'm A / B / C — others' briefs hidden, remembered per tab) instead of Swap roles. Non-group prompt byte-identical
   (qa_roleplay_group_backend.php 12/12); qa_light_speaking 50/50 incl. a First Steps student on a phone;
   qa_roleplay_group_request 5/5. Built by defaults to Thiago on business courses.
+- **2026-11-15** — Pushed to main and live (17 commits, no DB changes). Unit 1 imported on the live site (ids 472–478).
+- **2026-11-16** — Decided: every lesson is Warmer → Presentation → Practice → Production with **something new**
+  (A = core grammar/vocab, B = a second point that extends it — usually questions/negatives, C = functional language +
+  the simulation). Thiago will write all reading texts/presentations; other teachers build activities from them with
+  "+ Add" (a "teacher edition" pack of the skill comes after Unit 1). 1B = questions with "do" (I / you) + a Nordia job
+  interview reading (Paula → hired, her first day is 1C). Light **Dialogue Gap-Fill** (dialogue left, options right;
+  qa_light_dialog_gap_fill.mjs 16/16). Still dark for business: 13 practice types.
 - **2026-11-11** — Group-first rules decided (see §2); `/plan-business-unit` skill; Unit 1 plan in
   `docs/aurora-business/units/first-steps-01.md`; local demo (`scratchpad/demo_business.php create|cleanup`).
 
