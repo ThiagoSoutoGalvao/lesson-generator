@@ -136,6 +136,9 @@ const TEMPLATES = [
         id: 'true_false', label: 'True / False / Not Given', goals: ['reading'],
         blurb: 'A reading passage and 6 statements to judge. Trains close reading and inference.',
         defaultPrompt: 'Write a reading passage and 6 statements — an even mix of True, False and Not Given. Vary the order.',
+        // A1 / A2: True or False only — the server drops Not Given at those levels too (2026-11-18).
+        beginnerPrompt: 'Write a reading passage and 6 statements — 3 True and 3 False. Vary the order.',
+        beginnerLabel: 'True / False',
     },
     {
         id: 'mc_reading', label: 'Reading Comprehension (MC)', goals: ['reading'],
@@ -380,7 +383,9 @@ export default function GeneratePage() {
 
     function pickTemplate(t) {
         setTemplateId(t.id);
-        setPrompt(L && t.groupPrompt ? t.groupPrompt : t.defaultPrompt);
+        setPrompt(L && t.groupPrompt ? t.groupPrompt
+            : t.beginnerPrompt && ['A1', 'A2'].includes(level) ? t.beginnerPrompt
+            : t.defaultPrompt);
     }
 
     const canSubmit = template
@@ -550,7 +555,7 @@ export default function GeneratePage() {
                                                 : (L ? LF.chip : 'bg-white/5 border-white/12 hover:bg-white/10')
                                         }`}
                                     >
-                                        <span className={`text-sm font-semibold ${L ? 'text-ui-ink' : 'text-white'}`}>{t.label}</span>
+                                        <span className={`text-sm font-semibold ${L ? 'text-ui-ink' : 'text-white'}`}>{t.beginnerLabel && ['A1', 'A2'].includes(level) ? t.beginnerLabel : t.label}</span>
                                         <span className={`text-xs leading-snug ${L ? 'text-ui-muted' : templateId === t.id ? 'text-white/90' : 'text-white/45'}`}>{t.blurb}</span>
                                         <TemplateMeta templateId={t.id} selected={templateId === t.id} level={level} />
                                     </button>

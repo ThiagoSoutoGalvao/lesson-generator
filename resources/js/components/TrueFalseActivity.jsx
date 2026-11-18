@@ -4,8 +4,20 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
 
 const OPTIONS = ['True', 'False', 'Not Given'];
+// Light (Aurora Business) text sizes, indexed by the Display panel's size.
+const L_TEXT_SIZES = ['text-[16px]', 'text-[17px] sm:text-[19px]', 'text-[19px] sm:text-[22px]', 'text-[22px] sm:text-[26px]', 'text-[25px] sm:text-[30px]'];
+const L_STATEMENT_SIZES = ['text-[19px]', 'text-[21px] sm:text-[24px]', 'text-[23px] sm:text-[28px]', 'text-[26px] sm:text-[32px]', 'text-[29px] sm:text-[36px]'];
+
+// The passage with the answer's evidence sentence highlighted (only once answered, and only if it is really there).
+function LightPassage({ passage, evidence }) {
+    const at = evidence ? passage.indexOf(evidence) : -1;
+    if (at === -1) return passage;
+    return <>{passage.slice(0, at)}<mark data-evidence className="bg-[#FFE3D6] text-inherit rounded px-0.5 ring-1 ring-[#E0521F]/40">{evidence}</mark>{passage.slice(at + evidence.length)}</>;
+}
 const OPTION_COLORS = {
     True:      { base: 'bg-green-500/20 border-green-400/50 hover:bg-green-500/40 text-green-100',  selected: 'bg-green-500 border-green-400 text-white', correct: 'bg-green-500 border-green-400 text-white' },
     False:     { base: 'bg-red-500/20 border-red-400/50 hover:bg-red-500/40 text-red-100',          selected: 'bg-red-500 border-red-400 text-white',   correct: 'bg-red-500 border-red-400 text-white' },
@@ -26,6 +38,7 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
     const [showSave, setShowSave]         = useState(false);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below (text left, statement right; no photo)
 
     const statement = activity.statements[currentIndex];
     const answered  = chosen !== null;
@@ -33,6 +46,7 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
     const score     = answers.filter(Boolean).length;
 
     useEffect(() => {
+        if (light) return;
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
             .then(({ data }) => setBgUrl(data.url))
             .catch(() => null);
@@ -70,6 +84,80 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
         } else {
             setCurrentIndex(i => i + 1);
         }
+    }
+
+    function handleRestart() {
+        setCurrentIndex(0); setAnswers([]); setChosen(null); setFinished(false);
+    }
+
+    if (light) {
+        // Two buttons unless the set really uses Not Given (A1 / A2 sets don't, 2026-11-18).
+        const options = activity.statements.some(s => s.answer === 'Not Given') ? OPTIONS : OPTIONS.slice(0, 2);
+        const frame = {
+            eyebrow: 'True or false', title: activity.topic || 'Read and decide',
+            onSave: hideSave ? undefined : () => setShowSave(true),
+            isFullscreen, onFullscreen: toggleFullscreen, onClose,
+            overlay: !hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null,
+        };
+        if (finished) {
+            return (
+                <LightFrame {...frame}>
+                    <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
+                        <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                            <p className={LIGHT.eyebrow}>All done</p>
+                            <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">{score} of {total} correct</h1>
+                            <div className="flex flex-wrap justify-center gap-3 mt-2">
+                                <button type="button" onClick={handleRestart} className={LIGHT.primary}>Play again</button>
+                                {onClose && <button type="button" onClick={onClose} className={LIGHT.secondary}>Close</button>}
+                            </div>
+                        </section>
+                    </div>
+                </LightFrame>
+            );
+        }
+        return (
+            <LightFrame {...frame} extra={<span className="hidden sm:flex items-center gap-4"><LightProgress index={currentIndex} total={total} label="Statement" /><span className="text-[15px] font-semibold">Score {score}</span></span>}>
+                <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-8 grid grid-cols-1 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)] gap-4 sm:gap-6 items-start">
+                    <section aria-label="Text" className={`${LIGHT.card} p-5 sm:p-8`}>
+                        <p className={`${LIGHT.eyebrow} mb-3`}>Read the text</p>
+                        <p className={`${L_TEXT_SIZES[fontSizeIdx]} leading-relaxed whitespace-pre-line`}>
+                            <LightPassage passage={activity.passage} evidence={answered ? statement.evidence : null} />
+                        </p>
+                    </section>
+
+                    <section aria-label="Statement" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5 lg:sticky lg:top-6`}>
+                        <p className={LIGHT.eyebrow}>Statement {currentIndex + 1} of {total}<span className="sm:hidden"> · score {score}</span></p>
+                        <h1 className={`font-display ${L_STATEMENT_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{statement.text}</h1>
+                        <div role="group" aria-label="Options" className={`grid gap-3 ${options.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2'}`}>
+                            {options.map(opt => {
+                                let box = 'border border-[#DDE1E8] bg-white hover:bg-[#F6F7F9] font-semibold';
+                                if (answered && opt === statement.answer) box = LIGHT.right;
+                                else if (answered && opt === chosen) box = LIGHT.wrong;
+                                else if (answered) box = 'border border-[#DDE1E8] bg-white opacity-60 font-semibold';
+                                return (
+                                    <button key={opt} type="button" onClick={() => handleChoose(opt)} disabled={answered}
+                                        className={`${box} min-h-14 sm:min-h-16 rounded-[14px] px-4 text-[18px] sm:text-[20px] text-[#271D62] ${answered ? 'cursor-default' : 'cursor-pointer'}`}>
+                                        {opt}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {answered && (
+                            <p role="status" className={`rounded-xl px-4 sm:px-5 py-3.5 text-[17px] sm:text-[19px] leading-snug ${isCorrect ? 'bg-[#E5F4EC] text-[#14532D]' : 'bg-[#FDECEA] text-[#7F1D1D]'}`}>
+                                <span className="font-semibold">{isCorrect ? 'Right! ' : `Not quite. It's ${statement.answer}. `}</span>
+                                {statement.explanation}
+                                {statement.evidence && activity.passage.includes(statement.evidence) && <span className="block mt-1 text-[15px] opacity-80">The line is highlighted in the text.</span>}
+                            </p>
+                        )}
+                        <div className="flex justify-end">
+                            <button type="button" onClick={handleNext} disabled={!answered} className={LIGHT.primary}>
+                                {!answered ? 'Choose an answer' : currentIndex + 1 >= total ? 'See results' : 'Next statement'}
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </LightFrame>
+        );
     }
 
     const bgStyle = bgUrl

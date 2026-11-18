@@ -225,9 +225,15 @@ Rules:
 EOT;
     }
 
-    public function generateTrueFalse(string $source, string $prompt, ?string $level = null): array
+    /**
+     * At A1 / A2 the statements are True or False only: "Not Given" is an exam skill that confuses beginners (Thiago,
+     * 2026-11-18). $group (Aurora Business): each statement also carries "evidence", the passage sentence that proves
+     * it, which the light screen highlights. B1+ without $group: the prompt is byte-identical to before.
+     */
+    public function generateTrueFalse(string $source, string $prompt, ?string $level = null, bool $group = false): array
     {
         $source = $this->sanitizeUtf8($source);
+        $lv = LanguageLevel::from($level);
 
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),
@@ -239,7 +245,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildTrueFalsePrompt($source, $prompt, LanguageLevel::from($level)),
+                    'content' => $this->buildTrueFalsePrompt($source, $prompt, $lv, $group),
                 ],
             ],
         ]);
@@ -249,11 +255,75 @@ EOT;
         $text = $response->json('content.0.text');
         $data = $this->decodeJson($text);
 
+        $passage = (string) ($data['passage'] ?? '');
+        $statements = [];
+        foreach ($data['statements'] ?? [] as $st) {
+            if (! is_array($st)) continue;
+            // A "Not Given" slipping into an A1 / A2 set is dropped rather than shown with a button that isn't there.
+            if (! $this->trueFalseAllowsNotGiven($lv) && ($st['answer'] ?? '') === 'Not Given') continue;
+            // Evidence must be found word for word in the passage, or the screen couldn't highlight it.
+            if (array_key_exists('evidence', $st)) {
+                $e = is_string($st['evidence']) ? trim($st['evidence']) : '';
+                if ($e === '' || ! str_contains($passage, $e)) unset($st['evidence']);
+                else $st['evidence'] = $e;
+            }
+            $statements[] = $st;
+        }
+        if (count($statements) >= 3) $data['statements'] = $statements;
+
         return $data;
     }
 
-    private function buildTrueFalsePrompt(string $source, string $prompt, LanguageLevel $lv): string
+    private function trueFalseAllowsNotGiven(LanguageLevel $lv): bool
     {
+        return ! in_array($lv->code, ['A1', 'A2'], true);
+    }
+
+    private function buildTrueFalsePrompt(string $source, string $prompt, LanguageLevel $lv, bool $group = false): string
+    {
+        $ev = $group
+            ? ",\n      \"evidence\": \"<the one sentence of the passage that proves the answer, copied word for word>\""
+            : '';
+        if (! $this->trueFalseAllowsNotGiven($lv)) {
+            $evRule = $group ? "\n- \"evidence\" is copied exactly from the passage (same words and punctuation): one sentence, never a paraphrase" : '';
+            return <<<EOT
+{$source}
+
+Task: {$prompt}
+
+Return a JSON object with EXACTLY this structure:
+{
+  "type": "true_false",
+  "topic": "<short topic description>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the passage topic, e.g. 'students studying library books' or 'tourists exploring city map'>",
+  "passage": "<the reading passage students will refer to — {$lv->span(80, 150, ' to ')} words, copied or lightly adapted from the text>",
+  "statements": [
+    {
+      "text": "<a statement about the passage>",
+      "answer": "True",
+      "explanation": "<one sentence explaining why, quoting or referencing the passage>"{$ev}
+    },
+    {
+      "text": "<a statement about the passage>",
+      "answer": "False",
+      "explanation": "<one sentence explaining why, quoting or referencing the passage>"{$ev}
+    }
+  ]
+}
+
+Rules:
+- Generate the number of statements requested in the task — 6 if none is given, never fewer than 3 or more than 12
+- Every answer is "True" or "False", never "Not Given" (this is for beginners): even if the task mentions Not Given, every statement must be clearly confirmed or clearly contradicted by the passage
+- Split the answers as evenly as possible between True and False (with 6 statements: 3 of each) — but vary the order
+- For more than 8 statements, the passage may be up to 50% longer than the length above so there is enough to test
+- "True" means the passage clearly supports the statement
+- "False" means the passage clearly contradicts the statement: change one clear detail (a name, a day, a job, a number)
+- Statements must be unambiguous — no borderline True/False cases{$evRule}
+- Statements should be full sentences, not questions{$lv->rules}
+- Return ONLY the raw JSON object — no markdown backticks, no explanation
+EOT;
+        }
+        $evRule = $group ? "\n- \"evidence\" is copied exactly from the passage (same words and punctuation): one sentence, never a paraphrase; for a Not Given statement use the sentence closest to its topic" : '';
         return <<<EOT
 {$source}
 
@@ -269,17 +339,17 @@ Return a JSON object with EXACTLY this structure:
     {
       "text": "<a statement about the passage>",
       "answer": "True",
-      "explanation": "<one sentence explaining why, quoting or referencing the passage>"
+      "explanation": "<one sentence explaining why, quoting or referencing the passage>"{$ev}
     },
     {
       "text": "<a statement about the passage>",
       "answer": "False",
-      "explanation": "<one sentence explaining why, quoting or referencing the passage>"
+      "explanation": "<one sentence explaining why, quoting or referencing the passage>"{$ev}
     },
     {
       "text": "<a statement about the passage>",
       "answer": "Not Given",
-      "explanation": "<one sentence explaining that this information does not appear in the passage>"
+      "explanation": "<one sentence explaining that this information does not appear in the passage>"{$ev}
     }
   ]
 }
@@ -292,7 +362,7 @@ Rules:
 - "False" means the passage clearly contradicts the statement
 - "Not Given" means the passage neither confirms nor contradicts it — the information is simply absent
 - Statements must be unambiguous — no borderline True/False cases
-- Not Given statements must be genuinely absent from the passage, not just implied
+- Not Given statements must be genuinely absent from the passage, not just implied{$evRule}
 - Statements should be full sentences, not questions{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;

@@ -172,6 +172,10 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   **Light Error Correction** (both cards): the whole list on one card, the current sentence ringed coral; the mistake
   is hidden until **Show where** (coral underline), **Show answer** strikes it red + the fix in green + Why?; fixed
   sentences keep their fix and a tick; passage version the same inside the text; no photo; Start again on the last.
+  **Light True / False:** text left, statement right (stacked on a phone), no photo. At **A1 / A2 it is True / False only**
+  (any course — the prompt says so, the server drops a stray Not Given, the card reads "True / False" and the
+  Instructions say 3 True + 3 False); B1+ keeps Not Given (3 buttons). On business courses each statement also gets
+  **evidence** (the passage sentence that proves it, checked word for word server-side), highlighted after the answer.
 - **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
   view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
   pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate

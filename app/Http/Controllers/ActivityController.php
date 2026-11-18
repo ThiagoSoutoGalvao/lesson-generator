@@ -22,7 +22,7 @@ class ActivityController extends Controller
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
             'level'       => ['nullable', 'in:A1,A2,B1,B2'],
-            'group'       => ['nullable', 'boolean'], // Aurora Business: group-of-2–4 wording (role-play only for now)
+            'group'       => ['nullable', 'boolean'], // Aurora Business: group-of-2–4 wording (role-play; True/False evidence)
         ]);
 
         $provided = collect(['document_id', 'topic', 'source_text', 'source_activity_id'])
@@ -89,7 +89,7 @@ class ActivityController extends Controller
                 'unjumble'                => $claude->generateUnjumble($source, $prompt, $level),
                 'dialog_gap_fill'         => $claude->generateDialogGapFill($source, $prompt, $level),
                 'word_formation'          => $claude->generateWordFormation($source, $prompt, $level),
-                'true_false'              => $claude->generateTrueFalse($source, $prompt, $level),
+                'true_false'              => $claude->generateTrueFalse($source, $prompt, $level, $request->boolean('group')),
                 'mc_reading'              => $claude->generateMcReading($source, $prompt, $level),
                 'odd_one_out'             => $claude->generateOddOneOut($source, $prompt, $level),
                 'cloze'                   => $claude->generateCloze($source, $prompt, $level),
