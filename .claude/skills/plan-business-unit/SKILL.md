@@ -43,8 +43,10 @@ those rules; if they disagree, the decisions table wins — and fix this file.
 7. **First Steps = office survival.** What A2 office workers use every day: emails (send and reply),
    short presentations, office vocabulary, scheduling meetings, calls, quick messages. Company types and
    industries are for Everyday Business / Take the Lead.
-8. **Threads in every unit:** one typical Brazilian mistake (false friends, "I have 30 years", missing
-   a / an with jobs…) and politeness vs. directness where it fits.
+8. **Threads in every unit:** one common learner mistake (false friends, "I have 30 years", missing
+   a / an with jobs…) and politeness vs. directness where it fits. **Prompts never name a nationality or a
+   first language** ("Brazilian", "Portuguese") — the material may be used with other nationalities
+   (Thiago, 2026-11-18). Say "common mistakes", "adult students".
 9. **Real material is welcome.** Where a task can use the students' own jobs, emails or companies, say so.
 
 ## 1. Plan the unit (before any prompt)

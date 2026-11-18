@@ -168,7 +168,10 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   back to other levels' picks when none fits, e.g. Take the Lead B2 practice). The other 13 come back one by one as
   their light screens ship, by layout family (reading split-screen → gap texts → sentence items → tiles); a saved
   activity's content doesn't change, so lessons built now just look better later. Unit 2 planned (Costa Verde Energy,
-  Recife). Rule added: vary the city as well as the company.
+  Recife). Rule added: vary the city as well as the company. Prompts never name a nationality / first language.
+  **Light Error Correction** (both cards): the whole list on one card, the current sentence ringed coral; the mistake
+  is hidden until **Show where** (coral underline), **Show answer** strikes it red + the fix in green + Why?; fixed
+  sentences keep their fix and a tick; passage version the same inside the text; no photo; Start again on the last.
 - **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
   view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
   pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate

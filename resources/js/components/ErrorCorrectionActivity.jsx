@@ -4,10 +4,33 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
 
 const FONT_SIZES         = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
 const PASSAGE_SIZES      = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const EXPLANATION_SIZES  = ['text-lg', 'text-xl',  'text-2xl', 'text-3xl', 'text-4xl'];
+// Light (Aurora Business) list and passage text, indexed by the Display panel's size.
+const L_LINE_SIZES       = ['text-[17px]', 'text-[19px] sm:text-[21px]', 'text-[21px] sm:text-[24px]', 'text-[24px] sm:text-[28px]', 'text-[27px] sm:text-[32px]'];
+const L_WHY_SIZES        = ['text-[15px]', 'text-[16px] sm:text-[18px]', 'text-[18px] sm:text-[20px]', 'text-[20px] sm:text-[23px]', 'text-[23px] sm:text-[26px]'];
+
+// One mistake, drawn three ways: 'plain' (students look for it), 'where' (underlined), 'fixed' (struck + correction).
+function LightMark({ error, correction, state, markRef }) {
+    if (state === 'fixed') return (
+        <span ref={markRef}>
+            <span className="line-through decoration-2 text-[#B42318] mx-0.5" data-error>{error}</span>
+            <span className="font-bold text-[#1E7A4C] mx-0.5" data-correction>{correction}</span>
+        </span>
+    );
+    if (state === 'where') return <span ref={markRef} data-where className="underline decoration-[#E0521F] decoration-[3px] underline-offset-4 font-semibold">{error}</span>;
+    return <span ref={markRef}>{error}</span>;
+}
+
+function lightSentence(sentence, error, correction, state, markRef) {
+    const at = error ? sentence.indexOf(error) : -1;
+    if (at === -1) return sentence;
+    return <>{sentence.slice(0, at)}<LightMark error={error} correction={correction} state={state} markRef={markRef} />{sentence.slice(at + error.length)}</>;
+}
 
 // Split a passage into text/error segments. Each item's error is matched to the
 // next unclaimed occurrence in reading order, so repeated error strings still
@@ -39,10 +62,12 @@ function buildSegments(passage, items) {
 export default function ErrorCorrectionActivity({ activity, onClose, onComplete, hideSave }) {
     const [index, setIndex]             = useState(0);
     const [revealed, setRevealed]       = useState(false);
+    const [shown, setShown]             = useState(false); // light: "Show where" pressed for this item
     const [bgUrl, setBgUrl]             = useState(null);
     const [showSave, setShowSave]       = useState(false);
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below (no photo — the sentences are the task)
 
     const items = activity.items;
     const item  = items[index];
@@ -53,6 +78,7 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete,
     const activeRef = useRef(null);
 
     useEffect(() => {
+        if (light) return;
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
             .then(({ data }) => setBgUrl(data.url))
             .catch(() => null);
@@ -73,11 +99,15 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete,
     }, [index, revealed]);
 
     function handleNext() {
-        if (index < total - 1) { setIndex(i => i + 1); setRevealed(false); }
+        if (index < total - 1) { setIndex(i => i + 1); setRevealed(false); setShown(false); }
     }
 
     function handlePrev() {
-        if (index > 0) { setIndex(i => i - 1); setRevealed(false); }
+        if (index > 0) { setIndex(i => i - 1); setRevealed(false); setShown(false); }
+    }
+
+    function handleRestart() {
+        setIndex(0); setRevealed(false); setShown(false);
     }
 
     // Student app (Phase S4): reveal-only, no end screen — completion fires when
@@ -134,6 +164,68 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete,
             // upcoming error — leave it in the text, unmarked
             return <span key={i}>{seg.text}</span>;
         });
+    }
+
+    if (light) {
+        const stateOf = i => (i < index || (i === index && revealed) ? 'fixed' : i === index && shown ? 'where' : 'plain');
+        const last = index === total - 1;
+        return (
+            <LightFrame
+                eyebrow="Error correction"
+                title={activity.topic || 'Find and correct the mistakes'}
+                extra={<span className="hidden sm:flex"><LightProgress index={index} total={total} label={isPassage ? 'Mistake' : 'Sentence'} /></span>}
+                onSave={hideSave ? undefined : () => setShowSave(true)}
+                isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                overlay={!hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null}
+            >
+                <div className="max-w-4xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
+                    <p className={LIGHT.eyebrow}>{activity.instruction || (isPassage ? 'Find and correct the mistakes in the text' : 'Each sentence has one mistake. Find it and correct it.')}</p>
+
+                    {isPassage ? (
+                        <section aria-label="Text" className={`${LIGHT.card} p-5 sm:p-8`}>
+                            <p className={`${L_LINE_SIZES[fontSizeIdx]} leading-loose whitespace-pre-line`}>
+                                {segments.map((seg, i) => seg.itemIndex === null
+                                    ? <span key={i}>{seg.text}</span>
+                                    : <LightMark key={i} error={seg.text} correction={items[seg.itemIndex].correction} state={stateOf(seg.itemIndex)} markRef={seg.itemIndex === index ? activeRef : null} />)}
+                            </p>
+                        </section>
+                    ) : (
+                        <section aria-label="Sentences" className={`${LIGHT.card} p-3 sm:p-5`}>
+                            <ol className="flex flex-col gap-1.5">
+                                {items.map((it, i) => {
+                                    const active = i === index; const done = i < index;
+                                    return (
+                                        <li key={i} ref={active ? activeRef : null} data-active={active || undefined}
+                                            className={`flex gap-3 sm:gap-4 rounded-xl px-3 sm:px-4 py-2.5 sm:py-3 ${L_LINE_SIZES[fontSizeIdx]} leading-snug ${active ? 'ring-2 ring-[#E0521F] bg-[#FFF5F0]' : ''} ${!active && !done ? 'text-[#4A5163]' : ''}`}>
+                                            <span className={`shrink-0 font-semibold tabular-nums ${active ? 'text-[#E0521F]' : 'text-[#4A5163]'}`}>{i + 1}.</span>
+                                            <span className="flex-1 min-w-0 break-words">{lightSentence(it.sentence, it.error, it.correction, stateOf(i))}</span>
+                                            {done && <span className="shrink-0 text-[#1E7A4C] font-bold" aria-label="corrected">✓</span>}
+                                        </li>
+                                    );
+                                })}
+                            </ol>
+                        </section>
+                    )}
+
+                    {revealed && item.explanation && (
+                        <section aria-label="Why" className="rounded-xl bg-[#E5F4EC] px-4 sm:px-5 py-3.5">
+                            <p className="text-[13px] font-semibold uppercase tracking-[0.05em] text-[#14532D] mb-1">Why?</p>
+                            <p className={`${L_WHY_SIZES[fontSizeIdx]} text-[#14532D] leading-snug`}>{item.explanation}</p>
+                        </section>
+                    )}
+
+                    <div className="flex flex-wrap items-center justify-end gap-3 pb-4">
+                        {index > 0 && <button type="button" onClick={handlePrev} className={`${LIGHT.secondary} mr-auto`}>← Previous</button>}
+                        {!revealed && <button type="button" onClick={() => setShown(true)} disabled={shown} className={`${LIGHT.secondary} disabled:opacity-50 disabled:cursor-default`}>Show where</button>}
+                        {!revealed
+                            ? <button type="button" onClick={() => setRevealed(true)} className={LIGHT.primary}>Show answer</button>
+                            : last
+                                ? <button type="button" onClick={handleRestart} className={LIGHT.secondary}>Start again</button>
+                                : <button type="button" onClick={handleNext} className={LIGHT.primary}>Next →</button>}
+                    </div>
+                </div>
+            </LightFrame>
+        );
     }
 
     const bgStyle = bgUrl
