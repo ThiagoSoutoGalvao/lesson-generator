@@ -54,11 +54,15 @@ const PROMPTS = {
  * @param {string} stage            'warmer' | 'practice' | 'production'
  * @param {string} level            the course level (A1 / A2 / B1 / B2)
  * @param {string[]} existingTypes  types the lesson already has, in any stage
+ * @param {Set<string>|null} allowed  only these types (a business course: the ones with a light screen)
  * @returns {{type: string, prompt: string} | null}
  */
-export function pickFill(stage, level, existingTypes = []) {
-    const list = CANDIDATES[stage]?.[BAND[level] ?? 'mid'];
-    if (!list) return null;
+export function pickFill(stage, level, existingTypes = [], allowed = null) {
+    const ok = t => !allowed || allowed.has(t);
+    let list = CANDIDATES[stage]?.[BAND[level] ?? 'mid']?.filter(ok);
+    // Nothing allowed at this level (Take the Lead's B2 practice types are all dark so far) → the other levels' picks.
+    if (allowed && CANDIDATES[stage] && !list.length) list = [...new Set(['mid', 'low', 'high'].flatMap(b => CANDIDATES[stage][b]))].filter(ok);
+    if (!list?.length) return null;
     const type = list.find(t => !existingTypes.includes(t)) ?? list[0];
     const prompt = (stage === 'warmer' && WARMER_PROMPTS[type]) || PROMPTS[type] || WARMER_PROMPTS[type];
     return { type, prompt };

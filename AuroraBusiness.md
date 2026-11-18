@@ -162,6 +162,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 
 ## 7. Done so far (newest first)
 
+- **2026-11-18** — Business courses offer **only the formats with a light screen** (`LIGHT_TYPES` in `lib/uiTheme.js`:
+  Quiz, Flashcards, Unjumble, Match Pairs, Dialogue Gap-Fill, Picture Prompts, Discussion Questions and the 4
+  production cards); the exam filter is hidden there and "Suggest one with Claude" picks only those types (falls
+  back to other levels' picks when none fits, e.g. Take the Lead B2 practice). The other 13 come back one by one as
+  their light screens ship, by layout family (reading split-screen → gap texts → sentence items → tiles); a saved
+  activity's content doesn't change, so lessons built now just look better later. Unit 2 planned (Costa Verde Energy,
+  Recife). Rule added: vary the city as well as the company.
 - **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
   view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
   pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate

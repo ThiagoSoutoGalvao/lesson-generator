@@ -20,6 +20,13 @@ export function isLightCourse(trilha) {
     return TRILHAS[trilha]?.program === 'business';
 }
 
+// Activity types whose screen has a light version (2026-11-18). On a business course only these can be made, so
+// no dark screen ends up in a light lesson. A type joins this list when its light screen ships.
+export const LIGHT_TYPES = new Set([
+    'quiz', 'flashcards', 'unjumble', 'match_pairs', 'dialog_gap_fill', 'picture_prompts', 'discussion_questions',
+    'role_play', 'story_builder', 'debate', 'mini_presentation',
+]);
+
 /** Switch the light theme on while the calling component is mounted (and `on` is true). */
 export function useLightUi(on) {
     useEffect(() => {

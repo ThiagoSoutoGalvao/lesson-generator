@@ -34,7 +34,7 @@ import { LEVELS, DEFAULT_LEVEL, LEVEL_RANK } from '@/lib/levels';
 import { EXAMS, EXAM_ORDER, TEMPLATE_META, isDirect } from '@/lib/examStyles';
 import { getLessonSession, clearLessonSession } from '@/lib/lessonSession';
 import { STAGE_LABELS } from '@/lib/stages';
-import { useLightUi, useIsLightUi, isLightCourse } from '@/lib/uiTheme';
+import { useLightUi, useIsLightUi, isLightCourse, LIGHT_TYPES } from '@/lib/uiTheme';
 import { LF } from '@/lib/lightForm';
 
 // What a teacher is trying to get students to practise. This is the first choice
@@ -347,13 +347,15 @@ export default function GeneratePage() {
         if (from) { setSourceMode('lesson'); setMaterialId(from); }
     }, [location.key]);
 
-    const template     = TEMPLATES.find(t => t.id === templateId) ?? null;
-    const goalTemplates = goal ? TEMPLATES.filter(t => t.goals.includes(goal)) : [];
+    // A business course only offers the formats that have a light screen (the rest arrive as they are converted).
+    const catalogue    = L ? TEMPLATES.filter(t => LIGHT_TYPES.has(t.type ?? t.id)) : TEMPLATES;
+    const template     = catalogue.find(t => t.id === templateId) ?? null;
+    const goalTemplates = goal ? catalogue.filter(t => t.goals.includes(goal)) : [];
     // With an exam picked, the goal step is skipped and every format that mirrors that exam is listed.
-    const examTemplates = exam ? TEMPLATES.filter(t => isDirect(t.id, exam)) : [];
+    const examTemplates = exam ? catalogue.filter(t => isDirect(t.id, exam)) : [];
     const shownTemplates = exam ? examTemplates : goalTemplates;
     const showFormats    = exam || goal;
-    const examCount      = e => TEMPLATES.filter(t => isDirect(t.id, e)).length;
+    const examCount      = e => catalogue.filter(t => isDirect(t.id, e)).length;
     const selectedDoc  = documents.find(d => d.id === Number(documentId));
     const pageCount    = selectedDoc?.page_count ?? null;
     const trilhaLevel  = lessonSession ? TRILHA_LEVEL[lessonSession.trilha] : null;
@@ -479,8 +481,8 @@ export default function GeneratePage() {
             <div className={L ? LF.card : 'lg-surface border rounded-2xl p-6'}>
                 <form onSubmit={handleSubmit} className="flex flex-col gap-6">
 
-                    {/* Optional exam filter — skips the goal step */}
-                    <div className="flex flex-col gap-2">
+                    {/* Optional exam filter — skips the goal step (not on business courses: no exam prep there) */}
+                    <div className={`${L ? 'hidden' : 'flex'} flex-col gap-2`}>
                         <span className={lab}>
                             Preparing a student for an exam? <span className={hint}>— optional, skips straight to matching formats</span>
                         </span>

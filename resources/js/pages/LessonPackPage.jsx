@@ -11,7 +11,7 @@ import { STAGES } from '@/lib/stages';
 import { pickFill, FILLABLE_STAGES } from '@/lib/fillStage';
 import { tidyFocus } from '@/lib/naming';
 import { setLessonSession } from '@/lib/lessonSession';
-import { useLightUi, isLightCourse } from '@/lib/uiTheme';
+import { useLightUi, isLightCourse, LIGHT_TYPES } from '@/lib/uiTheme';
 
 // One course lesson as a lesson pack (Aurora Lessons Phase 1, step 4): the lesson's contents, then its saved
 // activities under Warmer → Presentation → Practice → Production. Nothing is generated here — it shows what
@@ -128,7 +128,7 @@ export default function LessonPackPage() {
     // "Suggest one with Claude" (step 7): pick a template for this stage + level, generate it from the lesson's
     // material (or its contents), and save it into the stage HIDDEN from students until the teacher approves it.
     async function fill(stage) {
-        const pick = pickFill(stage, TRILHA_LEVEL[trilha], here.map(a => a.type));
+        const pick = pickFill(stage, TRILHA_LEVEL[trilha], here.map(a => a.type), isLightCourse(trilha) ? LIGHT_TYPES : null);
         if (!pick) return;
         setFilling(f => ({ ...f, [stage]: 'busy' }));
         try {
@@ -293,7 +293,7 @@ export default function LessonPackPage() {
                                     </div>
                                     {items.length === 0 ? (
                                         FILLABLE_STAGES.includes(st.key)
-                                            ? <SuggestBox stage={st.key} state={filling[st.key]} pick={pickFill(st.key, TRILHA_LEVEL[trilha], here.map(a => a.type))} source={core?.name} onFill={() => fill(st.key)} />
+                                            ? <SuggestBox stage={st.key} state={filling[st.key]} pick={pickFill(st.key, TRILHA_LEVEL[trilha], here.map(a => a.type), isLightCourse(trilha) ? LIGHT_TYPES : null)} source={core?.name} onFill={() => fill(st.key)} />
                                             : <p className="rounded-xl border border-dashed border-ui-line text-ui-faint text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
