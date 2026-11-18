@@ -190,6 +190,9 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   **Light MC Reading** = the True / False design (text left, one question right, evidence line highlighted after the
   answer on business courses). **Light MC Cloze** = the Cloze design (gaps in order, the current gap's 4 options in a
   panel that stays on top, a wrong option turns red and the group tries again, right first time).
+  **Light Image Vocab Match:** words on top, photo cards below with the matched word **under** the photo (never on it);
+  right first time score. Business courses now offer every format except the 4 exam-style ones (Open Cloze, Word
+  Formation, Sentence Transformation, Read & Complete), kept for Take the Lead.
 - **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
   view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
   pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate

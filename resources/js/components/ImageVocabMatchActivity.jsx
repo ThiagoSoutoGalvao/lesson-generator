@@ -4,9 +4,12 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LIGHT } from '@/components/light/LightFrame';
 
 // Word-tile text size for the shared Display panel's 5 steps (step 3, the default, is the original size).
 const TILE_SIZES = ['text-xs', 'text-sm', 'text-base', 'text-lg', 'text-xl'];
+const L_TILE_SIZES = ['text-[16px]', 'text-[17px] sm:text-[19px]', 'text-[19px] sm:text-[21px]', 'text-[21px] sm:text-[24px]', 'text-[24px] sm:text-[27px]'];
 
 function shuffle(arr) {
     const a = [...arr];
@@ -30,6 +33,10 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
     const [showSave, setShowSave]     = useState(false);
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const { sizeIdx } = useDisplay();
+    // Aurora Business light layout: words on top, photos below with the word UNDER the photo once matched (never on it).
+    // Scored there: a word that was tried on a wrong photo no longer counts as right first time.
+    const light = useIsLightUi();
+    const [missed, setMissed] = useState([]); // light: pair indexes whose word was tried on a wrong photo
 
     useEffect(() => {
         let cancelled = false;
@@ -62,7 +69,7 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
     // Student app (Phase S3): completion only — you can't finish without every
     // pair matched, so there's no meaningful score to record.
     useEffect(() => {
-        if (finished) onComplete?.({});
+        if (finished) onComplete?.(light ? { score: total - missed.length, maxScore: total } : {});
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [finished]);
 
@@ -92,6 +99,7 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
             setSelected(null);
             if (Object.keys(newMatched).length === total) setFinished(true);
         } else {
+            setMissed(m => (m.includes(selectedOriginalIdx) ? m : [...m, selectedOriginalIdx]));
             setWrongImage(imageIdx);
             setTimeout(() => setWrongImage(null), 600);
         }
@@ -102,6 +110,74 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
         setMatched({});
         setSelected(null);
         setFinished(false);
+        setMissed([]);
+    }
+
+    if (light) {
+        const frame = {
+            eyebrow: 'Match the pictures', title: activity.topic || 'Match each word to its picture',
+            onSave: hideSave ? undefined : () => setShowSave(true),
+            isFullscreen, onFullscreen: toggleFullscreen, onClose,
+            overlay: !hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null,
+            extra: <span className="hidden sm:inline text-[15px] font-semibold text-[#4A5163]">{Object.keys(matched).length} of {total} matched</span>,
+        };
+        const selWord = selected !== null ? pairs[wordOrder[selected]]?.word : null;
+        return (
+            <LightFrame {...frame}>
+                <div className="max-w-[1180px] mx-auto px-4 sm:px-8 pb-8 flex flex-col gap-4 sm:gap-5">
+                    <div className="sticky top-0 z-10 bg-[#F6F7F9] pt-4 sm:pt-8 pb-1">
+                        {finished ? (
+                            <section aria-label="Results" className={`${LIGHT.card} p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4`}>
+                                <div className="flex-1">
+                                    <p className={LIGHT.eyebrow}>All matched</p>
+                                    <h1 className="font-display text-[24px] sm:text-[30px] font-semibold leading-tight">{total - missed.length} of {total} right first time</h1>
+                                </div>
+                                <div className="flex flex-wrap gap-3">
+                                    <button type="button" onClick={handleReset} className={LIGHT.primary}>Play again</button>
+                                    {onClose && <button type="button" onClick={onClose} className={LIGHT.secondary}>Close</button>}
+                                </div>
+                            </section>
+                        ) : (
+                            <section aria-label="Words" className={`${LIGHT.card} p-4 sm:p-5 flex flex-col gap-3`}>
+                                <p className={LIGHT.eyebrow}>{selWord ? `“${selWord}” — now tap its picture` : 'Choose a word, then its picture'}</p>
+                                <div className="flex flex-wrap gap-2 sm:gap-3">
+                                    {wordOrder.map((originalIdx, orderIdx) => (
+                                        <button key={originalIdx} type="button" onClick={() => handleWordClick(orderIdx)} aria-pressed={selected === orderIdx}
+                                            className={`${L_TILE_SIZES[sizeIdx]} min-h-12 rounded-xl px-4 py-2 font-semibold text-[#271D62] cursor-pointer
+                                                ${selected === orderIdx ? 'ring-2 ring-[#E0521F] border border-[#E0521F] bg-[#FFF5F0]' : 'border border-[#DDE1E8] bg-white hover:bg-[#F6F7F9]'}`}>
+                                            {pairs[originalIdx].word}
+                                        </button>
+                                    ))}
+                                </div>
+                            </section>
+                        )}
+                    </div>
+
+                    <section aria-label="Pictures" className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4">
+                        {pairs.map((pair, idx) => {
+                            const isMatched = matched[idx] !== undefined;
+                            const isWrong = wrongImage === idx;
+                            const canClick = selected !== null && !isMatched;
+                            return (
+                                <button key={idx} type="button" onClick={() => handleImageClick(idx)} disabled={isMatched}
+                                    aria-label={isMatched ? `Picture ${idx + 1}: ${matched[idx]}` : `Picture ${idx + 1}`}
+                                    data-matched={isMatched || undefined}
+                                    className={`${LIGHT.card} overflow-hidden flex flex-col text-left transition-all
+                                        ${isMatched ? '!border-2 !border-[#1E7A4C] cursor-default' : isWrong ? '!border-2 !border-[#B42318] scale-[0.98]' : canClick ? 'hover:ring-2 hover:ring-[#E0521F] cursor-pointer' : 'cursor-default'}`}>
+                                    <div className="relative aspect-[4/3] bg-[#E9ECF1]">
+                                        {imageUrls[idx] && <img src={imageUrls[idx]} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+                                    </div>
+                                    <div className={`px-3 py-2.5 flex items-center gap-2 min-h-12 ${isMatched ? 'bg-[#E5F4EC]' : ''}`}>
+                                        <span className="shrink-0 w-7 h-7 rounded-lg bg-[#F1F2F5] text-[#4A5163] text-[13px] font-semibold grid place-items-center">{idx + 1}</span>
+                                        {isMatched && <span className={`${L_TILE_SIZES[Math.max(0, sizeIdx - 1)]} font-semibold text-[#14532D] min-w-0 break-words`}>{matched[idx]}</span>}
+                                    </div>
+                                </button>
+                            );
+                        })}
+                    </section>
+                </div>
+            </LightFrame>
+        );
     }
 
     const gridCols = total <= 4 ? 'grid-cols-2' : total <= 6 ? 'grid-cols-3' : 'grid-cols-4';
