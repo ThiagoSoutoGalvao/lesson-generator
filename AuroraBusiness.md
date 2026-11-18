@@ -176,6 +176,10 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   (any course — the prompt says so, the server drops a stray Not Given, the card reads "True / False" and the
   Instructions say 3 True + 3 False); B1+ keeps Not Given (3 buttons). On business courses each statement also gets
   **evidence** (the passage sentence that proves it, checked word for word server-side), highlighted after the answer.
+  **Light Odd One Out:** 2 x 2 tiles; a wrong tap stays red and struck; once the odd word is found the reason is hidden
+  until **Show why** (a student says why first). **Light Word Categorisation:** words on top, one card per group below;
+  each word is **checked as it is placed** (tap word then group, or drag) — wrong goes back to the pool; score = right
+  first time. Neither has a photo.
 - **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
   view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
   pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate

@@ -4,10 +4,15 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LIGHT } from '@/components/light/LightFrame';
 
 // Text sizes for the shared Display panel's 5 steps (step 3, the default, is the original size).
 const TILE_SIZES = ['text-[11px]', 'text-xs', 'text-sm', 'text-base', 'text-lg'];
 const HEAD_SIZES = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
+// Light (Aurora Business) sizes.
+const L_TILE_SIZES = ['text-[16px]', 'text-[17px] sm:text-[19px]', 'text-[19px] sm:text-[22px]', 'text-[21px] sm:text-[25px]', 'text-[24px] sm:text-[28px]'];
+const L_HEAD_SIZES = ['text-[17px]', 'text-[19px] sm:text-[21px]', 'text-[21px] sm:text-[24px]', 'text-[23px] sm:text-[27px]', 'text-[26px] sm:text-[30px]'];
 
 function shuffle(arr) {
     const a = [...arr];
@@ -34,13 +39,21 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const { sizeIdx } = useDisplay();
     const dragRef = useRef(null);
+    // Aurora Business light layout: each word is checked as it's placed (students take turns, one word each); a wrong
+    // one goes back to the pool and no longer counts as right first time.
+    const light = useIsLightUi();
+    const [missed, setMissed]   = useState([]);   // light: words placed wrong at least once
+    const [notice, setNotice]   = useState(null); // light: { word, cat, ok } — what the last placement did
+    const noticeTimer = useRef(null);
+    useEffect(() => () => clearTimeout(noticeTimer.current), []);
 
     const allPlaced  = pool.length === 0;
-    const score      = checked
-        ? Object.entries(placements).filter(([w, cat]) => wordToCorrect[w] === cat).length
-        : 0;
+    const score      = !checked ? 0
+        : light ? allWords.filter(w => !missed.includes(w.text)).length
+        : Object.entries(placements).filter(([w, cat]) => wordToCorrect[w] === cat).length;
 
     useEffect(() => {
+        if (light) return;
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
             .then(({ data }) => setBgUrl(data.url))
             .catch(() => null);
@@ -64,6 +77,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
     // ── helpers ──────────────────────────────────────────────────────────────
 
     function placeWord(word, categoryName) {
+        if (light) { placeAndCheck(word, categoryName); return; }
         setPool(prev => prev.filter(w => w !== word));
         setPlacements(prev => {
             const next = { ...prev };
@@ -72,6 +86,29 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
             return next;
         });
         setSelected(null);
+    }
+
+    // Light: right → the word stays in that category for good; wrong → back to the pool, marked as missed.
+    function placeAndCheck(word, categoryName) {
+        if (checked || placements[word]) return;
+        const ok = wordToCorrect[word] === categoryName;
+        if (ok) {
+            const left = pool.filter(w => w !== word);
+            setPool(left);
+            setPlacements(prev => ({ ...prev, [word]: categoryName }));
+            if (left.length === 0) setChecked(true);
+        } else {
+            setMissed(m => (m.includes(word) ? m : [...m, word]));
+        }
+        setSelected(null);
+        setNotice({ word, cat: categoryName, ok });
+        clearTimeout(noticeTimer.current);
+        noticeTimer.current = setTimeout(() => setNotice(null), 2500);
+    }
+
+    function lightRestart() {
+        setPool(shuffle(allWords.map(w => w.text))); setPlacements({}); setChecked(false); setSelected(null);
+        setMissed([]); setNotice(null);
     }
 
     function returnToPool(word) {
@@ -126,6 +163,85 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
     }
 
     // ── rendering ─────────────────────────────────────────────────────────────
+
+    if (light) {
+        const frame = {
+            eyebrow: 'Sort the words', title: activity.topic || 'Put each word in its group',
+            onSave: hideSave ? undefined : () => setShowSave(true),
+            isFullscreen, onFullscreen: toggleFullscreen, onClose,
+            overlay: !hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null,
+            extra: <span className="hidden sm:inline text-[15px] font-semibold text-[#4A5163]">{allWords.length - pool.length} of {allWords.length} placed</span>,
+        };
+        const cols = activity.categories.length >= 3 ? 'lg:grid-cols-3' : '';
+        return (
+            <LightFrame {...frame}>
+                <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
+                    {checked ? (
+                        <section aria-label="Results" className={`${LIGHT.card} p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-4`}>
+                            <div className="flex-1">
+                                <p className={LIGHT.eyebrow}>All sorted</p>
+                                <h1 className="font-display text-[26px] sm:text-[32px] font-semibold leading-tight">{score} of {allWords.length} right first time</h1>
+                            </div>
+                            <div className="flex flex-wrap gap-3">
+                                <button type="button" onClick={lightRestart} className={LIGHT.primary}>Play again</button>
+                                {onClose && <button type="button" onClick={onClose} className={LIGHT.secondary}>Close</button>}
+                            </div>
+                        </section>
+                    ) : (
+                        <section aria-label="Words" className={`${LIGHT.card} p-4 sm:p-6 flex flex-col gap-3`}>
+                            <p className={LIGHT.eyebrow}>{selected ? `“${selected}” — now choose its group` : 'Choose a word, then its group (or drag it)'}</p>
+                            <div className="flex flex-wrap gap-2 sm:gap-3">
+                                {pool.map(w => {
+                                    const isSel = selected === w;
+                                    const flashWrong = notice && !notice.ok && notice.word === w;
+                                    return (
+                                        <button key={w} type="button" draggable
+                                            onDragStart={e => onDragStartWord(e, w, 'pool')}
+                                            onClick={() => onClickWord(w, 'pool')}
+                                            aria-pressed={isSel}
+                                            className={`${L_TILE_SIZES[sizeIdx]} min-h-12 rounded-xl px-4 py-2 font-semibold text-[#271D62] cursor-pointer select-none
+                                                ${isSel ? 'ring-2 ring-[#E0521F] border border-[#E0521F] bg-[#FFF5F0]' : flashWrong ? LIGHT.wrong : 'border border-[#DDE1E8] bg-white hover:bg-[#F6F7F9]'}`}>
+                                            {w}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+                            {notice && (
+                                <p role="status" className={`rounded-xl px-4 py-2.5 text-[16px] sm:text-[18px] ${notice.ok ? 'bg-[#E5F4EC] text-[#14532D]' : 'bg-[#FDECEA] text-[#7F1D1D]'}`}>
+                                    {notice.ok ? `Right! “${notice.word}” goes in ${notice.cat}.` : `Not ${notice.cat}. Try “${notice.word}” again.`}
+                                </p>
+                            )}
+                        </section>
+                    )}
+
+                    <div className={`grid grid-cols-1 sm:grid-cols-2 ${cols} gap-4`}>
+                        {activity.categories.map(cat => {
+                            const here = Object.entries(placements).filter(([, c]) => c === cat.name).map(([w]) => w);
+                            const target = selected && !checked;
+                            return (
+                                <section key={cat.name} aria-label={cat.name}
+                                    onDragOver={e => e.preventDefault()} onDrop={e => onDropCategory(e, cat.name)}
+                                    onClick={() => onClickCategory(cat.name)}
+                                    className={`${LIGHT.card} p-4 sm:p-5 flex flex-col gap-3 min-h-40 ${target ? 'cursor-pointer ring-2 ring-[#E0521F]/50 hover:bg-[#FFF5F0]' : ''}`}>
+                                    <div className="flex items-center gap-3">
+                                        <h2 className={`font-display ${L_HEAD_SIZES[sizeIdx]} font-semibold flex-1`}>{cat.name}</h2>
+                                        {target && <button type="button" onClick={e => { e.stopPropagation(); onClickCategory(cat.name); }} className={`${LIGHT.iconBtn} text-[#E0521F]`}>Put it here</button>}
+                                    </div>
+                                    <div className="flex flex-wrap gap-2">
+                                        {here.map(w => (
+                                            <span key={w} data-placed className={`${L_TILE_SIZES[sizeIdx]} rounded-xl px-4 py-2 ${missed.includes(w) ? 'border border-[#1E7A4C] bg-[#E5F4EC] font-semibold' : LIGHT.right}`}>
+                                                {w}{missed.includes(w) && <span className="sr-only"> (second try)</span>}
+                                            </span>
+                                        ))}
+                                    </div>
+                                </section>
+                            );
+                        })}
+                    </div>
+                </div>
+            </LightFrame>
+        );
+    }
 
     const bgStyle = bgUrl
         ? { backgroundImage: `url(${bgUrl})`, backgroundSize: 'cover', backgroundPosition: 'center' }

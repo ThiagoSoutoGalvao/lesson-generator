@@ -4,8 +4,13 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
+// Light (Aurora Business) tile and reason text, indexed by the Display panel's size.
+const L_TILE_SIZES = ['text-[19px]', 'text-[21px] sm:text-[24px]', 'text-[23px] sm:text-[28px]', 'text-[26px] sm:text-[32px]', 'text-[29px] sm:text-[36px]'];
+const L_WHY_SIZES  = ['text-[16px]', 'text-[17px] sm:text-[19px]', 'text-[19px] sm:text-[21px]', 'text-[21px] sm:text-[24px]', 'text-[24px] sm:text-[27px]'];
 
 export default function OddOneOutActivity({ activity, onClose, onComplete, hideSave }) {
     const [groupIndex, setGroupIndex] = useState(0);
@@ -17,12 +22,16 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
     const { sizeIdx: fontSizeIdx } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const wrongTimer = useRef(null);
+    const light = useIsLightUi(); // Aurora Business: the light layout below (no photo)
+    const [tried, setTried]     = useState([]);    // light: wrong words tapped in this group (they stay marked)
+    const [whyShown, setWhyShown] = useState(false); // light: the reason stays hidden until "Show why"
 
     const groups = activity.groups;
     const group  = groups[groupIndex];
     const total  = groups.length;
 
     useEffect(() => {
+        if (light) return;
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
             .then(({ data }) => setBgUrl(data.url))
             .catch(() => null);
@@ -47,6 +56,7 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
         if (word === group.odd_one) {
             setRevealed(true);
         } else {
+            setTried(t => (t.includes(idx) ? t : [...t, idx]));
             setWrongIdx(idx);
             clearTimeout(wrongTimer.current);
             wrongTimer.current = setTimeout(() => setWrongIdx(null), 600);
@@ -62,7 +72,77 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
             setGroupIndex(g => g + 1);
             setRevealed(false);
             setWrongIdx(null);
+            setTried([]); setWhyShown(false);
         }
+    }
+
+    function handleRestart() {
+        setGroupIndex(0); setRevealed(false); setFinished(false); setWrongIdx(null); setTried([]); setWhyShown(false);
+    }
+
+    if (light) {
+        const frame = {
+            eyebrow: 'Odd one out', title: activity.topic || 'Which one doesn’t belong?',
+            onSave: hideSave ? undefined : () => setShowSave(true),
+            isFullscreen, onFullscreen: toggleFullscreen, onClose,
+            overlay: !hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null,
+        };
+        if (finished) {
+            return (
+                <LightFrame {...frame}>
+                    <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
+                        <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                            <p className={LIGHT.eyebrow}>All done</p>
+                            <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">{total} groups finished</h1>
+                            <div className="flex flex-wrap justify-center gap-3 mt-2">
+                                <button type="button" onClick={handleRestart} className={LIGHT.primary}>Start again</button>
+                                {onClose && <button type="button" onClick={onClose} className={LIGHT.secondary}>Close</button>}
+                            </div>
+                        </section>
+                    </div>
+                </LightFrame>
+            );
+        }
+        return (
+            <LightFrame {...frame} extra={<span className="hidden sm:flex"><LightProgress index={groupIndex} total={total} label="Group" /></span>}>
+                <div className="max-w-3xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
+                    <section aria-label="Words" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5`}>
+                        <p className={LIGHT.eyebrow}><span className="sm:hidden">Group {groupIndex + 1} of {total} · </span>Which one doesn’t belong?</p>
+                        <div className="grid grid-cols-2 gap-3 sm:gap-4">
+                            {group.words.map((word, idx) => {
+                                const isOdd = word === group.odd_one;
+                                const wasTried = tried.includes(idx);
+                                let box = 'border border-[#DDE1E8] bg-white hover:bg-[#F6F7F9] cursor-pointer';
+                                if (revealed && isOdd) box = `${LIGHT.right} cursor-default`;
+                                else if (wasTried) box = `${LIGHT.wrong} line-through decoration-2 cursor-default`;
+                                else if (revealed) box = 'border border-[#DDE1E8] bg-white opacity-55 cursor-default';
+                                return (
+                                    <button key={idx} type="button" onClick={() => handleGuess(word, idx)} disabled={revealed || wasTried}
+                                        data-odd={revealed && isOdd ? '' : undefined} data-tried={wasTried ? '' : undefined}
+                                        className={`${box} ${L_TILE_SIZES[fontSizeIdx]} min-h-20 sm:min-h-28 rounded-2xl px-3 py-4 font-semibold text-[#271D62] text-center break-words`}>
+                                        {word}
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {revealed && !whyShown && <p role="status" className="text-[17px] sm:text-[19px] text-[#14532D] font-semibold">“{group.odd_one}” is the odd one out. Why? Say it, then check.</p>}
+                    </section>
+
+                    {revealed && whyShown && (
+                        <section aria-label="Why" className="rounded-xl bg-[#E5F4EC] px-4 sm:px-5 py-3.5">
+                            <p className="text-[13px] font-semibold uppercase tracking-[0.05em] text-[#14532D] mb-1">Why?</p>
+                            <p className={`${L_WHY_SIZES[fontSizeIdx]} text-[#14532D] leading-snug`}>{group.reason}</p>
+                        </section>
+                    )}
+
+                    <div className="flex flex-wrap items-center justify-end gap-3 pb-4">
+                        {!revealed && <button type="button" onClick={handleReveal} className={LIGHT.secondary}>Show answer</button>}
+                        {revealed && !whyShown && <button type="button" onClick={() => setWhyShown(true)} className={LIGHT.secondary}>Show why</button>}
+                        {revealed && <button type="button" onClick={handleNext} className={LIGHT.primary}>{groupIndex + 1 < total ? 'Next group' : 'Finish'}</button>}
+                    </div>
+                </div>
+            </LightFrame>
+        );
     }
 
     const bgStyle = bgUrl
