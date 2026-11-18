@@ -185,6 +185,8 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   fills a stuck gap; score = right first time (sent to the student app too). First batch of light conversions done:
   Error Correction, True / False, Odd One Out, Word Categorisation, Cloze. Next: Signs & Notices, MC Reading, MC Cloze,
   Image Vocab Match; exam-style ones (Open Cloze, Word Formation, Sentence Transformation, Read & Complete) last.
+  **Light Signs & Notices:** text left (dressed as a sign, notice, chat message or **email** with From / Subject), question
+  right; on business courses the prompt asks for **office texts** and adds the email kind (other courses unchanged).
 - **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
   view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
   pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate

@@ -22,7 +22,7 @@ class ActivityController extends Controller
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
             'level'       => ['nullable', 'in:A1,A2,B1,B2'],
-            'group'       => ['nullable', 'boolean'], // Aurora Business: group-of-2–4 wording (role-play; True/False evidence)
+            'group'       => ['nullable', 'boolean'], // Aurora Business: group-of-2–4 wording (role-play; True/False evidence; office Signs & Notices)
         ]);
 
         $provided = collect(['document_id', 'topic', 'source_text', 'source_activity_id'])
@@ -102,7 +102,7 @@ class ActivityController extends Controller
                 'image_vocab_match'       => $claude->generateImageVocabMatch($source, $prompt, $level),
                 'word_categorisation'     => $claude->generateWordCategorisation($source, $prompt, $level),
                 'match_pairs'             => $claude->generateMatchPairs($source, $prompt, $level),
-                'signs_notices'           => $claude->generateSignsNotices($source, $prompt, $level),
+                'signs_notices'           => $claude->generateSignsNotices($source, $prompt, $level, $request->boolean('group')),
                 'picture_prompts'         => $claude->generatePicturePrompts($source, $prompt, $level),
                 'role_play'               => $claude->generateRolePlay($source, $prompt, $level, $request->boolean('group')),
                 'story_builder'           => $claude->generateStoryBuilder($source, $prompt, $level),

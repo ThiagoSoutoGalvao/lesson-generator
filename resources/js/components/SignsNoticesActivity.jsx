@@ -4,10 +4,53 @@ import SavePanel from '@/components/SavePanel';
 import DisplayControls from '@/components/DisplayControls';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
+import { useIsLightUi } from '@/lib/uiTheme';
+import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
 
 const TEXT_SIZES   = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
 const OPTION_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const LETTERS = ['A', 'B', 'C'];
+// Light (Aurora Business) sizes.
+const L_TEXT_SIZES = ['text-[18px]', 'text-[20px] sm:text-[22px]', 'text-[22px] sm:text-[26px]', 'text-[25px] sm:text-[30px]', 'text-[28px] sm:text-[34px]'];
+const L_Q_SIZES    = ['text-[19px]', 'text-[21px] sm:text-[23px]', 'text-[23px] sm:text-[26px]', 'text-[26px] sm:text-[30px]', 'text-[29px] sm:text-[34px]'];
+const L_OPT_SIZES  = ['text-[16px]', 'text-[17px] sm:text-[19px]', 'text-[19px] sm:text-[21px]', 'text-[21px] sm:text-[24px]', 'text-[24px] sm:text-[27px]'];
+
+// Light version of the text, dressed as what it is — on a white page, so each kind keeps its own surface.
+function LightTextCard({ item, sizeCls }) {
+    const tag = <p className={`${LIGHT.eyebrow} mb-2`}>{{ sign: 'Sign', notice: 'Notice', message: 'Message', email: 'Email' }[item.kind] ?? 'Text'}</p>;
+    if (item.kind === 'sign') return (
+        <div data-kind="sign">{tag}
+            <div className="bg-white border-[5px] border-[#271D62] rounded-xl px-5 py-8 text-center">
+                <p className={`${sizeCls} font-extrabold uppercase tracking-wide leading-tight`}>{item.text}</p>
+            </div>
+        </div>
+    );
+    if (item.kind === 'message') return (
+        <div data-kind="message">{tag}
+            <div className="bg-[#E7F6EE] border border-[#CFE9DA] rounded-3xl rounded-tl-md px-5 py-4 max-w-full inline-block">
+                <p className={`${sizeCls} leading-snug`}>{item.text}</p>
+            </div>
+        </div>
+    );
+    if (item.kind === 'email') return (
+        <div data-kind="email">{tag}
+            <div className="bg-white border border-[#DDE1E8] rounded-xl overflow-hidden">
+                <div className="bg-[#F6F7F9] border-b border-[#DDE1E8] px-5 py-3 text-[15px] sm:text-[16px] text-[#4A5163] flex flex-col gap-0.5">
+                    {item.from && <span><span className="font-semibold text-[#271D62]">From:</span> {item.from}</span>}
+                    {item.subject && <span><span className="font-semibold text-[#271D62]">Subject:</span> {item.subject}</span>}
+                </div>
+                <p className={`${sizeCls} leading-snug px-5 py-5 whitespace-pre-line`}>{item.text}</p>
+            </div>
+        </div>
+    );
+    return (
+        <div data-kind="notice">{tag}
+            <div className="bg-[#FFF8E6] border border-[#F1E2B8] border-t-8 border-t-[#F2C14E] rounded-md px-5 py-6">
+                <p className={`${sizeCls} leading-snug text-center`}>{item.text}</p>
+            </div>
+        </div>
+    );
+}
 
 // The text itself, dressed as what it is: a public sign, a paper notice or a chat message.
 function TextCard({ item, sizeCls }) {
@@ -50,10 +93,12 @@ export default function SignsNoticesActivity({ activity, onClose, onComplete, hi
     const [showSave, setShowSave] = useState(false);
     const { sizeIdx: fontSizeIdx } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
+    const light = useIsLightUi(); // Aurora Business: the light layout below (text left, question right; no photo)
 
     const item = items[index];
 
     useEffect(() => {
+        if (light) return;
         axios.get('/api/background', { params: { topic: activity.keyword || activity.topic } })
             .then(({ data }) => setBgUrl(data.url))
             .catch(() => null);
@@ -88,6 +133,69 @@ export default function SignsNoticesActivity({ activity, onClose, onComplete, hi
 
     function restart() {
         setIndex(0); setWrongIdx([]); setSolved(false); setFirstTry(0); setFinished(false);
+    }
+
+    if (light) {
+        const frame = {
+            eyebrow: 'Signs & notices', title: activity.topic || 'Read and answer',
+            onSave: hideSave ? undefined : () => setShowSave(true),
+            isFullscreen, onFullscreen: toggleFullscreen, onClose,
+            overlay: !hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null,
+        };
+        if (finished) {
+            return (
+                <LightFrame {...frame}>
+                    <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
+                        <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                            <p className={LIGHT.eyebrow}>All done</p>
+                            <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">{firstTry} of {total} right first time</h1>
+                            <div className="flex flex-wrap justify-center gap-3 mt-2">
+                                <button type="button" onClick={restart} className={LIGHT.primary}>Play again</button>
+                                {onClose && <button type="button" onClick={onClose} className={LIGHT.secondary}>Close</button>}
+                            </div>
+                        </section>
+                    </div>
+                </LightFrame>
+            );
+        }
+        return (
+            <LightFrame {...frame} extra={<span className="hidden sm:flex"><LightProgress index={index} total={total} label="Text" /></span>}>
+                <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-4 sm:py-8 grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 items-start">
+                    <section aria-label="Text" className={`${LIGHT.card} p-5 sm:p-8`}>
+                        <LightTextCard item={item} sizeCls={L_TEXT_SIZES[fontSizeIdx]} />
+                    </section>
+                    <section aria-label="Question" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5`}>
+                        <p className={LIGHT.eyebrow}>Text {index + 1} of {total}</p>
+                        <h1 className={`font-display ${L_Q_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{item.question}</h1>
+                        <div role="group" aria-label="Options" className="flex flex-col gap-3">
+                            {item.options.map((opt, i) => {
+                                const isRight = solved && i === item.answer;
+                                const isWrong = wrongIdx.includes(i);
+                                let box = 'border border-[#DDE1E8] bg-white hover:bg-[#F6F7F9] font-medium cursor-pointer';
+                                let chip = 'bg-[#F1F2F5] text-[#4A5163]';
+                                if (isRight) { box = `${LIGHT.right} cursor-default`; chip = LIGHT.rightChip; }
+                                else if (isWrong) { box = `${LIGHT.wrong} cursor-default`; chip = LIGHT.wrongChip; }
+                                else if (solved) box = 'border border-[#DDE1E8] bg-white opacity-60 cursor-default';
+                                return (
+                                    <button key={i} type="button" onClick={() => choose(i)} disabled={solved || isWrong}
+                                        className={`${box} ${L_OPT_SIZES[fontSizeIdx]} min-h-14 w-full text-left flex items-center gap-4 px-4 py-3 rounded-[14px] text-[#271D62]`}>
+                                        <span className={`${chip} shrink-0 w-8 h-8 rounded-[10px] grid place-items-center text-[14px] font-semibold`}>{LETTERS[i]}</span>
+                                        <span className="min-w-0 break-words">{opt}</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                        {wrongIdx.length > 0 && !solved && <p role="status" className="rounded-xl px-4 py-2.5 bg-[#FDECEA] text-[#7F1D1D] text-[16px] sm:text-[18px]">Not that one. Read it again and try once more.</p>}
+                        {solved && <p role="status" className="rounded-xl px-4 py-2.5 bg-[#E5F4EC] text-[#14532D] text-[16px] sm:text-[18px] font-semibold">Right!</p>}
+                        <div className="flex justify-end">
+                            <button type="button" onClick={next} disabled={!solved} className={LIGHT.primary}>
+                                {!solved ? 'Choose an answer' : index + 1 >= total ? 'See results' : 'Next text'}
+                            </button>
+                        </div>
+                    </section>
+                </div>
+            </LightFrame>
+        );
     }
 
     const bgStyle = bgUrl

@@ -23,7 +23,7 @@ export function isLightCourse(trilha) {
 // Activity types whose screen has a light version (2026-11-18). On a business course only these can be made, so
 // no dark screen ends up in a light lesson. A type joins this list when its light screen ships.
 export const LIGHT_TYPES = new Set([
-    'quiz', 'flashcards', 'unjumble', 'match_pairs', 'dialog_gap_fill', 'error_correction', 'true_false', 'odd_one_out', 'word_categorisation', 'cloze', 'picture_prompts', 'discussion_questions',
+    'quiz', 'flashcards', 'unjumble', 'match_pairs', 'dialog_gap_fill', 'error_correction', 'true_false', 'odd_one_out', 'word_categorisation', 'cloze', 'signs_notices', 'picture_prompts', 'discussion_questions',
     'role_play', 'story_builder', 'debate', 'mini_presentation',
 ]);
 

@@ -131,6 +131,8 @@ const TEMPLATES = [
         id: 'signs_notices', label: 'Signs & Notices', goals: ['reading'],
         blurb: 'Short signs, notices and messages, each with one easy question. Real-life reading for beginners.',
         defaultPrompt: 'Create 5 short real-life texts (signs, notices and messages). Give each one question with 3 options.',
+        // Aurora Business: office texts, and emails too (the server adds the email kind for groups, 2026-11-18).
+        groupPrompt: 'Create 5 short office texts (signs, notices, chat messages and emails). Give each one question with 3 options.',
     },
     {
         id: 'true_false', label: 'True / False / Not Given', goals: ['reading'],

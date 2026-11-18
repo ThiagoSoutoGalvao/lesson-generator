@@ -1340,9 +1340,10 @@ Rules:
 EOT;
     }
 
-    public function generateSignsNotices(string $source, string $prompt, ?string $level = null): array
+    /** $group (Aurora Business, 2026-11-18): office texts only, plus a fourth kind, a short email (from / subject / body). */
+    public function generateSignsNotices(string $source, string $prompt, ?string $level = null, bool $group = false): array
     {
-        $data = $this->requestJson($this->buildSignsNoticesPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
+        $data = $this->requestJson($this->buildSignsNoticesPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level), $group));
 
         // Keep only items with a text, a question, three distinct options and an answer
         // that points at one of them — anything else can't be marked.
@@ -1359,8 +1360,14 @@ EOT;
                 continue;
             }
 
-            $kind    = in_array($item['kind'] ?? '', ['sign', 'notice', 'message'], true) ? $item['kind'] : 'notice';
-            $items[] = ['kind' => $kind, 'text' => $text, 'question' => $question, 'options' => $options, 'answer' => $answer];
+            $kinds   = $group ? ['sign', 'notice', 'message', 'email'] : ['sign', 'notice', 'message'];
+            $kind    = in_array($item['kind'] ?? '', $kinds, true) ? $item['kind'] : 'notice';
+            $row     = ['kind' => $kind, 'text' => $text, 'question' => $question, 'options' => $options, 'answer' => $answer];
+            if ($kind === 'email') {
+                $row['from']    = trim((string) ($item['from'] ?? ''));
+                $row['subject'] = trim((string) ($item['subject'] ?? ''));
+            }
+            $items[] = $row;
         }
 
         if (count($items) < 3) {
@@ -1373,8 +1380,14 @@ EOT;
         return $data;
     }
 
-    private function buildSignsNoticesPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    private function buildSignsNoticesPrompt(string $source, string $prompt, LanguageLevel $lv, bool $group = false): string
     {
+        // Without $group the prompt is byte-identical to before.
+        $kindList = $group ? "<'sign', 'notice', 'message' or 'email'>" : "<'sign', 'notice' or 'message'>";
+        $emailFields = $group ? "\n      \"from\": \"<email only: the sender's name, e.g. 'Marta Lima'>\",\n      \"subject\": \"<email only: a short subject line>\"," : '';
+        $kindsRule = $group
+            ? '- Use real texts from an office: a "sign" is a short sign in the office (MEETING ROOM 2 — BOOKED, PRINTER OUT OF ORDER, VISITORS SIGN IN HERE), a "notice" is a short notice on the office wall or noticeboard (a fire drill, new lunch times, a team event), a "message" is a short chat message between colleagues (Teams or WhatsApp), an "email" is a short work email (put the body in "text", without greeting lines repeated in "subject"). Mix the four kinds, at least one of each when there are 4 or more items; show office work only, never the company\'s industry'
+            : '- Use real-life texts: a "sign" is a short public sign (NO PARKING, WET FLOOR, OPEN 9-5), a "notice" is a short notice on a wall or door (opening times, a cancelled class, a rule), a "message" is a short text message or note between two people. Mix the three kinds';
         return <<<EOT
 {$source}
 
@@ -1387,7 +1400,7 @@ Return a JSON object with EXACTLY this structure:
   "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image, e.g. 'busy city street shops'>",
   "items": [
     {
-      "kind": "<'sign', 'notice' or 'message'>",
+      "kind": "{$kindList}",{$emailFields}
       "text": "<the text exactly as the student reads it>",
       "question": "<one easy question about it, e.g. 'Where would you see this?' or 'What does it mean?'>",
       "options": ["<option A>", "<option B>", "<option C>"],
@@ -1398,7 +1411,7 @@ Return a JSON object with EXACTLY this structure:
 
 Rules:
 - Generate the number of items requested in the task — 5 if none is given, never fewer than 3 or more than 8
-- Use real-life texts: a "sign" is a short public sign (NO PARKING, WET FLOOR, OPEN 9-5), a "notice" is a short notice on a wall or door (opening times, a cancelled class, a rule), a "message" is a short text message or note between two people. Mix the three kinds
+{$kindsRule}
 - Each text is no more than {$lv->scaled(40)} words and must make sense without any picture
 - Every question has exactly 3 options and exactly ONE is correct; the two wrong options must be clearly wrong but plausible; vary which position holds the correct answer
 - Keep the questions simple and direct (where would you see this, what does it mean, what must you do, who is it from)
