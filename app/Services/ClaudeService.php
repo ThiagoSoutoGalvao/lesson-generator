@@ -1000,9 +1000,10 @@ EOT;
         return $this->hasBlankKey($parts, 'blank');
     }
 
-    public function generateMcReading(string $source, string $prompt, ?string $level = null): array
+    /** $group (Aurora Business, 2026-11-18): each question also carries "evidence", the passage sentence the light screen highlights. */
+    public function generateMcReading(string $source, string $prompt, ?string $level = null, bool $group = false): array
     {
-        $data = $this->requestJson($this->buildMcReadingPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level)));
+        $data = $this->requestJson($this->buildMcReadingPrompt($this->sanitizeUtf8($source), $prompt, LanguageLevel::from($level), $group));
 
         $data['questions'] = array_values(array_filter($data['questions'] ?? [], function ($q) {
             $text    = $q['text']    ?? '';
@@ -1019,11 +1020,24 @@ EOT;
             throw new RuntimeException('Claude did not return a valid reading passage with questions — please try again.');
         }
 
+        // Evidence must be found word for word in the passage, or the screen couldn't highlight it.
+        $passage = (string) $data['passage'];
+        foreach ($data['questions'] as &$q) {
+            if (! array_key_exists('evidence', $q)) continue;
+            $e = is_string($q['evidence']) ? trim($q['evidence']) : '';
+            if ($e === '' || ! str_contains($passage, $e)) unset($q['evidence']);
+            else $q['evidence'] = $e;
+        }
+        unset($q);
+
         return $data;
     }
 
-    private function buildMcReadingPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    private function buildMcReadingPrompt(string $source, string $prompt, LanguageLevel $lv, bool $group = false): string
     {
+        // Without $group the prompt is byte-identical to before.
+        $ev = $group ? ",\n      \"evidence\": \"<the one sentence of the passage that shows the answer, copied word for word>\"" : '';
+        $evRule = $group ? "\n- \"evidence\" is copied exactly from the passage (same words and punctuation): one sentence, never a paraphrase" : '';
         return <<<EOT
 {$source}
 
@@ -1040,7 +1054,7 @@ Return a JSON object with EXACTLY this structure:
       "text": "<a comprehension question about the passage>",
       "options": ["<option A>", "<option B>", "<option C>", "<option D>"],
       "answer": "<the correct option, copied verbatim from this question's options>",
-      "explanation": "<one sentence explaining why, referencing the passage>"
+      "explanation": "<one sentence explaining why, referencing the passage>"{$ev}
     }
   ]
 }
@@ -1050,7 +1064,7 @@ Rules:
 - Each question has EXACTLY 4 options; exactly one is correct and is repeated verbatim as "answer"
 - Mix question types: main idea, specific detail, vocabulary in context, inference, and the writer's purpose or opinion
 - Wrong options must be plausible and drawn from the passage's topic — not obviously silly
-- The passage must actually contain (or clearly imply, for inference questions) the information each question tests{$lv->rules}
+- The passage must actually contain (or clearly imply, for inference questions) the information each question tests{$evRule}{$lv->rules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation
 EOT;
     }
