@@ -180,6 +180,11 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   until **Show why** (a student says why first). **Light Word Categorisation:** words on top, one card per group below;
   each word is **checked as it is placed** (tap word then group, or drag) — wrong goes back to the pool; score = right
   first time. Neither has a photo.
+  **Light Cloze:** the word bank stays at the top while the text scrolls; gaps go **in order** (current one ringed
+  coral), a student taps the word and it is checked at once (wrong flashes red, the gap stops counting); Show answer
+  fills a stuck gap; score = right first time (sent to the student app too). First batch of light conversions done:
+  Error Correction, True / False, Odd One Out, Word Categorisation, Cloze. Next: Signs & Notices, MC Reading, MC Cloze,
+  Image Vocab Match; exam-style ones (Open Cloze, Word Formation, Sentence Transformation, Read & Complete) last.
 - **2026-11-12** — **Light Materials + Generate + Library launch.** Thiago found the Materials form and the first
   view of a new reading still in the glass look. Now: while the lesson session (`lib/lessonSession.js`, set by a
   pack's "+ Add" or the last save) is a business course, Materials (Presentation + Reading Text tabs) and Generate
