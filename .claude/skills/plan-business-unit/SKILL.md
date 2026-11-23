@@ -39,7 +39,7 @@ those rules; if they disagree, the decisions table wins — and fix this file.
    work**, not the industry itself. Never use a real company's name (some students work at CPFL — invent a
    similar one). **Vary the city too** (Recife, São Paulo, Curitiba, Porto Alegre, a branch abroad…), not always
    Natal. List the companies and cities already used in the unit plan files and don't repeat one in a module.
-   Used so far (First Steps): 1 Nordia Foods, Natal · 2 Costa Verde Energy, Recife.
+   Used so far (First Steps): 1 Nordia Foods, Natal · 2 Costa Verde Energy, Recife · 3 Pampa Seguros, Porto Alegre.
 7. **First Steps = office survival.** What A2 office workers use every day: emails (send and reply),
    short presentations, office vocabulary, scheduling meetings, calls, quick messages. Company types and
    industries are for Everyday Business / Take the Lead.
