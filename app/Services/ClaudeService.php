@@ -1285,7 +1285,7 @@ Return a JSON object with EXACTLY this structure:
 
 Rules:
 - Use 2 or 3 categories (never more)
-- Each category must have between 4 and 6 words — 5 if the task gives no number
+- Each category must have between 4 and 10 words — follow the number the task asks for; 5 if the task gives no number
 - All categories must have the same number of words
 - Words must be clearly and unambiguously correct for their category — no borderline cases
 - No word may appear in more than one category
