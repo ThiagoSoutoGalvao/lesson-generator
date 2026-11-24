@@ -7,6 +7,12 @@ use RuntimeException;
 
 class ClaudeService
 {
+    // 2026-11-25: Claude Sonnet 5.5 (was Sonnet 4.6) — same quality in a side-by-side test of 7 formats, ~30% cheaper
+    // and about twice as fast (scratchpad/qa_2026-09/compare_models.php). Sonnet 5.5 thinks by default; these are
+    // short structured tasks, so thinking stays off ('between_tools' is how this model turns it off).
+    private const MODEL    = 'claude-sonnet-5-5';
+    private const THINKING = ['type' => 'between_tools'];
+
     public function detectSections(string $source): array
     {
         $source = $this->sanitizeUtf8($source);
@@ -15,7 +21,8 @@ class ClaudeService
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -66,7 +73,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'messages'   => [
                 [
@@ -89,7 +97,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -116,7 +125,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -175,7 +185,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -239,7 +250,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -312,7 +324,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of statements requested in the task — 6 if none is given, never fewer than 3 or more than 12
+- Generate exactly the number of statements the task asks for ("5 statements" means 5) — 6 only if the task gives no number, never fewer than 3 or more than 12
 - Every answer is "True" or "False", never "Not Given" (this is for beginners): even if the task mentions Not Given, every statement must be clearly confirmed or clearly contradicted by the passage
 - Split the answers as evenly as possible between True and False (with 6 statements: 3 of each) — but vary the order
 - For more than 8 statements, the passage may be up to 50% longer than the length above so there is enough to test
@@ -355,7 +367,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of statements requested in the task — 6 if none is given, never fewer than 3 or more than 12
+- Generate exactly the number of statements the task asks for ("5 statements" means 5) — 6 only if the task gives no number, never fewer than 3 or more than 12
 - Distribute the answers as evenly as possible across True, False and Not Given (with 6 statements: 2 of each) — but vary the order
 - For more than 8 statements, the passage may be up to 50% longer than the length above so there is enough to test
 - "True" means the passage clearly supports the statement
@@ -376,7 +388,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -438,7 +451,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -479,7 +493,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of groups requested in the task — 6 if none is given, never fewer than 3 or more than 15
+- Generate exactly the number of groups the task asks for ("5 groups" means 5) — 6 only if the task gives no number, never fewer than 3 or more than 15
 - Each group must have exactly 4 words: 3 that share a clear connection and 1 odd one out
 - The odd word must be clearly and unambiguously different — no borderline cases
 - The reason must explain both why the odd word doesn't fit AND what connects the other three
@@ -497,7 +511,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -558,7 +573,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -629,7 +645,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -690,7 +707,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of questions requested in the task — 6 if none is given, never fewer than 3 or more than 15
+- Generate exactly the number of questions the task asks for ("5 questions" means 5) — 6 only if the task gives no number, never fewer than 3 or more than 15
 - Questions must be genuinely open-ended — no yes/no questions
 - Each question should invite students to share opinions, experiences, or ideas related to the text
 - Each question must have exactly 2 follow-up prompts — short phrases to keep the conversation going (e.g. "Why do you think so?", "Can you give an example?", "Have you ever experienced this?")
@@ -710,7 +727,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -753,7 +771,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of items requested in the task — 6 if none is given, never fewer than 3 or more than 20
+- Generate exactly the number of items the task asks for ("5 items" means 5) — 6 only if the task gives no number, never fewer than 3 or more than 20
 - Each item tests a distinct grammar structure from the text: tense changes, passive voice, reported speech, modal verbs, conditionals, comparatives, or phrasal verbs
 - The key word must appear in the answer and cannot be modified (no inflection changes)
 - The "stem" gives students the start of the second sentence to anchor their answer — it should end naturally at the gap point, followed by "..."
@@ -771,7 +789,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -1060,7 +1079,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of questions requested in the task — 6 if none is given, never fewer than 3 or more than 10
+- Generate exactly the number of questions the task asks for ("5 questions" means 5) — 6 only if the task gives no number, never fewer than 3 or more than 10
 - Each question has EXACTLY 4 options; exactly one is correct and is repeated verbatim as "answer"
 - Mix question types: main idea, specific detail, vocabulary in context, inference, and the writer's purpose or opinion
 - Wrong options must be plausible and drawn from the passage's topic — not obviously silly
@@ -1212,7 +1231,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of pairs requested in the task — 6 if none is given, never fewer than 4 or more than 8
+- Generate exactly the number of pairs the task asks for ("5 pairs" means 5) — 6 only if the task gives no number, never fewer than 4 or more than 8
 - Each word must be a concrete noun or short noun phrase that a photograph can show clearly (a job, an object, a place, a food, an item of clothing) — nothing abstract
 - Each keyword must be a vivid, descriptive scene or image (3-5 words) — not just the word itself — so Unsplash returns a recognisable, relevant photo
 - Keywords must be visually distinct from each other — no two pairs should produce similar-looking images
@@ -1344,7 +1363,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of pairs requested in the task — 6 if none is given, never fewer than 4 or more than 8
+- Generate exactly the number of pairs the task asks for ("5 pairs" means 5) — 6 only if the task gives no number, never fewer than 4 or more than 8
 - Every left item has exactly ONE correct partner on the right, and no right item could reasonably match a different left item
 - All left items are the same kind of thing and all right items are the same kind of thing (for example digits and number words, countries and nationalities, words and short definitions, words and their opposites, base verbs and past forms)
 - Keep every item short — a word or a short phrase of at most 6 words; a definition must be simple and use easier words than the word it defines
@@ -1424,7 +1443,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of items requested in the task — 5 if none is given, never fewer than 3 or more than 8
+- Generate exactly the number of items the task asks for ("5 items" means 5) — 5 only if the task gives no number, never fewer than 3 or more than 8
 {$kindsRule}
 - Each text is no more than {$lv->scaled(40)} words and must make sense without any picture
 - Every question has exactly 3 options and exactly ONE is correct; the two wrong options must be clearly wrong but plausible; vary which position holds the correct answer
@@ -1494,7 +1513,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate the number of prompts requested in the task — 4 if none is given, never fewer than 2 or more than 6
+- Generate exactly the number of prompts the task asks for ("5 prompts" means 5) — 4 only if the task gives no number, never fewer than 2 or more than 6
 - Each keyword must describe a photo with people, an activity and a clear setting, so a stock-photo search returns something there is plenty to talk about — a different scene for every prompt
 - The photo is found by searching the keyword alone, so it may only name things a camera can see: who (e.g. "colleagues", "two women"), what they are doing, and where. No city or country names, and no abstract words (culture, balance, success, satisfaction, remote, flexible) — those match unrelated photos
 - When the topic is abstract, pick a concrete scene that shows it (for workplace culture: "colleagues laughing meeting office table") and ask about what is visible first
@@ -1519,7 +1538,7 @@ EOT;
     private function productionRules(string $noun, LanguageLevel $lv): string
     {
         return <<<EOT
-- Generate the number of {$noun} requested in the task — 3 if none is given, never fewer than 1 or more than 6
+- Generate exactly the number of {$noun} the task asks for — 3 only if the task gives no number, never fewer than 1 or more than 6
 - "targets" is the "Use it!" checklist the teacher ticks while the student speaks: 4-6 short items of target language from the task (a structure, a phrase frame or a key word group), each under 40 characters and written the way a student would say it, e.g. "Have you ever…?", "I've never…", "If I had…, I would…", "used to + verb"
 - Every card must give the student natural reasons to use the target language
 - All language must be {$lv->cefr} level{$lv->rules}
@@ -1689,6 +1708,7 @@ Rules:
   - only use the past simple when the lesson practises it or gives no tense at all
 - "word": a word or phrase from the lesson's target vocabulary or language that fits naturally in an answer IN THAT TENSE (e.g. a frequency adverb fits a present-simple routine, not a one-off past event); a different one for each step of a story
 - The "opening" is in the same tense as the questions
+- CAST: if the source text names people, a company or a place, the stories are about them (e.g. the reading's characters at their company) — don't invent new ones. Only invent names when the source has none
 {$this->productionRules('stories', $lv)}
 EOT;
     }
@@ -1829,7 +1849,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -1853,7 +1874,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 4096,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -1915,7 +1937,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 6000,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
@@ -1980,7 +2003,8 @@ EOT;
             'x-api-key'         => config('services.anthropic.key'),
             'anthropic-version' => '2023-06-01',
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
-            'model'      => 'claude-sonnet-4-6',
+            'model'      => self::MODEL,
+            'thinking'   => self::THINKING,
             'max_tokens' => 6000,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
