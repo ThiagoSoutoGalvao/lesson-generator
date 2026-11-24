@@ -109,6 +109,8 @@ class ActivityController extends Controller
                 'debate'                  => $claude->generateDebate($source, $prompt, $level),
                 'mini_presentation'       => $claude->generateMiniPresentation($source, $prompt, $level),
             };
+            // Check the answer key and spread the right answers across A / B / C / D.
+            $activity = \App\Support\AnswerOptions::fix($request->type, $activity);
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
         }
