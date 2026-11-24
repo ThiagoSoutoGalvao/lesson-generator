@@ -340,6 +340,7 @@ export default function LessonPackPage() {
                     sourceName={slot => sourceFor(slot)?.name}
                     earlier={earlierSummary(library, trilha, lesson, part)}
                     onBuild={buildSlot}
+                    built={here.some(a => !MATERIAL_TYPES.includes(a.type))}
                     missing={isLightCourse(trilha) ? [!readingHere && 'reading', !presHere && 'presentation'].filter(Boolean) : []}
                     onDraft={draftMaterials}
                     onMakeMaterials={makeMaterials}
@@ -411,8 +412,11 @@ const STAGE_LABEL = Object.fromEntries(STAGES.map(s => [s.key, s.label]));
 
 // "Build this lesson": pick a grid (a different one is suggested every lesson), see what it will make and
 // from which material, then make them all — one at a time, each saved hidden until approved.
-function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, earlier, onBuild, missing, onDraft, onMakeMaterials }) {
+function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, earlier, onBuild, missing, onDraft, onMakeMaterials, built }) {
     const draftable = missing.length > 0;
+    // A lesson that already has activities shows the panel folded into one button (2026-11-25: it pushed the
+    // activities far down the page).
+    const [open, setOpen] = useState(!built);
     const [gridId, setGridId] = useState(suggested?.id ?? grids[0]?.id);
     const [status, setStatus] = useState({}); // slot index → 'busy' | 'done' | error message
     const [running, setRunning] = useState(false);
@@ -453,10 +457,23 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
         setRunning(false);
     }
 
+    if (!open) return (
+        <section aria-label="Build this lesson" className="flex" data-testid="build-lesson">
+            <button type="button" onClick={() => setOpen(true)} aria-expanded="false"
+                className="bg-ui-field hover:bg-ui-well border border-ui-line text-ui-ink text-sm font-semibold px-4 py-2 rounded-lg cursor-pointer">
+                Build more with a grid…
+            </button>
+        </section>
+    );
+
     return (
         <section aria-label="Build this lesson" className="ui-card border rounded-2xl p-5 flex flex-col gap-4" data-testid="build-lesson">
-            <div>
-                <h3 className="font-display text-lg font-semibold text-ui-ink">Build {code} with a grid</h3>
+            <div className="relative">
+                {built && !running && (
+                    <button type="button" onClick={() => setOpen(false)} aria-expanded="true"
+                        className="absolute right-0 top-0 text-sm text-ui-muted underline cursor-pointer">Hide</button>
+                )}
+                <h3 className="font-display text-lg font-semibold text-ui-ink pr-12">Build {code} with a grid</h3>
                 <p className="text-ui-muted text-sm">
                     Makes the lesson’s activities from its reading and presentation. Each one is saved hidden from students until you approve it — check them, delete what’s weak and press Build again to remake it.
                 </p>

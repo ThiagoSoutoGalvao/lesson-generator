@@ -38,9 +38,14 @@ class LessonBuilder
     public function __construct(private ClaudeService $claude, private LessonDrafter $drafter, private ActivityMaker $maker) {}
 
     /** Builds one lesson (e.g. 4 + 'B'). Returns [made, failed] activity counts; throws if the lesson's material can't be made. */
-    public function build(int $userId, string $trilha, int $lesson, string $part, callable $log): array
+    // Who the cards say built it — the teacher running the build, not Claude (Thiago, 2026-11-25: students and
+    // teachers are still wary of AI, so it reads like every other lesson).
+    private string $by = 'Thiago';
+
+    public function build(int $userId, string $trilha, int $lesson, string $part, callable $log, string $by = 'Thiago'): array
     {
         $this->log = $log;
+        $this->by = $by;
         $level = LessonDrafter::LEVEL[$trilha];
         $code = "{$lesson}{$part}";
         $here = fn () => Activity::where('user_id', $userId)->where('trilha', $trilha)->where('trilha_lesson', $lesson)
@@ -54,7 +59,7 @@ class LessonBuilder
         if (! $reading || ! $pres) {
             if (! $this->drafter->unitPlan($userId, $trilha, $lesson)) {
                 $this->say("{$code}: writing the unit plan…");
-                $plan = $this->drafter->writeUnitPlan($userId, $trilha, $lesson);
+                $plan = $this->drafter->writeUnitPlan($userId, $trilha, $lesson, $by);
                 $this->say('  ' . str_replace("\n", "\n  ", trim($plan)));
             }
             $earlier = $this->earlierSummary($userId, $trilha, $lesson, $part);
@@ -112,7 +117,7 @@ class LessonBuilder
         return Activity::create([
             'user_id' => $userId, 'name' => $name, 'type' => $type, 'content' => $content,
             'trilha' => $trilha, 'trilha_lesson' => $lesson, 'trilha_part' => $part, 'stage' => $stage,
-            'built_by' => 'Claude (lesson builder)', 'student_visible' => $visible,
+            'built_by' => $this->by, 'student_visible' => $visible,
         ]);
     }
 

@@ -189,6 +189,11 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   7 formats from the 3A reading showed the same quality as Sonnet 4.6, ~30% cheaper and ~2× faster (Haiku 5.5 was
   ~30× cheaper but weaker on role-plays / stories — not used). Real cost: ~$0.011 per activity, a whole unit ≈ $0.50.
   Item-count rules now say "exactly the number the task asks for".
+  **`php artisan lessons:build FirstSteps 4`** (run on Railway, detached, log in /tmp): builds whole lessons on the server —
+  unit plan (saved in the unit's 📝 brief) → reading + presentation → the suggested grid, activities hidden. **Unit 4 built
+  live** (Vale Verde Tecidos, Blumenau; 18 activities, 0 failed, ~3 min). Built items say **"by Thiago"** (his call:
+  students and teachers are still wary of AI) — `--by` on the command. A lesson that already has activities shows the
+  grid panel folded into a "Build more with a grid…" button. Known gap: the grid choice can skip Simulation on a C lesson.
 
 - **2026-11-18** — Business courses offer **only the formats with a light screen** (`LIGHT_TYPES` in `lib/uiTheme.js`:
   Quiz, Flashcards, Unjumble, Match Pairs, Dialogue Gap-Fill, Picture Prompts, Discussion Questions and the 4

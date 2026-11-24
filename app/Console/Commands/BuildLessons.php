@@ -19,7 +19,8 @@ use Throwable;
 class BuildLessons extends Command
 {
     protected $signature = 'lessons:build {trilha} {from : first unit} {to? : last unit (default: from)}
-        {--parts=ABC : which lessons of each unit} {--owner=aurora@lessongenerator.app : the login that owns the course}';
+        {--parts=ABC : which lessons of each unit} {--owner=aurora@lessongenerator.app : the login that owns the course}
+        {--by=Thiago : the name the cards show as "by …"}';
 
     protected $description = 'Build Aurora Business lessons (plan, reading, presentation, grid) — activities saved hidden until approved';
 
@@ -44,7 +45,7 @@ class BuildLessons extends Command
                 if (! in_array($part, ['A', 'B', 'C'], true)) continue;
                 $t = microtime(true);
                 try {
-                    [$made, $failed] = $builder->build($owner->id, $trilha, $unit, $part, $log);
+                    [$made, $failed] = $builder->build($owner->id, $trilha, $unit, $part, $log, (string) $this->option('by'));
                     $log(sprintf('%d%s done in %ds — %d made, %d failed', $unit, $part, microtime(true) - $t, $made, $failed));
                 } catch (Throwable $e) {
                     $log("{$unit}{$part} STOPPED: " . $e->getMessage());

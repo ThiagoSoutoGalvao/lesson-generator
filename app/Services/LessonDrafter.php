@@ -47,7 +47,7 @@ class LessonDrafter
     }
 
     /** A new unit's plan (company, cast, what's new in A / B / C), saved in the unit's brief. Returns the plan text. */
-    public function writeUnitPlan(int $userId, string $trilha, int $lesson): string
+    public function writeUnitPlan(int $userId, string $trilha, int $lesson, string $by = 'Thiago'): string
     {
         $cefr = self::LEVEL[$trilha];
         $used = $this->usedCompanies($userId, $trilha, $lesson);
@@ -78,7 +78,7 @@ TXT;
                 'vocabulary'      => $s($d['vocabulary'] ?? ''),
                 'level_notes'     => "Company: " . $s($d['company']) . "\nCast: " . $s($d['cast']) . "\nCommon mistakes: " . $s($d['mistakes'] ?? ''),
                 'part_plans'      => ['A' => $s($d['A'], 1200), 'B' => $s($d['B'], 1200), 'C' => $s($d['C'], 1200)],
-                'updated_by'      => 'Claude (lesson builder)',
+                'updated_by'      => $by,
             ],
         );
         return (string) $this->unitPlan($userId, $trilha, $lesson);
