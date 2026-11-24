@@ -162,6 +162,18 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 
 ## 7. Done so far (newest first)
 
+- **2026-11-24** — **Build a lesson with a grid** (step 1 of the faster workflow; step 2 = "Build from plan", where the
+  unit plan holds the reading/presentation prompts and the app makes the materials too). On the lesson pack: pick a
+  grid (`lib/lessonGrids.js` — Reading-led, Grammar-led, Vocabulary-led, Simulation, Read & check; Radiant/Glow/Lights
+  also Accuracy (B2)), press Build → every activity made from the lesson's own reading / presentation, saved **hidden
+  until approved**. The suggested grid is the one sharing the fewest formats with the previous lesson; every request
+  carries `earlier` (the last 4 lessons' readings, presentations and words) so lessons build on each other. Same day:
+  multiple-choice answer keys checked and the right answers **spread evenly across A/B/C/D** (`App\Support\AnswerOptions`
+  — a Dialogue Gap-Fill had come out all-A); **photo first** for Picture Prompts / Image Vocab Match
+  (`App\Services\PhotoMatcher`: Claude looks at 4 real candidate photos per item, picks one or drops the item, rewrites the
+  question for that photo; the photo is saved with the activity). Word Categorisation: up to 10 words per category.
+  Unit 3 plan: `docs/aurora-business/units/first-steps-03.md` (Pampa Seguros, Porto Alegre).
+
 - **2026-11-18** — Business courses offer **only the formats with a light screen** (`LIGHT_TYPES` in `lib/uiTheme.js`:
   Quiz, Flashcards, Unjumble, Match Pairs, Dialogue Gap-Fill, Picture Prompts, Discussion Questions and the 4
   production cards); the exam filter is hidden there and "Suggest one with Claude" picks only those types (falls

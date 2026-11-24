@@ -22,6 +22,7 @@ class ActivityController extends Controller
             'page_from'   => ['nullable', 'integer', 'min:1'],
             'page_to'     => ['nullable', 'integer', 'min:1'],
             'level'       => ['nullable', 'in:A1,A2,B1,B2'],
+            'earlier'     => ['nullable', 'string', 'max:1500'], // "Build this lesson": what the course's previous lessons covered
             'group'       => ['nullable', 'boolean'], // Aurora Business: group-of-2–4 wording (role-play; True/False evidence; office Signs & Notices; MC Reading evidence)
         ]);
 
@@ -77,6 +78,14 @@ class ActivityController extends Controller
         } else {
             $sourceText = trim($request->input('source_text'));
             $source = "Here is the text to base the activity on:\n\n{$sourceText}";
+        }
+
+        // "Build this lesson" (2026-11-24): the course's previous lessons, so a lesson builds on the last ones.
+        // Without it the source is exactly as before.
+        if ($request->filled('earlier')) {
+            $source .= "\n\nFor reference, what this course's earlier lessons covered:\n" . trim($request->input('earlier'))
+                . "\nWhere it fits naturally, recycle two or three words or structures from those lessons, "
+                . "but don't repeat their examples, and keep the focus on this lesson's material.";
         }
 
         $prompt = $request->prompt;

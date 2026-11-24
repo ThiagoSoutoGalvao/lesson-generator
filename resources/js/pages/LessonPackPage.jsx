@@ -9,6 +9,7 @@ import Spinner from '@/components/Spinner';
 import { TRILHAS, TRILHA_LEVEL, TRILHA_TOC, TYPE_LABELS, composeActivityName, trilhaParts, partOf, focusFromName } from '@/lib/trilhas';
 import { STAGES } from '@/lib/stages';
 import { pickFill, FILLABLE_STAGES } from '@/lib/fillStage';
+import { gridsFor, slotPrompt, defaultGrid, earlierSummary, previousLessonTypes } from '@/lib/lessonGrids';
 import { tidyFocus } from '@/lib/naming';
 import { setLessonSession } from '@/lib/lessonSession';
 import { useLightUi, isLightCourse, LIGHT_TYPES } from '@/lib/uiTheme';
@@ -127,6 +128,37 @@ export default function LessonPackPage() {
 
     // "Suggest one with Claude" (step 7): pick a template for this stage + level, generate it from the lesson's
     // material (or its contents), and save it into the stage HIDDEN from students until the teacher approves it.
+    // "Build this lesson" (2026-11-24): every activity of a grid, one after the other, from the lesson's own
+    // reading / presentation, with a summary of the course's earlier lessons. Each one is saved hidden from
+    // students until approved. A slot whose stage already holds that format is skipped, so pressing it again
+    // only fills what's missing (e.g. after deleting a weak one).
+    const readingHere = here.find(a => a.type === 'reading_text');
+    const presHere    = here.find(a => a.type === 'presentation' || a.type === 'grammar_explainer');
+    function sourceFor(slot) {
+        const want = slot.source === 'presentation' ? [presHere, readingHere] : [readingHere, presHere];
+        return want.find(Boolean) ?? core;
+    }
+    async function buildSlot(slot) {
+        const body = { type: slot.type, prompt: slotPrompt(slot, trilha), level: TRILHA_LEVEL[trilha] };
+        if (isLightCourse(trilha)) body.group = true;
+        const src = sourceFor(slot);
+        if (src) body.source_activity_id = src.id;
+        else body.topic = (toc.slice(0, 2).join('; ') || `${config.label} lesson ${lesson}`).slice(0, 200);
+        const earlier = earlierSummary(library, trilha, lesson, part);
+        if (earlier) body.earlier = earlier;
+        const { data: content } = await axios.post('/api/generate', body);
+        const focus = tidyFocus(content.topic || content.title || toc[0] || TYPE_LABELS[slot.type] || '').split(' ').slice(0, 6).join(' ') || 'Suggested';
+        let builtBy = null;
+        try { builtBy = localStorage.getItem('aurora.save.builtBy') || null; } catch { /* ignore */ }
+        const { data: saved } = await axios.post('/api/activities', {
+            name: composeActivityName({ trilha, lesson, part, type: slot.type, focus }),
+            type: slot.type, content, trilha, trilha_lesson: lesson, trilha_part: part, stage: slot.stage, built_by: builtBy,
+            student_visible: false,
+        });
+        setActivities(prev => [...prev, saved]);
+        setLibrary(prev => [saved, ...prev]);
+    }
+
     async function fill(stage) {
         const pick = pickFill(stage, TRILHA_LEVEL[trilha], here.map(a => a.type), isLightCourse(trilha) ? LIGHT_TYPES : null);
         if (!pick) return;
@@ -261,6 +293,20 @@ export default function LessonPackPage() {
                 </p>
             )}
 
+            {!loading && !error && (
+                <BuildLesson
+                    key={code}
+                    code={code}
+                    grids={gridsFor(trilha)}
+                    suggested={defaultGrid(gridsFor(trilha), part, previousLessonTypes(library, trilha, lesson, part))}
+                    has={slot => here.some(a => a.stage === slot.stage && a.type === slot.type)}
+                    hasMaterial={Boolean(readingHere || presHere)}
+                    sourceName={slot => sourceFor(slot)?.name}
+                    earlier={earlierSummary(library, trilha, lesson, part)}
+                    onBuild={buildSlot}
+                />
+            )}
+
             {loading && <div className="flex justify-center py-10"><Spinner message="Loading the lesson…" color="text-ui-muted" textColor="text-ui-faint" /></div>}
             {error && <div className="rounded-xl bg-ui-danger-bg border border-ui-danger-line px-4 py-3 text-sm text-ui-danger">{error}</div>}
 
@@ -319,6 +365,100 @@ export default function LessonPackPage() {
                 />
             )}
         </div>
+    );
+}
+
+const STAGE_LABEL = Object.fromEntries(STAGES.map(s => [s.key, s.label]));
+
+// "Build this lesson": pick a grid (a different one is suggested every lesson), see what it will make and
+// from which material, then make them all — one at a time, each saved hidden until approved.
+function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, earlier, onBuild }) {
+    const [gridId, setGridId] = useState(suggested?.id ?? grids[0]?.id);
+    const [status, setStatus] = useState({}); // slot index → 'busy' | 'done' | error message
+    const [running, setRunning] = useState(false);
+    const grid = grids.find(g => g.id === gridId) ?? grids[0];
+    if (!grid) return null;
+
+    const todo = grid.slots.map((s, i) => i).filter(i => !has(grid.slots[i]) && status[i] !== 'done');
+
+    async function run(indexes) {
+        setRunning(true);
+        for (const i of indexes) {
+            setStatus(st => ({ ...st, [i]: 'busy' }));
+            try {
+                await onBuild(grid.slots[i]);
+                setStatus(st => ({ ...st, [i]: 'done' }));
+            } catch (err) {
+                setStatus(st => ({ ...st, [i]: err.response?.data?.message ?? 'Claude could not make this one. Try again.' }));
+            }
+        }
+        setRunning(false);
+    }
+
+    return (
+        <section aria-label="Build this lesson" className="ui-card border rounded-2xl p-5 flex flex-col gap-4" data-testid="build-lesson">
+            <div>
+                <h3 className="font-display text-lg font-semibold text-ui-ink">Build {code} with a grid</h3>
+                <p className="text-ui-muted text-sm">
+                    Makes the lesson’s activities from its reading and presentation. Each one is saved hidden from students until you approve it — check them, delete what’s weak and press Build again to remake it.
+                </p>
+            </div>
+
+            <div role="radiogroup" aria-label="Grid" className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                {grids.map(g => {
+                    const on = g.id === grid.id;
+                    return (
+                        <button key={g.id} type="button" role="radio" aria-checked={on} disabled={running}
+                            onClick={() => { setGridId(g.id); setStatus({}); }}
+                            className={`text-left rounded-xl px-3.5 py-2.5 border-2 cursor-pointer disabled:cursor-not-allowed text-ui-ink ${on ? 'bg-ui-sel border-ui-sel-line' : 'border-ui-line hover:border-ui-faint'}`}>
+                            <span className="flex items-center gap-2 font-semibold text-sm">
+                                {g.label}
+                                {g.id === suggested?.id && <span className="text-[11px] font-semibold text-ui-accent">suggested</span>}
+                            </span>
+                            <span className="block text-ui-muted text-xs mt-0.5">{g.blurb}</span>
+                        </button>
+                    );
+                })}
+            </div>
+
+            <ol className="flex flex-col gap-1.5" aria-label="What this grid makes">
+                {grid.slots.map((s, i) => {
+                    const st = status[i];
+                    const there = has(s) && st !== 'done';
+                    return (
+                        <li key={i} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm" data-testid="grid-slot">
+                            <span className="text-ui-faint w-24 shrink-0">{STAGE_LABEL[s.stage]}</span>
+                            <span className="text-ui-ink font-semibold">{TYPE_LABELS[s.type] ?? s.type}</span>
+                            {sourceName(s) && <span className="text-ui-faint text-xs truncate max-w-[16rem]">from {sourceName(s)}</span>}
+                            <span className="ml-auto text-xs" role={typeof st === 'string' && st !== 'busy' && st !== 'done' ? 'alert' : undefined}>
+                                {there && <span className="text-ui-faint">already in the lesson</span>}
+                                {st === 'busy' && <span className="text-ui-muted">making it…</span>}
+                                {st === 'done' && <span className="text-[#1E7A4C] font-semibold">✓ made — check it below</span>}
+                                {st && st !== 'busy' && st !== 'done' && (
+                                    <span className="text-ui-danger">{st} <button type="button" disabled={running} onClick={() => run([i])} className="underline cursor-pointer">Try again</button></span>
+                                )}
+                            </span>
+                        </li>
+                    );
+                })}
+            </ol>
+
+            {earlier && (
+                <details className="text-sm">
+                    <summary className="text-ui-muted cursor-pointer">Builds on the earlier lessons</summary>
+                    <pre className="whitespace-pre-wrap font-sans text-ui-muted text-xs mt-2">{earlier}</pre>
+                </details>
+            )}
+
+            <div className="flex flex-wrap items-center gap-3">
+                <button type="button" onClick={() => run(todo)} disabled={running || todo.length === 0 || !hasMaterial}
+                    className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-ui-well disabled:text-ui-faint disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer">
+                    {running ? 'Building…' : todo.length === 0 ? 'All made' : `Build ${todo.length} ${todo.length === 1 ? 'activity' : 'activities'}`}
+                </button>
+                {!hasMaterial && <p className="text-ui-muted text-sm">Add this lesson’s reading or presentation first (+ Add in the Presentation stage).</p>}
+                {running && <p className="text-ui-muted text-sm">About 20 seconds each — you can watch them appear below.</p>}
+            </div>
+        </section>
     );
 }
 
