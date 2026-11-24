@@ -1680,8 +1680,15 @@ Rules:
 - Every question is open (Who / What / Where / When / Why / How…), so the answer has to invent a detail — never a yes/no question and never one the opening already answers
 - Each question follows from the story so far but works whatever the previous answers were
 {$askRule}
-- "word": a word or phrase from the lesson's target vocabulary or language that fits naturally in the answer; a different one for each step of a story
-- The questions use the tense the lesson practises (usually the past simple for a story)
+- TENSE: first find the main tense / structure the lesson practises in the source and the task. Every question is asked in it and every answer naturally uses it. Shape the story to fit that tense — don't force a past-tense story:
+  - present simple / routines / frequency → a story about someone's usual day or habits ("What time does Camila usually start work?", "Who does she always call first?")
+  - past simple → what happened one day ("Who called Diego at nine?")
+  - present continuous → what is happening right now ("What is Diego doing at the moment?")
+  - going to / will / future → plans ("What is Camila going to do on Friday?")
+  - present perfect → experiences or recent news ("What has Diego just finished?")
+  - only use the past simple when the lesson practises it or gives no tense at all
+- "word": a word or phrase from the lesson's target vocabulary or language that fits naturally in an answer IN THAT TENSE (e.g. a frequency adverb fits a present-simple routine, not a one-off past event); a different one for each step of a story
+- The "opening" is in the same tense as the questions
 {$this->productionRules('stories', $lv)}
 EOT;
     }
