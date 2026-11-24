@@ -376,10 +376,11 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
     const [gridId, setGridId] = useState(suggested?.id ?? grids[0]?.id);
     const [status, setStatus] = useState({}); // slot index → 'busy' | 'done' | error message
     const [running, setRunning] = useState(false);
+    const [skip, setSkip] = useState(() => new Set()); // unticked slot indexes
     const grid = grids.find(g => g.id === gridId) ?? grids[0];
     if (!grid) return null;
 
-    const todo = grid.slots.map((s, i) => i).filter(i => !has(grid.slots[i]) && status[i] !== 'done');
+    const todo = grid.slots.map((s, i) => i).filter(i => !has(grid.slots[i]) && status[i] !== 'done' && !skip.has(i));
 
     async function run(indexes) {
         setRunning(true);
@@ -409,7 +410,7 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
                     const on = g.id === grid.id;
                     return (
                         <button key={g.id} type="button" role="radio" aria-checked={on} disabled={running}
-                            onClick={() => { setGridId(g.id); setStatus({}); }}
+                            onClick={() => { setGridId(g.id); setStatus({}); setSkip(new Set()); }}
                             className={`text-left rounded-xl px-3.5 py-2.5 border-2 cursor-pointer disabled:cursor-not-allowed text-ui-ink ${on ? 'bg-ui-sel border-ui-sel-line' : 'border-ui-line hover:border-ui-faint'}`}>
                             <span className="flex items-center gap-2 font-semibold text-sm">
                                 {g.label}
@@ -427,6 +428,11 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
                     const there = has(s) && st !== 'done';
                     return (
                         <li key={i} className="flex flex-wrap items-baseline gap-x-2 gap-y-0.5 text-sm" data-testid="grid-slot">
+                            <input type="checkbox" className="self-center accent-[#e0521f] cursor-pointer disabled:cursor-not-allowed"
+                                aria-label={`Make ${TYPE_LABELS[s.type] ?? s.type} (${STAGE_LABEL[s.stage]})`}
+                                checked={!there && st !== 'done' ? !skip.has(i) : true}
+                                disabled={running || there || st === 'done'}
+                                onChange={e => setSkip(prev => { const n = new Set(prev); e.target.checked ? n.delete(i) : n.add(i); return n; })} />
                             <span className="text-ui-faint w-24 shrink-0">{STAGE_LABEL[s.stage]}</span>
                             <span className="text-ui-ink font-semibold">{TYPE_LABELS[s.type] ?? s.type}</span>
                             {sourceName(s) && <span className="text-ui-faint text-xs truncate max-w-[16rem]">from {sourceName(s)}</span>}
@@ -453,9 +459,9 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
             <div className="flex flex-wrap items-center gap-3">
                 <button type="button" onClick={() => run(todo)} disabled={running || todo.length === 0 || !hasMaterial}
                     className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-ui-well disabled:text-ui-faint disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer">
-                    {running ? 'Building…' : todo.length === 0 ? 'All made' : `Build ${todo.length} ${todo.length === 1 ? 'activity' : 'activities'}`}
+                    {running ? 'Building…' : todo.length === 0 ? (skip.size ? 'Nothing ticked' : 'All made') : `Build ${todo.length} ${todo.length === 1 ? 'activity' : 'activities'}`}
                 </button>
-                {!hasMaterial && <p className="text-ui-muted text-sm">Add this lesson’s reading or presentation first (+ Add in the Presentation stage).</p>}
+                {!hasMaterial && <p className="text-ui-danger text-sm font-semibold">This lesson has no reading or presentation yet. Add one first (+ Add in the Presentation stage) — the activities are made from it.</p>}
                 {running && <p className="text-ui-muted text-sm">About 20 seconds each — you can watch them appear below.</p>}
             </div>
         </section>
