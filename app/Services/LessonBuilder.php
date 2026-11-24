@@ -104,6 +104,60 @@ class LessonBuilder
         return [$made, $failed];
     }
 
+    /**
+     * Remakes a lesson's existing activities with the grids' current instructions (2026-11-25: more items per
+     * activity), from the lesson's own reading / presentation. Only the content changes — id, name, stage and
+     * whether students can see it stay as they are. An activity whose format isn't in any grid is left alone.
+     */
+    public function refill(int $userId, string $trilha, int $lesson, string $part, callable $log): array
+    {
+        $this->log = $log;
+        $level = LessonDrafter::LEVEL[$trilha];
+        $acts = Activity::where('user_id', $userId)->where('trilha', $trilha)->where('trilha_lesson', $lesson)
+            ->where(fn ($q) => $part === 'A' ? $q->where('trilha_part', 'A')->orWhereNull('trilha_part') : $q->where('trilha_part', $part))
+            ->orderBy('id')->get();
+        $reading = $acts->firstWhere('type', 'reading_text');
+        $pres = $acts->first(fn ($a) => in_array($a->type, ['presentation', 'grammar_explainer'], true));
+        if (! $reading && ! $pres) {
+            $this->say("{$lesson}{$part}: no reading or presentation — skipped");
+            return [0, 0];
+        }
+        $slots = collect($this->grids())->flatMap(fn ($g) => $g['slots']);
+        $earlier = $this->earlierSummary($userId, $trilha, $lesson, $part);
+        $done = 0; $failed = 0;
+        foreach ($acts as $a) {
+            if (in_array($a->type, ['reading_text', 'presentation', 'grammar_explainer'], true)) continue;
+            $slot = $slots->first(fn ($s) => $s['type'] === $a->type && $s['stage'] === $a->stage) ?? $slots->firstWhere('type', $a->type);
+            if (! $slot) {
+                $this->say("  - {$a->name}: not a grid format — left as it is");
+                continue;
+            }
+            $src = $slot['source'] === 'presentation' ? ($pres ?? $reading) : ($reading ?? $pres);
+            try {
+                $source = ActivityMaker::withEarlier(\App\Support\LessonMaterial::sourceFor($src) ?? throw new \RuntimeException('the lesson material has no text'), $earlier);
+                $content = $this->maker->make($a->type, $source, mb_substr($slot['prompt'] . self::GROUP, 0, 1000), $level, true);
+                $a->update(['content' => $content]);
+                $this->say("  ✓ {$a->name} — " . $this->countOf($content) . ' items');
+                $done++;
+            } catch (Throwable $e) {
+                $this->say("  ✗ {$a->name}: " . $e->getMessage() . ' (kept the old one)');
+                $failed++;
+            }
+        }
+        return [$done, $failed];
+    }
+
+    private function countOf(array $c): int
+    {
+        foreach (['questions', 'sentences', 'cards', 'pairs', 'statements', 'items', 'groups', 'prompts', 'stories', 'topics', 'texts'] as $k) {
+            if (isset($c[$k]) && is_array($c[$k])) return count($c[$k]);
+        }
+        if (isset($c['dialog'])) return count(array_filter($c['dialog'], fn ($l) => ! empty($l['options']) || ! empty($l['blank'])));
+        if (isset($c['categories'])) return array_sum(array_map(fn ($x) => count($x['words'] ?? []), $c['categories']));
+        if (isset($c['parts'])) return count(array_filter($c['parts'], fn ($p) => isset($p['blank']) || isset($p['answer']) || isset($p['options'])));
+        return 0;
+    }
+
     private function save(int $userId, string $trilha, int $lesson, string $part, string $type, string $stage, array $content, string $focus, bool $visible): Activity
     {
         $focus = trim(preg_replace('/\s+/u', ' ', str_replace(['·', '•'], ' ', $focus)));

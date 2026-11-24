@@ -23,7 +23,7 @@ class ClaudeService
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -75,7 +75,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'messages'   => [
                 [
                     'role'    => 'user',
@@ -99,7 +99,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -127,7 +127,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -187,7 +187,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -252,7 +252,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -390,7 +390,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -453,7 +453,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -513,7 +513,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -575,7 +575,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -625,8 +625,8 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Mark the number of lines as blank: true that the task asks for (gaps) — 3 if none is given, never fewer than 2 or more than 8 — spread them throughout the dialog, not bunched at the end
-- The dialog must have between 8 and 20 lines total, and at least twice as many lines as gaps, so every gap has context around it
+- Mark EXACTLY the number of gaps the task asks for as blank: true ("10 gaps" means 10 blank lines — count them) — 3 if none is given, never fewer than 2 or more than 12 — spread them throughout the dialog, not bunched at the end
+- Length: about twice as many lines as gaps, so every gap has context around it (e.g. 10 gaps → a dialogue of about 20 lines; 3 gaps → about 8 lines), never more than 30 lines. Write the dialogue as long as it needs to be to fit every gap
 - Each blank must have exactly 3 options (one correct, two wrong)
 - Wrong options must be grammatically correct and plausible in the context, but clearly not the best fit
 - The "line" field on a blank item always contains the correct answer text
@@ -647,7 +647,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -682,7 +682,7 @@ EOT;
             }
         }
 
-        return array_slice($clean, 0, 6);
+        return array_slice($clean, 0, 15);
     }
 
     private function buildDiscussionQuestionsPrompt(string $source, string $prompt, LanguageLevel $lv): string
@@ -729,7 +729,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -791,7 +791,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [
@@ -1340,7 +1340,7 @@ EOT;
         }
 
         $data['type']  = 'match_pairs';
-        $data['pairs'] = array_slice($pairs, 0, 8);
+        $data['pairs'] = array_slice($pairs, 0, 12);
 
         return $data;
     }
@@ -1363,7 +1363,7 @@ Return a JSON object with EXACTLY this structure:
 }
 
 Rules:
-- Generate exactly the number of pairs the task asks for ("5 pairs" means 5) — 6 only if the task gives no number, never fewer than 4 or more than 8
+- Generate exactly the number of pairs the task asks for ("5 pairs" means 5) — 6 only if the task gives no number, never fewer than 4 or more than 12
 - Every left item has exactly ONE correct partner on the right, and no right item could reasonably match a different left item
 - All left items are the same kind of thing and all right items are the same kind of thing (for example digits and number words, countries and nationalities, words and short definitions, words and their opposites, base verbs and past forms)
 - Keep every item short — a word or a short phrase of at most 6 words; a definition must be simple and use easier words than the word it defines
@@ -1851,7 +1851,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 ['role' => 'user', 'content' => $content],
@@ -1876,7 +1876,7 @@ EOT;
         ])->timeout(120)->post('https://api.anthropic.com/v1/messages', [
             'model'      => self::MODEL,
             'thinking'   => self::THINKING,
-            'max_tokens' => 4096,
+            'max_tokens' => 8192,
             'system'     => 'You are an English language teaching assistant. Return ONLY valid JSON — no markdown code fences, no explanation, just raw JSON.',
             'messages'   => [
                 [

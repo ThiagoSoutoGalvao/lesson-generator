@@ -13,6 +13,7 @@ use Throwable;
  * the suggested grid, every activity hidden from students until approved. See App\Services\LessonBuilder.
  *   php artisan lessons:build FirstSteps 4            # 4A, 4B, 4C
  *   php artisan lessons:build FirstSteps 4 6          # units 4 to 6
+ *   php artisan lessons:build FirstSteps 4 5 --refill # remake units 4–5's activities with the current grid instructions
  * On Railway, start it detached so it outlives the SSH session — and don't deploy while it runs (a deploy restarts
  * the container and stops it; running it again picks up where it stopped).
  */
@@ -20,7 +21,8 @@ class BuildLessons extends Command
 {
     protected $signature = 'lessons:build {trilha} {from : first unit} {to? : last unit (default: from)}
         {--parts=ABC : which lessons of each unit} {--owner=aurora@lessongenerator.app : the login that owns the course}
-        {--by=Thiago : the name the cards show as "by …"}';
+        {--by=Thiago : the name the cards show as "by …"}
+        {--refill : remake the existing activities with the current grid instructions instead of building}';
 
     protected $description = 'Build Aurora Business lessons (plan, reading, presentation, grid) — activities saved hidden until approved';
 
@@ -45,7 +47,9 @@ class BuildLessons extends Command
                 if (! in_array($part, ['A', 'B', 'C'], true)) continue;
                 $t = microtime(true);
                 try {
-                    [$made, $failed] = $builder->build($owner->id, $trilha, $unit, $part, $log, (string) $this->option('by'));
+                    [$made, $failed] = $this->option('refill')
+                        ? $builder->refill($owner->id, $trilha, $unit, $part, $log)
+                        : $builder->build($owner->id, $trilha, $unit, $part, $log, (string) $this->option('by'));
                     $log(sprintf('%d%s done in %ds — %d made, %d failed', $unit, $part, microtime(true) - $t, $made, $failed));
                 } catch (Throwable $e) {
                     $log("{$unit}{$part} STOPPED: " . $e->getMessage());
