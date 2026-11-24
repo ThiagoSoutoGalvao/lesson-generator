@@ -173,6 +173,14 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   (`App\Services\PhotoMatcher`: Claude looks at 4 real candidate photos per item, picks one or drops the item, rewrites the
   question for that photo; the photo is saved with the activity). Word Categorisation: up to 10 words per category.
   Unit 3 plan: `docs/aurora-business/units/first-steps-03.md` (Pampa Seguros, Porto Alegre).
+- **2026-11-25** — **Build from plan** (step 2). Grids now make **6 activities** (1 warmer, 3 practice, 2 production),
+  each with a tick box. On a business lesson with no reading / presentation the panel offers **Draft the reading and
+  presentation**: `POST /api/lesson-draft` (`LessonDraftController`) has Claude draft both prompts from the syllabus line,
+  the **unit plan file** (`docs/aurora-business/units/<course>-<NN>.md` — keep writing one per unit, it is what keeps the
+  cast and "new in each lesson" on track), this unit's earlier readings / presentations and the companies already used.
+  The teacher edits the fields, then **Make both, then build N activities** writes and saves both (Presentation stage)
+  and runs the grid from them. If one fails the other is kept and the box offers just the missing one. Also: the 2A
+  Dialogue, Quiz and both Picture Prompts on the live site were re-dealt / re-matched (backup in `backups/`).
 
 - **2026-11-18** — Business courses offer **only the formats with a light screen** (`LIGHT_TYPES` in `lib/uiTheme.js`:
   Quiz, Flashcards, Unjumble, Match Pairs, Dialogue Gap-Fill, Picture Prompts, Discussion Questions and the 4
