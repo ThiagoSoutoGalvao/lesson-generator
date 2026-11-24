@@ -35,6 +35,8 @@ export function slotPrompt(slot, trilha) {
  * (ties → the usual order for that part: A reading-led, B grammar-led, C simulation).
  */
 export function defaultGrid(grids, part, previousTypes = []) {
+    // A C lesson is the unit's simulation: always the Simulation grid when the course has it (2026-11-25).
+    if (part === 'C' && grids.some(g => g.id === 'simulation')) return grids.find(g => g.id === 'simulation');
     const order = { A: ['reading', 'vocabulary', 'grammar'], B: ['grammar', 'check', 'reading'], C: ['simulation', 'grammar', 'reading'] }[part] ?? [];
     const rankOf = g => (order.indexOf(g.id) === -1 ? 99 : order.indexOf(g.id));
     const overlap = g => g.slots.filter(s => previousTypes.includes(s.type)).length;

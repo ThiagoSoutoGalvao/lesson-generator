@@ -144,6 +144,8 @@ class LessonBuilder
     {
         $order = self::PART_ORDER[$part] ?? [];
         $grids = $this->grids();
+        // A C lesson is the unit's simulation: always the Simulation grid (2026-11-25 — 4C lost it on overlap).
+        foreach ($grids as $g) if ($part === 'C' && $g['id'] === 'simulation') return $g;
         usort($grids, function ($a, $b) use ($order, $previousTypes) {
             $ov = fn ($g) => count(array_filter($g['slots'], fn ($s) => in_array($s['type'], $previousTypes, true)));
             $rk = fn ($g) => ($i = array_search($g['id'], $order, true)) === false ? 99 : $i;
