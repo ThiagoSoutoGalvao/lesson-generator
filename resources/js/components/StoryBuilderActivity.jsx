@@ -114,7 +114,7 @@ function StoryCard({ story }) {
                 </div>
             ) : (
                 <ol className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3" aria-label="Story prompts">
-                    {story.prompts.map((p, i) => (
+                    {(story.prompts ?? []).map((p, i) => (
                         <li key={i} className="rounded-2xl bg-ui-box border border-ui-line px-5 py-4 flex gap-3 items-start">
                             <span className="shrink-0 w-8 h-8 rounded-full bg-ui-sel text-ui-accent font-bold grid place-items-center">{i + 1}</span>
                             <span className={`${PROMPT_SIZES[sizeIdx]} leading-snug ${textColor}`}>{p}</span>
