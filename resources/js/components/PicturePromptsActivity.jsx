@@ -40,6 +40,8 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
         let cancelled = false;
         [index, index + 1].forEach(i => {
             if (i >= total || photos[i] !== undefined) return;
+            // Photo first (2026-11-24): the photo Claude checked against the question is saved with it.
+            if (prompts[i].photo) { setPhotos(p => ({ ...p, [i]: prompts[i].photo })); return; }
             axios.get('/api/background', { params: { topic: prompts[i].keyword } })
                 .then(({ data }) => { if (!cancelled) setPhotos(p => ({ ...p, [i]: data.url })); })
                 .catch(() => { if (!cancelled) setPhotos(p => ({ ...p, [i]: null })); });

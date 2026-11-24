@@ -1784,7 +1784,13 @@ EOT;
     }
 
     /** Shared Claude JSON request used by the newer generators. */
-    private function requestJson(string $content): array
+    /** A JSON request whose content may hold images (PhotoMatcher). */
+    public function askJson(array $content): array
+    {
+        return $this->requestJson($content);
+    }
+
+    private function requestJson(string|array $content): array
     {
         $response = Http::withHeaders([
             'x-api-key'         => config('services.anthropic.key'),

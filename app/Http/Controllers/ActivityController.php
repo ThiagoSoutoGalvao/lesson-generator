@@ -111,6 +111,12 @@ class ActivityController extends Controller
             };
             // Check the answer key and spread the right answers across A / B / C / D.
             $activity = \App\Support\AnswerOptions::fix($request->type, $activity);
+            // Photo first: Claude looks at real candidate photos and picks / rewrites for them.
+            if ($request->type === 'picture_prompts') {
+                $activity = app(\App\Services\PhotoMatcher::class)->picturePrompts($activity, \App\Services\LanguageLevel::from($level)->cefr);
+            } elseif ($request->type === 'image_vocab_match') {
+                $activity = app(\App\Services\PhotoMatcher::class)->imageVocabMatch($activity);
+            }
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
         }

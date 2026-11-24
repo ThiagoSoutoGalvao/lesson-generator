@@ -48,7 +48,8 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
                 const batch = pairs.slice(i, i + batchSize);
                 await Promise.all(
                     batch.map((pair, j) =>
-                        axios.get('/api/background', { params: { topic: pair.keyword } })
+                        // Photo first (2026-11-24): the photo Claude checked against the word is saved with it.
+                        (pair.photo ? Promise.resolve({ data: { url: pair.photo } }) : axios.get('/api/background', { params: { topic: pair.keyword } }))
                             .then(({ data }) => {
                                 if (!cancelled) setImageUrls(prev => {
                                     const next = [...prev];
