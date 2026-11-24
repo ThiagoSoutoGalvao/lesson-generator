@@ -134,25 +134,61 @@ export default function LessonPackPage() {
     // only fills what's missing (e.g. after deleting a weak one).
     const readingHere = here.find(a => a.type === 'reading_text');
     const presHere    = here.find(a => a.type === 'presentation' || a.type === 'grammar_explainer');
-    function sourceFor(slot) {
-        const want = slot.source === 'presentation' ? [presHere, readingHere] : [readingHere, presHere];
+    function sourceFor(slot, mats = {}) {
+        const reading = mats.reading ?? readingHere, pres = mats.pres ?? presHere;
+        const want = slot.source === 'presentation' ? [pres, reading] : [reading, pres];
         return want.find(Boolean) ?? core;
     }
-    async function buildSlot(slot) {
+    function builtBy() {
+        try { return localStorage.getItem('aurora.save.builtBy') || null; } catch { return null; }
+    }
+    // Step 2 (2026-11-25): no reading / presentation yet -> Claude drafts both prompts, the teacher edits them,
+    // then both are written and saved in the Presentation stage before the grid runs from them.
+    async function draftMaterials() {
+        const { data } = await axios.post('/api/lesson-draft', {
+            trilha, lesson, part, syllabus: toc.join('\n').slice(0, 1000),
+            earlier: earlierSummary(library, trilha, lesson, part) || undefined,
+        });
+        return data;
+    }
+    async function makeMaterials(draft, onStep) {
+        const save = async (type, content, topic) => {
+            const focus = tidyFocus(topic || TYPE_LABELS[type]).split(' ').slice(0, 6).join(' ');
+            const { data: saved } = await axios.post('/api/activities', {
+                name: composeActivityName({ trilha, lesson, part, type, focus }),
+                type, content, trilha, trilha_lesson: lesson, trilha_part: part, stage: 'presentation', built_by: builtBy(),
+            });
+            setActivities(prev => [...prev, saved]);
+            setLibrary(prev => [saved, ...prev]);
+            return saved;
+        };
+        const r = draft.reading, p = draft.presentation;
+        let reading = readingHere, pres = presHere;
+        if (!reading) {
+            onStep('reading');
+            const { data } = await axios.post('/api/reading/generate', { topic: r.topic, vocabulary: r.vocabulary || undefined, extra: r.extra || undefined, paragraphs: r.paragraphs, level: r.level || TRILHA_LEVEL[trilha] });
+            reading = await save('reading_text', data, r.topic.split(/[—:–]/)[0]);
+        }
+        if (!pres) {
+            onStep('presentation');
+            const { data } = await axios.post('/api/presentation/generate', { topic: p.topic, extra: p.extra || undefined, slides: p.slides });
+            pres = await save('presentation', data, p.topic);
+        }
+        return { reading, pres };
+    }
+    async function buildSlot(slot, mats = {}) {
         const body = { type: slot.type, prompt: slotPrompt(slot, trilha), level: TRILHA_LEVEL[trilha] };
         if (isLightCourse(trilha)) body.group = true;
-        const src = sourceFor(slot);
+        const src = sourceFor(slot, mats);
         if (src) body.source_activity_id = src.id;
         else body.topic = (toc.slice(0, 2).join('; ') || `${config.label} lesson ${lesson}`).slice(0, 200);
         const earlier = earlierSummary(library, trilha, lesson, part);
         if (earlier) body.earlier = earlier;
         const { data: content } = await axios.post('/api/generate', body);
         const focus = tidyFocus(content.topic || content.title || toc[0] || TYPE_LABELS[slot.type] || '').split(' ').slice(0, 6).join(' ') || 'Suggested';
-        let builtBy = null;
-        try { builtBy = localStorage.getItem('aurora.save.builtBy') || null; } catch { /* ignore */ }
         const { data: saved } = await axios.post('/api/activities', {
             name: composeActivityName({ trilha, lesson, part, type: slot.type, focus }),
-            type: slot.type, content, trilha, trilha_lesson: lesson, trilha_part: part, stage: slot.stage, built_by: builtBy,
+            type: slot.type, content, trilha, trilha_lesson: lesson, trilha_part: part, stage: slot.stage, built_by: builtBy(),
             student_visible: false,
         });
         setActivities(prev => [...prev, saved]);
@@ -304,6 +340,9 @@ export default function LessonPackPage() {
                     sourceName={slot => sourceFor(slot)?.name}
                     earlier={earlierSummary(library, trilha, lesson, part)}
                     onBuild={buildSlot}
+                    missing={isLightCourse(trilha) ? [!readingHere && 'reading', !presHere && 'presentation'].filter(Boolean) : []}
+                    onDraft={draftMaterials}
+                    onMakeMaterials={makeMaterials}
                 />
             )}
 
@@ -372,7 +411,8 @@ const STAGE_LABEL = Object.fromEntries(STAGES.map(s => [s.key, s.label]));
 
 // "Build this lesson": pick a grid (a different one is suggested every lesson), see what it will make and
 // from which material, then make them all — one at a time, each saved hidden until approved.
-function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, earlier, onBuild }) {
+function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, earlier, onBuild, missing, onDraft, onMakeMaterials }) {
+    const draftable = missing.length > 0;
     const [gridId, setGridId] = useState(suggested?.id ?? grids[0]?.id);
     const [status, setStatus] = useState({}); // slot index → 'busy' | 'done' | error message
     const [running, setRunning] = useState(false);
@@ -382,12 +422,29 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
 
     const todo = grid.slots.map((s, i) => i).filter(i => !has(grid.slots[i]) && status[i] !== 'done' && !skip.has(i));
 
-    async function run(indexes) {
+    const [draft, setDraft] = useState(null);
+    const [drafting, setDrafting] = useState(false);
+    const [matStep, setMatStep] = useState(null); // 'reading' | 'presentation' | error message
+    async function getDraft() {
+        setDrafting(true); setMatStep(null);
+        try { setDraft(await onDraft()); }
+        catch (err) { setMatStep(err.response?.data?.message ?? 'Claude could not draft this lesson. Try again.'); }
+        setDrafting(false);
+    }
+    async function makeAll() {
+        setRunning(true);
+        let mats;
+        try { mats = await onMakeMaterials(draft, setMatStep); setMatStep(null); }
+        catch (err) { setMatStep(err.response?.data?.message ?? 'Claude could not write this one. Try again.'); setRunning(false); return; }
+        await run(todo, mats);
+    }
+
+    async function run(indexes, mats) {
         setRunning(true);
         for (const i of indexes) {
             setStatus(st => ({ ...st, [i]: 'busy' }));
             try {
-                await onBuild(grid.slots[i]);
+                await onBuild(grid.slots[i], mats);
                 setStatus(st => ({ ...st, [i]: 'done' }));
             } catch (err) {
                 setStatus(st => ({ ...st, [i]: err.response?.data?.message ?? 'Claude could not make this one. Try again.' }));
@@ -456,7 +513,12 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
                 </details>
             )}
 
-            <div className="flex flex-wrap items-center gap-3">
+            {draftable && (
+                <MaterialDraft draft={draft} setDraft={setDraft} drafting={drafting} running={running} step={matStep}
+                    todo={todo.length} missing={missing} onDraft={getDraft} onMake={makeAll} />
+            )}
+
+            <div className={`flex flex-wrap items-center gap-3 ${draftable && !hasMaterial ? 'hidden' : ''}`}>
                 <button type="button" onClick={() => run(todo)} disabled={running || todo.length === 0 || !hasMaterial}
                     className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-ui-well disabled:text-ui-faint disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer">
                     {running ? 'Building…' : todo.length === 0 ? (skip.size ? 'Nothing ticked' : 'All made') : `Build ${todo.length} ${todo.length === 1 ? 'activity' : 'activities'}`}
@@ -465,6 +527,63 @@ function BuildLesson({ code, grids, suggested, has, hasMaterial, sourceName, ear
                 {running && <p className="text-ui-muted text-sm">About 20 seconds each — you can watch them appear below.</p>}
             </div>
         </section>
+    );
+}
+
+// Step 2: the reading + presentation prompts Claude drafted, as editable form fields (same fields as Materials).
+function MaterialDraft({ draft, setDraft, drafting, running, step, todo, missing, onDraft, onMake }) {
+    const what = missing.length === 2 ? 'both' : `the ${missing[0]}`;
+    const set = (which, key) => e => {
+        const v = e.target.type === 'number' ? Number(e.target.value) : e.target.value;
+        setDraft(d => ({ ...d, [which]: { ...d[which], [key]: v } }));
+    };
+    const error = step && step !== 'reading' && step !== 'presentation' ? step : null;
+    const field = 'mt-1 w-full rounded-lg border border-ui-line bg-transparent px-3 py-2 text-sm text-ui-ink font-normal';
+    const label = 'text-xs font-semibold text-ui-muted';
+    if (!draft) return (
+        <div className="rounded-xl bg-ui-well px-4 py-3 flex flex-col gap-2" data-testid="material-draft">
+            <p className="text-sm text-ui-ink">This lesson has no {missing.length === 2 ? 'reading or presentation' : missing[0]} yet. Claude can draft the prompts from the unit plan and the earlier lessons — you check them, then it writes {what} and builds the grid.</p>
+            <div className="flex flex-wrap items-center gap-3">
+                <button type="button" onClick={onDraft} disabled={drafting}
+                    className="bg-[#e0521f] hover:bg-[#c9461a] disabled:opacity-60 text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer">
+                    {drafting ? 'Drafting…' : missing.length === 2 ? 'Draft the reading and presentation' : `Draft the ${missing[0]}`}
+                </button>
+                {drafting && <p className="text-ui-muted text-sm">About 20 seconds.</p>}
+            </div>
+            {error && <p role="alert" className="text-ui-danger text-sm">{error}</p>}
+        </div>
+    );
+    const r = draft.reading, p = draft.presentation;
+    return (
+        <div className="flex flex-col gap-4" data-testid="material-draft">
+            <fieldset disabled={running} className="grid grid-cols-1 lg:grid-cols-2 gap-4 min-w-0">
+                {missing.includes('reading') && <div className="flex flex-col gap-2 min-w-0">
+                    <h4 className="font-semibold text-ui-ink text-sm">Reading Text</h4>
+                    <label className={label}>Topic<input className={field} value={r.topic} maxLength={200} onChange={set('reading', 'topic')} /></label>
+                    <label className={label}>Target vocabulary<input className={field} value={r.vocabulary} maxLength={500} onChange={set('reading', 'vocabulary')} /></label>
+                    <label className={label}>Number of paragraphs<input type="number" min={1} max={10} className={field} value={r.paragraphs} onChange={set('reading', 'paragraphs')} /></label>
+                    <label className={label}>Extra instructions<textarea rows={7} className={field} value={r.extra} maxLength={3000} onChange={set('reading', 'extra')} /></label>
+                </div>}
+                {missing.includes('presentation') && <div className="flex flex-col gap-2 min-w-0">
+                    <h4 className="font-semibold text-ui-ink text-sm">Presentation</h4>
+                    <label className={label}>Topic<input className={field} value={p.topic} maxLength={200} onChange={set('presentation', 'topic')} /></label>
+                    <label className={label}>Number of slides<input type="number" min={4} max={10} className={field} value={p.slides} onChange={set('presentation', 'slides')} /></label>
+                    <label className={label}>Extra instructions<textarea rows={10} className={field} value={p.extra} maxLength={3000} onChange={set('presentation', 'extra')} /></label>
+                </div>}
+            </fieldset>
+            <div className="flex flex-wrap items-center gap-3">
+                <button type="button" onClick={onMake} disabled={running || !r.topic.trim() || !p.topic.trim()}
+                    className="bg-[#e0521f] hover:bg-[#c9461a] disabled:bg-ui-well disabled:text-ui-faint disabled:cursor-not-allowed text-white font-semibold px-5 py-2.5 rounded-xl cursor-pointer">
+                    {running ? 'Building…' : todo ? `Make ${what}, then build ${todo} ${todo === 1 ? 'activity' : 'activities'}` : `Make ${what}`}
+                </button>
+                <button type="button" onClick={onDraft} disabled={running || drafting} className="text-sm text-ui-muted underline cursor-pointer disabled:cursor-not-allowed">
+                    {drafting ? 'Drafting…' : 'Draft again'}
+                </button>
+                {step === 'reading' && <p className="text-ui-muted text-sm">Writing the reading…</p>}
+                {step === 'presentation' && <p className="text-ui-muted text-sm">Writing the presentation…</p>}
+            </div>
+            {error && <p role="alert" className="text-ui-danger text-sm">{error}</p>}
+        </div>
     );
 }
 

@@ -54,6 +54,7 @@ Route::middleware('auth:web')->group(function () {
             Route::post('/presentation/generate', [ActivityController::class, 'generatePresentation']);
             Route::post('/reading/generate', [ActivityController::class, 'generateReadingText']);
             Route::post('/essay-feedback/generate', [ActivityController::class, 'generateEssayFeedback']);
+            Route::post('/lesson-draft', [\App\Http\Controllers\LessonDraftController::class, 'draft']);
             Route::post('/detect-sections', [SectionController::class, 'detect']);
         });
 
