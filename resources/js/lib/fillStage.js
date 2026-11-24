@@ -44,7 +44,7 @@ const PROMPTS = {
     word_formation:          'Create 6 word formation items based on words from the lesson.',
     picture_prompts:         'Create 3 picture prompts where describing the photo calls for the lesson’s target language, each with a question and 2-3 sentence starters.',
     role_play:               'Create 3 role-play cards. Each has an everyday situation where the lesson’s target language is needed, a role for the student and a role for the teacher.',
-    story_builder:           'Create 3 stories, each with a title and 6 short prompts in order, that the student tells using the lesson’s target language.',
+    story_builder:           'Create 3 stories the group builds by asking and answering questions, each with an opening and 6 questions in order, each answered with a word from the lesson’s target language.',
     discussion_questions:    'Generate 6 open-ended discussion questions that call for the lesson’s target language, each with 2 follow-up prompts.',
     debate:                  'Create 3 debate statements linked to the lesson topic, each with 2 arguments for and 2 against that use the lesson’s target language.',
     mini_presentation:       'Create 3 presentation topics linked to the lesson that the student can talk about from their own life, each with 4-5 steps.',

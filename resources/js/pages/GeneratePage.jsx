@@ -172,8 +172,8 @@ const TEMPLATES = [
     },
     {
         id: 'story_builder', label: 'Story Builder', goals: ['speaking'],
-        blurb: 'A story title and 5–6 prompts the student turns into a story, then retells from memory. Use it for past tenses and linkers.',
-        defaultPrompt: 'Create 3 stories, each with a title and 6 short prompts in order that the student turns into a story.',
+        blurb: 'Students build a story by asking each other questions, answering with a target word each time, then retell it. Use it for past tenses and question forms.',
+        defaultPrompt: 'Create 3 stories the group builds by asking and answering questions, each with an opening and 6 questions in order.',
     },
     {
         id: 'debate', label: 'Debate Cards', goals: ['speaking'],

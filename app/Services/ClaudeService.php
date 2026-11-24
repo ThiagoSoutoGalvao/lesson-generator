@@ -1606,17 +1606,32 @@ Rules:
 EOT;
     }
 
+    /**
+     * Story builder (2026-11-25, rebuilt): the group builds a story by asking and answering questions. Each story has
+     * an opening and 5–6 questions in story order, each with a word the answer must use. A1/A2 see the full question;
+     * B1+ see a cue ("Who / call / Diego / at nine?") and form the question themselves (`full` is the answer key).
+     * Stories saved before this have `prompts` instead of `steps` and still render the old way.
+     */
     public function generateStoryBuilder(string $source, string $prompt, ?string $level = null): array
     {
         $lv   = LanguageLevel::from($level);
-        $data = $this->requestJson($this->buildStoryBuilderPrompt($this->sanitizeUtf8($source), $prompt, $lv));
+        $cues = in_array($lv->code, ['B1', 'B2'], true);
+        $data = $this->requestJson($this->buildStoryBuilderPrompt($this->sanitizeUtf8($source), $prompt, $lv, $cues));
 
         $stories = [];
         foreach ($data['stories'] ?? [] as $s) {
-            $title   = $this->clip($s['title'] ?? '', 80);
-            $prompts = array_values(array_filter(array_map(fn ($p) => $this->clip($p, 90), (array) ($s['prompts'] ?? [])), fn ($p) => $p !== ''));
-            if ($title !== '' && count($prompts) >= 3) {
-                $stories[] = ['title' => $title, 'prompts' => array_slice($prompts, 0, 8)];
+            $title = $this->clip($s['title'] ?? '', 80);
+            $steps = [];
+            foreach ((array) ($s['steps'] ?? []) as $st) {
+                $ask = $this->clip(is_array($st) ? ($st['ask'] ?? '') : $st, 120);
+                if ($ask === '') continue;
+                $step = ['ask' => $ask, 'word' => $this->clip(is_array($st) ? ($st['word'] ?? '') : '', 40)];
+                $full = $cues && is_array($st) ? $this->clip($st['full'] ?? '', 140) : '';
+                if ($full !== '' && $full !== $ask) $step['full'] = $full;
+                $steps[] = $step;
+            }
+            if ($title !== '' && count($steps) >= 3) {
+                $stories[] = ['title' => $title, 'opening' => $this->clip($s['opening'] ?? '', 240), 'steps' => array_slice($steps, 0, 7)];
             }
         }
         if (! $stories) {
@@ -1632,30 +1647,41 @@ EOT;
         ];
     }
 
-    private function buildStoryBuilderPrompt(string $source, string $prompt, LanguageLevel $lv): string
+    private function buildStoryBuilderPrompt(string $source, string $prompt, LanguageLevel $lv, bool $cues): string
     {
+        $askRule = $cues
+            ? '- "ask" is a CUE the student turns into a question: question word + key words in base form, separated by " / ", ending in "?" — e.g. "Who / call / Diego / at nine?", "Why / the client / be / angry?". "full" is the correct full question, e.g. "Who called Diego at nine?"'
+            : '- "ask" is the full question, short and simple (under 12 words), e.g. "Who called Diego at nine o\'clock?". Leave "full" out.';
         return <<<EOT
 {$source}
 
 Task: {$prompt}
 
+The group builds each story together: one student asks a question, the next student answers it by inventing the detail (using the given word), and the answers become the story. Then they swap.
+
 Return a JSON object with EXACTLY this structure:
 {
   "type": "story_builder",
   "topic": "<short topic>",
-  "targets": ["<target language the student should use>", "<another>"],
+  "targets": ["<target language the students should use>", "<another>"],
   "stories": [
     {
-      "title": "<a story title the student tells, e.g. 'The day everything went wrong'>",
-      "prompts": ["<prompt 1>", "<prompt 2>", "<prompt 3>", "<prompt 4>", "<prompt 5>", "<prompt 6>"]
+      "title": "<a story title, e.g. 'Diego's strange Monday'>",
+      "opening": "<1-2 sentences that start the story and leave it open, e.g. 'Diego arrived at the office at 8:30. Something was wrong.'>",
+      "steps": [
+        {"ask": "<question 1>", "full": "<full question, only for cues>", "word": "<word or phrase the answer must use>"}
+      ]
     }
   ]
 }
 
 Rules:
-- Each story has 5-6 prompts in order, each a short fragment (under 10 words) the student turns into full sentences — e.g. "The alarm didn't go off", "While I was running for the bus…", "…I had left my laptop at home"
-- Prompts are cues, not a finished story: leave the student room to add detail
-- Each story has a clear beginning, a problem and an ending
+- Each story has 5-6 steps in story order: the first questions set the scene, the middle ones bring a problem, the last ones lead to an ending
+- Every question is open (Who / What / Where / When / Why / How…), so the answer has to invent a detail — never a yes/no question and never one the opening already answers
+- Each question follows from the story so far but works whatever the previous answers were
+{$askRule}
+- "word": a word or phrase from the lesson's target vocabulary or language that fits naturally in the answer; a different one for each step of a story
+- The questions use the tense the lesson practises (usually the past simple for a story)
 {$this->productionRules('stories', $lv)}
 EOT;
     }

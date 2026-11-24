@@ -181,6 +181,10 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   The teacher edits the fields, then **Make both, then build N activities** writes and saves both (Presentation stage)
   and runs the grid from them. If one fails the other is kept and the box offers just the missing one. Also: the 2A
   Dialogue, Quiz and both Picture Prompts on the live site were re-dealt / re-matched (backup in `backups/`).
+  Same day: **Story Builder rebuilt** (all courses) — the group builds the story by asking questions: an opening, then
+  one step on screen at a time (ASK + ANSWER WITH a target word), "the story so far", then a retell with every word.
+  A1/A2 get full questions; B1+ get cues ("Who / call / Diego / at nine?") with "Show the question". Old saved stories
+  (`prompts`) keep the old card.
 
 - **2026-11-18** — Business courses offer **only the formats with a light screen** (`LIGHT_TYPES` in `lib/uiTheme.js`:
   Quiz, Flashcards, Unjumble, Match Pairs, Dialogue Gap-Fill, Picture Prompts, Discussion Questions and the 4

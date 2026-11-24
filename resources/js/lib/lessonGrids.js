@@ -45,7 +45,7 @@ export const GRIDS = [
             { stage: 'practice',   type: 'match_pairs',          source: 'reading',      prompt: 'Create 8 pairs that match the reading’s key words and phrases with their meanings.' },
             { stage: 'practice',   type: 'flashcards',           source: 'reading',      prompt: 'Create 8 flashcards with the reading’s key words and phrases, each with a short example sentence about work.' },
             { stage: 'production', type: 'picture_prompts',      source: 'reading',      prompt: 'Create 3 picture prompts where describing the photo calls for the reading’s vocabulary, each with a question and 3 sentence starters.' },
-            { stage: 'production', type: 'story_builder',        source: 'reading',      prompt: 'Create 3 story builders set in an office like the one in the reading, where telling the story needs the reading’s vocabulary.' },
+            { stage: 'production', type: 'story_builder',        source: 'reading',      prompt: 'Create 3 stories set in an office like the one in the reading that the group builds by asking and answering questions, each answer using one of the reading’s words.' },
         ],
     },
     {
@@ -57,7 +57,7 @@ export const GRIDS = [
             { stage: 'practice',   type: 'unjumble',             source: 'presentation', prompt: 'Create 6 useful sentences from the lesson’s target language for students to put in order.' },
             { stage: 'practice',   type: 'error_correction',     source: 'presentation', prompt: 'Write 6 short lines from a conversation in the lesson’s situation, each with one typical mistake with the lesson’s target language, for students to correct.' },
             { stage: 'production', type: 'role_play',            source: 'reading',      prompt: 'Create 3 role-play cards in the lesson’s situation where the target language is needed, with a role for Student A and a role for Student B, and an optional role C for a third student.' },
-            { stage: 'production', type: 'story_builder',        source: 'reading',      prompt: 'Create 3 story builders about a day in the lesson’s situation that went wrong, where telling the story needs the lesson’s target language.' },
+            { stage: 'production', type: 'story_builder',        source: 'reading',      prompt: 'Create 3 stories about a day in the lesson’s situation that went wrong, which the group builds by asking and answering questions with the lesson’s target language.' },
         ],
     },
     {
