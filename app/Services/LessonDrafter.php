@@ -1,0 +1,178 @@
+<?php
+
+namespace App\Services;
+
+use App\Models\Activity;
+use App\Models\TrilhaLessonBrief;
+use App\Support\LessonMaterial;
+use RuntimeException;
+
+/**
+ * Aurora Business lesson planning by Claude (2026-11-25), shared by the pack's "Draft the reading and presentation"
+ * (LessonDraftController) and the lesson builder (lessons:build):
+ *  - unitPlan(): the unit plan — the repo file docs/aurora-business/units/<course>-<NN>.md if there is one, otherwise
+ *    the unit's brief (the 📝 brief editor's fields), which writeUnitPlan() fills for a new unit;
+ *  - draft(): the Reading Text + Presentation form fields for one lesson.
+ */
+class LessonDrafter
+{
+    public const BUSINESS = ['FirstSteps' => 'first-steps', 'EverydayBusiness' => 'everyday-business', 'TakeTheLead' => 'take-the-lead'];
+    public const LEVEL    = ['FirstSteps' => 'A2', 'EverydayBusiness' => 'B1', 'TakeTheLead' => 'B2'];
+
+    public function __construct(private ClaudeService $claude) {}
+
+    /** The unit's syllabus lines (resources/js/data/businessToc.json, shared with the app). */
+    public static function syllabus(string $trilha, int $lesson): string
+    {
+        static $toc = null;
+        $toc ??= json_decode(file_get_contents(resource_path('js/data/businessToc.json')), true);
+        return implode("\n", $toc[$trilha][(string) $lesson] ?? []);
+    }
+
+    public function unitPlan(int $userId, string $trilha, int $lesson): ?string
+    {
+        $file = base_path(sprintf('docs/aurora-business/units/%s-%02d.md', self::BUSINESS[$trilha], $lesson));
+        if (is_file($file)) {
+            return mb_substr(file_get_contents($file), 0, 3000);
+        }
+        $b = TrilhaLessonBrief::where('user_id', $userId)->where('trilha', $trilha)->where('trilha_lesson', $lesson)->first();
+        if (! $b || (! filled($b->level_notes) && ! $b->part_plans)) {
+            return null;
+        }
+        $out = "Language: {$b->target_language}\nVocabulary: {$b->vocabulary}\n{$b->level_notes}\n";
+        foreach ((array) $b->part_plans as $p => $line) {
+            $out .= "Lesson {$lesson}{$p}: {$line}\n";
+        }
+        return mb_substr($out, 0, 3000);
+    }
+
+    /** A new unit's plan (company, cast, what's new in A / B / C), saved in the unit's brief. Returns the plan text. */
+    public function writeUnitPlan(int $userId, string $trilha, int $lesson): string
+    {
+        $cefr = self::LEVEL[$trilha];
+        $used = $this->usedCompanies($userId, $trilha, $lesson);
+        $prompt = "Plan unit {$lesson} of an Aurora Business course ({$cefr}), taught as three 60-minute lessons A / B / C to a small group of 2–4 adults: "
+            . "A = input, B = practice, C = a realistic workplace simulation. Unit syllabus:\n" . self::syllabus($trilha, $lesson) . "\n"
+            . ($used ? "\nCompanies and casts already used in this course (never reuse a company or a first name; pick a different kind of workplace): " . implode('; ', $used) . "\n" : '')
+            . <<<TXT
+
+Return JSON:
+{"company": "a fictional company: name, kind of workplace, city (office work only — e.g. 'Serra Azul Logística, a logistics company, office in Belo Horizonte')",
+ "cast": "3–4 people with first names and office jobs, e.g. 'Paula (sales assistant), Bruno (account manager)'",
+ "language": "the unit's target language", "vocabulary": "8–12 words or phrases",
+ "mistakes": "2–3 common mistakes with this language, written as wrong → right",
+ "A": "what lesson A's reading is about and the language that is NEW in A", "B": "the same for B (new language, not A's again)", "C": "the same for C, ending in the simulation"}
+Rules: never a real company's name; never mention the students' nationality or first language; each lesson adds something new; plain English, no markdown.
+TXT;
+        $d = $this->claude->askJson([['type' => 'text', 'text' => $prompt]]);
+        foreach (['company', 'cast', 'A', 'B', 'C'] as $k) {
+            if (! filled($d[$k] ?? null)) {
+                throw new RuntimeException("Claude's unit plan for unit {$lesson} is missing “{$k}”.");
+            }
+        }
+        $s = fn ($v, $n = 600) => mb_substr(trim(is_array($v) ? implode(', ', $v) : (string) $v), 0, $n);
+        TrilhaLessonBrief::updateOrCreate(
+            ['user_id' => $userId, 'trilha' => $trilha, 'trilha_lesson' => $lesson],
+            [
+                'target_language' => $s($d['language'] ?? ''),
+                'vocabulary'      => $s($d['vocabulary'] ?? ''),
+                'level_notes'     => "Company: " . $s($d['company']) . "\nCast: " . $s($d['cast']) . "\nCommon mistakes: " . $s($d['mistakes'] ?? ''),
+                'part_plans'      => ['A' => $s($d['A'], 1200), 'B' => $s($d['B'], 1200), 'C' => $s($d['C'], 1200)],
+                'updated_by'      => 'Claude (lesson builder)',
+            ],
+        );
+        return (string) $this->unitPlan($userId, $trilha, $lesson);
+    }
+
+    /** The Reading Text + Presentation form fields for one lesson. */
+    public function draft(int $userId, string $trilha, int $lesson, string $part, string $syllabus, ?string $earlier): array
+    {
+        $cefr = self::LEVEL[$trilha];
+        $code = "{$lesson}{$part}";
+        $plan = $this->unitPlan($userId, $trilha, $lesson);
+        $unitSoFar = $this->unitSoFar($userId, $trilha, $lesson, $part);
+        $used = $this->usedCompanies($userId, $trilha, $lesson);
+
+        $ctx = "Course: Aurora Business, {$cefr} level. Lesson {$code} (unit {$lesson}, lesson {$part} of A / B / C: A = input, B = practice, C = a realistic workplace simulation).\n";
+        $ctx .= "Unit syllabus:\n" . trim($syllabus) . "\n";
+        if ($plan) $ctx .= "\nThe unit plan (follow it: cast, company, what is new in each lesson):\n{$plan}\n";
+        if ($unitSoFar) $ctx .= "\nThis unit's earlier lessons (same cast and company — continue the story, don't repeat it):\n{$unitSoFar}\n";
+        if (filled($earlier)) $ctx .= "\nThe course's recent lessons:\n" . trim($earlier) . "\n";
+        if ($used && ! $plan) $ctx .= "\nCompanies already used in this course (never reuse one): " . implode('; ', $used) . "\n";
+
+        $rules = <<<TXT
+You plan Aurora Business lessons. Draft the prompts a teacher will paste into two tools that write the lesson's core material: a Reading Text and a Presentation. Return JSON:
+{"reading": {"topic": "...", "vocabulary": "...", "paragraphs": 4, "extra": "..."}, "presentation": {"topic": "...", "extra": "...", "slides": 6}}
+
+Rules:
+- Something new every lesson: introduce the language that is new in lesson {$code} (from the unit plan if there is one, otherwise the right step of the unit's syllabus for lesson {$part}). Don't re-teach what the unit's earlier lessons already taught.
+- Office work only (emails, calls, meetings, routines, admin) even when the company is in another industry. A fictional company: never a real company's name. If the unit plan or the unit's earlier lessons name the company and cast, use them; for a new unit, invent a new company (a different kind of workplace from those already used) and 3–4 people with first names and office jobs.
+- The class is a small group of 2–4 adults. The reading should work in a group: each paragraph makes sense on its own (each student can read one), or it is a dialogue / interview pairs can read in roles.
+- Never mention the students' nationality or first language. Say "common mistakes", not whose mistakes.
+- reading.topic: a short title + a one-line premise, under 150 characters. reading.vocabulary: 6–10 comma-separated words or phrases at {$cefr} level that the lesson needs. reading.paragraphs: 3–6. reading.extra: under 2 short paragraphs and under 1200 characters: the genre and voice, the cast, the target language to include (several times, in natural sentences), "use every target word at least once", what to avoid, how to end.
+- presentation.topic: the language point as a short title, under 120 characters. presentation.extra: under 1200 characters: "{$cefr} level" (the tool has no level setting), the forms to teach with examples from the reading's cast and company, a slide of common mistakes, short check questions for the group. presentation.slides: 5–8.
+- Plain English the teacher can edit. No markdown.
+TXT;
+
+        $data = $this->claude->askJson([['type' => 'text', 'text' => $ctx . "\n" . $rules]]);
+        $r = $data['reading'] ?? [];
+        $p = $data['presentation'] ?? [];
+        $cut = fn ($s, $n) => mb_substr(trim(is_array($s) ? implode(', ', $s) : (string) $s), 0, $n);
+        if ($cut($r['topic'] ?? '', 1) === '' || $cut($p['topic'] ?? '', 1) === '') {
+            throw new RuntimeException('Claude could not draft this lesson — please try again.');
+        }
+        return [
+            'reading' => [
+                'topic'      => $cut($r['topic'], 200),
+                'vocabulary' => $cut($r['vocabulary'] ?? '', 500),
+                'paragraphs' => max(1, min(10, (int) ($r['paragraphs'] ?? 4))),
+                'extra'      => $cut($r['extra'] ?? '', 3000),
+                'level'      => $cefr,
+            ],
+            'presentation' => [
+                'topic'  => $cut($p['topic'], 200),
+                'extra'  => $cut($p['extra'] ?? '', 3000),
+                'slides' => max(4, min(10, (int) ($p['slides'] ?? 6))),
+            ],
+        ];
+    }
+
+    /** This unit's readings and presentations from the parts before this one (B sees A; C sees A and B). */
+    private function unitSoFar(int $userId, string $trilha, int $lesson, string $part): string
+    {
+        $out = '';
+        foreach ($this->materials($userId, $trilha)->where('trilha_lesson', $lesson) as $a) {
+            if (($a->trilha_part ?? 'A') >= $part) continue;
+            $out .= "- {$a->name}:\n" . mb_substr(LessonMaterial::text($a), 0, 1500) . "\n";
+        }
+        return mb_substr($out, 0, 4000);
+    }
+
+    /** Companies named in unit plan files and briefs, plus the opening of each earlier unit's first reading. */
+    private function usedCompanies(int $userId, string $trilha, int $lesson): array
+    {
+        $used = [];
+        foreach (glob(base_path('docs/aurora-business/units/*.md')) ?: [] as $f) {
+            $txt = file_get_contents($f);
+            if (preg_match('/^Company:\s*(.+)$/mi', $txt, $m)) $used[] = mb_substr(trim($m[1]), 0, 120);
+            if (preg_match('/^Cast:\s*(.+)$/mi', $txt, $m)) $used[] = 'cast ' . mb_substr(trim($m[1]), 0, 160);
+        }
+        foreach (TrilhaLessonBrief::where('user_id', $userId)->where('trilha', $trilha)->where('trilha_lesson', '<>', $lesson)->get() as $b) {
+            if (preg_match('/^Company:\s*(.+)$/mi', (string) $b->level_notes, $m)) $used[] = mb_substr(trim($m[1]), 0, 120);
+            if (preg_match('/^Cast:\s*(.+)$/mi', (string) $b->level_notes, $m)) $used[] = 'cast ' . mb_substr(trim($m[1]), 0, 160);
+        }
+        $first = $this->materials($userId, $trilha)->where('type', 'reading_text')->where('trilha_lesson', '<', $lesson)
+            ->groupBy('trilha_lesson')->map->first();
+        foreach ($first as $a) {
+            $used[] = "(lesson {$a->trilha_lesson} reading opens:) " . mb_substr(LessonMaterial::text($a), 0, 160);
+        }
+        return array_slice(array_values(array_unique($used)), 0, 40);
+    }
+
+    private function materials(int $userId, string $trilha)
+    {
+        return Activity::where('user_id', $userId)->where('trilha', $trilha)
+            ->whereIn('type', ['reading_text', 'presentation'])
+            ->orderBy('trilha_lesson')->orderBy('trilha_part')->orderBy('id')->get();
+    }
+}

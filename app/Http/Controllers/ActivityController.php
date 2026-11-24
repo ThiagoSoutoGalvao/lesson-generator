@@ -81,51 +81,13 @@ class ActivityController extends Controller
         }
 
         // "Build this lesson" (2026-11-24): the course's previous lessons, so a lesson builds on the last ones.
-        // Without it the source is exactly as before.
-        if ($request->filled('earlier')) {
-            $source .= "\n\nFor reference, what this course's earlier lessons covered:\n" . trim($request->input('earlier'))
-                . "\nWhere it fits naturally, recycle two or three words or structures from those lessons, "
-                . "but don't repeat their examples, and keep the focus on this lesson's material.";
-        }
+        $source = \App\Services\ActivityMaker::withEarlier($source, $request->input('earlier'));
 
         $prompt = $request->prompt;
         $level  = $request->input('level'); // null = B1, the level the prompts were written for
 
         try {
-            $activity = match ($request->type) {
-                'quiz'                    => $claude->generateQuiz($source, $prompt, $level),
-                'flashcards'              => $claude->generateFlashcards($source, $prompt, $level),
-                'unjumble'                => $claude->generateUnjumble($source, $prompt, $level),
-                'dialog_gap_fill'         => $claude->generateDialogGapFill($source, $prompt, $level),
-                'word_formation'          => $claude->generateWordFormation($source, $prompt, $level),
-                'true_false'              => $claude->generateTrueFalse($source, $prompt, $level, $request->boolean('group')),
-                'mc_reading'              => $claude->generateMcReading($source, $prompt, $level, $request->boolean('group')),
-                'odd_one_out'             => $claude->generateOddOneOut($source, $prompt, $level),
-                'cloze'                   => $claude->generateCloze($source, $prompt, $level),
-                'open_cloze'              => $claude->generateOpenCloze($source, $prompt, $level),
-                'mc_cloze'                => $claude->generateMcCloze($source, $prompt, $level),
-                'read_complete'           => $claude->generateReadComplete($source, $prompt, $level),
-                'discussion_questions'    => $claude->generateDiscussionQuestions($source, $prompt, $level),
-                'sentence_transformation' => $claude->generateSentenceTransformation($source, $prompt, $level),
-                'error_correction'        => $claude->generateErrorCorrection($source, $prompt, $level),
-                'image_vocab_match'       => $claude->generateImageVocabMatch($source, $prompt, $level),
-                'word_categorisation'     => $claude->generateWordCategorisation($source, $prompt, $level),
-                'match_pairs'             => $claude->generateMatchPairs($source, $prompt, $level),
-                'signs_notices'           => $claude->generateSignsNotices($source, $prompt, $level, $request->boolean('group')),
-                'picture_prompts'         => $claude->generatePicturePrompts($source, $prompt, $level),
-                'role_play'               => $claude->generateRolePlay($source, $prompt, $level, $request->boolean('group')),
-                'story_builder'           => $claude->generateStoryBuilder($source, $prompt, $level),
-                'debate'                  => $claude->generateDebate($source, $prompt, $level),
-                'mini_presentation'       => $claude->generateMiniPresentation($source, $prompt, $level),
-            };
-            // Check the answer key and spread the right answers across A / B / C / D.
-            $activity = \App\Support\AnswerOptions::fix($request->type, $activity);
-            // Photo first: Claude looks at real candidate photos and picks / rewrites for them.
-            if ($request->type === 'picture_prompts') {
-                $activity = app(\App\Services\PhotoMatcher::class)->picturePrompts($activity, \App\Services\LanguageLevel::from($level)->cefr);
-            } elseif ($request->type === 'image_vocab_match') {
-                $activity = app(\App\Services\PhotoMatcher::class)->imageVocabMatch($activity);
-            }
+            $activity = app(\App\Services\ActivityMaker::class)->make($request->type, $source, $prompt, $level, $request->boolean('group'));
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
         }
