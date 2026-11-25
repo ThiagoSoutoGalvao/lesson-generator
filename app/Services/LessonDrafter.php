@@ -158,7 +158,10 @@ TXT;
             if (preg_match('/^Company:\s*(.+)$/mi', $txt, $m)) $used[] = mb_substr(trim($m[1]), 0, 120);
             if (preg_match('/^Cast:\s*(.+)$/mi', $txt, $m)) $used[] = 'cast ' . mb_substr(trim($m[1]), 0, 160);
         }
-        foreach (TrilhaLessonBrief::where('user_id', $userId)->where('trilha', $trilha)->where('trilha_lesson', '<>', $lesson)->get() as $b) {
+        // Every business course's unit plans, not just this one's (2026-11-26: Everyday Business 2 reused First Steps 5's company).
+        $briefs = TrilhaLessonBrief::where('user_id', $userId)->whereIn('trilha', array_keys(self::BUSINESS))
+            ->where(fn ($q) => $q->where('trilha', '<>', $trilha)->orWhere('trilha_lesson', '<>', $lesson))->get();
+        foreach ($briefs as $b) {
             if (preg_match('/^Company:\s*(.+)$/mi', (string) $b->level_notes, $m)) $used[] = mb_substr(trim($m[1]), 0, 120);
             if (preg_match('/^Cast:\s*(.+)$/mi', (string) $b->level_notes, $m)) $used[] = 'cast ' . mb_substr(trim($m[1]), 0, 160);
         }
