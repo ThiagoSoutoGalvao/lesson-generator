@@ -65,12 +65,13 @@ Return JSON:
  "A": "what lesson A's reading is about (flowing text: a story, email, blog post, interview or chat — never a calendar, table or list) and the language that is NEW in A", "B": "the same for B (new language, not A's again)", "C": "the same for C, ending in the simulation"}
 Rules: each field holds only your final answer — no reasoning, no "X is not used; instead…"; never a real company's name; never mention the students' nationality or first language; each lesson adds something new; plain English, no markdown.
 TXT;
-        $d = $this->askJsonTwice([['type' => 'text', 'text' => $prompt]]);
-        $d['company'] = self::finalAnswer((string) ($d['company'] ?? ''));
-        foreach (['company', 'cast', 'A', 'B', 'C'] as $k) {
-            if (! filled($d[$k] ?? null)) {
-                throw new RuntimeException("Claude's unit plan for unit {$lesson} is missing “{$k}”.");
-            }
+        // Up to 2 tries: a plan with a missing field also stopped a build (EB 10A, 2026-11-26).
+        for ($try = 1; ; $try++) {
+            $d = $this->askJsonTwice([['type' => 'text', 'text' => $prompt]]);
+            $d['company'] = self::finalAnswer((string) ($d['company'] ?? ''));
+            $missing = array_values(array_filter(['company', 'cast', 'A', 'B', 'C'], fn ($k) => ! filled($d[$k] ?? null)));
+            if (! $missing) break;
+            if ($try >= 2) throw new RuntimeException("Claude's unit plan for unit {$lesson} is missing “{$missing[0]}”.");
         }
         $s = fn ($v, $n = 600) => mb_substr(trim(is_array($v) ? implode(', ', $v) : (string) $v), 0, $n);
         TrilhaLessonBrief::updateOrCreate(
