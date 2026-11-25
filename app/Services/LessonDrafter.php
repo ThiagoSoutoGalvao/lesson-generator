@@ -57,14 +57,16 @@ class LessonDrafter
             . <<<TXT
 
 Return JSON:
-{"company": "a fictional company: name, kind of workplace, city (office work only — e.g. 'Serra Azul Logística, a logistics company, office in Belo Horizonte')",
+{"considered": "names you thought of and rejected, if any (this field is discarded)",
+ "company": "ONLY your final choice — a fictional company: name, kind of workplace, city (office work only — e.g. 'Serra Azul Logística, a logistics company, office in Belo Horizonte')",
  "cast": "3–4 people with first names and office jobs, e.g. 'Paula (sales assistant), Bruno (account manager)'",
  "language": "the unit's target language", "vocabulary": "8–12 words or phrases",
  "mistakes": "2–3 common mistakes with this language, written as wrong → right",
  "A": "what lesson A's reading is about (flowing text: a story, email, blog post, interview or chat — never a calendar, table or list) and the language that is NEW in A", "B": "the same for B (new language, not A's again)", "C": "the same for C, ending in the simulation"}
 Rules: each field holds only your final answer — no reasoning, no "X is not used; instead…"; never a real company's name; never mention the students' nationality or first language; each lesson adds something new; plain English, no markdown.
 TXT;
-        $d = $this->claude->askJson([['type' => 'text', 'text' => $prompt]]);
+        $d = $this->askJsonTwice([['type' => 'text', 'text' => $prompt]]);
+        $d['company'] = self::finalAnswer((string) ($d['company'] ?? ''));
         foreach (['company', 'cast', 'A', 'B', 'C'] as $k) {
             if (! filled($d[$k] ?? null)) {
                 throw new RuntimeException("Claude's unit plan for unit {$lesson} is missing “{$k}”.");
@@ -115,7 +117,7 @@ Rules:
 - Plain English the teacher can edit. No markdown.
 TXT;
 
-        $data = $this->claude->askJson([['type' => 'text', 'text' => $ctx . "\n" . $rules]]);
+        $data = $this->askJsonTwice([['type' => 'text', 'text' => $ctx . "\n" . $rules]]);
         $r = $data['reading'] ?? [];
         $p = $data['presentation'] ?? [];
         $cut = fn ($s, $n) => mb_substr(trim(is_array($s) ? implode(', ', $s) : (string) $s), 0, $n);
@@ -136,6 +138,27 @@ TXT;
                 'slides' => max(4, min(10, (int) ($p['slides'] ?? 6))),
             ],
         ];
+    }
+
+    /** One retry when Claude's reply isn't valid JSON (2026-11-26: a build stopped at EB 9A on one bad reply). */
+    private function askJsonTwice(array $content): array
+    {
+        try {
+            return $this->claude->askJson($content);
+        } catch (RuntimeException $e) {
+            return $this->claude->askJson($content);
+        }
+    }
+
+    /** "X is not used; instead: Y is not used either; final answer: Z" → "Z" (Claude sometimes reasons in the field). */
+    public static function finalAnswer(string $s): string
+    {
+        $s = trim($s);
+        if (! preg_match('/is not used|is also used|instead|final (?:answer|choice)|chosen|No —/iu', $s)) {
+            return $s;
+        }
+        $parts = preg_split('/(?:final answer|final choice|chosen company|chosen|instead|No —)\s*:?\s*/iu', $s);
+        return trim((string) end($parts), " ;:.");
     }
 
     /** This unit's readings and presentations from the parts before this one (B sees A; C sees A and B). */
