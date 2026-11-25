@@ -23,6 +23,12 @@ class BackgroundController extends Controller
 
         $url = $this->fetchFromUnsplash($topic);
 
+        // 2026-11-26: a placeholder (Unsplash unavailable, e.g. its 50-an-hour limit) is shown but never cached —
+        // cached, it stayed on that keyword for good, and the next visit gets a real photo instead.
+        if (str_starts_with($url, 'https://picsum.photos/')) {
+            return response()->json(['url' => $url]);
+        }
+
         // updated_at set by hand: a re-fetch that lands on the same photo must still count as fresh.
         $row = ImageCache::firstOrNew(['keyword' => $topic]);
         $row->url        = $url;
