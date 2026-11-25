@@ -198,6 +198,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   activities, 0 failed; 5C with the Simulation grid). Then **more items per activity** (grids ask for ~10; generator caps
   lifted) and `--refill` remade Units 4–5's 36 activities in place (all OK). **Unit 6 built** (Lume Design Studio; 17 of 18 —
   6A's Image Match found too few photos for abstract calendar words). Photo formats can come back short (2–5 items).
+  Then: 6A reading rewritten as flowing paragraphs (drafts now must be flowing text, never a calendar/list); 6A refilled
+  from it; photo formats now skip photos the login already used. **Found: the Unsplash key is demo tier, 50 searches an
+  hour for the whole app** — the photo refill of 4A, 4C, 5B hit it and saved them WITHOUT checked photos.
+  **NEXT (hand-off):** 1) push `0417e01` (search cache + clear error at the limit) — not yet approved; 2) after the hourly
+  reset run `lessons:build FirstSteps 4 5 --refill --only=picture_prompts,image_vocab_match`; 3) add Unsplash download
+  tracking, then Thiago applies for Unsplash Production (5,000/h); 4) "Approve lesson" + "Redo" buttons; 5) Unit 7+
+  with `lessons:build`; 6) 4C has no role-play (Build more → Simulation).
 
 - **2026-11-18** — Business courses offer **only the formats with a light screen** (`LIGHT_TYPES` in `lib/uiTheme.js`:
   Quiz, Flashcards, Unjumble, Match Pairs, Dialogue Gap-Fill, Picture Prompts, Discussion Questions and the 4
