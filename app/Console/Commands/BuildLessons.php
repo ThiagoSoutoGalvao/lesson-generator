@@ -23,7 +23,9 @@ class BuildLessons extends Command
         {--parts=ABC : which lessons of each unit} {--owner=aurora@lessongenerator.app : the login that owns the course}
         {--by=Thiago : the name the cards show as "by …"}
         {--refill : remake the existing activities with the current grid instructions instead of building}
-        {--only= : with --refill, just these formats (comma-separated, e.g. picture_prompts,image_vocab_match)}';
+        {--only= : with --refill, just these formats (comma-separated, e.g. picture_prompts,image_vocab_match)}
+        {--no-photos : build everything except Picture Prompts / Image Match (the photo search allows 50 an hour)}
+        {--photos-only : add just the missing Picture Prompts / Image Match to lessons already built}';
 
     protected $description = 'Build Aurora Business lessons (plan, reading, presentation, grid) — activities saved hidden until approved';
 
@@ -50,7 +52,8 @@ class BuildLessons extends Command
                 try {
                     [$made, $failed] = $this->option('refill')
                         ? $builder->refill($owner->id, $trilha, $unit, $part, $log, array_filter(explode(',', (string) $this->option('only'))))
-                        : $builder->build($owner->id, $trilha, $unit, $part, $log, (string) $this->option('by'));
+                        : $builder->build($owner->id, $trilha, $unit, $part, $log, (string) $this->option('by'),
+                            $this->option('photos-only') ? 'only' : ($this->option('no-photos') ? 'none' : 'all'));
                     $log(sprintf('%d%s done in %ds — %d made, %d failed', $unit, $part, microtime(true) - $t, $made, $failed));
                 } catch (Throwable $e) {
                     $log("{$unit}{$part} STOPPED: " . $e->getMessage());

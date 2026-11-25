@@ -42,7 +42,12 @@ class LessonBuilder
     // teachers are still wary of AI, so it reads like every other lesson).
     private string $by = 'Thiago';
 
-    public function build(int $userId, string $trilha, int $lesson, string $part, callable $log, string $by = 'Thiago'): array
+    /**
+     * $photos (2026-11-26, the Unsplash key allows 50 searches an hour): 'all' = the whole grid; 'none' = skip the photo
+     * formats (Picture Prompts, Image Match) so lessons keep coming; 'only' = come back later and add just the photo
+     * formats missing from the grid the lesson was built with.
+     */
+    public function build(int $userId, string $trilha, int $lesson, string $part, callable $log, string $by = 'Thiago', string $photos = 'all'): array
     {
         $this->log = $log;
         $this->by = $by;
@@ -56,7 +61,11 @@ class LessonBuilder
         $acts = $here();
         $reading = $acts->firstWhere('type', 'reading_text');
         $pres = $acts->first(fn ($a) => in_array($a->type, ['presentation', 'grammar_explainer'], true));
-        if (! $reading || ! $pres) {
+        if ($photos === 'only' && ! $reading && ! $pres) {
+            $this->say("{$code}: not built yet — no photo pass");
+            return [0, 0];
+        }
+        if ($photos !== 'only' && (! $reading || ! $pres)) {
             if (! $this->drafter->unitPlan($userId, $trilha, $lesson)) {
                 $this->say("{$code}: writing the unit plan…");
                 $plan = $this->drafter->writeUnitPlan($userId, $trilha, $lesson, $by);
@@ -80,11 +89,17 @@ class LessonBuilder
         }
 
         // 3: the grid
-        $grid = $this->defaultGrid($part, $this->previousLessonTypes($userId, $trilha, $lesson, $part));
-        $this->say("{$code}: grid “{$grid['label']}”");
+        $grid = $photos === 'only'
+            ? $this->gridBuiltWith($part, $acts)
+            : $this->defaultGrid($part, $this->previousLessonTypes($userId, $trilha, $lesson, $part));
+        $this->say("{$code}: grid “{$grid['label']}”" . ($photos === 'none' ? ' (photo formats later)' : ($photos === 'only' ? ' — photo pass' : '')));
         $earlier = $this->earlierSummary($userId, $trilha, $lesson, $part);
         $made = 0; $failed = 0;
         foreach ($grid['slots'] as $slot) {
+            $isPhoto = in_array($slot['type'], self::PHOTO_TYPES, true);
+            if (($photos === 'none' && $isPhoto) || ($photos === 'only' && ! $isPhoto)) {
+                continue;
+            }
             if ($here()->contains(fn ($a) => $a->stage === $slot['stage'] && $a->type === $slot['type'])) {
                 $this->say("  - {$slot['stage']} {$slot['type']}: already there");
                 continue;
@@ -193,6 +208,21 @@ class LessonBuilder
     {
         $all = json_decode(file_get_contents(resource_path('js/data/lessonGrids.json')), true);
         return array_values(array_filter($all, fn ($g) => in_array('business', $g['courses'], true)));
+    }
+
+    private const PHOTO_TYPES = ['picture_prompts', 'image_vocab_match'];
+
+    /** The grid a lesson was built with: the one most of its activities belong to (ties → the usual order). */
+    private function gridBuiltWith(string $part, $acts): array
+    {
+        $order = self::PART_ORDER[$part] ?? [];
+        $grids = $this->grids();
+        $has = fn ($g) => count(array_filter($g['slots'], fn ($s) => $acts->contains(fn ($a) => $a->type === $s['type'] && $a->stage === $s['stage'])));
+        usort($grids, function ($a, $b) use ($has, $order) {
+            $rk = fn ($g) => ($i = array_search($g['id'], $order, true)) === false ? 99 : $i;
+            return [-$has($a), $rk($a)] <=> [-$has($b), $rk($b)];
+        });
+        return $grids[0];
     }
 
     private function defaultGrid(string $part, array $previousTypes): array
