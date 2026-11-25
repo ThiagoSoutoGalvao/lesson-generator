@@ -62,7 +62,7 @@ Return JSON:
  "language": "the unit's target language", "vocabulary": "8–12 words or phrases",
  "mistakes": "2–3 common mistakes with this language, written as wrong → right",
  "A": "what lesson A's reading is about (flowing text: a story, email, blog post, interview or chat — never a calendar, table or list) and the language that is NEW in A", "B": "the same for B (new language, not A's again)", "C": "the same for C, ending in the simulation"}
-Rules: never a real company's name; never mention the students' nationality or first language; each lesson adds something new; plain English, no markdown.
+Rules: each field holds only your final answer — no reasoning, no "X is not used; instead…"; never a real company's name; never mention the students' nationality or first language; each lesson adds something new; plain English, no markdown.
 TXT;
         $d = $this->claude->askJson([['type' => 'text', 'text' => $prompt]]);
         foreach (['company', 'cast', 'A', 'B', 'C'] as $k) {
