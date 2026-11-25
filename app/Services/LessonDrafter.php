@@ -57,8 +57,7 @@ class LessonDrafter
             . <<<TXT
 
 Return JSON:
-{"considered": "names you thought of and rejected, if any (this field is discarded)",
- "company": "ONLY your final choice — a fictional company: name, kind of workplace, city (office work only — e.g. 'Serra Azul Logística, a logistics company, office in Belo Horizonte')",
+{"company": "ONLY your final choice — a fictional company: name, kind of workplace, city (office work only — e.g. 'Serra Azul Logística, a logistics company, office in Belo Horizonte')",
  "cast": "3–4 people with first names and office jobs, e.g. 'Paula (sales assistant), Bruno (account manager)'",
  "language": "the unit's target language", "vocabulary": "8–12 words or phrases",
  "mistakes": "2–3 common mistakes with this language, written as wrong → right",

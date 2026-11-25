@@ -2104,6 +2104,10 @@ EOT;
 
     private function throwIfFailed($response): void
     {
+        // A refusal is a 200 with no content — say so instead of "invalid JSON: " (TtL 1A, 2026-11-26).
+        if ($response->json('stop_reason') === 'refusal') {
+            throw new RuntimeException('Claude declined this request (' . ($response->json('stop_details.category') ?? 'refusal') . ').');
+        }
         if (! $response->failed()) return;
 
         $type = $response->json('error.type') ?? '';
