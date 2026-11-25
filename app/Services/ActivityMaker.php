@@ -53,6 +53,10 @@ class ActivityMaker
         } elseif ($type === 'image_vocab_match') {
             $activity = $this->photos->avoidUsedBy($userId)->imageVocabMatch($activity);
         }
+        if (in_array($type, ['picture_prompts', 'image_vocab_match'], true) && $this->photos->limited) {
+            // Better no activity than one whose photos weren't checked (2026-11-25).
+            throw new \RuntimeException('The photo service has reached its hourly limit — please try this one again in an hour.');
+        }
         return $activity;
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -26,12 +27,16 @@ class PhotoMatcher
     /** Photo ids already used in this teacher's activities — skipped when anything else fits (2026-11-25). */
     private array $avoid = [];
 
+    /** Set when Unsplash said no because the hourly limit was reached. */
+    public bool $limited = false;
+
     public function __construct(private ClaudeService $claude) {}
 
     /** Prefer photos this login hasn't used yet: the same office photos kept coming back across lessons. */
     public function avoidUsedBy(?int $userId): static
     {
         $this->avoid = [];
+        $this->limited = false;
         if ($userId === null) {
             return $this;
         }
@@ -179,20 +184,31 @@ EOT]];
     /** Top results, closest description first (same scoring as BackgroundController). */
     private function search(string $query, string $key, ?string $scoreAgainst = null): array
     {
-        try {
-            $response = Http::timeout(15)->get('https://api.unsplash.com/search/photos', [
-                'query' => $query, 'client_id' => $key, 'orientation' => 'landscape',
-                'content_filter' => 'high', 'per_page' => 20,
-            ]);
-        } catch (\Throwable $e) {
-            return [];
-        }
-        if ($response->failed()) {
-            return [];
+        // 2026-11-25: the Unsplash key allows 50 searches an hour (demo tier) — the same phrase is searched once a week.
+        $cacheKey = 'unsplash-search:' . md5(mb_strtolower(trim($query)));
+        $results = Cache::get($cacheKey);
+        if ($results === null) {
+            try {
+                $response = Http::timeout(15)->get('https://api.unsplash.com/search/photos', [
+                    'query' => $query, 'client_id' => $key, 'orientation' => 'landscape',
+                    'content_filter' => 'high', 'per_page' => 20,
+                ]);
+            } catch (\Throwable $e) {
+                return [];
+            }
+            if (in_array($response->status(), [403, 429], true)) {
+                $this->limited = true; // hourly limit reached
+                return [];
+            }
+            if ($response->failed()) {
+                return [];
+            }
+            $results = (array) $response->json('results', []);
+            Cache::put($cacheKey, $results, now()->addDays(7));
         }
         $words = $this->words($scoreAgainst ?? $query);
         $rows  = [];
-        foreach ((array) $response->json('results', []) as $rank => $photo) {
+        foreach ($results as $rank => $photo) {
             if (empty($photo['urls']['regular']) || empty($photo['urls']['small'])) {
                 continue;
             }
