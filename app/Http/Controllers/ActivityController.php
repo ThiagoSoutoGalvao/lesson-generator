@@ -87,7 +87,7 @@ class ActivityController extends Controller
         $level  = $request->input('level'); // null = B1, the level the prompts were written for
 
         try {
-            $activity = app(\App\Services\ActivityMaker::class)->make($request->type, $source, $prompt, $level, $request->boolean('group'));
+            $activity = app(\App\Services\ActivityMaker::class)->make($request->type, $source, $prompt, $level, $request->boolean('group'), auth()->id());
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);
         }

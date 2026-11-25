@@ -92,7 +92,7 @@ class LessonBuilder
             $src = $slot['source'] === 'presentation' ? ($pres ?? $reading) : ($reading ?? $pres);
             try {
                 $source = ActivityMaker::withEarlier(\App\Support\LessonMaterial::sourceFor($src) ?? throw new \RuntimeException('the lesson material has no text'), $earlier);
-                $content = $this->maker->make($slot['type'], $source, mb_substr($slot['prompt'] . self::GROUP, 0, 1000), $level, true);
+                $content = $this->maker->make($slot['type'], $source, mb_substr($slot['prompt'] . self::GROUP, 0, 1000), $level, true, $userId);
                 $a = $this->save($userId, $trilha, $lesson, $part, $slot['type'], $slot['stage'], $content, $content['topic'] ?? $content['title'] ?? '', false);
                 $this->say("  ✓ {$slot['stage']} {$a->name}");
                 $made++;
@@ -109,7 +109,7 @@ class LessonBuilder
      * activity), from the lesson's own reading / presentation. Only the content changes — id, name, stage and
      * whether students can see it stay as they are. An activity whose format isn't in any grid is left alone.
      */
-    public function refill(int $userId, string $trilha, int $lesson, string $part, callable $log): array
+    public function refill(int $userId, string $trilha, int $lesson, string $part, callable $log, array $only = []): array
     {
         $this->log = $log;
         $level = LessonDrafter::LEVEL[$trilha];
@@ -127,6 +127,7 @@ class LessonBuilder
         $done = 0; $failed = 0;
         foreach ($acts as $a) {
             if (in_array($a->type, ['reading_text', 'presentation', 'grammar_explainer'], true)) continue;
+            if ($only && ! in_array($a->type, $only, true)) continue;
             $slot = $slots->first(fn ($s) => $s['type'] === $a->type && $s['stage'] === $a->stage) ?? $slots->firstWhere('type', $a->type);
             if (! $slot) {
                 $this->say("  - {$a->name}: not a grid format — left as it is");
@@ -135,7 +136,7 @@ class LessonBuilder
             $src = $slot['source'] === 'presentation' ? ($pres ?? $reading) : ($reading ?? $pres);
             try {
                 $source = ActivityMaker::withEarlier(\App\Support\LessonMaterial::sourceFor($src) ?? throw new \RuntimeException('the lesson material has no text'), $earlier);
-                $content = $this->maker->make($a->type, $source, mb_substr($slot['prompt'] . self::GROUP, 0, 1000), $level, true);
+                $content = $this->maker->make($a->type, $source, mb_substr($slot['prompt'] . self::GROUP, 0, 1000), $level, true, $userId);
                 $a->update(['content' => $content]);
                 $this->say("  ✓ {$a->name} — " . $this->countOf($content) . ' items');
                 $done++;

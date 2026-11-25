@@ -15,7 +15,8 @@ class ActivityMaker
 
     public function __construct(private ClaudeService $claude, private PhotoMatcher $photos) {}
 
-    public function make(string $type, string $source, string $prompt, ?string $level, bool $group = false): array
+    /** $userId: the login it's for, so the photo formats can skip photos it has already used. */
+    public function make(string $type, string $source, string $prompt, ?string $level, bool $group = false, ?int $userId = null): array
     {
         $c = $this->claude;
         $activity = match ($type) {
@@ -48,9 +49,9 @@ class ActivityMaker
         $activity = AnswerOptions::fix($type, $activity);
         // Photo first: Claude looks at real candidate photos and picks / rewrites for them.
         if ($type === 'picture_prompts') {
-            $activity = $this->photos->picturePrompts($activity, LanguageLevel::from($level)->cefr);
+            $activity = $this->photos->avoidUsedBy($userId)->picturePrompts($activity, LanguageLevel::from($level)->cefr);
         } elseif ($type === 'image_vocab_match') {
-            $activity = $this->photos->imageVocabMatch($activity);
+            $activity = $this->photos->avoidUsedBy($userId)->imageVocabMatch($activity);
         }
         return $activity;
     }

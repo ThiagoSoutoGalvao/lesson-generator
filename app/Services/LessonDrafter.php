@@ -61,7 +61,7 @@ Return JSON:
  "cast": "3–4 people with first names and office jobs, e.g. 'Paula (sales assistant), Bruno (account manager)'",
  "language": "the unit's target language", "vocabulary": "8–12 words or phrases",
  "mistakes": "2–3 common mistakes with this language, written as wrong → right",
- "A": "what lesson A's reading is about and the language that is NEW in A", "B": "the same for B (new language, not A's again)", "C": "the same for C, ending in the simulation"}
+ "A": "what lesson A's reading is about (flowing text: a story, email, blog post, interview or chat — never a calendar, table or list) and the language that is NEW in A", "B": "the same for B (new language, not A's again)", "C": "the same for C, ending in the simulation"}
 Rules: never a real company's name; never mention the students' nationality or first language; each lesson adds something new; plain English, no markdown.
 TXT;
         $d = $this->claude->askJson([['type' => 'text', 'text' => $prompt]]);
@@ -107,6 +107,7 @@ You plan Aurora Business lessons. Draft the prompts a teacher will paste into tw
 Rules:
 - Something new every lesson: introduce the language that is new in lesson {$code} (from the unit plan if there is one, otherwise the right step of the unit's syllabus for lesson {$part}). Don't re-teach what the unit's earlier lessons already taught.
 - Office work only (emails, calls, meetings, routines, admin) even when the company is in another industry. A fictional company: never a real company's name. If the unit plan or the unit's earlier lessons name the company and cast, use them; for a new unit, invent a new company (a different kind of workplace from those already used) and 3–4 people with first names and office jobs.
+- The reading is FLOWING TEXT that reads naturally from start to finish: a short story, an email, a blog post, an interview or a chat. Never a calendar, timetable, table, form or list of slots, and no sentence pattern repeated line after line ("Monday: … Tuesday: …"). Facts like days and times go inside natural sentences. Say this in reading.extra.
 - The class is a small group of 2–4 adults. The reading should work in a group: each paragraph makes sense on its own (each student can read one), or it is a dialogue / interview pairs can read in roles.
 - Never mention the students' nationality or first language. Say "common mistakes", not whose mistakes.
 - reading.topic: a short title + a one-line premise, under 150 characters. reading.vocabulary: 6–10 comma-separated words or phrases at {$cefr} level that the lesson needs. reading.paragraphs: 3–6. reading.extra: under 2 short paragraphs and under 1200 characters: the genre and voice, the cast, the target language to include (several times, in natural sentences), "use every target word at least once", what to avoid, how to end.

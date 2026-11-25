@@ -23,7 +23,35 @@ class PhotoMatcher
 {
     private const PER_ITEM = 4;
 
+    /** Photo ids already used in this teacher's activities — skipped when anything else fits (2026-11-25). */
+    private array $avoid = [];
+
     public function __construct(private ClaudeService $claude) {}
+
+    /** Prefer photos this login hasn't used yet: the same office photos kept coming back across lessons. */
+    public function avoidUsedBy(?int $userId): static
+    {
+        $this->avoid = [];
+        if ($userId === null) {
+            return $this;
+        }
+        $rows = \App\Models\Activity::where('user_id', $userId)->whereIn('type', ['picture_prompts', 'image_vocab_match'])->pluck('content');
+        foreach ($rows as $c) {
+            $c = is_array($c) ? $c : (json_decode((string) $c, true) ?: []);
+            foreach (array_merge($c['prompts'] ?? [], $c['pairs'] ?? []) as $item) {
+                if (! empty($item['photo'])) {
+                    $this->avoid[self::photoId($item['photo'])] = true;
+                }
+            }
+        }
+        return $this;
+    }
+
+    /** An Unsplash URL without its size / crop query, so the same photo matches at any size. */
+    private static function photoId(string $url): string
+    {
+        return strtok($url, '?');
+    }
 
     public function picturePrompts(array $data, string $cefr): array
     {
@@ -138,7 +166,11 @@ EOT]];
             if (count($c) < 2 && $short !== trim((string) $kw)) {
                 $c = array_merge($c, $this->search($short, $key, (string) $kw));
             }
-            $all[] = array_slice($this->uniqueByUrl($c), 0, self::PER_ITEM);
+            // Unused photos first; one already used elsewhere only when there aren't enough fresh ones.
+            $c = $this->uniqueByUrl($c);
+            $fresh = array_values(array_filter($c, fn ($r) => ! isset($this->avoid[self::photoId($r['regular'])])));
+            $used  = array_values(array_filter($c, fn ($r) => isset($this->avoid[self::photoId($r['regular'])])));
+            $all[] = array_slice(count($fresh) >= 2 ? $fresh : array_merge($fresh, $used), 0, self::PER_ITEM);
         }
         // Nothing at all came back → treat as unavailable rather than dropping every item.
         return array_sum(array_map('count', $all)) === 0 ? null : $all;
@@ -150,7 +182,7 @@ EOT]];
         try {
             $response = Http::timeout(15)->get('https://api.unsplash.com/search/photos', [
                 'query' => $query, 'client_id' => $key, 'orientation' => 'landscape',
-                'content_filter' => 'high', 'per_page' => 10,
+                'content_filter' => 'high', 'per_page' => 20,
             ]);
         } catch (\Throwable $e) {
             return [];
