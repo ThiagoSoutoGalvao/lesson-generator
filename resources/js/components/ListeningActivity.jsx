@@ -180,9 +180,17 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
                         </ol>
                     </section>
                 ) : format === 'message' ? (
-                    <section aria-label="Phone message" className="rounded-2xl border-2 border-dashed border-[#DDE1E8] bg-[#FFFBEA] p-4 sm:p-6 flex flex-col gap-4">
-                        <p className="font-display font-bold tracking-[0.08em] text-[18px]">PHONE MESSAGE</p>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <section aria-label="Phone message" className={`${LIGHT.card} relative overflow-hidden p-4 sm:p-6 flex flex-col gap-4`}>
+                        {/* Same "Soft glow" as the player, in the opposite corner, so the two cards read as a pair. */}
+                        <span aria-hidden="true" className="pointer-events-none absolute -left-20 -bottom-24 w-64 h-64 rounded-full"
+                            style={{ background: 'radial-gradient(circle, rgba(160,23,137,.20) 0%, rgba(224,82,31,.14) 45%, rgba(224,82,31,0) 70%)' }} />
+                        <p className="relative flex items-center gap-2.5 font-display font-bold tracking-[0.08em] text-[18px]">
+                            <span aria-hidden="true" className="grid place-items-center w-9 h-9 rounded-[10px] bg-[#FDE9E0] text-[#C9461A]">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z" /></svg>
+                            </span>
+                            PHONE MESSAGE
+                        </p>
+                        <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-4">
                             {items.map((f, n) => (
                                 <label key={n} className="flex flex-col gap-1.5 text-[15px] sm:text-[16px] font-semibold min-w-0">
                                     {f.label}
