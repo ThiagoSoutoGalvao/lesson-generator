@@ -124,7 +124,7 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
     const transcript = (
         <ol className="flex flex-col gap-1" aria-label="What they said">
             {lines.map((l, i) => (
-                <li key={i} className={`flex gap-3 rounded-xl px-3 py-2 ${player.now === i ? 'bg-[#FDE9E0]' : ''}`}>
+                <li key={i} className={`flex gap-3 rounded-xl px-3 py-2 ${player.now === i ? 'bg-white/80' : ''}`}>
                     <span className="font-semibold text-[#C9461A] shrink-0 min-w-[4.5rem]">{l.who === 'Narrator' ? '' : l.who}</span>
                     <span className={`${txt} leading-relaxed min-w-0`}>{l.text}</span>
                 </li>
@@ -201,7 +201,7 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
                 ) : (
                     <section aria-label="Questions" className="flex flex-col gap-2.5">
                         {items.map((it, n) => (
-                            <div key={n} className={`rounded-2xl px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 ${box(n)}`} data-testid="listen-item">
+                            <div key={n} className={`rounded-2xl px-4 py-3 flex flex-wrap items-center gap-x-4 gap-y-2 ${checked ? box(n) : GLOW}`} data-testid="listen-item">
                                 <p className={`${txt} flex-1 basis-60 min-w-0`}>{format === 'who' ? `“${it.quote}”` : it.statement}</p>
                                 <div className="flex gap-2 flex-wrap">
                                     {format === 'answer'
@@ -229,7 +229,7 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
                         <button type="button" onClick={() => setShowText(v => !v)} className={LIGHT.secondary}>{showText ? 'Hide the text' : 'Show the text'}</button>
                     )}
                 </div>
-                {showText && format !== 'complete' && <section aria-label="Transcript" className={`${LIGHT.card} p-3 sm:p-5`}>{transcript}</section>}
+                {showText && format !== 'complete' && <section aria-label="Transcript" className={`${GLOW} p-3 sm:p-5`}>{transcript}</section>}
             </div>
         </LightFrame>
     );
