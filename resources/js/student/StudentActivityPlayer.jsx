@@ -30,6 +30,7 @@ import StoryBuilderActivity from '@/components/StoryBuilderActivity';
 import DebateActivity from '@/components/DebateActivity';
 import MiniPresentationActivity from '@/components/MiniPresentationActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
+import ListeningActivity from '@/components/ListeningActivity';
 
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
 
@@ -51,6 +52,7 @@ const RECORDS_ATTEMPT = new Set([
     'picture_prompts',              // completion only — speaking has no answer to check
     'role_play', 'story_builder', 'debate', 'mini_presentation', // production templates — completion only
     'presentation',                 // completion only — a Homework reference, last slide reached
+    'listening',                    // scored: right answers / total, on every check
 ]);
 
 const COMPONENTS = {
@@ -78,6 +80,7 @@ const COMPONENTS = {
     story_builder:           StoryBuilderActivity,
     debate:                  DebateActivity,
     mini_presentation:       MiniPresentationActivity,
+    listening:               ListeningActivity,
     // Only reachable here via a direct Homework assignment (assertVisible blocks the trilha
     // path) — a teacher handing over a presentation as a take-home reference.
     presentation:            GrammarExplainerActivity,

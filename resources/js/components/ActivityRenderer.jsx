@@ -25,6 +25,7 @@ import MiniPresentationActivity from '@/components/MiniPresentationActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ReadingTextActivity from '@/components/ReadingTextActivity';
 import EssayFeedbackActivity from '@/components/EssayFeedbackActivity';
+import ListeningActivity from '@/components/ListeningActivity';
 
 // One saved activity, fullscreen, as a teacher launches it (from the Library or a lesson pack). Moved out of
 // LibraryPage (Aurora Lessons Phase 1, step 4) so every teacher-side launcher shows the same thing.
@@ -64,6 +65,7 @@ const OTHERS = {
     grammar_explainer:       GrammarExplainerActivity,
     presentation:            GrammarExplainerActivity,
     essay_feedback:          EssayFeedbackActivity,
+    listening:               ListeningActivity,
 };
 
 export default function ActivityRenderer({ content, savedId = null, onClose, onTargetsChange, onDerive }) {

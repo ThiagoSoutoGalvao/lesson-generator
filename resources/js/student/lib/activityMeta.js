@@ -10,6 +10,7 @@ export const ACTIVITY_META = {
     dialog_gap_fill:         { label: 'Dialogue gap-fill',    icon: '💬' },
     word_categorisation:     { label: 'Categorise',           icon: '🗂️' },
     true_false:              { label: 'True / False',         icon: '⚖️' },
+    listening:               { label: 'Listening',            icon: '🎧' },
     mc_reading:              { label: 'Reading',              icon: '📖' },
     read_complete:           { label: 'Read & complete',      icon: '✏️' },
     image_vocab_match:       { label: 'Picture match',        icon: '🖼️' },

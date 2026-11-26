@@ -23,6 +23,9 @@ Route::middleware('auth:web')->group(function () {
     // both the teacher and student side, carries no user data.
     Route::get('/background', [BackgroundController::class, 'fetch']);
 
+    // A listening activity's spoken lines (2026-11-26) — both roles, no user data.
+    Route::get('/audio/{clip}', [\App\Http\Controllers\AudioController::class, 'show']);
+
     // Student content API — filtered by the student's trilha, not by owner.
     Route::middleware(EnsureStudent::class)->prefix('student')->group(function () {
         Route::get('/lessons', [StudentContentController::class, 'lessons']);

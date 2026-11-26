@@ -24,7 +24,7 @@ export function isLightCourse(trilha) {
 // no dark screen ends up in a light lesson. A type joins this list when its light screen ships.
 export const LIGHT_TYPES = new Set([
     'quiz', 'flashcards', 'unjumble', 'match_pairs', 'dialog_gap_fill', 'error_correction', 'true_false', 'odd_one_out', 'word_categorisation', 'cloze', 'signs_notices', 'mc_reading', 'mc_cloze', 'image_vocab_match', 'picture_prompts', 'discussion_questions',
-    'role_play', 'story_builder', 'debate', 'mini_presentation',
+    'role_play', 'story_builder', 'debate', 'mini_presentation', 'listening',
 ]);
 
 /** Switch the light theme on while the calling component is mounted (and `on` is true). */

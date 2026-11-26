@@ -161,6 +161,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-26** — **Listening, step 1** (plan: demo in the app → grid slot + builder → fill all courses → later
+  "Listen and reply" / video). New `listening` type (`ListeningActivity.jsx`, light only), four formats: answer (T/F),
+  who (who said it), complete (gaps, replay a line), message (a new voicemail + phone-message form). Made from the lesson
+  reading by `App\Services\ListeningMaker` (Claude writes items, checked against the recording) + `App\Services\Speech`
+  (OpenAI gpt-4o-mini-tts, one clip per line, stored in `audio_clips`, served by `GET /api/audio/{clip}`, a repeated
+  line is never paid twice). `php artisan lessons:listening <course> <unit> --part= --format=`. Public demo page with the
+  same four formats: https://claude.ai/artifact/1KbwroaoDexYT3kQXhnUWg
 - **2026-11-26** — **Take the Lead (B2) 1–16 built** and visible (photo formats wait for a credit top-up, like
   Everyday Business 14–16). **"Write a new version" / "Edit text"** on a business lesson's reading or presentation card
   (`MaterialRedo.jsx`, `MaterialRedoController`, `RemakeFromMaterialJob`): the teacher says what should change, reads the

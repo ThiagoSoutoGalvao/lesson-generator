@@ -195,6 +195,7 @@ export const TYPE_LABELS = {
     dialog_gap_fill:          'Dialog',
     word_categorisation:      'Categorise',
     true_false:               'True / False',
+    listening:                'Listening',
     image_vocab_match:        'Image Match',
     word_formation:           'Word Formation',
     odd_one_out:              'Odd One Out',

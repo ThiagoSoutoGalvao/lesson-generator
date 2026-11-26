@@ -26,7 +26,7 @@ class LessonBuilder
         'discussion_questions' => 'Discussion', 'sentence_transformation' => 'Transform', 'error_correction' => 'Error Correction',
         'match_pairs' => 'Match Pairs', 'signs_notices' => 'Signs & Notices', 'picture_prompts' => 'Picture Prompts',
         'role_play' => 'Role-play', 'story_builder' => 'Story Builder', 'debate' => 'Debate', 'mini_presentation' => 'Mini Presentation',
-        'presentation' => 'Presentation', 'reading_text' => 'Reading Text',
+        'presentation' => 'Presentation', 'reading_text' => 'Reading Text', 'listening' => 'Listening',
     ];
     // Same sentence as GROUP in resources/js/lib/lessonGrids.js.
     private const GROUP = ' The class is a small group of 2–4 adults: items are short enough to take in turns, and speaking tasks are for pairs or the whole group (Ask your partner…, Find someone who…).';
