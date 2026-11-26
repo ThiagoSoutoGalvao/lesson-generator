@@ -133,9 +133,13 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
     return (
         <LightFrame {...frame}>
             <div className="max-w-3xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-6">
-                <section aria-label="Recording" className={`${LIGHT.card} p-4 sm:p-6 flex flex-col gap-3`}>
-                    <p className={`${LIGHT.muted} text-[15px] sm:text-[17px]`}>{HELP[format]}</p>
-                    <div className="flex flex-wrap items-center gap-3">
+                {/* "Soft glow" (Thiago picked it, 2026-11-26): white like the rest of the screen, aurora colours glowing behind the logo. */}
+                <section aria-label="Recording" className={`${LIGHT.card} relative overflow-hidden p-4 sm:p-6 flex flex-col gap-3 min-h-[160px]`}>
+                    <span aria-hidden="true" className="pointer-events-none absolute -right-16 -top-24 w-64 h-64 rounded-full"
+                        style={{ background: 'radial-gradient(circle, rgba(160,23,137,.28) 0%, rgba(224,82,31,.18) 45%, rgba(224,82,31,0) 70%)' }} />
+                    <img src="/brand/aurora-symbol.png" alt="" aria-hidden="true" className="pointer-events-none absolute right-3 top-2 sm:right-5 sm:top-3 w-16 sm:w-20" />
+                    <p className={`${LIGHT.muted} relative text-[15px] sm:text-[17px] pr-20 sm:pr-24`}>{HELP[format]}</p>
+                    <div className="relative flex flex-wrap items-center gap-3">
                         <button type="button" onClick={() => (player.playing ? player.stop() : player.play())} className={`${LIGHT.primary} min-w-40`} data-testid="listen-play">
                             {player.playing ? '❚❚ Stop' : '▶ Play'}
                         </button>
@@ -145,10 +149,11 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
                                     className={`h-11 px-3.5 rounded-[10px] border text-[15px] font-semibold cursor-pointer ${player.rate === r ? 'bg-[#271D62] text-white border-[#271D62]' : 'bg-white border-[#DDE1E8] hover:bg-[#F1F2F5]'}`}>{r}×</button>
                             ))}
                         </div>
-                        <span role="status" className={`${LIGHT.muted} text-[15px]`}>
-                            {player.playing && lines[player.now]?.who !== 'Narrator' ? `${lines[player.now].who} is speaking…` : player.playing ? 'Playing…' : ''}
-                        </span>
                     </div>
+                    <p role="status" className={`relative flex items-center gap-2.5 min-h-6 text-[15px] font-semibold text-[#C9461A] ${player.playing ? 'lg-eq-on' : ''}`}>
+                        <span className="lg-eq" aria-hidden="true"><i /><i /><i /><i /><i /></span>
+                        {player.playing && lines[player.now]?.who !== 'Narrator' ? `${lines[player.now].who} is speaking…` : player.playing ? 'Playing…' : ''}
+                    </p>
                 </section>
 
                 {format === 'complete' ? (

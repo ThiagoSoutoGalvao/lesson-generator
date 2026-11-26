@@ -655,3 +655,14 @@ body.tf-active main .text-xs:not(.fixed.inset-0 *) {
 :root[data-ui="light"] body { background: #F6F7F9; }
 /* The Display panel's text colour (white / yellow…) is for dark screens; on the light theme page text stays ink. */
 :root[data-ui="light"] { --tf-color: var(--ui-ink) !important; }
+
+/* Listening player bars (ListeningActivity, 2026-11-26): still and faint at rest, moving while the audio plays. */
+.lg-eq { display: inline-flex; gap: 3px; align-items: flex-end; height: 18px }
+.lg-eq i { width: 4px; height: 5px; border-radius: 2px; background: currentColor; opacity: .35 }
+.lg-eq-on .lg-eq i { opacity: 1; animation: lg-eq .9s ease-in-out infinite }
+.lg-eq-on .lg-eq i:nth-child(2) { animation-delay: .15s }
+.lg-eq-on .lg-eq i:nth-child(3) { animation-delay: .3s }
+.lg-eq-on .lg-eq i:nth-child(4) { animation-delay: .45s }
+.lg-eq-on .lg-eq i:nth-child(5) { animation-delay: .6s }
+@keyframes lg-eq { 0%, 100% { height: 5px } 50% { height: 18px } }
+@media (prefers-reduced-motion: reduce) { .lg-eq-on .lg-eq i { animation: none; height: 12px } }
