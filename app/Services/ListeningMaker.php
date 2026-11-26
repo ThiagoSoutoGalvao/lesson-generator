@@ -86,7 +86,7 @@ class ListeningMaker
             'message' => "Write a NEW short phone voicemail (60–90 words) that one person from the lesson leaves for another, about this lesson's situation, at {$level} level. "
                 . 'It must contain 5 clear facts to note down (for example who called, a day, a time, a place, a thing to bring, a phone extension or number); say any number slowly and repeat it once. '
                 . 'Then write the phone-message form: 5 fields, each ONE short fact, in the order heard. For each field give "accept": 1–4 short forms a student might write (e.g. ["10", "ten", "10:00"]); an answer counts when it contains one of them. '
-                . 'Return JSON {"title": "Message from …", "lines": [{"who": "the caller's first name", "text": "the whole voicemail"}], "fields": [{"label": "When is the meeting?", "answer": "Wednesday", "accept": ["wednesday", "wed"]}]}.',
+                . 'Return JSON {"title": "Message from …", "lines": [{"who": "the first name of the person calling", "text": "the whole voicemail"}], "fields": [{"label": "When is the meeting?", "answer": "Wednesday", "accept": ["wednesday", "wed"]}]}.',
         };
     }
 
