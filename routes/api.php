@@ -56,7 +56,10 @@ Route::middleware('auth:web')->group(function () {
             Route::post('/essay-feedback/generate', [ActivityController::class, 'generateEssayFeedback']);
             Route::post('/lesson-draft', [\App\Http\Controllers\LessonDraftController::class, 'draft']);
             Route::post('/detect-sections', [SectionController::class, 'detect']);
+            Route::post('/materials/{activity}/new-version', [\App\Http\Controllers\MaterialRedoController::class, 'preview']);
+            Route::post('/materials/{activity}/replace', [\App\Http\Controllers\MaterialRedoController::class, 'approve']);
         });
+        Route::get('/materials/{activity}/remake-status', [\App\Http\Controllers\MaterialRedoController::class, 'status']);
 
         Route::get('/activities', [SavedActivityController::class, 'index']);
         Route::post('/activities', [SavedActivityController::class, 'store']);

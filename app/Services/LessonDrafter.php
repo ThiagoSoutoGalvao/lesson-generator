@@ -87,7 +87,11 @@ TXT;
     }
 
     /** The Reading Text + Presentation form fields for one lesson. */
-    public function draft(int $userId, string $trilha, int $lesson, string $part, string $syllabus, ?string $earlier): array
+    /**
+     * $redo (2026-11-26, "Write a new version"): the material a teacher wants replaced — ['what' => 'reading' |
+     * 'presentation', 'text' => its current text, 'note' => what should change]. The draft then avoids repeating it.
+     */
+    public function draft(int $userId, string $trilha, int $lesson, string $part, string $syllabus, ?string $earlier, ?array $redo = null): array
     {
         $cefr = self::LEVEL[$trilha];
         $code = "{$lesson}{$part}";
@@ -101,6 +105,12 @@ TXT;
         if ($unitSoFar) $ctx .= "\nThis unit's earlier lessons (same cast and company — continue the story, don't repeat it):\n{$unitSoFar}\n";
         if (filled($earlier)) $ctx .= "\nThe course's recent lessons:\n" . trim($earlier) . "\n";
         if ($used && ! $plan) $ctx .= "\nCompanies already used in this course (never reuse one): " . implode('; ', $used) . "\n";
+        if ($redo) {
+            $note = trim((string) ($redo['note'] ?? '')) ?: 'It did not work well in class. Make it clearer and more natural.';
+            $ctx .= "\nThe teacher asked for a NEW version of this lesson's {$redo['what']}. Keep the same cast, company and target language, "
+                . "but write a different, better one. What the teacher wants changed: {$note}\nThe current {$redo['what']} (don't repeat it):\n"
+                . mb_substr(trim((string) $redo['text']), 0, 1800) . "\n";
+        }
 
         $rules = <<<TXT
 You plan Aurora Business lessons. Draft the prompts a teacher will paste into two tools that write the lesson's core material: a Reading Text and a Presentation. Return JSON:

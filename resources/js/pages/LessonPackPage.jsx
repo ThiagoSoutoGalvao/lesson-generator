@@ -6,6 +6,7 @@ import LessonPlayer, { lessonSequence } from '@/components/LessonPlayer';
 import StageSelect from '@/components/StageSelect';
 import LibraryPicker from '@/components/LibraryPicker';
 import Spinner from '@/components/Spinner';
+import MaterialRedo from '@/components/MaterialRedo';
 import { TRILHAS, TRILHA_LEVEL, TRILHA_TOC, TYPE_LABELS, composeActivityName, trilhaParts, partOf, focusFromName } from '@/lib/trilhas';
 import { STAGES } from '@/lib/stages';
 import { pickFill, FILLABLE_STAGES } from '@/lib/fillStage';
@@ -55,9 +56,11 @@ export default function LessonPackPage() {
     const [teaching, setTeaching]     = useState(false); // lesson mode (step 6)
     const [filling, setFilling]       = useState({});    // stage → 'busy' | error message (step 7)
 
+    const [reloads, setReloads]       = useState(0);     // bumped after a remake, to fetch the lesson again
+
     useEffect(() => {
         if (!config) return;
-        setLoading(true);
+        if (!reloads) setLoading(true);
         Promise.all([axios.get('/api/activities'), axios.get('/api/trilha-briefs')])
             .then(([acts, briefs]) => {
                 setLibrary(acts.data);
@@ -66,7 +69,7 @@ export default function LessonPackPage() {
             })
             .catch(err => setError(err.response?.data?.message ?? 'Could not load this lesson.'))
             .finally(() => setLoading(false));
-    }, [trilha, lesson]);
+    }, [trilha, lesson, reloads]);
 
     if (!config || !Number.isInteger(lesson) || lesson < 1 || lesson > config.lessons) {
         return (
@@ -240,6 +243,12 @@ export default function LessonPackPage() {
         setActivities(prev => prev.map(x => (x.id === a.id ? { ...x, trilha_part: data.trilha_part, name: data.name } : x)));
     };
 
+    // "Write a new version" / "Edit text" (MaterialRedo): the new material in place, or everything again after a remake.
+    const replaced = (updated, refetch) => {
+        if (updated) setActivities(prev => prev.map(x => (x.id === updated.id ? { ...x, ...updated } : x)));
+        if (refetch) setReloads(n => n + 1);
+    };
+
     const copied = saved => {
         setActivities(prev => [...prev, saved]);
         setLibrary(prev => [saved, ...prev]);
@@ -359,7 +368,7 @@ export default function LessonPackPage() {
                                 <p className="text-ui-warn text-sm">Pick a stage for each one and it moves into the lesson below.</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {unplaced.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} />)}
+                                {unplaced.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} />)}
                             </div>
                         </section>
                     )}
@@ -383,7 +392,7 @@ export default function LessonPackPage() {
                                             : <p className="rounded-xl border border-dashed border-ui-line text-ui-faint text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {items.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} />)}
+                                            {items.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} />)}
                                         </div>
                                     )}
                                 </li>
@@ -712,7 +721,7 @@ function PartSelect({ a, parts, lesson, onMove }) {
     );
 }
 
-function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom, onApprove, onDelete }) {
+function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom, onApprove, onDelete, onReplaced }) {
     const [confirming, setConfirming] = useState(false);
     const [deleteError, setDeleteError] = useState('');
     const focus = focusFromName(a.name);
@@ -760,6 +769,7 @@ function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom,
                     Make an activity from this
                 </button>
             )}
+            {onReplaced && ['reading_text', 'presentation'].includes(a.type) && <MaterialRedo a={a} onReplaced={onReplaced} />}
         </div>
     );
 }

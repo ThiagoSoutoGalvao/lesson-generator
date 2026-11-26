@@ -2111,6 +2111,10 @@ EOT;
         if (! $response->failed()) return;
 
         $type = $response->json('error.type') ?? '';
+        // An empty balance is an invalid_request_error too — it used to say "The request was too large" (2026-11-26).
+        if (str_contains((string) $response->json('error.message'), 'credit balance')) {
+            throw new RuntimeException('The Claude credit has run out, so nothing can be generated until it is topped up.');
+        }
 
         $message = match ($type) {
             'rate_limit_error'       => 'Rate limit reached. Please wait a moment and try again.',

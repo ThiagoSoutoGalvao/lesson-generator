@@ -161,6 +161,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-26** — **Take the Lead (B2) 1–16 built** and visible (photo formats wait for a credit top-up, like
+  Everyday Business 14–16). **"Write a new version" / "Edit text"** on a business lesson's reading or presentation card
+  (`MaterialRedo.jsx`, `MaterialRedoController`, `RemakeFromMaterialJob`): the teacher says what should change, reads the
+  new version on the same card, "Use this one" replaces it and remakes only the activities made from it on the queue
+  (progress shown, can leave the page); "Edit text" fixes words by hand, remake optional. Empty Claude credit now says
+  so instead of "The request was too large". A unit-plan field asking for rejected names was refused by Claude
+  (reasoning extraction) — removed (5334c9d).
 
 - **2026-11-24** — **Build a lesson with a grid** (step 1 of the faster workflow; step 2 = "Build from plan", where the
   unit plan holds the reading/presentation prompts and the app makes the materials too). On the lesson pack: pick a

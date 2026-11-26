@@ -124,7 +124,8 @@ class LessonBuilder
      * activity), from the lesson's own reading / presentation. Only the content changes — id, name, stage and
      * whether students can see it stay as they are. An activity whose format isn't in any grid is left alone.
      */
-    public function refill(int $userId, string $trilha, int $lesson, string $part, callable $log, array $only = []): array
+    // $fromId (2026-11-26, "Write a new version"): remake only the activities made from that reading / presentation.
+    public function refill(int $userId, string $trilha, int $lesson, string $part, callable $log, array $only = [], ?int $fromId = null): array
     {
         $this->log = $log;
         $level = LessonDrafter::LEVEL[$trilha];
@@ -149,6 +150,7 @@ class LessonBuilder
                 continue;
             }
             $src = $slot['source'] === 'presentation' ? ($pres ?? $reading) : ($reading ?? $pres);
+            if ($fromId && $src->id !== $fromId) continue;
             try {
                 $source = ActivityMaker::withEarlier(\App\Support\LessonMaterial::sourceFor($src) ?? throw new \RuntimeException('the lesson material has no text'), $earlier);
                 $content = $this->maker->make($a->type, $source, mb_substr($slot['prompt'] . self::GROUP, 0, 1000), $level, true, $userId);
@@ -176,6 +178,16 @@ class LessonBuilder
 
     private function save(int $userId, string $trilha, int $lesson, string $part, string $type, string $stage, array $content, string $focus, bool $visible): Activity
     {
+        return Activity::create([
+            'user_id' => $userId, 'name' => self::nameFor($trilha, $lesson, $part, $type, $focus), 'type' => $type, 'content' => $content,
+            'trilha' => $trilha, 'trilha_lesson' => $lesson, 'trilha_part' => $part, 'stage' => $stage,
+            'built_by' => $this->by, 'student_visible' => $visible,
+        ]);
+    }
+
+    /** "EVERYDAY BUSINESS L03B · Reading Text · Focus", the Focus trimmed to ≤ 6 words without a trailing stopword. */
+    public static function nameFor(string $trilha, int $lesson, string $part, string $type, string $focus): string
+    {
         $focus = trim(preg_replace('/\s+/u', ' ', str_replace(['·', '•'], ' ', $focus)));
         $words = array_slice(explode(' ', $focus), 0, 6);
         while (count($words) > 1 && in_array(mb_strtolower(rtrim(end($words), ',:;')), ['a', 'an', 'the', 'at', 'of', 'in', 'on', 'to', 'and', 'or', 'with', 'for', 'new', 'by', 'from'], true)) {
@@ -183,12 +195,7 @@ class LessonBuilder
         }
         $focus = rtrim(implode(' ', $words), ',:;–—-') ?: (self::TYPE_LABELS[$type] ?? $type);
         $focus = mb_strtoupper(mb_substr($focus, 0, 1)) . mb_substr($focus, 1);
-        $name = sprintf('%s L%02d%s · %s · %s', self::LABEL[$trilha], $lesson, $part, self::TYPE_LABELS[$type] ?? $type, $focus);
-        return Activity::create([
-            'user_id' => $userId, 'name' => $name, 'type' => $type, 'content' => $content,
-            'trilha' => $trilha, 'trilha_lesson' => $lesson, 'trilha_part' => $part, 'stage' => $stage,
-            'built_by' => $this->by, 'student_visible' => $visible,
-        ]);
+        return sprintf('%s L%02d%s · %s · %s', self::LABEL[$trilha], $lesson, $part, self::TYPE_LABELS[$type] ?? $type, $focus);
     }
 
     private function say(string $line): void
