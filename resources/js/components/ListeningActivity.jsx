@@ -20,6 +20,8 @@ const HELP = {
 };
 const norm = s => String(s ?? '').toLowerCase().replace(/[^\p{L}\p{N}' ]+/gu, ' ').replace(/\s+/g, ' ').trim();
 const clipUrl = id => `/api/audio/${id}`;
+// The "Soft glow" cards (Thiago, 2026-11-26): the pink-purple from around the logo fills the whole card.
+const GLOW = 'relative overflow-hidden rounded-2xl border border-[#EBCFE3] bg-[linear-gradient(135deg,#F6E3F2_0%,#FBE6EC_50%,#FDE9DF_100%)]';
 
 // Plays lines [from..to] one after another, with a short pause between speakers.
 function usePlayer(lines) {
@@ -134,9 +136,7 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
         <LightFrame {...frame}>
             <div className="max-w-3xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-6">
                 {/* "Soft glow" (Thiago picked it, 2026-11-26): white like the rest of the screen, aurora colours glowing behind the logo. */}
-                <section aria-label="Recording" className={`${LIGHT.card} relative overflow-hidden p-4 sm:p-6 flex flex-col gap-3 min-h-[160px]`}>
-                    <span aria-hidden="true" className="pointer-events-none absolute -right-16 -top-24 w-64 h-64 rounded-full"
-                        style={{ background: 'radial-gradient(circle, rgba(160,23,137,.28) 0%, rgba(224,82,31,.18) 45%, rgba(224,82,31,0) 70%)' }} />
+                <section aria-label="Recording" className={`${GLOW} p-4 sm:p-6 flex flex-col gap-3 min-h-[160px]`}>
                     <img src="/brand/aurora-symbol.png" alt="" aria-hidden="true" className="pointer-events-none absolute right-3 top-2 sm:right-5 sm:top-3 w-16 sm:w-20" />
                     <p className={`${LIGHT.muted} relative text-[15px] sm:text-[17px] pr-20 sm:pr-24`}>{HELP[format]}</p>
                     <div className="relative flex flex-wrap items-center gap-3">
@@ -157,10 +157,10 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
                 </section>
 
                 {format === 'complete' ? (
-                    <section aria-label="Complete the text" className={`${LIGHT.card} p-3 sm:p-5`}>
+                    <section aria-label="Complete the text" className={`${GLOW} p-3 sm:p-5`}>
                         <ol className="flex flex-col gap-1">
                             {gapLines.map((l, i) => (
-                                <li key={i} className={`flex gap-2 sm:gap-3 items-start rounded-xl px-2 py-2 ${player.now === i ? 'bg-[#FDE9E0]' : ''}`}>
+                                <li key={i} className={`flex gap-2 sm:gap-3 items-start rounded-xl px-2 py-2 ${player.now === i ? 'bg-white/80' : ''}`}>
                                     <button type="button" onClick={() => player.play(i, i)} aria-label={`Play line ${i + 1}`} className="shrink-0 w-9 h-9 rounded-[10px] border border-[#DDE1E8] bg-white hover:bg-[#F1F2F5] cursor-pointer text-[13px]">▶</button>
                                     <div className="flex flex-col sm:flex-row sm:gap-3 min-w-0 flex-1">
                                     {l.who !== 'Narrator' && <span className="font-semibold text-[#C9461A] shrink-0 sm:min-w-[4rem] sm:pt-1.5 text-[14px] sm:text-[16px]">{l.who}</span>}
@@ -180,12 +180,9 @@ export default function ListeningActivity({ activity, onClose, onComplete, hideS
                         </ol>
                     </section>
                 ) : format === 'message' ? (
-                    <section aria-label="Phone message" className={`${LIGHT.card} relative overflow-hidden p-4 sm:p-6 flex flex-col gap-4`}>
-                        {/* Same "Soft glow" as the player, in the opposite corner, so the two cards read as a pair. */}
-                        <span aria-hidden="true" className="pointer-events-none absolute -left-20 -bottom-24 w-64 h-64 rounded-full"
-                            style={{ background: 'radial-gradient(circle, rgba(160,23,137,.20) 0%, rgba(224,82,31,.14) 45%, rgba(224,82,31,0) 70%)' }} />
+                    <section aria-label="Phone message" className={`${GLOW} p-4 sm:p-6 flex flex-col gap-4`}>
                         <p className="relative flex items-center gap-2.5 font-display font-bold tracking-[0.08em] text-[18px]">
-                            <span aria-hidden="true" className="grid place-items-center w-9 h-9 rounded-[10px] bg-[#FDE9E0] text-[#C9461A]">
+                            <span aria-hidden="true" className="grid place-items-center w-9 h-9 rounded-[10px] bg-white text-[#C9461A]">
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2Z" /></svg>
                             </span>
                             PHONE MESSAGE
