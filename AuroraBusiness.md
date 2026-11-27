@@ -161,6 +161,16 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-28** — **Readings as a magazine page** (his pick: mockup option "A · Foto ao lado",
+  https://claude.ai/artifact/WbHv5SHyEP9Ezv8a6oq8yH). Business readings only (`ReadingTextActivity` light branch): warm
+  paper ground #FAF6F0; laptop = photo (4:5, capped at 56% of the screen) + caption + "Words in this text" in a sticky left
+  column (sticks by its bottom when taller than the screen), article right: kicker from the activity name ("FIRST STEPS ·
+  UNIT 3 · READING", `name` now passed through ActivityRenderer / Library / pack / Teach now / student player), Poppins
+  headline, paragraphs numbered in the margin, coral drop cap (never on an email or dialogue). Phone: photo 16:10, numbers
+  above paragraphs, words last. Optional content `dek` / `byline {name, role, company}` / `pull {after, text}` are shown
+  when present; new business readings ask for them (`generateReadingText(..., $group)`, `tidyMagazineExtras` drops a pull
+  that isn't really in the passage); other courses' prompt unchanged. Every saved reading switches with no data change.
+  Backfill of the extras for the ~144 saved readings: proposed, not run. Tests 3/3, QA `qa_reading_magazine.mjs` 27/27.
 - **2026-11-28** — **"Taught up to": students see the course as it is taught.** On a business course the student app opens
   lessons only up to each student's mark (`users.taught_lesson` / `taught_part`, `App\Support\TaughtUpTo`); nothing marked
   = **1A only**; later lessons show a lock, "Opens after class". The teacher moves it with **Mark 4B as taught** on the lesson

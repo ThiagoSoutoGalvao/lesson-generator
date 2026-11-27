@@ -1866,7 +1866,12 @@ EOT;
         return $data;
     }
 
-    public function generateReadingText(string $topic, string $vocabulary = '', int $paragraphs = 3, string $extra = '', ?string $level = null): array
+    /**
+     * $group (Aurora Business, 2026-11-28): the reading also carries the magazine extras its light screen shows: "dek"
+     * (a one-sentence intro), "byline" ({ name, role, company }) and "pull" ({ after, text }, a sentence copied from the
+     * passage). Each is checked here and dropped when unusable. Without $group the prompt is byte-identical to before.
+     */
+    public function generateReadingText(string $topic, string $vocabulary = '', int $paragraphs = 3, string $extra = '', ?string $level = null, bool $group = false): array
     {
         $lv = LanguageLevel::from($level);
 
@@ -1881,7 +1886,7 @@ EOT;
             'messages'   => [
                 [
                     'role'    => 'user',
-                    'content' => $this->buildReadingTextPrompt($topic, $vocabulary, $paragraphs, $extra, $lv),
+                    'content' => $this->buildReadingTextPrompt($topic, $vocabulary, $paragraphs, $extra, $lv, $group),
                 ],
             ],
         ]);
@@ -1892,11 +1897,51 @@ EOT;
         $data = $this->decodeJson($text);
         $data['level'] = $lv->code;
 
+        return $group ? self::tidyMagazineExtras($data) : $data;
+    }
+
+    /**
+     * Keeps a reading's optional magazine extras only when they are usable: a short "dek", a byline with a name, and a
+     * "pull" whose text really is in the passage (quote marks and spacing ignored) after a paragraph that isn't the last.
+     */
+    public static function tidyMagazineExtras(array $data): array
+    {
+        $paragraphs = array_values(array_filter($data['paragraphs'] ?? [], 'is_string'));
+        $norm = fn (string $s) => preg_replace('/\s+/u', ' ', trim(str_replace(["\u{201C}", "\u{201D}", '"', "\u{2019}", "\u{2018}"], ['', '', '', "'", "'"], $s)));
+
+        $dek = is_string($data['dek'] ?? null) ? trim($data['dek']) : '';
+        if ($dek === '' || mb_strlen($dek) > 240) unset($data['dek']); else $data['dek'] = $dek;
+
+        $b = $data['byline'] ?? null;
+        if (is_array($b) && is_string($b['name'] ?? null) && trim($b['name']) !== '') {
+            $data['byline'] = array_filter([
+                'name'    => trim($b['name']),
+                'role'    => is_string($b['role'] ?? null) ? trim($b['role']) : '',
+                'company' => is_string($b['company'] ?? null) ? trim($b['company']) : '',
+            ], fn ($v) => $v !== '');
+        } else {
+            unset($data['byline']);
+        }
+
+        $p = $data['pull'] ?? null;
+        $text = is_array($p) && is_string($p['text'] ?? null) ? trim(str_replace(["\u{201C}", "\u{201D}"], '', $p['text']), " \t\n\"") : '';
+        $after = is_array($p) && is_numeric($p['after'] ?? null) ? (int) $p['after'] : -1;
+        $found = $text !== '' && mb_strlen($text) <= 200
+            && collect($paragraphs)->contains(fn ($para) => str_contains($norm($para), $norm($text)));
+        if ($found && $after >= 0 && $after < count($paragraphs) - 1) {
+            $data['pull'] = ['after' => $after, 'text' => $text];
+        } else {
+            unset($data['pull']);
+        }
+
         return $data;
     }
 
-    private function buildReadingTextPrompt(string $topic, string $vocabulary, int $paragraphs, string $extra, LanguageLevel $lv): string
+    private function buildReadingTextPrompt(string $topic, string $vocabulary, int $paragraphs, string $extra, LanguageLevel $lv, bool $group = false): string
     {
+        // Aurora Business: the magazine extras (see generateReadingText). Empty strings keep the B1 prompt byte-identical.
+        $magFields = $group ? "\n  \"dek\": \"<one sentence, at most 25 words, introducing the text like a magazine intro line: who it is about and what happens>\",\n  \"byline\": { \"name\": \"<the main person in the text (or the writer)>\", \"role\": \"<their job, e.g. 'Claims assistant'>\", \"company\": \"<their company and city, e.g. 'Pampa Seguros, Porto Alegre'; empty if the text names none>\" },\n  \"pull\": { \"after\": <the 0-based index of the paragraph the quote comes after, never the last paragraph>, \"text\": \"<one short, memorable sentence copied word for word from the paragraphs>\" }," : '';
+        $magRules = $group ? "\n- \"pull.text\" MUST be one sentence copied exactly from the paragraphs (same words), under 15 words; pick one from paragraph \"after\" or an earlier one\n- If the text has no main person, set \"byline\" to null" : '';
         // Shorter paragraphs below B1; B1 keeps the original "3 to 6".
         $sentences = match ($lv->code) { 'A1' => '2 to 4', 'A2' => '3 to 5', default => '3 to 6' };
         $vocabSection = $vocabulary
@@ -1911,7 +1956,7 @@ Return a JSON object with EXACTLY this structure:
 {
   "type": "reading_text",
   "topic": "<short topic name, 2-5 words>",
-  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",
+  "keyword": "<3-5 word descriptive scene phrase for an Unsplash background image that fits the topic>",{$magFields}
   "paragraphs": [
     "<paragraph 1 text>",
     "<paragraph 2 text>"
@@ -1926,7 +1971,7 @@ Rules:
 - Each paragraph should be {$sentences} sentences long and flow naturally as a coherent text, not a disconnected list of sentences
 - The "word" field in each vocabulary entry MUST appear verbatim (same spelling, any capitalization) somewhere in the paragraphs text, so it can be highlighted
 - Provide between 5 and 10 vocabulary entries total
-- Definitions must be simple and clear for {$lv->cefr} learners, avoiding complex words in the definition itself
+- Definitions must be simple and clear for {$lv->cefr} learners, avoiding complex words in the definition itself{$magRules}
 - Return ONLY the raw JSON object — no markdown backticks, no explanation{$lv->rules}
 EOT;
     }

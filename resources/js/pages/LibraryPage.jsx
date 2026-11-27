@@ -479,6 +479,7 @@ export default function LibraryPage() {
             <ActivityRenderer
                 content={launched}
                 savedId={launchedId}
+                name={activities.find(x => x.id === launchedId)?.name}
                 onClose={() => setLaunched(null)}
                 // Ticks and target edits save against this Library id; keep the local copy current too.
                 onTargetsChange={targets => setActivities(prev => prev.map(x => (x.id === launchedId ? { ...x, content: { ...x.content, targets } } : x)))}

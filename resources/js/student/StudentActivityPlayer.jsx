@@ -170,6 +170,7 @@ export default function StudentActivityPlayer() {
     const props = content.type === 'quiz'
         ? { quiz: content, onClose: goBack, hideSave: true }
         : { activity: content, onClose: goBack, hideSave: true };
+    if (content.type === 'reading_text') props.name = data.name; // the magazine kicker (FIRST STEPS · UNIT 3)
 
     if (RECORDS_ATTEMPT.has(content.type)) props.onComplete = handleComplete;
 

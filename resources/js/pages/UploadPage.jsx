@@ -144,6 +144,7 @@ function ReadingTextGenerator() {
                 extra:      extra.trim() || undefined,
                 paragraphs,
                 level,
+                group: L || undefined, // Aurora Business lesson: the magazine extras (dek, byline, pull)
             });
             navigate('/generate', { state: { activity: data } });
         } catch (err) {

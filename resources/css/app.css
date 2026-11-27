@@ -666,3 +666,6 @@ body.tf-active main .text-xs:not(.fixed.inset-0 *) {
 .lg-eq-on .lg-eq i:nth-child(5) { animation-delay: .6s }
 @keyframes lg-eq { 0%, 100% { height: 5px } 50% { height: 18px } }
 @media (prefers-reduced-motion: reduce) { .lg-eq-on .lg-eq i { animation: none; height: 12px } }
+
+/* Magazine reading (Aurora Business, 2026-11-28): the italic serif for the intro line and the pulled quote. */
+.font-serif-text { font-family: 'Source Serif 4', Georgia, serif; }

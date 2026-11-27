@@ -77,7 +77,7 @@ class LessonBuilder
             if (! $reading) {
                 $r = $draft['reading'];
                 $this->say("{$code}: writing the reading “{$r['topic']}”…");
-                $content = $this->claude->generateReadingText($r['topic'], $r['vocabulary'], $r['paragraphs'], $r['extra'], $level);
+                $content = $this->claude->generateReadingText($r['topic'], $r['vocabulary'], $r['paragraphs'], $r['extra'], $level, true); // business: magazine extras
                 $reading = $this->save($userId, $trilha, $lesson, $part, 'reading_text', 'presentation', $content, preg_split('/[—:–]/u', $r['topic'])[0], true);
             }
             if (! $pres) {

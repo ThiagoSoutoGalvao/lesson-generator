@@ -24,10 +24,11 @@ export const LIGHT = {
  *   eyebrow / title  the two header lines ("Quiz" / the topic)
  *   extra            header items before the standard buttons (progress, score…)
  *   onSave           shows a Save button (omit for students)
+ *   ground           another page colour (the reading's warm paper, #FAF6F0)
  */
-export function LightFrame({ eyebrow, title, extra, onSave, isFullscreen, onFullscreen, onClose, children, overlay }) {
+export function LightFrame({ eyebrow, title, extra, onSave, isFullscreen, onFullscreen, onClose, children, overlay, ground }) {
     return (
-        <div className="fixed inset-0 z-50 flex flex-col bg-[#F6F7F9] text-[#271D62]" data-ui-screen="light">
+        <div className="fixed inset-0 z-50 flex flex-col bg-[#F6F7F9] text-[#271D62]" style={ground ? { background: ground } : undefined} data-ui-screen="light">
             {overlay}
             <header className="shrink-0 bg-white border-b border-[#DDE1E8] flex flex-wrap items-center gap-x-4 gap-y-2 px-4 sm:px-8 py-3 sm:min-h-[72px]">
                 <img src="/brand/aurora-symbol.png" alt="" aria-hidden="true" className="hidden sm:block w-9 h-9 object-contain" />

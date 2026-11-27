@@ -37,7 +37,7 @@ class MaterialRedoController extends Controller
             );
             if ($reading) {
                 $r = $draft['reading'];
-                $content = $claude->generateReadingText($r['topic'], $r['vocabulary'], $r['paragraphs'], $r['extra'], $r['level']);
+                $content = $claude->generateReadingText($r['topic'], $r['vocabulary'], $r['paragraphs'], $r['extra'], $r['level'], isset(LessonDrafter::BUSINESS[$activity->trilha])); // business: magazine extras
             } else {
                 $p = $draft['presentation'];
                 $content = $claude->generatePresentation($p['topic'], $p['extra'], $p['slides']);

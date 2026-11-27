@@ -87,6 +87,7 @@ export default function LessonPackPage() {
             <ActivityRenderer
                 content={launched.content}
                 savedId={launched.id}
+                name={launched.name}
                 onClose={() => setLaunched(null)}
                 onTargetsChange={targets => setActivities(prev => prev.map(x => (x.id === launched.id ? { ...x, content: { ...x.content, targets } } : x)))}
                 onContentChange={content => setActivities(prev => prev.map(x => (x.id === launched.id ? { ...x, content } : x)))}
@@ -173,7 +174,7 @@ export default function LessonPackPage() {
         let reading = readingHere, pres = presHere;
         if (!reading) {
             onStep('reading');
-            const { data } = await axios.post('/api/reading/generate', { topic: r.topic, vocabulary: r.vocabulary || undefined, extra: r.extra || undefined, paragraphs: r.paragraphs, level: r.level || TRILHA_LEVEL[trilha] });
+            const { data } = await axios.post('/api/reading/generate', { topic: r.topic, vocabulary: r.vocabulary || undefined, extra: r.extra || undefined, paragraphs: r.paragraphs, level: r.level || TRILHA_LEVEL[trilha], group: isLightCourse(trilha) || undefined });
             reading = await save('reading_text', data, r.topic.split(/[—:–]/)[0]);
         }
         if (!pres) {
@@ -374,7 +375,7 @@ export default function LessonPackPage() {
                                 <p className="text-ui-warn text-sm">Pick a stage for each one and it moves into the lesson below.</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {unplaced.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} onEdited={u => replaced(u, false)} />)}
+                                {unplaced.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id, name: a.name })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} onEdited={u => replaced(u, false)} />)}
                             </div>
                         </section>
                     )}
@@ -398,7 +399,7 @@ export default function LessonPackPage() {
                                             : <p className="rounded-xl border border-dashed border-ui-line text-ui-faint text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {items.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} onEdited={u => replaced(u, false)} />)}
+                                            {items.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id, name: a.name })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} onEdited={u => replaced(u, false)} />)}
                                         </div>
                                     )}
                                 </li>

@@ -73,6 +73,7 @@ export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExi
                     key={current.id}
                     content={current.content}
                     savedId={current.id}
+                    name={current.name}
                     onClose={finishCurrent}
                     onTargetsChange={targets => onTargetsChange?.(current.id, targets)}
                     onContentChange={content => onContentChange?.(current.id, content)}

@@ -124,6 +124,7 @@ class ActivityController extends Controller
             'paragraphs' => ['nullable', 'integer', 'min:1', 'max:10'],
             'extra'      => ['nullable', 'string', 'max:3000'],
             'level'      => ['nullable', 'in:A1,A2,B1,B2'],
+            'group'      => ['nullable', 'boolean'], // Aurora Business: add the magazine extras (dek, byline, pull)
         ]);
 
         try {
@@ -132,7 +133,8 @@ class ActivityController extends Controller
                 $request->input('vocabulary', ''),
                 (int) $request->input('paragraphs', 3),
                 $request->input('extra', ''),
-                $request->input('level')
+                $request->input('level'),
+                $request->boolean('group')
             );
         } catch (\RuntimeException $e) {
             return response()->json(['message' => $e->getMessage()], 502);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import SavePanel from '@/components/SavePanel';
@@ -35,6 +35,48 @@ const DERIVE_OPTIONS = [
 ];
 
 const PARAGRAPH_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
+// Magazine layout's "Words in this text" box: word (Poppins) and definition, following the Aa size.
+const WORD_SIZES = ['text-[14px]', 'text-[15px]', 'text-[16px]', 'text-[18px]', 'text-[20px]'];
+const DEF_SIZES  = ['text-[13px]', 'text-[13px]', 'text-[14px]', 'text-[16px]', 'text-[18px]'];
+
+// The magazine layout's left column sticks under the header; when it is taller than the screen (a long word list) it
+// sticks by its bottom instead (a negative top), so the last words stay reachable while the text scrolls.
+function useStickyTop(ref, on) {
+    const [top, setTop] = useState(24);
+    useEffect(() => {
+        const el = ref.current;
+        const main = el?.closest('main');
+        if (!on || !el || !main || typeof ResizeObserver === 'undefined') return undefined;
+        const fit = () => setTop(Math.min(24, main.clientHeight - el.offsetHeight - 24));
+        fit();
+        const ro = new ResizeObserver(fit);
+        ro.observe(el);
+        ro.observe(main);
+        return () => ro.disconnect();
+    }, [on, ref]);
+    return top;
+}
+
+/** "FIRST STEPS L03A · Reading Text · …" → "FIRST STEPS · Unit 3 · Reading" (shown upper-case). */
+export function kickerFromName(name) {
+    const m = /^([A-Z][A-Z ]*?) L(\d{1,2})[A-C]?\s*·/.exec(name ?? '');
+    return m ? `${m[1]} · Unit ${Number(m[2])} · Reading` : 'Reading';
+}
+
+/** The optional magazine extras (newer readings): dek, byline ({ name, role, company } or a string), pull ({ after, text }). */
+export function magazineExtras(activity) {
+    const dek = typeof activity.dek === 'string' && activity.dek.trim() ? activity.dek.trim() : null;
+    const b = activity.byline;
+    const byline = typeof b === 'string' ? (b.trim() ? [b.trim()] : null)
+        : b && typeof b === 'object' ? ([b.name, b.role, b.company].filter(x => typeof x === 'string' && x.trim()).map(x => x.trim()))
+        : null;
+    const pl = activity.pull;
+    const count = (activity.paragraphs ?? []).length;
+    const pull = pl && typeof pl.text === 'string' && pl.text.trim() && Number.isInteger(pl.after) && pl.after >= 0 && pl.after < count - 1
+        ? { after: pl.after, text: pl.text.trim().replace(/^[“"]|[”"]$/g, '') } : null;
+    const caption = b && typeof b === 'object' && b.name ? [b.name, b.company].filter(Boolean).join(', ') : null;
+    return { dek, byline: byline?.length ? byline : null, pull, caption };
+}
 const GLOSSARY_SIZES   = ['text-sm',  'text-base', 'text-lg', 'text-xl', 'text-2xl'];
 const FONT_SIZE_MAX = PARAGRAPH_SIZES.length - 1;
 
@@ -143,7 +185,9 @@ function EmailCard({ email, words }) {
 }
 
 /** A light-layout paragraph: an email card, a story with emails quoted in it, a dialogue, or plain text. */
-function LightParagraph({ p, words, speakers, size }) {
+// dropCap: the magazine layout's coral initial on paragraph 1 — plain prose only, never on an email or a dialogue.
+const DROP_CAP = 'first-letter:float-left first-letter:font-display first-letter:font-bold first-letter:text-[#E0521F] first-letter:text-[52px] min-[900px]:first-letter:text-[64px] first-letter:leading-[0.9] first-letter:mt-1.5 first-letter:mr-2.5';
+function LightParagraph({ p, words, speakers, size, dropCap = false }) {
     const email = parseEmail(p);
     if (email) return <div className={`${size} leading-[1.65]`}><EmailCard email={email} words={words} /></div>;
     const parts = splitQuotedEmails(p);
@@ -155,7 +199,7 @@ function LightParagraph({ p, words, speakers, size }) {
         </div>
     );
     const lines = parseDialogue(p, speakers);
-    if (!lines) return <p className={`${size} leading-[1.7] whitespace-pre-line`}>{renderRich(p, words)}</p>;
+    if (!lines) return <p className={`${size} leading-[1.65] whitespace-pre-line ${dropCap ? DROP_CAP : ''}`} data-drop-cap={dropCap || undefined}>{renderRich(p, words)}</p>;
     return (
         <div className={`${size} leading-[1.6] grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2`} data-dialogue>
             {lines.map((l, j) => (
@@ -170,7 +214,8 @@ function LightParagraph({ p, words, speakers, size }) {
 
 // hideSave / onComplete: an Aurora Business student opens the lesson's reading from their course (2026-11-28) — no
 // Save, and an "I've read it" button at the end records it as done.
-export default function ReadingTextActivity({ activity, onClose, onDerive, hideSave, onComplete }) {
+// name: the saved activity's name, for the kicker ("FIRST STEPS · UNIT 3 · READING"); optional.
+export default function ReadingTextActivity({ activity, onClose, onDerive, hideSave, onComplete, name }) {
     const navigate = useNavigate();
     const [bgUrl, setBgUrl]             = useState(null);
     const [showSave, setShowSave]       = useState(false);
@@ -188,6 +233,10 @@ export default function ReadingTextActivity({ activity, onClose, onDerive, hideS
     const speakers    = light ? dialogueSpeakers(paragraphs.filter(p => !parseEmail(p))) : [];
     const letter      = light ? parseLetter(paragraphs) : null; // the whole reading is one email
     const canDerive   = typeof onDerive === 'function' && paragraphs.length > 0;
+    const { dek, byline, pull, caption } = magazineExtras(activity);
+    const kicker = kickerFromName(name);
+    const leftRef = useRef(null);
+    const stickyTop = useStickyTop(leftRef, light);
     const [readDone, setReadDone] = useState(false);
     function markRead() { if (!readDone) { setReadDone(true); onComplete?.({}); } }
 
@@ -250,14 +299,14 @@ export default function ReadingTextActivity({ activity, onClose, onDerive, hideS
         </div>
     );
 
-    // Aurora Business light layout: the photo as a band above the text, the passage on a white card in a
-    // comfortable reading column, the vocabulary on its own card below.
+    // Aurora Business light layout: a magazine page on warm paper (2026-11-28). Every saved reading works from topic /
+    // paragraphs / vocabulary alone; `dek`, `byline` and `pull` are optional extras newer readings carry.
     if (light) {
         const tool = `${LIGHT.iconBtn} hidden md:grid`;
         return (
             <>
                 <div className="print:hidden">
-                    <LightFrame
+                    <LightFrame ground="#FAF6F0"
                         eyebrow={`Reading text · ${paragraphs.length} paragraph${paragraphs.length === 1 ? '' : 's'}`} title={activity.topic}
                         extra={<>
                             {vocabulary.length > 0 && <button type="button" onClick={() => setShowVocab(v => !v)} className={LIGHT.iconBtn} title="Toggle vocabulary (V)">{showVocab ? 'Hide words' : 'Words'}</button>}
@@ -273,7 +322,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive, hideS
                             )}
                         </>}
                     >
-                        <div className="max-w-[860px] mx-auto px-4 sm:px-8 py-4 sm:py-7 flex flex-col gap-4 sm:gap-5">
+                        <div className="max-w-[1240px] mx-auto px-4 min-[900px]:px-10 py-4 min-[900px]:py-7 flex flex-col gap-4 min-[900px]:gap-6">
                             {canDerive && (
                                 <div className="flex flex-wrap items-center gap-2">
                                     <span className="text-[14px] font-semibold text-[#4A5163] mr-1">Make an exercise from this text:</span>
@@ -286,32 +335,70 @@ export default function ReadingTextActivity({ activity, onClose, onDerive, hideS
                                     {deriveError && <span className="text-[#B42318] text-sm basis-full" role="alert">{deriveError}</span>}
                                 </div>
                             )}
-                            <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px]" />
-                            <article className={`${LIGHT.card} px-5 py-6 sm:px-12 sm:py-10 flex flex-col gap-5`} aria-label="Reading text">
-                                {letter
-                                    ? <div className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7]`}><EmailCard email={letter} words={vocabWords} /></div>
-                                    : paragraphs.map((p, i) => <LightParagraph key={i} p={p} words={vocabWords} speakers={speakers} size={LIGHT_PARA_SIZES[fontSizeIdx]} />)}
-                            </article>
-                            {showVocab && vocabulary.length > 0 && (
-                                <section className={`${LIGHT.card} px-5 py-5 sm:px-10 sm:py-7`} aria-label="Vocabulary">
-                                    <p className={`${LIGHT.eyebrow} mb-4`}>Vocabulary</p>
-                                    <dl className="grid grid-cols-1 sm:grid-cols-2 gap-x-10 gap-y-3">
-                                        {vocabulary.map((v, i) => (
-                                            <div key={i} className={`${GLOSSARY_SIZES[fontSizeIdx]} leading-snug`}>
-                                                <dt className="inline font-bold">{v.word}</dt>
-                                                <dd className="inline text-[#4A5163]"> — {v.definition}</dd>
-                                            </div>
-                                        ))}
-                                    </dl>
-                                </section>
-                            )}
-                            {onComplete && (
-                                <div className="flex justify-end pb-4">
-                                    {readDone
-                                        ? <p className="text-[16px] font-semibold text-[#1E7A4C]" role="status">✓ Done — well read!</p>
-                                        : <button type="button" onClick={markRead} className={LIGHT.primary}>I’ve read it</button>}
+                            {/* Magazine layout "A · Foto ao lado" (2026-11-28, mockup artifact WbHv5SHyEP9Ezv8a6oq8yH): photo +
+                                vocabulary on the left, sticky; the article on the right. Below 900px it stacks — photo,
+                                caption, article, then the vocabulary last (the left column becomes `contents`). */}
+                            <div className="grid grid-cols-1 min-[900px]:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] gap-4 min-[900px]:gap-11" data-reading-layout>
+                                <div className="contents min-[900px]:flex min-[900px]:flex-col min-[900px]:gap-4 min-[900px]:sticky min-[900px]:self-start" style={{ top: stickyTop }} ref={leftRef} data-reading-left>
+                                    <div className="order-1 min-[900px]:order-none relative aspect-[16/10] min-[900px]:aspect-[4/5] min-[900px]:max-h-[56vh] rounded-[14px] overflow-hidden bg-[#EDE6DB]" data-reading-photo>
+                                        {bgUrl && <img src={bgUrl} alt="" className="absolute inset-0 w-full h-full object-cover" />}
+                                    </div>
+                                    {caption && <p className="order-2 min-[900px]:order-none -mt-1 text-[13px] text-[#4A5163]">{caption}</p>}
+                                    {showVocab && vocabulary.length > 0 && (
+                                        <section className="order-4 min-[900px]:order-none bg-white border border-[#E9E1D6] rounded-[14px] px-5 py-[18px]" aria-label="Words in this text" data-reading-words>
+                                            <h2 className="text-[12px] font-semibold tracking-[0.12em] uppercase text-[#9A3412] mb-3">Words in this text</h2>
+                                            <dl className="grid gap-3">
+                                                {vocabulary.map((v, i) => (
+                                                    <div key={i}>
+                                                        <dt className={`font-display font-semibold ${WORD_SIZES[fontSizeIdx]}`}>{v.word}</dt>
+                                                        <dd className={`mt-0.5 leading-[1.45] text-[#4A5163] ${DEF_SIZES[fontSizeIdx]}`}>{v.definition}</dd>
+                                                    </div>
+                                                ))}
+                                            </dl>
+                                        </section>
+                                    )}
                                 </div>
-                            )}
+                                <article className="order-3 min-[900px]:order-none min-w-0 min-[900px]:pl-10" aria-label="Reading text" data-reading-article>
+                                    <p className="text-[11px] sm:text-[12px] font-semibold tracking-[0.14em] uppercase text-[#9A3412]" data-reading-kicker>{kicker}</p>
+                                    <h1 className="font-display font-bold text-[34px] min-[900px]:text-[clamp(40px,3.6vw,54px)] leading-[1.05] tracking-[-0.02em] mt-2 mb-3 [text-wrap:balance] [overflow-wrap:anywhere]">{activity.topic}</h1>
+                                    {dek && <p className="font-serif-text italic text-[18px] min-[900px]:text-[20px] leading-[1.45] text-[#4A5163] max-w-[46ch] mb-[18px]" data-reading-dek>{dek}</p>}
+                                    {byline && (
+                                        <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1 text-[13px] text-[#4A5163] py-3 border-y border-[#E9E1D6] mb-6" data-reading-byline>
+                                            {byline.map((b, i) => (
+                                                <span key={i} className="contents">
+                                                    {i > 0 && <span className="w-1 h-1 rounded-full bg-[#E0521F]" aria-hidden="true" />}
+                                                    {i === 0 ? <b className="text-[#271D62]">{b}</b> : <span>{b}</span>}
+                                                </span>
+                                            ))}
+                                        </div>
+                                    )}
+                                    {!dek && !byline && <div className="mb-5" />}
+                                    {letter
+                                        ? <div className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7] max-w-[64ch]`}><EmailCard email={letter} words={vocabWords} /></div>
+                                        : (
+                                            <div className="flex flex-col gap-5 max-w-[64ch]">
+                                                {paragraphs.map((p, i) => (
+                                                    <Fragment key={i}>
+                                                        <div className="relative" data-para>
+                                                            <span className="block mb-0.5 min-[900px]:mb-0 min-[900px]:absolute min-[900px]:-left-10 min-[900px]:top-1 min-[900px]:w-7 min-[900px]:text-right font-display font-semibold text-[13px] text-[#E0521F]" aria-hidden="true" data-para-number>{i + 1}</span>
+                                                            <LightParagraph p={p} words={vocabWords} speakers={speakers} size={LIGHT_PARA_SIZES[fontSizeIdx]} dropCap={i === 0} />
+                                                        </div>
+                                                        {pull && pull.after === i && (
+                                                            <blockquote className="my-2 pl-[22px] py-1 border-l-4 border-[#E0521F] font-serif-text italic text-[22px] min-[900px]:text-[26px] leading-[1.35] max-w-[30ch]" data-reading-pull>“{pull.text}”</blockquote>
+                                                        )}
+                                                    </Fragment>
+                                                ))}
+                                            </div>
+                                        )}
+                                    {onComplete && (
+                                        <div className="flex justify-end pt-6 pb-4">
+                                            {readDone
+                                                ? <p className="text-[16px] font-semibold text-[#1E7A4C]" role="status">✓ Done — well read!</p>
+                                                : <button type="button" onClick={markRead} className={LIGHT.primary}>I’ve read it</button>}
+                                        </div>
+                                    )}
+                                </article>
+                            </div>
                         </div>
                     </LightFrame>
                 </div>
