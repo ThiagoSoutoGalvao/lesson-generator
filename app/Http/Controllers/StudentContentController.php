@@ -7,6 +7,7 @@ use App\Models\ActivityAttempt;
 use App\Models\StudentAssignment;
 use App\Services\StudentHomeworkService;
 use App\Services\StudentProgressService;
+use App\Support\TaughtUpTo;
 use Illuminate\Http\Request;
 
 /**
@@ -30,14 +31,9 @@ class StudentContentController extends Controller
     {
         $student = $request->user();
 
-        $activities = Activity::query()
-            ->where('trilha', $student->trilha)
-            ->where('student_visible', true)
-            ->whereNotIn('type', Activity::TEACHER_ONLY_TYPES)
-            ->whereNotNull('trilha_lesson')
-            ->orderBy('trilha_lesson')
-            ->orderBy('created_at')
-            ->get(['id', 'name', 'type', 'trilha_lesson', 'trilha_part']);
+        // Business courses: only lessons up to the teacher's "taught" mark, plus each lesson's reading and
+        // presentation (TaughtUpTo). Other courses: the whole trilha, as before.
+        $activities = TaughtUpTo::courseActivities($student, ['id', 'name', 'type', 'trilha_lesson', 'trilha_part', 'created_at']);
 
         // Latest attempt per activity for this student (plus a count for the
         // progress page later). One query for the whole trilha.
@@ -50,7 +46,8 @@ class StudentContentController extends Controller
 
         $lessons = $activities
             ->groupBy('trilha_lesson')
-            ->map(fn ($group) => $group->map(function ($a) use ($attempts) {
+            // The lesson's reading / presentation first — it is what the activities were made from.
+            ->map(fn ($group) => $group->sortBy(fn ($a) => in_array($a->type, TaughtUpTo::MATERIAL_TYPES, true) ? 0 : 1)->map(function ($a) use ($attempts) {
                 $mine   = $attempts->get($a->id);
                 $latest = $mine?->last();
 
@@ -66,7 +63,11 @@ class StudentContentController extends Controller
                 ];
             })->values());
 
-        return response()->json(['lessons' => $lessons]);
+        return response()->json([
+            'lessons' => $lessons,
+            // null on a course without the mark (the whole trilha is open)
+            'taught'  => TaughtUpTo::applies($student->trilha) ? TaughtUpTo::mark($student) : null,
+        ]);
     }
 
     /**
@@ -160,9 +161,12 @@ class StudentContentController extends Controller
             ->where('activity_id', $activity->id)
             ->exists();
 
+        // Aurora Business (2026-11-28): reading + presentation are part of the course, and only lessons up to
+        // the teacher's "taught" mark are open (TaughtUpTo).
         $viaTrilha = $activity->trilha === $student->trilha
             && $activity->student_visible
-            && ! in_array($activity->type, Activity::TEACHER_ONLY_TYPES, true);
+            && ! in_array($activity->type, TaughtUpTo::hiddenTypes($student), true)
+            && TaughtUpTo::isOpen($student, $activity->trilha_lesson, $activity->trilha_part);
 
         $viaHomework = $assigned
             && ($activity->type === 'presentation' || ! in_array($activity->type, Activity::TEACHER_ONLY_TYPES, true));

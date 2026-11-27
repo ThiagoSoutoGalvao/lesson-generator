@@ -39,6 +39,7 @@ Route::middleware('auth:web')->group(function () {
     Route::middleware(EnsureTeacher::class)->group(function () {
         Route::get('/students', [StudentController::class, 'index']);
         Route::post('/students', [StudentController::class, 'store']);
+        Route::post('/students/taught', [StudentController::class, 'markTaught']);
         Route::patch('/students/{student}', [StudentController::class, 'update']);
         Route::delete('/students/{student}', [StudentController::class, 'destroy']);
         Route::get('/students/{student}/progress', [StudentController::class, 'progress']);

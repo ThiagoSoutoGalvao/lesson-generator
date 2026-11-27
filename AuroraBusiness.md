@@ -161,6 +161,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-28** — **"Taught up to": students see the course as it is taught.** On a business course the student app opens
+  lessons only up to each student's mark (`users.taught_lesson` / `taught_part`, `App\Support\TaughtUpTo`); nothing marked
+  = **1A only**; later lessons show a lock, "Opens after class". The teacher moves it with **Mark 4B as taught** on the lesson
+  page (`TaughtMarker.jsx`, `POST /api/students/taught`; every student on the course listed, ticked if behind — untick who
+  missed class; only moves forward) or sets any lesson on the Students page ("Taught up to"; a new course resets it).
+  Business students now also open each lesson's **reading** (with "I've read it" → done) and **presentation**, listed first.
+  Lights / Glow / Radiant unchanged (whole trilha, no readings). Tests `TaughtUpToTest` 4/4, QA `qa_taught.mjs` 15/15.
 - **2026-11-27** — **"Edit text" on Picture Prompts and Discussion** (lesson-pack card, every course): fix the words by hand on the same page — each photo is shown above its question, so a question that doesn't match the picture can be rewritten; starters / follow-ups one per line; "Use it!" targets. `PATCH /api/activities/{id}/text` (`ActivityTextController`) takes only text and keeps photos, credits and the item count. Same day, after his review: an **✎ Edit** button inside the activity screen too (top of the question card; edits the picture / question on screen, teacher only — `hideSave` hides it from students; edits flow back to the pack, Library and Teach now). Tests 3/3, QA `qa_text_edit.mjs` 14/14. Next: "Change photo", then more types.
 - **2026-11-27** — **Emails in readings laid out as email cards** (review found 4A / 7A cluttered). No content change: `lib/readingEmails.js` recognises a paragraph that IS an email (From / To / Subject lines, greeting, body, signature) and a story that QUOTES one ("Subject line: … Hi Leandro, … Thanks, Valentina."); `ReadingTextActivity` shows each as a mail-app card (grey header, greeting / body / sign-off on their own lines). Email paragraphs no longer count "From:" as a speaker. Also a reading that is ONE email over several paragraphs (greeting first, "Best regards, Name" last) becomes one card, and quoted emails without "Subject line:" (FS 7B, 7C). Production scan: 34 of 144 business readings now show emails as cards. `LessonDrafter` now asks for emails in that shape and no "You say it like this" notes inside them. QA `qa_reading_emails.mjs` 31/31.
 - **2026-11-26** — **Listening, step 1** (plan: demo in the app → grid slot + builder → fill all courses → later

@@ -483,6 +483,23 @@ function StudentRow({ s, onChange, onRemoved }) {
                 >
                     {TRILHA_NAMES.map(t => <option key={t} value={t} className="bg-[#1c1540]">{TRILHAS[t].label}</option>)}
                 </select>
+                {/* Aurora Business: the student app opens lessons up to this one (normally moved with "Mark 4B as
+                    taught" on the lesson page; set here to fix one student or go back). */}
+                {TRILHAS[s.trilha]?.program === 'business' && (
+                    <label className="flex items-center gap-1.5 text-white/60 text-xs">
+                        Taught up to
+                        <select
+                            value={`${s.taught_lesson ?? 1}${s.taught_part ?? 'A'}`}
+                            disabled={busy}
+                            onChange={e => patch({ taught: e.target.value })}
+                            aria-label="Taught up to"
+                            className="bg-white/8 border border-white/15 text-white text-xs rounded-lg px-2 py-1.5 cursor-pointer"
+                        >
+                            {Array.from({ length: TRILHAS[s.trilha].lessons }, (_, i) => i + 1).flatMap(n =>
+                                (TRILHAS[s.trilha].parts ?? ['A']).map(p => <option key={`${n}${p}`} value={`${n}${p}`} className="bg-[#1c1540]">{n}{p}</option>))}
+                        </select>
+                    </label>
+                )}
                 <button
                     onClick={() => setExpanded(e => !e)}
                     className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-white/15 text-white/70 hover:text-white hover:bg-white/10 transition-colors cursor-pointer"

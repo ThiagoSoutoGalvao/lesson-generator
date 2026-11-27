@@ -1,7 +1,7 @@
 // Student-app labels + icons for the activity types a student can be shown.
-// Teacher-only types (reading_text, essay_feedback, grammar_explainer) are filtered out
-// server-side and deliberately absent here. `presentation` is the one exception — reachable
-// only via a direct Homework assignment, as a take-home reference (2026-09-24).
+// Teacher-only types (essay_feedback, grammar_explainer) are filtered out server-side and deliberately absent here.
+// `presentation` reaches a student via a Homework assignment (2026-09-24); on an Aurora Business course the lesson's
+// presentation and reading are part of the course too (TaughtUpTo, 2026-11-28).
 
 export const ACTIVITY_META = {
     quiz:                    { label: 'Quiz',                 icon: '❓' },
@@ -30,6 +30,7 @@ export const ACTIVITY_META = {
     debate:                  { label: 'Debate',               icon: '⚖️' },
     mini_presentation:       { label: 'Mini presentation',    icon: '🎤' },
     presentation:            { label: 'Presentation',         icon: '📽️' },
+    reading_text:            { label: 'Reading',              icon: '📖' },
 };
 
 export function activityMeta(type) {

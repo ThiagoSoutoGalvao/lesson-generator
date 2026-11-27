@@ -8,6 +8,7 @@ import LibraryPicker from '@/components/LibraryPicker';
 import Spinner from '@/components/Spinner';
 import MaterialRedo from '@/components/MaterialRedo';
 import ActivityTextEditor from '@/components/ActivityTextEditor';
+import TaughtMarker from '@/components/TaughtMarker';
 import { TRILHAS, TRILHA_LEVEL, TRILHA_TOC, TYPE_LABELS, composeActivityName, trilhaParts, partOf, focusFromName } from '@/lib/trilhas';
 import { STAGES } from '@/lib/stages';
 import { pickFill, FILLABLE_STAGES } from '@/lib/fillStage';
@@ -334,6 +335,8 @@ export default function LessonPackPage() {
             )}
 
             {part && <PlanLine key={code} code={code} plan={plan} onSave={savePlan} />}
+
+            {part && isLightCourse(trilha) && <TaughtMarker trilha={trilha} lesson={lesson} part={part} />}
 
             {!loading && core && (
                 <p className="ui-shell-text text-ui-muted text-sm -mt-2" data-testid="pack-source">

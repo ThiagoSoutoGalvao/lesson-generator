@@ -31,6 +31,7 @@ import DebateActivity from '@/components/DebateActivity';
 import MiniPresentationActivity from '@/components/MiniPresentationActivity';
 import GrammarExplainerActivity from '@/components/GrammarExplainerActivity';
 import ListeningActivity from '@/components/ListeningActivity';
+import ReadingTextActivity from '@/components/ReadingTextActivity';
 
 const GRADIENT = 'linear-gradient(157deg,#1A0F3D 0%,#2A1560 30%,#5A1B73 62%,#8E2160 86%,#B8433A 118%)';
 
@@ -53,6 +54,7 @@ const RECORDS_ATTEMPT = new Set([
     'role_play', 'story_builder', 'debate', 'mini_presentation', // production templates — completion only
     'presentation',                 // completion only — a Homework reference, last slide reached
     'listening',                    // scored: right answers / total, on every check
+    'reading_text',                 // completion only — "I've read it" (Aurora Business course, 2026-11-28)
 ]);
 
 const COMPONENTS = {
@@ -81,9 +83,10 @@ const COMPONENTS = {
     debate:                  DebateActivity,
     mini_presentation:       MiniPresentationActivity,
     listening:               ListeningActivity,
-    // Only reachable here via a direct Homework assignment (assertVisible blocks the trilha
-    // path) — a teacher handing over a presentation as a take-home reference.
+    // Reachable via a direct Homework assignment, and on an Aurora Business course (TaughtUpTo, 2026-11-28),
+    // where each lesson's reading and presentation are part of what the student can open.
     presentation:            GrammarExplainerActivity,
+    reading_text:            ReadingTextActivity,
 };
 
 function FullscreenMessage({ children, onBack }) {

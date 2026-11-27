@@ -232,6 +232,9 @@ branches at module scope on `window.__AURORA_USER__.role` (injected by
 - **For a student to see an activity** (`StudentContentController::assertVisible()`):
   type not teacher-only, **and** either (a) same `trilha` + `trilha_lesson`
   not null + `student_visible` true (the original, trilha-scoped path), **or**
+  **Aurora Business courses add a gate (2026-11-28, `App\Support\TaughtUpTo`):** only lessons up to the student's
+  "taught" mark (default 1A), and reading_text / presentation are allowed — every student list goes through
+  `TaughtUpTo::courseActivities()`. Or
   (b) a `student_assignments` row exists for that student + activity (Aurora
   Homework H2 — how a one-off activity, which has no trilha at all, reaches a
   student). The two paths are independent `OR` branches, not layered — an

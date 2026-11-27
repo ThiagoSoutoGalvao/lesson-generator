@@ -30,6 +30,15 @@ function currentUnit(lessons, total) {
     return started.at(-1) ?? 1;
 }
 
+// "Taught up to" (2026-11-28): the teacher marks each lesson as taught; lessons after the mark are locked here
+// (the server doesn't send their activities either). taught = { lesson, part } — 1A until the first mark.
+const rankOf = (n, p) => n * 10 + (String(p || 'A').charCodeAt(0) - 64);
+const isOpen = (taught, n, p) => !taught || rankOf(n, p) <= rankOf(taught.lesson, taught.part);
+
+function Lock() {
+    return <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" aria-hidden="true"><rect x="5" y="11" width="14" height="9" rx="2" /><path d="M8 11V8a4 4 0 0 1 8 0v3" /></svg>;
+}
+
 function Check({ className = 'w-4 h-4' }) {
     return <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M5 12l5 5L19 7" /></svg>;
 }
@@ -38,7 +47,16 @@ function Chevron() {
 }
 
 /** A 1A / 1B / 1C line: done (green tick), to do (coral ring) or nothing yet. */
-function PartRow({ n, part, items }) {
+function PartRow({ n, part, items, locked }) {
+    if (locked) {
+        return (
+            <div className="flex items-center gap-3 px-4 min-h-[52px] border-t border-[#ECEEF2] text-[17px] text-[#4A5163]" data-testid="unit-part">
+                <span className="w-7 h-7 rounded-full bg-[#F1F2F5] grid place-items-center shrink-0"><Lock /></span>
+                <span className="flex-1">Lesson {n}{part}</span>
+                <span className="text-[14px]">Opens after class</span>
+            </div>
+        );
+    }
     const done = items.filter(a => a.done).length;
     const state = items.length === 0 ? 'empty' : done === items.length ? 'done' : 'todo';
     return (
@@ -73,7 +91,7 @@ export function BusinessHomePage({ user }) {
     const meta = TRILHAS[user.trilha];
     const total = meta?.lessons ?? 0;
     const firstName = (user.name || '').trim().split(/\s+/)[0] || 'there';
-    const { loading, error, lessons } = useStudentLessons();
+    const { loading, error, lessons, taught } = useStudentLessons();
     const [homework, setHomework] = useState(null);
 
     useEffect(() => {
@@ -87,7 +105,7 @@ export function BusinessHomePage({ user }) {
     const all = Object.values(lessons ?? {}).flat();
     const done = all.filter(a => a.done).length;
     const pct = all.length ? Math.round((done / all.length) * 100) : 0;
-    const now = currentUnit(lessons, total);
+    const now = taught ? taught.lesson : currentUnit(lessons, total); // the unit the class is on
     const nowInfo = unitInfo(user.trilha, now);
     const parts = meta?.parts?.length ? meta.parts : ['A'];
     const todo = (homework ?? []).filter(h => !h.done);
@@ -130,7 +148,7 @@ export function BusinessHomePage({ user }) {
                             {nowInfo.goal && <span className="block text-[15px] text-[#4A5163] mt-1">Goal: {nowInfo.goal}</span>}
                         </Link>
                         {loading ? <p className="px-4 pb-4 text-[15px] text-[#4A5163]">Loading…</p>
-                            : parts.map(p => <PartRow key={p} n={now} part={p} items={(lessons?.[now] ?? []).filter(a => (a.part ?? 'A') === p)} />)}
+                            : parts.map(p => <PartRow key={p} n={now} part={p} locked={!isOpen(taught, now, p)} items={(lessons?.[now] ?? []).filter(a => (a.part ?? 'A') === p)} />)}
                     </div>
                 )}
             </section>
@@ -142,6 +160,15 @@ export function BusinessHomePage({ user }) {
                         const items = lessons?.[n] ?? [];
                         const d = items.filter(a => a.done).length;
                         const finished = items.length > 0 && d === items.length;
+                        if (!isOpen(taught, n, 'A')) {
+                            return (
+                                <li key={n} className="border-t border-[#ECEEF2] first:border-t-0 flex items-center gap-3 px-4 min-h-[56px] py-2 text-[#4A5163]" data-testid="locked-unit">
+                                    <span className="w-8 h-8 rounded-lg grid place-items-center text-[15px] font-semibold shrink-0 bg-[#F1F2F5]">{n}</span>
+                                    <span className="flex-1 min-w-0 text-[16px] truncate">{unitInfo(user.trilha, n).title}</span>
+                                    <span aria-label="Opens after class"><Lock /></span>
+                                </li>
+                            );
+                        }
                         return (
                             <li key={n} className="border-t border-[#ECEEF2] first:border-t-0">
                                 <Link to={`/s/lesson/${n}`} className="flex items-center gap-3 px-4 min-h-[56px] py-2">
@@ -186,7 +213,7 @@ export function BusinessLessonPage({ user }) {
     const n = Number(useParams().n);
     const meta = TRILHAS[user.trilha];
     const valid = Number.isInteger(n) && n >= 1 && n <= (meta?.lessons ?? 0);
-    const { loading, error, lessons } = useStudentLessons();
+    const { loading, error, lessons, taught } = useStudentLessons();
     const info = unitInfo(user.trilha, n);
     const learn = (TRILHA_TOC[user.trilha]?.[n] ?? []).slice(1);
     const items = lessons?.[n] ?? [];
@@ -222,6 +249,14 @@ export function BusinessLessonPage({ user }) {
                     {loading && <p className="text-[15px] text-[#4A5163]">Loading…</p>}
                     {error && <p className={`${card} p-4 text-[15px] text-[#4A5163]`}>{error}</p>}
                     {!loading && !error && parts.map(p => {
+                        if (!isOpen(taught, n, p)) {
+                            return (
+                                <section key={p} id={`part-${p}`} aria-label={`Lesson ${n}${p}`} className="flex flex-col gap-2 scroll-mt-4" data-testid="student-part">
+                                    <h2 className="font-display text-[20px] font-semibold text-[#4A5163]">Lesson {n}{p}</h2>
+                                    <p className="rounded-2xl border border-dashed border-[#C6CCD6] px-4 py-4 text-[15px] text-[#4A5163] flex items-center gap-2"><Lock /> Opens after your class.</p>
+                                </section>
+                            );
+                        }
                         const mine = items.filter(a => (a.part ?? 'A') === p);
                         const d = mine.filter(a => a.done).length;
                         return (

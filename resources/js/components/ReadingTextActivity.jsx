@@ -168,7 +168,9 @@ function LightParagraph({ p, words, speakers, size }) {
     );
 }
 
-export default function ReadingTextActivity({ activity, onClose, onDerive }) {
+// hideSave / onComplete: an Aurora Business student opens the lesson's reading from their course (2026-11-28) — no
+// Save, and an "I've read it" button at the end records it as done.
+export default function ReadingTextActivity({ activity, onClose, onDerive, hideSave, onComplete }) {
     const navigate = useNavigate();
     const [bgUrl, setBgUrl]             = useState(null);
     const [showSave, setShowSave]       = useState(false);
@@ -186,6 +188,8 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const speakers    = light ? dialogueSpeakers(paragraphs.filter(p => !parseEmail(p))) : [];
     const letter      = light ? parseLetter(paragraphs) : null; // the whole reading is one email
     const canDerive   = typeof onDerive === 'function' && paragraphs.length > 0;
+    const [readDone, setReadDone] = useState(false);
+    function markRead() { if (!readDone) { setReadDone(true); onComplete?.({}); } }
 
     async function handleDerive(opt) {
         setDeriving(opt.label);
@@ -259,9 +263,9 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
                             {vocabulary.length > 0 && <button type="button" onClick={() => setShowVocab(v => !v)} className={LIGHT.iconBtn} title="Toggle vocabulary (V)">{showVocab ? 'Hide words' : 'Words'}</button>}
                             <button type="button" onClick={() => window.print()} className={tool} title="Download as PDF">PDF</button>
                         </>}
-                        onSave={() => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
+                        onSave={hideSave ? null : () => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
                         overlay={<>
-                            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+                            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
                             {deriving && (
                                 <div className="absolute inset-0 z-30 bg-white/85 flex items-center justify-center">
                                     <Spinner message={`Building your ${deriving}… this can take up to 20 seconds`} color="text-[#E0521F]" textColor="text-[#4A5163]" />
@@ -301,6 +305,13 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
                                     </dl>
                                 </section>
                             )}
+                            {onComplete && (
+                                <div className="flex justify-end pb-4">
+                                    {readDone
+                                        ? <p className="text-[16px] font-semibold text-[#1E7A4C]" role="status">✓ Done — well read!</p>
+                                        : <button type="button" onClick={markRead} className={LIGHT.primary}>I’ve read it</button>}
+                                </div>
+                            )}
                         </div>
                     </LightFrame>
                 </div>
@@ -314,7 +325,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
         <div className="fixed inset-0 flex flex-col z-50 print:hidden" style={bgStyle}>
             <div className="absolute inset-0 bg-black/55" />
 
-            {showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
+            {!hideSave && showSave && <SavePanel activity={activity} onDone={() => setShowSave(false)} />}
 
             {/* Header */}
             <div className="relative z-10 flex items-center justify-between px-8 py-4 shrink-0">
@@ -335,7 +346,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
                             {showVocab ? 'Hide vocabulary' : 'Show vocabulary'}
                         </button>
                     )}
-                    <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>
+                    {!hideSave && <button onClick={() => setShowSave(true)} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer">Save</button>}
                     <button onClick={() => navigate('/generate')} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Generate another activity">+ Add activity</button>
                     <button onClick={() => window.print()} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title="Download as PDF">⬇ PDF</button>
                     <button onClick={toggleFullscreen} className="text-white/50 hover:text-white text-sm transition-colors cursor-pointer" title={isFullscreen ? 'Exit fullscreen (F)' : 'Fullscreen (F)'}>

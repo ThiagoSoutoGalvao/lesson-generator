@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\StudentHomeworkService;
 use App\Services\StudentProgressService;
 use App\Support\Credentials;
+use App\Support\TaughtUpTo;
 use App\Support\Trilhas;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -27,6 +28,9 @@ use Illuminate\Validation\ValidationException;
  */
 class StudentController extends Controller
 {
+    /** What the Students page gets for each student; taught_* is the Aurora Business "taught up to" mark. */
+    private const FIELDS = ['id', 'name', 'email', 'trilha', 'taught_lesson', 'taught_part', 'is_active', 'created_at'];
+
     private function guardTeacher(): void
     {
         abort_unless(auth()->user()?->isTeacher(), 403, 'Teachers only.');
@@ -39,7 +43,7 @@ class StudentController extends Controller
         return User::where('teacher_id', auth()->id())
             ->where('role', 'student')
             ->orderBy('name')
-            ->get(['id', 'name', 'email', 'trilha', 'is_active', 'created_at']);
+            ->get(self::FIELDS);
     }
 
     public function store(Request $request)
@@ -70,7 +74,7 @@ class StudentController extends Controller
         $student->save();
 
         return response()->json(
-            $student->only(['id', 'name', 'email', 'trilha', 'is_active', 'created_at']),
+            $student->only(self::FIELDS),
             201,
         );
     }
@@ -93,14 +97,33 @@ class StudentController extends Controller
             'trilha'    => ['sometimes', Rule::in(Trilhas::NAMES)],
             'is_active' => ['sometimes', 'boolean'],
             'password'  => ['sometimes', 'string', 'min:8', 'max:100'],
+            // "4B", or null to go back to the start (1A only) — business courses only
+            'taught'    => ['sometimes', 'nullable', 'string', 'max:4'],
         ]);
 
-        if (array_key_exists('trilha', $data))    $student->trilha = $data['trilha'];
+        if (array_key_exists('trilha', $data) && $data['trilha'] !== $student->trilha) {
+            $student->trilha = $data['trilha'];
+            // A new course starts at its first lesson.
+            $student->taught_lesson = null;
+            $student->taught_part   = null;
+        }
+        if (array_key_exists('taught', $data)) {
+            if ($data['taught'] === null || $data['taught'] === '') {
+                $student->taught_lesson = null;
+                $student->taught_part   = null;
+            } else {
+                $code = TaughtUpTo::parse($data['taught']);
+                if (! $code || ! TaughtUpTo::applies($student->trilha)) {
+                    throw ValidationException::withMessages(['taught' => 'Use a lesson like 4B, on an Aurora Business course.']);
+                }
+                [$student->taught_lesson, $student->taught_part] = $code;
+            }
+        }
         if (array_key_exists('is_active', $data)) $student->is_active = $data['is_active'];
         if (array_key_exists('password', $data))  $student->password = Hash::make($data['password']);
         $student->save();
 
-        return response()->json($student->only(['id', 'name', 'email', 'trilha', 'is_active', 'created_at']));
+        return response()->json($student->only(self::FIELDS));
     }
 
     /**
@@ -264,6 +287,45 @@ class StudentController extends Controller
         $assignment->delete();
 
         return response()->json(['ok' => true]);
+    }
+
+    /**
+     * "Mark 4B as taught" on a business lesson page: the ticked students (this teacher's, on that course) can
+     * now open every lesson up to 4B. It only moves a mark forward — a student already past 4B keeps their
+     * mark (the Students page sets any lesson, back as well).
+     *
+     * POST /api/students/taught  { trilha, lesson, part, student_ids[] }
+     */
+    public function markTaught(Request $request)
+    {
+        $this->guardTeacher();
+
+        $data = $request->validate([
+            'trilha'        => ['required', Rule::in(Trilhas::BUSINESS)],
+            'lesson'        => ['required', 'integer', 'min:1', 'max:99'],
+            'part'          => ['required', Rule::in(['A', 'B', 'C'])],
+            'student_ids'   => ['present', 'array', 'max:50'],
+            'student_ids.*' => ['integer'],
+        ]);
+
+        $students = User::where('teacher_id', auth()->id())
+            ->where('role', 'student')
+            ->where('trilha', $data['trilha'])
+            ->whereIn('id', $data['student_ids'])
+            ->get();
+
+        $new = TaughtUpTo::rank($data['lesson'], $data['part']);
+        foreach ($students as $s) {
+            $m = TaughtUpTo::mark($s);
+            $marked = $s->taught_lesson !== null;
+            if (! $marked || $new > TaughtUpTo::rank($m['lesson'], $m['part'])) {
+                $s->taught_lesson = $data['lesson'];
+                $s->taught_part   = $data['part'];
+                $s->save();
+            }
+        }
+
+        return response()->json(['students' => $students->map(fn (User $s) => $s->only(self::FIELDS))->values()]);
     }
 
     private function guardOwnStudent(User $student): void

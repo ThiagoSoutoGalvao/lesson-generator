@@ -14,6 +14,9 @@ final class Trilhas
 {
     public const NAMES = ['Lights', 'Glow', 'Radiant', 'FirstSteps', 'EverydayBusiness', 'TakeTheLead'];
 
+    /** The Aurora Business modules (TRILHAS[…].program === 'business' on the client). */
+    public const BUSINESS = ['FirstSteps', 'EverydayBusiness', 'TakeTheLead'];
+
     /** For an `in:` validation rule: "Lights,Glow,…". */
     public static function rule(): string
     {

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Activity;
 use App\Models\ActivityAttempt;
 use App\Models\User;
+use App\Support\TaughtUpTo;
 
 /**
  * Builds one student's progress snapshot — shared by the student's own
@@ -18,12 +19,8 @@ class StudentProgressService
 
     public static function build(User $student): array
     {
-        $activities = Activity::query()
-            ->where('trilha', $student->trilha)
-            ->where('student_visible', true)
-            ->whereNotIn('type', Activity::TEACHER_ONLY_TYPES)
-            ->whereNotNull('trilha_lesson')
-            ->get(['id', 'trilha_lesson']);
+        // Same list the student's course shows (TaughtUpTo: business lessons up to the "taught" mark).
+        $activities = TaughtUpTo::courseActivities($student, ['id', 'trilha_lesson']);
 
         $attempts = ActivityAttempt::ownPractice()->where('student_id', $student->id)
             ->whereIn('activity_id', $activities->pluck('id'))
@@ -81,6 +78,7 @@ class StudentProgressService
 
         return [
             'trilha'           => $student->trilha,
+            'taught'           => TaughtUpTo::applies($student->trilha) ? TaughtUpTo::mark($student) : null,
             'activities_total' => $activities->count(),
             'activities_done'  => $doneActivityIds->count(),
             'total_attempts'   => $attempts->count(),

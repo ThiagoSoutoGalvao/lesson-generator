@@ -46,7 +46,10 @@ class AuroraBusinessCoursesTest extends TestCase
             'trilha' => 'FirstSteps', 'trilha_lesson' => 1, 'trilha_part' => 'B',
         ])->assertCreated()->json('id');
 
-        $this->actingAs($student)->getJson("/api/student/activities/{$id}")->assertOk();
+        // 1B opens once the teacher marks it as taught (TaughtUpTo, 2026-11-28); a new student has 1A only.
+        $this->actingAs($student)->getJson("/api/student/activities/{$id}")->assertNotFound();
+        $this->actingAs($teacher)->postJson('/api/students/taught', ['trilha' => 'FirstSteps', 'lesson' => 1, 'part' => 'B', 'student_ids' => [$studentId]])->assertOk();
+        $this->actingAs($student->fresh())->getJson("/api/student/activities/{$id}")->assertOk();
     }
 
     public function test_typed_names_match_the_stored_course_name(): void

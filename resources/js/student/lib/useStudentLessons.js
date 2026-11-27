@@ -3,6 +3,7 @@ import axios from 'axios';
 
 // Shared fetch of GET /api/student/lessons —
 //   { [lessonNumber]: [{ id, name, type, done, last_score, last_max, attempts }] }
+// plus `taught` ({ lesson, part } on an Aurora Business course: lessons after it are locked; null elsewhere).
 // Cached at module scope so navigating between My Trilha and a lesson view
 // doesn't refetch. `reloadStudentLessons()` (called after an attempt is
 // recorded) busts the cache, refetches, and pushes the fresh data to every
@@ -15,7 +16,7 @@ const subs = new Set();
 function fetchLessons() {
     inFlight = inFlight ?? axios.get('/api/student/lessons')
         .then(res => {
-            cache = res.data.lessons ?? {};
+            cache = { lessons: res.data.lessons ?? {}, taught: res.data.taught ?? null };
             inFlight = null;
             subs.forEach(fn => fn(cache));
             return cache;
@@ -32,15 +33,15 @@ export function reloadStudentLessons() {
 
 export function useStudentLessons() {
     const [state, setState] = useState(() =>
-        cache ? { loading: false, lessons: cache } : { loading: true },
+        cache ? { loading: false, ...cache } : { loading: true },
     );
 
     useEffect(() => {
-        const onData = lessons => setState({ loading: false, lessons });
+        const onData = data => setState({ loading: false, ...data });
         subs.add(onData);
 
         if (cache) {
-            setState({ loading: false, lessons: cache });
+            setState({ loading: false, ...cache });
         } else {
             fetchLessons().catch(() => setState({
                 loading: false,
