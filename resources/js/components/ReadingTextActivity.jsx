@@ -8,7 +8,7 @@ import Spinner from '@/components/Spinner';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
-import { parseEmail, splitQuotedEmails } from '@/lib/readingEmails';
+import { parseEmail, parseLetter, splitQuotedEmails } from '@/lib/readingEmails';
 
 // Light layout: 20px reading text at the default size (18px on a phone).
 const LIGHT_PARA_SIZES = ['text-base', 'text-[17px] sm:text-lg', 'text-lg sm:text-[20px]', 'text-[20px] sm:text-[23px]', 'text-[22px] sm:text-[27px]'];
@@ -184,6 +184,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const vocabWords  = vocabulary.map(v => v.word);
     // Email paragraphs are left out, or "From:" / "To:" / "Subject:" would count as people talking.
     const speakers    = light ? dialogueSpeakers(paragraphs.filter(p => !parseEmail(p))) : [];
+    const letter      = light ? parseLetter(paragraphs) : null; // the whole reading is one email
     const canDerive   = typeof onDerive === 'function' && paragraphs.length > 0;
 
     async function handleDerive(opt) {
@@ -225,7 +226,8 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const printView = (
         <div className="read-print-root" style={{ display: 'none' }}>
             <p className="read-print-meta">Reading text — {activity.topic}</p>
-            {paragraphs.map((p, i) => {
+            {letter && <div className="read-print-paragraph"><EmailCard email={letter} words={vocabWords} /></div>}
+            {!letter && paragraphs.map((p, i) => {
                 if (light && (parseEmail(p) || splitQuotedEmails(p))) return <div key={i} className="read-print-paragraph"><LightParagraph p={p} words={vocabWords} speakers={speakers} size="" /></div>;
                 const lines = light ? parseDialogue(p, speakers) : null;
                 if (!lines) return <p key={i} className="read-print-paragraph">{light ? renderRich(p, vocabWords) : highlightVocab(p, vocabWords)}</p>;
@@ -282,7 +284,9 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
                             )}
                             <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px]" />
                             <article className={`${LIGHT.card} px-5 py-6 sm:px-12 sm:py-10 flex flex-col gap-5`} aria-label="Reading text">
-                                {paragraphs.map((p, i) => <LightParagraph key={i} p={p} words={vocabWords} speakers={speakers} size={LIGHT_PARA_SIZES[fontSizeIdx]} />)}
+                                {letter
+                                    ? <div className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7]`}><EmailCard email={letter} words={vocabWords} /></div>
+                                    : paragraphs.map((p, i) => <LightParagraph key={i} p={p} words={vocabWords} speakers={speakers} size={LIGHT_PARA_SIZES[fontSizeIdx]} />)}
                             </article>
                             {showVocab && vocabulary.length > 0 && (
                                 <section className={`${LIGHT.card} px-5 py-5 sm:px-10 sm:py-7`} aria-label="Vocabulary">

@@ -12,7 +12,18 @@ const GREETING = /^(Dear|Hi|Hello|Hey|Good (?:morning|afternoon|evening))\b[^.!?
 const SIGN_OFF = /^(Best regards|Kind regards|Warm regards|Regards|Best wishes|Best|Many thanks|Thanks(?: again| a lot)?|Thank you(?: again)?|Cheers|See you(?: soon| then| on \w+)?|Yours(?: sincerely| faithfully)?|Talk soon|All the best)\s*[,.!]?$/i;
 
 // "… ten more boxes. Thanks, Valentina." — a sign-off and a name at the very end of a run-on email.
-const INLINE_END = /\s*\b(Best regards|Kind regards|Warm regards|Regards|Best wishes|Many thanks|Thanks|Thank you|Cheers|See you soon|All the best),?\s+([A-Z][\p{L}'-]+(?:\s+[A-Z][\p{L}'-]+)?)\.?$/u;
+const INLINE_END = /\s*\b(Best regards|Kind regards|Warm regards|Regards|Best wishes|Warm wishes|Many thanks|Thanks|Thank you|Cheers|See you soon|Talk soon|Speak soon|All the best),?\s+([A-Z][\p{L}'-]+(?:\s+[A-Z][\p{L}'-]+)?)\.?$/u;
+
+/**
+ * "Dear Marcos, I am writing…" → ["Dear Marcos,", "I am writing…"]. A greeting to several people
+ * ("Dear Fabrício, Manuela and Ivan, thank you…") runs to the comma before a lower-case word or "I";
+ * otherwise it is the shortest "Hi Name," / "Hi Name!".
+ */
+function splitGreeting(t) {
+    const m = t.match(/^((?:Dear|Hi|Hello|Hey)\b[^.!?\n]{0,60}?,)\s+(?=[a-z]|I\b|I['’])/)
+        ?? t.match(/^((?:Dear|Hi|Hello|Hey)\s[^,.!?\n]{1,40}[,!])\s*/);
+    return m ? [m[1], t.slice(m[0].length)] : ['', t];
+}
 
 const key = h => { const k = h.toLowerCase(); return k.startsWith('subject') ? 'subject' : k; };
 
@@ -74,11 +85,12 @@ export function parseEmail(text) {
 export function parseQuotedEmail(inner) {
     let t = String(inner ?? '').trim();
     const s = t.match(/^Subject(?: line)?:\s*(.+?[.!?])\s+/i);
-    if (!s) return null;
-    const email = { from: '', to: '', cc: '', date: '', subject: s[1].replace(/\.$/, ''), greeting: '', body: [], signOff: '', signature: '' };
-    t = t.slice(s[0].length);
-    const g = t.match(/^((?:Dear|Hi|Hello|Hey)\s[^,.!?]{1,40}[,!])\s*/i);
-    if (g) { email.greeting = g[1]; t = t.slice(g[0].length); }
+    // Without a subject, a quote is an email only when it is long and opens with a greeting or ends "Best regards, Name".
+    if (!s && !(t.length >= 60 && (/^(Dear|Hi|Hello)\s/.test(t) || INLINE_END.test(t)))) return null;
+    const email = { from: '', to: '', cc: '', date: '', subject: s ? s[1].replace(/\.$/, '') : '', greeting: '', body: [], signOff: '', signature: '' };
+    if (s) t = t.slice(s[0].length);
+    [email.greeting, t] = splitGreeting(t);
+    if (!s && !email.greeting && !INLINE_END.test(t)) return null;
     const end = t.match(INLINE_END);
     if (end) { email.signOff = `${end[1]},`; email.signature = end[2]; t = t.slice(0, end.index); }
     email.body = t.trim() ? [t.trim()] : [];
@@ -88,7 +100,7 @@ export function parseQuotedEmail(inner) {
 /** Shape 2 splitter: a paragraph → [{ text }, { email }, { text }…], or null when it quotes no email. */
 export function splitQuotedEmails(text) {
     const t = String(text ?? '');
-    const re = /[“"](Subject(?: line)?:[^"“”]+)[”"]/gi;
+    const re = /[“"]([^"“”]{20,})[”"]/g;
     const out = [];
     let at = 0, found = false;
     for (const m of t.matchAll(re)) {
@@ -104,4 +116,22 @@ export function splitQuotedEmails(text) {
     const after = t.slice(at).trim();
     if (after) out.push({ text: after });
     return out;
+}
+
+/**
+ * Shape 3: the whole reading is ONE email written as paragraphs — the first opens with a greeting (after an optional
+ * "Subject: …" line), the last ends with a sign-off and a name. Returns one email, or null.
+ */
+export function parseLetter(paragraphs) {
+    const ps = (paragraphs ?? []).map(p => String(p ?? '').replace(/\r/g, '').trim()).filter(Boolean);
+    if (ps.length < 2) return null;
+    let first = ps[0], subject = '';
+    const s = first.match(/^Subject:\s*(.+)\n/i);
+    if (s) { subject = s[1].trim(); first = first.slice(s[0].length).trim(); }
+    const [greeting, rest] = splitGreeting(first);
+    const end = ps[ps.length - 1].match(INLINE_END);
+    if (!greeting || !end || end.index === 0) return null;
+    const body = [rest, ...ps.slice(1, -1), ps[ps.length - 1].slice(0, end.index)]
+        .flatMap(b => b.split(/\n\s*\n/)).map(b => b.trim()).filter(Boolean);
+    return { from: '', to: '', cc: '', date: '', subject, greeting, body, signOff: `${end[1]},`, signature: end[2] };
 }
