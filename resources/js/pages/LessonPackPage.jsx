@@ -7,6 +7,7 @@ import StageSelect from '@/components/StageSelect';
 import LibraryPicker from '@/components/LibraryPicker';
 import Spinner from '@/components/Spinner';
 import MaterialRedo from '@/components/MaterialRedo';
+import ActivityTextEditor from '@/components/ActivityTextEditor';
 import { TRILHAS, TRILHA_LEVEL, TRILHA_TOC, TYPE_LABELS, composeActivityName, trilhaParts, partOf, focusFromName } from '@/lib/trilhas';
 import { STAGES } from '@/lib/stages';
 import { pickFill, FILLABLE_STAGES } from '@/lib/fillStage';
@@ -368,7 +369,7 @@ export default function LessonPackPage() {
                                 <p className="text-ui-warn text-sm">Pick a stage for each one and it moves into the lesson below.</p>
                             </div>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {unplaced.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} />)}
+                                {unplaced.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} onEdited={u => replaced(u, false)} />)}
                             </div>
                         </section>
                     )}
@@ -392,7 +393,7 @@ export default function LessonPackPage() {
                                             : <p className="rounded-xl border border-dashed border-ui-line text-ui-faint text-sm px-4 py-4">Nothing here yet.</p>
                                     ) : (
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                            {items.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} />)}
+                                            {items.map(a => <ActivityCard key={a.id} a={a} parts={parts} lesson={lesson} onMove={p => move(a, p)} onLaunch={() => setLaunched({ content: a.content, id: a.id })} onStage={updateOne} onMakeFrom={MATERIAL_TYPES.includes(a.type) ? () => makeFrom(a) : null} onApprove={() => approve(a)} onDelete={() => remove(a)} onReplaced={isLightCourse(trilha) ? replaced : null} onEdited={u => replaced(u, false)} />)}
                                         </div>
                                     )}
                                 </li>
@@ -721,7 +722,7 @@ function PartSelect({ a, parts, lesson, onMove }) {
     );
 }
 
-function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom, onApprove, onDelete, onReplaced }) {
+function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom, onApprove, onDelete, onReplaced, onEdited }) {
     const [confirming, setConfirming] = useState(false);
     const [deleteError, setDeleteError] = useState('');
     const focus = focusFromName(a.name);
@@ -770,6 +771,7 @@ function ActivityCard({ a, parts, lesson, onMove, onLaunch, onStage, onMakeFrom,
                 </button>
             )}
             {onReplaced && ['reading_text', 'presentation'].includes(a.type) && <MaterialRedo a={a} onReplaced={onReplaced} />}
+            <ActivityTextEditor a={a} onSaved={onEdited} />
         </div>
     );
 }
