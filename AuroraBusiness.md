@@ -161,6 +161,7 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-27** — **Emails in readings laid out as email cards** (review found 4A / 7A cluttered). No content change: `lib/readingEmails.js` recognises a paragraph that IS an email (From / To / Subject lines, greeting, body, signature) and a story that QUOTES one ("Subject line: … Hi Leandro, … Thanks, Valentina."); `ReadingTextActivity` shows each as a mail-app card (grey header, greeting / body / sign-off on their own lines). Email paragraphs no longer count "From:" as a speaker. `LessonDrafter` now asks for emails in that shape and no "You say it like this" notes inside them. QA `qa_reading_emails.mjs` 19/19.
 - **2026-11-26** — **Listening, step 1** (plan: demo in the app → grid slot + builder → fill all courses → later
   "Listen and reply" / video). New `listening` type (`ListeningActivity.jsx`, light only), four formats: answer (T/F),
   who (who said it), complete (gaps, replay a line), message (a new voicemail + phone-message form). Made from the lesson

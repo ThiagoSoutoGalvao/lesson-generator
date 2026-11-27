@@ -8,6 +8,7 @@ import Spinner from '@/components/Spinner';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
+import { parseEmail, splitQuotedEmails } from '@/lib/readingEmails';
 
 // Light layout: 20px reading text at the default size (18px on a phone).
 const LIGHT_PARA_SIZES = ['text-base', 'text-[17px] sm:text-lg', 'text-lg sm:text-[20px]', 'text-[20px] sm:text-[23px]', 'text-[22px] sm:text-[27px]'];
@@ -110,6 +111,63 @@ function renderRich(text, words) {
     ));
 }
 
+const EMAIL_FIELDS = [['from', 'From'], ['to', 'To'], ['cc', 'Cc'], ['date', 'Date'], ['subject', 'Subject']];
+
+/** One email, laid out like a mail app: a grey header (From / To / Subject), then greeting, body, sign-off, signature. */
+function EmailCard({ email, words }) {
+    const fields = EMAIL_FIELDS.filter(([k]) => email[k]);
+    return (
+        <div className="rounded-2xl border border-[#DDE1E8] bg-white overflow-hidden [overflow-wrap:anywhere] shadow-[0_1px_2px_rgba(39,29,98,0.06)]" data-email>
+            {fields.length > 0 && (
+                <dl className="grid grid-cols-[auto_minmax(0,1fr)] gap-x-3 gap-y-1 px-4 sm:px-6 py-3 bg-[#F3F4F8] border-b border-[#DDE1E8] text-[0.8em] leading-snug">
+                    {fields.map(([k, label]) => (
+                        <div key={k} className="contents">
+                            <dt className="font-semibold text-[#4A5163]">{label}</dt>
+                            <dd className={k === 'subject' ? 'font-bold text-[#271D62]' : 'text-[#271D62]'}>{k === 'subject' ? renderRich(email[k], words) : email[k]}</dd>
+                        </div>
+                    ))}
+                </dl>
+            )}
+            <div className="px-4 sm:px-6 py-4 sm:py-5 flex flex-col gap-3">
+                {email.greeting && <p>{renderRich(email.greeting, words)}</p>}
+                {email.body.map((b, i) => <p key={i}>{renderRich(b, words)}</p>)}
+                {(email.signOff || email.signature) && (
+                    <div>
+                        {email.signOff && <p>{renderRich(email.signOff, words)}</p>}
+                        {email.signature && <p className={`whitespace-pre-line ${email.signature.includes('\n') ? 'text-[0.85em] text-[#4A5163] mt-2 pt-2 border-t border-[#EEF0F4]' : ''}`}>{email.signature}</p>}
+                    </div>
+                )}
+            </div>
+        </div>
+    );
+}
+
+/** A light-layout paragraph: an email card, a story with emails quoted in it, a dialogue, or plain text. */
+function LightParagraph({ p, words, speakers, size }) {
+    const email = parseEmail(p);
+    if (email) return <div className={`${size} leading-[1.65]`}><EmailCard email={email} words={words} /></div>;
+    const parts = splitQuotedEmails(p);
+    if (parts) return (
+        <div className={`${size} leading-[1.7] flex flex-col gap-4`}>
+            {parts.map((x, j) => x.email
+                ? <div key={j} className="text-[0.95em] leading-[1.65]"><EmailCard email={x.email} words={words} /></div>
+                : <p key={j}>{renderRich(x.text, words)}</p>)}
+        </div>
+    );
+    const lines = parseDialogue(p, speakers);
+    if (!lines) return <p className={`${size} leading-[1.7] whitespace-pre-line`}>{renderRich(p, words)}</p>;
+    return (
+        <div className={`${size} leading-[1.6] grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2`} data-dialogue>
+            {lines.map((l, j) => (
+                <p key={j} className="contents">
+                    <span className="font-bold text-[#E0521F] whitespace-nowrap" data-speaker>{l.speaker}:</span>
+                    <span>{renderRich(l.line, words)}</span>
+                </p>
+            ))}
+        </div>
+    );
+}
+
 export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const navigate = useNavigate();
     const [bgUrl, setBgUrl]             = useState(null);
@@ -124,7 +182,8 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
     const paragraphs = activity.paragraphs ?? [];
     const vocabulary = activity.vocabulary ?? [];
     const vocabWords  = vocabulary.map(v => v.word);
-    const speakers    = light ? dialogueSpeakers(paragraphs) : [];
+    // Email paragraphs are left out, or "From:" / "To:" / "Subject:" would count as people talking.
+    const speakers    = light ? dialogueSpeakers(paragraphs.filter(p => !parseEmail(p))) : [];
     const canDerive   = typeof onDerive === 'function' && paragraphs.length > 0;
 
     async function handleDerive(opt) {
@@ -167,6 +226,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
         <div className="read-print-root" style={{ display: 'none' }}>
             <p className="read-print-meta">Reading text — {activity.topic}</p>
             {paragraphs.map((p, i) => {
+                if (light && (parseEmail(p) || splitQuotedEmails(p))) return <div key={i} className="read-print-paragraph"><LightParagraph p={p} words={vocabWords} speakers={speakers} size="" /></div>;
                 const lines = light ? parseDialogue(p, speakers) : null;
                 if (!lines) return <p key={i} className="read-print-paragraph">{light ? renderRich(p, vocabWords) : highlightVocab(p, vocabWords)}</p>;
                 return <div key={i} className="read-print-paragraph">{lines.map((l, j) => <p key={j} style={{ margin: '0 0 0.3em' }}><strong>{l.speaker}:</strong> {renderRich(l.line, vocabWords)}</p>)}</div>;
@@ -222,20 +282,7 @@ export default function ReadingTextActivity({ activity, onClose, onDerive }) {
                             )}
                             <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px]" />
                             <article className={`${LIGHT.card} px-5 py-6 sm:px-12 sm:py-10 flex flex-col gap-5`} aria-label="Reading text">
-                                {paragraphs.map((p, i) => {
-                                    const lines = parseDialogue(p, speakers);
-                                    if (!lines) return <p key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.7]`}>{renderRich(p, vocabWords)}</p>;
-                                    return (
-                                        <div key={i} className={`${LIGHT_PARA_SIZES[fontSizeIdx]} leading-[1.6] grid grid-cols-[auto_minmax(0,1fr)] gap-x-4 gap-y-2`} data-dialogue>
-                                            {lines.map((l, j) => (
-                                                <p key={j} className="contents">
-                                                    <span className="font-bold text-[#E0521F] whitespace-nowrap" data-speaker>{l.speaker}:</span>
-                                                    <span>{renderRich(l.line, vocabWords)}</span>
-                                                </p>
-                                            ))}
-                                        </div>
-                                    );
-                                })}
+                                {paragraphs.map((p, i) => <LightParagraph key={i} p={p} words={vocabWords} speakers={speakers} size={LIGHT_PARA_SIZES[fontSizeIdx]} />)}
                             </article>
                             {showVocab && vocabulary.length > 0 && (
                                 <section className={`${LIGHT.card} px-5 py-5 sm:px-10 sm:py-7`} aria-label="Vocabulary">
