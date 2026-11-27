@@ -68,13 +68,13 @@ const OTHERS = {
     listening:               ListeningActivity,
 };
 
-export default function ActivityRenderer({ content, savedId = null, onClose, onTargetsChange, onDerive }) {
+export default function ActivityRenderer({ content, savedId = null, onClose, onTargetsChange, onContentChange, onDerive }) {
     if (!content) return null;
     const type = content.type;
     if (type === 'quiz') return <QuizActivity quiz={content} onClose={onClose} />;
     if (type === 'reading_text') return <ReadingTextActivity activity={content} onClose={onClose} onDerive={onDerive} />;
     const Speaking = SPEAKING[type];
-    if (Speaking) return <Speaking activity={content} onClose={onClose} savedId={savedId} onTargetsChange={onTargetsChange} />;
+    if (Speaking) return <Speaking activity={content} onClose={onClose} savedId={savedId} onTargetsChange={onTargetsChange} onContentChange={onContentChange} />;
     const Component = OTHERS[type];
     return Component ? <Component activity={content} onClose={onClose} /> : null;
 }

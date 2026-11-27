@@ -8,6 +8,7 @@ import { useFullscreen } from '@/hooks/useFullscreen';
 import { phrasesFor } from '@/lib/pictureFrames';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { InlineItemEditor, EditItemButton, saveActivityText } from '@/components/ActivityTextEditor';
 
 const QUESTION_SIZES = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
 const CHIP_SIZES     = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'];
@@ -16,8 +17,10 @@ const CHIP_SIZES     = ['text-sm', 'text-base', 'text-lg', 'text-xl', 'text-2xl'
 // Speaking practice with no answer to check: the teacher listens and gives live feedback,
 // so it records completion only. Students default to "I can see…"; the panel under the
 // photo offers other openers for the activity's level (see lib/pictureFrames.js).
-export default function PicturePromptsActivity({ activity, onClose, onComplete, hideSave, savedId = null, onTargetsChange }) {
-    const prompts = activity.prompts;
+export default function PicturePromptsActivity({ activity, onClose, onComplete, hideSave, savedId = null, onTargetsChange, onContentChange }) {
+    // Local copy so an edit made on this screen shows straight away (2026-11-27).
+    const [prompts, setPrompts] = useState(activity.prompts);
+    const [editing, setEditing] = useState(false);
     const total   = prompts.length;
     const phrases = phrasesFor(activity.level);
 
@@ -62,8 +65,19 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
     }, [finished]);
 
     function next() {
+        setEditing(false);
         if (index + 1 >= total) setFinished(true);
         else setIndex(i => i + 1);
+    }
+
+    // "Edit" on the question card: the teacher, on a saved activity (never in the student app).
+    const canEdit = !hideSave && Boolean(activityId);
+    async function saveItem({ question, lines }) {
+        const list = prompts.map((p, i) => (i === index ? { ...p, question, starters: lines } : p));
+        const content = await saveActivityText(activityId, 'picture_prompts', { ...activity, prompts: list });
+        setPrompts(content.prompts);
+        onContentChange?.(content);
+        setEditing(false);
     }
 
     if (light) {
@@ -71,7 +85,9 @@ export default function PicturePromptsActivity({ activity, onClose, onComplete, 
             <LightPicturePrompts
                 activity={activity} current={current} index={index} total={total} photo={photos[index]} phrases={phrases}
                 showPhrases={showPhrases} onTogglePhrases={() => setShowPhrases(v => !v)} finished={finished}
-                onBack={() => setIndex(i => i - 1)} onNext={next} onRestart={() => { setIndex(0); setFinished(false); }}
+                onBack={() => { setEditing(false); setIndex(i => i - 1); }} onNext={next}
+                onEdit={canEdit ? () => setEditing(true) : null}
+                editor={editing ? <InlineItemEditor key={index} question={current.question} lines={current.starters} linesLabel="Sentence starters" onSave={saveItem} onCancel={() => setEditing(false)} /> : null} onRestart={() => { setIndex(0); setFinished(false); }}
                 sizeIdx={fontSizeIdx} onClose={onClose} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen}
                 onSave={hideSave ? null : () => setShowSave(true)}
                 overlay={!hideSave && showSave ? <SavePanel activity={{ ...activity, targets }} onSaved={a => setActivityId(a.id)} onDone={() => setShowSave(false)} /> : null}
@@ -192,7 +208,7 @@ const LIGHT_CHIP_SIZES = ['text-sm', 'text-base', 'text-[17px] sm:text-lg', 'tex
 // Aurora Business light layout: the whole photo on its own panel (never cropped, never under text), the question
 // and openers on a white card, "Use it!" on the right.
 function LightPicturePrompts({ activity, current, index, total, photo, phrases, showPhrases, onTogglePhrases, finished,
-    onBack, onNext, onRestart, sizeIdx, onClose, isFullscreen, onFullscreen, onSave, overlay, checklist }) {
+    onBack, onNext, onRestart, sizeIdx, onClose, isFullscreen, onFullscreen, onSave, overlay, checklist, onEdit, editor }) {
     return (
         <LightFrame
             eyebrow="Picture prompts" title={activity.topic || 'Describe the picture'}
@@ -223,7 +239,11 @@ function LightPicturePrompts({ activity, current, index, total, photo, phrases, 
                                 )}
                             </div>
                             <section className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-4`} aria-label="Question">
-                                <p className={LIGHT.eyebrow}><span className="sm:hidden">Picture {index + 1} of {total} · </span>Talk about the picture</p>
+                                <div className="flex items-start justify-between gap-3">
+                                    <p className={LIGHT.eyebrow}><span className="sm:hidden">Picture {index + 1} of {total} · </span>Talk about the picture</p>
+                                    {onEdit && !editor && <EditItemButton onClick={onEdit} />}
+                                </div>
+                                {editor ?? <>
                                 <h1 className={`font-display ${LIGHT_Q_SIZES[sizeIdx]} font-semibold leading-snug`}>{current.question}</h1>
                                 {current.starters?.length > 0 && (
                                     <div className="flex flex-wrap gap-2">
@@ -248,6 +268,7 @@ function LightPicturePrompts({ activity, current, index, total, photo, phrases, 
                                     {index > 0 && <button type="button" onClick={onBack} className={LIGHT.secondary}>Back</button>}
                                     <button type="button" onClick={onNext} className={LIGHT.primary}>{index + 1 >= total ? 'Finish' : 'Next picture'}</button>
                                 </div>
+                                </>}
                             </section>
                         </>
                     )}

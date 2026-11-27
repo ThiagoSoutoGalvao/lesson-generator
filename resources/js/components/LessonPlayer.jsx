@@ -24,7 +24,7 @@ export function lessonSequence(activities) {
         .sort((a, b) => (STAGE_ORDER[a.stage] - STAGE_ORDER[b.stage]) || (a.id - b.id));
 }
 
-export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExit, onTargetsChange }) {
+export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExit, onTargetsChange, onContentChange }) {
     const [index, setIndex]   = useState(0);
     const [phase, setPhase]   = useState('intro'); // intro | activity | done
     const [done, setDone]     = useState(() => new Set());
@@ -75,6 +75,7 @@ export default function LessonPlayer({ title, items, skipped = 0, focusOf, onExi
                     savedId={current.id}
                     onClose={finishCurrent}
                     onTargetsChange={targets => onTargetsChange?.(current.id, targets)}
+                    onContentChange={content => onContentChange?.(current.id, content)}
                 />
                 {pillSmall ? (
                     <button type="button" onClick={() => setPillSmall(false)} aria-label="Show the lesson controls"

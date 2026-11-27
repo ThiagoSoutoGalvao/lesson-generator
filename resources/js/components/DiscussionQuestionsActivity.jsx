@@ -7,12 +7,16 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightPhoto, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { InlineItemEditor, EditItemButton, saveActivityText } from '@/components/ActivityTextEditor';
 
 const FONT_SIZES = ['text-3xl', 'text-4xl', 'text-5xl', 'text-6xl', 'text-7xl'];
 const LIGHT_SIZES = ['text-[22px] sm:text-2xl', 'text-2xl sm:text-3xl', 'text-[24px] sm:text-[36px]', 'text-[28px] sm:text-[42px]', 'text-[32px] sm:text-[50px]'];
 const FOLLOW_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 
-export default function DiscussionQuestionsActivity({ activity, onClose, onComplete, hideSave, savedId = null, onTargetsChange }) {
+export default function DiscussionQuestionsActivity({ activity, onClose, onComplete, hideSave, savedId = null, onTargetsChange, onContentChange }) {
+    // Local copy so an edit made on this screen shows straight away (2026-11-27).
+    const [questions, setQuestions] = useState(activity.questions);
+    const [editing, setEditing] = useState(false);
     const [index, setIndex]           = useState(0);
     const [bgUrl, setBgUrl]           = useState(null);
     const [showSave, setShowSave]     = useState(false);
@@ -26,7 +30,6 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
     const [targets, setTargets]   = useState(activity.targets ?? []);
     const [activityId, setActivityId] = useState(savedId);
 
-    const questions = activity.questions;
     const current   = questions[index];
     const total     = questions.length;
 
@@ -49,7 +52,17 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
     useEffect(() => {
         setDisplayQuestion(current.question);
         setFollowUps(current.follow_ups ?? []);
-    }, [index]);
+        setEditing(false);
+    }, [index, questions]);
+
+    // "Edit" on the question card: the teacher, on a saved activity (never in the student app).
+    const canEdit = !hideSave && Boolean(activityId);
+    async function saveItem({ question, lines }) {
+        const list = questions.map((q, i) => (i === index ? { ...q, question, follow_ups: lines } : q));
+        const content = await saveActivityText(activityId, 'discussion_questions', { ...activity, questions: list });
+        setQuestions(content.questions);
+        onContentChange?.(content);
+    }
 
     function next() { if (index < total - 1) setIndex(i => i + 1); }
     function prev() { if (index > 0) setIndex(i => i - 1); }
@@ -94,7 +107,11 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
                     <div className="flex-1 min-w-0 flex flex-col gap-4 sm:gap-5">
                         <LightPhoto url={bgUrl} className="h-[150px] sm:h-[200px]" />
                         <section className={`${LIGHT.card} p-5 sm:p-9 flex flex-col gap-5`} aria-label="Question">
-                            <p className={LIGHT.eyebrow}><span className="sm:hidden">Question {index + 1} of {total} · </span>Discuss</p>
+                            <div className="flex items-start justify-between gap-3">
+                                <p className={LIGHT.eyebrow}><span className="sm:hidden">Question {index + 1} of {total} · </span>Discuss</p>
+                                {canEdit && !editing && <EditItemButton onClick={() => setEditing(true)} />}
+                            </div>
+                            {editing ? <InlineItemEditor key={index} question={current.question} lines={current.follow_ups} linesLabel="Follow-up questions" onSave={saveItem} onCancel={() => setEditing(false)} /> : <>
                             <h1 className={`font-display ${LIGHT_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{displayQuestion}</h1>
                             {followUps.length > 0 && (
                                 <div className="flex flex-col gap-2">
@@ -113,6 +130,7 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
                                 {index > 0 && <button type="button" onClick={prev} className={LIGHT.secondary}>← Previous</button>}
                                 <button type="button" onClick={next} disabled={index === total - 1} className={LIGHT.primary}>{index === total - 1 ? 'Last question' : 'Next question'}</button>
                             </div>
+                            </>}
                         </section>
                     </div>
                     <div className="md:w-[340px] md:shrink-0 flex flex-col">{checklist}</div>

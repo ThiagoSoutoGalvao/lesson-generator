@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { LIGHT } from '@/components/light/LightFrame';
 
 // "Edit text" on a lesson-pack card (2026-11-27): fix the words of an activity by hand, on the same page.
 // Picture Prompts shows each photo next to its question, so a question that doesn't match the picture can be
@@ -87,5 +88,68 @@ function Editor({ a, onCancel, onSaved }) {
                 <button type="button" disabled={busy} onClick={onCancel} className={quiet}>Cancel</button>
             </div>
         </div>
+    );
+}
+
+/**
+ * Saves the text of a whole Picture Prompts / Discussion activity (only words; the server keeps photos and count).
+ * Returns the saved content.
+ */
+export async function saveActivityText(id, type, content) {
+    const listKey = type === 'picture_prompts' ? 'prompts' : 'questions';
+    const lineKey = type === 'picture_prompts' ? 'starters' : 'follow_ups';
+    const body = {
+        topic: content.topic ?? '',
+        [listKey]: (content[listKey] ?? []).map(x => ({ question: x.question ?? '', [lineKey]: x[lineKey] ?? [] })),
+    };
+    try {
+        const { data } = await axios.patch(`/api/activities/${id}/text`, { content: body });
+        return data.activity.content;
+    } catch (e) {
+        const errs = e.response?.data?.errors;
+        throw new Error(errs ? Object.values(errs).flat()[0] : (e.response?.data?.message ?? 'Could not save it. Please try again.'));
+    }
+}
+
+/**
+ * Edit one item inside the activity screen (light layout): the question and its starters / follow-ups.
+ * `onSave({ question, lines })` returns a promise; errors are shown here.
+ */
+export function InlineItemEditor({ question, lines: initial = [], linesLabel, onSave, onCancel }) {
+    const [q, setQ] = useState(question ?? '');
+    const [ls, setLs] = useState((initial ?? []).join('\n'));
+    const [busy, setBusy] = useState(false);
+    const [error, setError] = useState('');
+    const input = 'w-full rounded-xl border border-[#DDE1E8] bg-white text-[#271D62] text-[17px] px-3 py-2.5 focus:outline-none focus:border-[#E0521F]';
+    async function save() {
+        if (!q.trim()) { setError('The question needs some text.'); return; }
+        setBusy(true); setError('');
+        try { await onSave({ question: q.trim(), lines: ls.split('\n').map(s => s.trim()).filter(Boolean) }); }
+        catch (e) { setError(e.message); setBusy(false); }
+    }
+    return (
+        <div className="flex flex-col gap-3" data-testid="inline-editor">
+            <label className="text-[14px] font-semibold text-[#4A5163]">Question
+                <textarea rows={3} maxLength={600} value={q} onChange={e => setQ(e.target.value)} className={`${input} mt-1 font-normal`} autoFocus />
+            </label>
+            <label className="text-[14px] font-semibold text-[#4A5163]">{linesLabel}, one per line
+                <textarea rows={3} value={ls} onChange={e => setLs(e.target.value)} className={`${input} mt-1 font-normal`} />
+            </label>
+            {error && <p className="text-[15px] text-[#B42318]" role="alert">{error}</p>}
+            <div className="flex flex-wrap justify-end gap-3">
+                <button type="button" disabled={busy} onClick={onCancel} className={LIGHT.secondary}>Cancel</button>
+                <button type="button" disabled={busy} onClick={save} className={LIGHT.primary}>{busy ? 'Saving…' : 'Save'}</button>
+            </div>
+        </div>
+    );
+}
+
+/** The small "Edit" button for a question card. */
+export function EditItemButton({ onClick }) {
+    return (
+        <button type="button" onClick={onClick} title="Edit this question"
+            className="shrink-0 text-[14px] font-semibold text-[#271D62] border border-[#DDE1E8] hover:border-[#E0521F] hover:bg-[#FDEEE7] rounded-lg px-3 min-h-9 cursor-pointer">
+            ✎ Edit
+        </button>
     );
 }

@@ -88,6 +88,7 @@ export default function LessonPackPage() {
                 savedId={launched.id}
                 onClose={() => setLaunched(null)}
                 onTargetsChange={targets => setActivities(prev => prev.map(x => (x.id === launched.id ? { ...x, content: { ...x.content, targets } } : x)))}
+                onContentChange={content => setActivities(prev => prev.map(x => (x.id === launched.id ? { ...x, content } : x)))}
                 onDerive={derived => setLaunched({ content: derived, id: null })}
             />
         );
@@ -117,6 +118,7 @@ export default function LessonPackPage() {
                 focusOf={focusOf}
                 onExit={() => setTeaching(false)}
                 onTargetsChange={(id, targets) => setActivities(prev => prev.map(x => (x.id === id ? { ...x, content: { ...x.content, targets } } : x)))}
+                onContentChange={(id, content) => setActivities(prev => prev.map(x => (x.id === id ? { ...x, content } : x)))}
             />
         );
     }

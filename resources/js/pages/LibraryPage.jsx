@@ -482,6 +482,7 @@ export default function LibraryPage() {
                 onClose={() => setLaunched(null)}
                 // Ticks and target edits save against this Library id; keep the local copy current too.
                 onTargetsChange={targets => setActivities(prev => prev.map(x => (x.id === launchedId ? { ...x, content: { ...x.content, targets } } : x)))}
+                onContentChange={content => setActivities(prev => prev.map(x => (x.id === launchedId ? { ...x, content } : x)))}
                 // An activity derived from a Reading Text is a new, unsaved one — it must not inherit the reading's id.
                 onDerive={derived => { setLaunched(derived); setLaunchedId(null); }}
             />
