@@ -170,7 +170,9 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   above paragraphs, words last. Optional content `dek` / `byline {name, role, company}` / `pull {after, text}` are shown
   when present; new business readings ask for them (`generateReadingText(..., $group)`, `tidyMagazineExtras` drops a pull
   that isn't really in the passage); other courses' prompt unchanged. Every saved reading switches with no data change.
-  Backfill of the extras for the ~144 saved readings: proposed, not run. Tests 3/3, QA `qa_reading_magazine.mjs` 27/27.
+  Tests 3/3, QA `qa_reading_magazine.mjs` 27/27. **Backfill run on live (his yes):** 143 of 144 business readings got a dek,
+  142 a byline, 123 a pull (the rest had no quote that passed the check); #1572 has one paragraph and was skipped. Cost ≈ US$0.85.
+  Script `scratchpad/qa_2026-09/backfill_magazine.php`, backup of the original content in `backups/magazine_backup_2026-11-28.json`.
 - **2026-11-28** — **"Taught up to": students see the course as it is taught.** On a business course the student app opens
   lessons only up to each student's mark (`users.taught_lesson` / `taught_part`, `App\Support\TaughtUpTo`); nothing marked
   = **1A only**; later lessons show a lock, "Opens after class". The teacher moves it with **Mark 4B as taught** on the lesson
