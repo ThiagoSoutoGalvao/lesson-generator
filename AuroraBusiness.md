@@ -161,6 +161,11 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-28** — **✎ Edit on Story Builder** (his review: some steps weren't questions, some answer words made no
+  sense). On the question card (teacher only, saved activities): edit the step's "Ask", the optional full question
+  (behind "Show the question") and the "Answer with" word (empty = none; the retell list follows). `story_builder`
+  joined `ActivityTextController` (text only; stories / steps can't be added; old-style stories kept). Tests 4/4,
+  QA `qa_story_edit.mjs` 10/10.
 - **2026-11-28** — **Warmer light theme, "B · Mais quente"** (his pick, mockup https://claude.ai/artifact/WWCaHUXKsNtrNN5Q8K3muf;
   for the marketing videos too). Business screens only: warm paper ground with a soft pink wash at the top (Layout +
   LightFrame default), warm borders (`--ui-line` #E9E1D6, `--ui-well` #F7F2EC), the listening's glow behind the activity

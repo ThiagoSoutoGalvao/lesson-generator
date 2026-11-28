@@ -50,6 +50,34 @@ class ActivityTextEditTest extends TestCase
         $this->assertSame('Jobs', $a->fresh()->content['topic']);
     }
 
+    public function test_story_builder_steps_change_and_the_rest_is_kept(): void
+    {
+        $u = User::factory()->create();
+        $a = $this->make($u, 'story_builder', ['targets' => ['first', 'then'], 'stories' => [
+            ['title' => 'A late train', 'opening' => 'Ana is at the station.', 'steps' => [
+                ['ask' => 'Where / Ana / go?', 'full' => 'Where is Ana going?', 'word' => 'meeting'],
+                ['ask' => 'The train is late.', 'word' => 'banana'],
+            ]],
+            ['title' => 'Old style', 'prompts' => ['A', 'B']],
+        ]]);
+        $this->actingAs($u)->patchJson("/api/activities/{$a->id}/text", ['content' => ['stories' => [
+            ['steps' => [
+                ['ask' => 'Where / Ana / go?', 'full' => 'Where is Ana going?', 'word' => 'meeting'],
+                ['ask' => '  Why / train / late?  ', 'full' => 'Why is the train late?', 'word' => ' '],
+            ]],
+            [],
+        ]]])->assertOk();
+        $c = $a->fresh()->content;
+        $this->assertSame(['ask' => 'Why / train / late?', 'full' => 'Why is the train late?'], $c['stories'][0]['steps'][1]);
+        $this->assertSame('A late train', $c['stories'][0]['title']);
+        $this->assertSame(['A', 'B'], $c['stories'][1]['prompts']);
+        $this->assertSame(['first', 'then'], $c['targets']);
+
+        // a step can't be added, and an empty ask is refused
+        $this->actingAs($u)->patchJson("/api/activities/{$a->id}/text", ['content' => ['stories' => [['steps' => [['ask' => 'x']]], []]]])->assertStatus(422);
+        $this->actingAs($u)->patchJson("/api/activities/{$a->id}/text", ['content' => ['stories' => [['steps' => [['ask' => ''], ['ask' => 'y']]], []]]])->assertStatus(422);
+    }
+
     public function test_refuses_other_owners_other_types_wrong_count_and_empty_questions(): void
     {
         $u = User::factory()->create();
