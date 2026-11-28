@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const FONT_SIZES         = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
 const PASSAGE_SIZES      = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
@@ -59,7 +60,7 @@ function buildSegments(passage, items) {
     return segments;
 }
 
-export default function ErrorCorrectionActivity({ activity, onClose, onComplete, hideSave }) {
+export default function ErrorCorrectionActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const [index, setIndex]             = useState(0);
     const [revealed, setRevealed]       = useState(false);
     const [shown, setShown]             = useState(false); // light: "Show where" pressed for this item
@@ -72,6 +73,11 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete,
     const items = activity.items;
     const item  = items[index];
     const total = items.length;
+    // ✎ Edit inside the activity (teacher, saved activity): edits the mistake that is active now.
+    const ed = useItemEdit('error_correction', activity, onEditItems, index, {
+        onSaved: () => { setRevealed(false); setShown(false); },
+        onRemoved: n => { setRevealed(false); setShown(false); setIndex(i => Math.min(i, n - 1)); },
+    });
 
     const isPassage = typeof activity.passage === 'string' && activity.passage.trim() !== '';
     const segments  = isPassage ? buildSegments(activity.passage, items) : null;
@@ -179,8 +185,11 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete,
                 overlay={!hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null}
             >
                 <div className="max-w-4xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
-                    <p className={LIGHT.chip}>{activity.instruction || (isPassage ? 'Find and correct the mistakes in the text' : 'Each sentence has one mistake. Find it and correct it.')}</p>
-
+                    <div className="flex items-start justify-between gap-3">
+                        <p className={LIGHT.chip}>{activity.instruction || (isPassage ? 'Find and correct the mistakes in the text' : 'Each sentence has one mistake. Find it and correct it.')}</p>
+                        {ed.button}
+                    </div>
+                    {ed.editor ? <section aria-label="Edit" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-3`}><p className="text-[15px] font-semibold text-[#4A5163]">{isPassage ? 'Mistake' : 'Sentence'} {index + 1} of {total}</p>{ed.editor}</section> : <>
                     {isPassage ? (
                         <section aria-label="Text" className={`${LIGHT.card} p-5 sm:p-8`}>
                             <p className={`${L_LINE_SIZES[fontSizeIdx]} leading-loose whitespace-pre-line`}>
@@ -223,6 +232,7 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete,
                                 ? <button type="button" onClick={handleRestart} className={LIGHT.secondary}>Start again</button>
                                 : <button type="button" onClick={handleNext} className={LIGHT.primary}>Next →</button>}
                     </div>
+                    </>}
                 </div>
             </LightFrame>
         );

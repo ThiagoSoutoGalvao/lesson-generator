@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const OPTIONS = ['True', 'False', 'Not Given'];
 // Light (Aurora Business) text sizes, indexed by the Display panel's size.
@@ -26,7 +27,7 @@ const OPTION_COLORS = {
 
 const FONT_SIZES  = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 
-export default function TrueFalseActivity({ activity, onClose, onComplete, hideSave }) {
+export default function TrueFalseActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const total   = activity.statements.length;
 
     const [currentIndex, setCurrentIndex] = useState(0);
@@ -39,6 +40,11 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const light = useIsLightUi(); // Aurora Business: the light layout below (text left, statement right; no photo)
+    // ✎ Edit inside the activity (teacher, saved activity).
+    const ed = useItemEdit('true_false', activity, onEditItems, currentIndex, {
+        onSaved: () => { setChosen(null); setAnswers(a => { const n = [...a]; n[currentIndex] = undefined; return n; }); },
+        onRemoved: n => { setChosen(null); setAnswers([]); setCurrentIndex(i => Math.min(i, n - 1)); },
+    });
 
     const statement = activity.statements[currentIndex];
     const answered  = chosen !== null;
@@ -126,7 +132,11 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
                     </section>
 
                     <section aria-label="Statement" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5 lg:sticky lg:top-6`}>
-                        <p className={LIGHT.chip}>Statement {currentIndex + 1} of {total}<span className="sm:hidden"> · score {score}</span></p>
+                        <div className="flex items-start justify-between gap-3">
+                            <p className={LIGHT.chip}>Statement {currentIndex + 1} of {total}<span className="sm:hidden"> · score {score}</span></p>
+                            {ed.button}
+                        </div>
+                        {ed.editor ?? <>
                         <h1 className={`font-display ${L_STATEMENT_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{statement.text}</h1>
                         <div role="group" aria-label="Options" className={`grid gap-3 ${options.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2'}`}>
                             {options.map(opt => {
@@ -154,6 +164,7 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
                                 {!answered ? 'Choose an answer' : currentIndex + 1 >= total ? 'See results' : 'Next statement'}
                             </button>
                         </div>
+                        </>}
                     </section>
                 </div>
             </LightFrame>

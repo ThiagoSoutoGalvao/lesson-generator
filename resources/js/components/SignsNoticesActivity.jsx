@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const TEXT_SIZES   = ['text-xl', 'text-2xl', 'text-3xl', 'text-4xl', 'text-5xl'];
 const OPTION_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
@@ -80,7 +81,7 @@ function TextCard({ item, sizeCls }) {
 
 // Signs & Notices — one short real-life text per screen, one easy question with 3 options.
 // Scored on the answers the student got right first time.
-export default function SignsNoticesActivity({ activity, onClose, onComplete, hideSave }) {
+export default function SignsNoticesActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const items = activity.items;
     const total = items.length;
 
@@ -94,6 +95,11 @@ export default function SignsNoticesActivity({ activity, onClose, onComplete, hi
     const { sizeIdx: fontSizeIdx } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const light = useIsLightUi(); // Aurora Business: the light layout below (text left, question right; no photo)
+    // ✎ Edit inside the activity (teacher, saved activity): the text is answered again after an edit.
+    const ed = useItemEdit('signs_notices', activity, onEditItems, index, {
+        onSaved: () => { setWrongIdx([]); setSolved(false); },
+        onRemoved: n => { setWrongIdx([]); setSolved(false); setIndex(i => Math.min(i, n - 1)); },
+    });
 
     const item = items[index];
 
@@ -165,7 +171,11 @@ export default function SignsNoticesActivity({ activity, onClose, onComplete, hi
                         <LightTextCard item={item} sizeCls={L_TEXT_SIZES[fontSizeIdx]} />
                     </section>
                     <section aria-label="Question" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5`}>
-                        <p className={LIGHT.chip}>Text {index + 1} of {total}</p>
+                        <div className="flex items-start justify-between gap-3">
+                            <p className={LIGHT.chip}>Text {index + 1} of {total}</p>
+                            {ed.button}
+                        </div>
+                        {ed.editor ?? <>
                         <h1 className={`font-display ${L_Q_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{item.question}</h1>
                         <div role="group" aria-label="Options" className="flex flex-col gap-3">
                             {item.options.map((opt, i) => {
@@ -192,6 +202,7 @@ export default function SignsNoticesActivity({ activity, onClose, onComplete, hi
                                 {!solved ? 'Choose an answer' : index + 1 >= total ? 'See results' : 'Next text'}
                             </button>
                         </div>
+                        </>}
                     </section>
                 </div>
             </LightFrame>

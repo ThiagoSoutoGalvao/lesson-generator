@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SpeakingActivityShell from '@/components/SpeakingActivityShell';
+import { EditableCard } from '@/lib/itemEdit';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useInkColor } from '@/lib/uiTheme';
 
@@ -16,7 +17,7 @@ export default function DebateActivity(props) {
             label="Debate"
             itemNoun="Statement"
             nextLabel="Next statement"
-            renderItem={card => <DebateCard card={card} />}
+            renderItem={(card, i) => <EditableCard type="debate" activity={props.activity} onEditItems={props.onEditItems} index={i}><DebateCard card={card} /></EditableCard>}
         />
     );
 }

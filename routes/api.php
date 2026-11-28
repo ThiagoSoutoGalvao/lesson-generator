@@ -72,6 +72,7 @@ Route::middleware('auth:web')->group(function () {
         Route::post('/activities/import', [SavedActivityController::class, 'import']);
         Route::patch('/activities/{activity}', [SavedActivityController::class, 'update']);
         Route::patch('/activities/{activity}/text', [\App\Http\Controllers\ActivityTextController::class, 'update']);
+        Route::patch('/activities/{activity}/items', [\App\Http\Controllers\ActivityItemsController::class, 'update']); // edit / remove one item on screen
         Route::post('/activities/{activity}/copy', [SavedActivityController::class, 'copy']);
         Route::delete('/activities/{activity}', [SavedActivityController::class, 'destroy']);
         Route::get('/folders', [SavedActivityController::class, 'folders']);

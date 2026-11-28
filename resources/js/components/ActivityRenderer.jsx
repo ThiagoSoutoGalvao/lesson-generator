@@ -1,3 +1,6 @@
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import { ITEM_SPECS, saveItems } from '@/lib/itemEdit';
 import QuizActivity from '@/components/QuizActivity';
 import FlashcardActivity from '@/components/FlashcardActivity';
 import UnjumbleActivity from '@/components/UnjumbleActivity';
@@ -33,6 +36,8 @@ import ListeningActivity from '@/components/ListeningActivity';
 //   savedId          its Library id — speaking activities save "Use it!" ticks and target edits against it
 //   onTargetsChange  called with the new target list after an edit, so the caller's copy stays current
 //   onDerive         Reading Text only: open an activity derived from the text in its place
+//   onContentChange  called with the new content after an edit made inside the activity
+// Edit inside the activity (2026-11-28): the template gets `onEditItems(listKey, list)`; `live` holds the edited copy.
 // The student app has its own map (StudentActivityPlayer), which adds hideSave + onComplete.
 
 const SPEAKING = {
@@ -69,12 +74,22 @@ const OTHERS = {
 };
 
 export default function ActivityRenderer({ content, savedId = null, name = null, onClose, onTargetsChange, onContentChange, onDerive }) {
-    if (!content) return null;
-    const type = content.type;
-    if (type === 'quiz') return <QuizActivity quiz={content} onClose={onClose} />;
-    if (type === 'reading_text') return <ReadingTextActivity activity={content} name={name} onClose={onClose} onDerive={onDerive} />;
+    const [live, setLive] = useState(content);
+    useEffect(() => { setLive(content); }, [content]);
+    if (!live) return null;
+    const type = live.type;
+    // Edit inside the activity (2026-11-28): only on a saved activity whose type has an item spec (lib/itemEdit.jsx).
+    const onEditItems = savedId && ITEM_SPECS[type]
+        ? async (listKey, list) => {
+            const saved = await saveItems(axios, savedId, listKey, list);
+            setLive(saved);
+            onContentChange?.(saved);
+        }
+        : null;
+    if (type === 'quiz') return <QuizActivity quiz={live} onClose={onClose} onEditItems={onEditItems} />;
+    if (type === 'reading_text') return <ReadingTextActivity activity={live} name={name} onClose={onClose} onDerive={onDerive} />;
     const Speaking = SPEAKING[type];
-    if (Speaking) return <Speaking activity={content} onClose={onClose} savedId={savedId} onTargetsChange={onTargetsChange} onContentChange={onContentChange} />;
+    if (Speaking) return <Speaking activity={live} onClose={onClose} savedId={savedId} onTargetsChange={onTargetsChange} onContentChange={onContentChange} onEditItems={onEditItems} />;
     const Component = OTHERS[type];
-    return Component ? <Component activity={content} onClose={onClose} /> : null;
+    return Component ? <Component activity={live} onClose={onClose} onEditItems={onEditItems} /> : null;
 }

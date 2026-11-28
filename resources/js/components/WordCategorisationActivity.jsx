@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LIGHT } from '@/components/light/LightFrame';
+import { useListEdit } from '@/lib/itemEdit';
 
 // Text sizes for the shared Display panel's 5 steps (step 3, the default, is the original size).
 const TILE_SIZES = ['text-[11px]', 'text-xs', 'text-sm', 'text-base', 'text-lg'];
@@ -23,7 +24,7 @@ function shuffle(arr) {
     return a;
 }
 
-export default function WordCategorisationActivity({ activity, onClose, onComplete, hideSave }) {
+export default function WordCategorisationActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     // flat list of all words with their correct category
     const allWords = activity.categories.flatMap(cat =>
         cat.words.map(w => ({ text: w, correct: cat.name }))
@@ -46,6 +47,17 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
     const [notice, setNotice]   = useState(null); // light: { word, cat, ok } — what the last placement did
     const noticeTimer = useRef(null);
     useEffect(() => () => clearTimeout(noticeTimer.current), []);
+
+    // ✎ Edit inside the activity (teacher, saved activity): fix, move or remove words; the game starts again after.
+    const le = useListEdit('word_categorisation', activity, onEditItems, { label: 'Edit words' });
+    const wordsKey = activity.categories.map(c => `${c.name}:${c.words.join('|')}`).join('\n');
+    const firstDeal = useRef(true);
+    useEffect(() => {
+        if (firstDeal.current) { firstDeal.current = false; return; }
+        setPool(shuffle(allWords.map(w => w.text))); setPlacements({}); setChecked(false); setSelected(null);
+        setMissed([]); setNotice(null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [wordsKey]);
 
     const allPlaced  = pool.length === 0;
     const score      = !checked ? 0
@@ -176,6 +188,8 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
         return (
             <LightFrame {...frame}>
                 <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
+                    {le.editor}
+                    {!le.editing && <>
                     {checked ? (
                         <section aria-label="Results" className={`${LIGHT.glowCard} p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-4`}>
                             <div className="flex-1">
@@ -189,7 +203,10 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                         </section>
                     ) : (
                         <section aria-label="Words" className={`${LIGHT.card} p-4 sm:p-6 flex flex-col gap-3`}>
-                            <p className={LIGHT.chip}>{selected ? `“${selected}” — now choose its group` : 'Choose a word, then its group (or drag it)'}</p>
+                            <div className="flex items-start justify-between gap-3">
+                                <p className={LIGHT.chip}>{selected ? `“${selected}” — now choose its group` : 'Choose a word, then its group (or drag it)'}</p>
+                                {le.button}
+                            </div>
                             <div className="flex flex-wrap gap-2 sm:gap-3">
                                 {pool.map(w => {
                                     const isSel = selected === w;
@@ -238,6 +255,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                             );
                         })}
                     </div>
+                    </>}
                 </div>
             </LightFrame>
         );

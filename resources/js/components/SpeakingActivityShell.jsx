@@ -21,6 +21,8 @@ export default function SpeakingActivityShell({
 }) {
     const total = items.length;
     const [index, setIndex]       = useState(0);
+    // A card removed with ✎ Edit (2026-11-28): stay on a card that still exists.
+    useEffect(() => { if (total > 0 && index >= total) setIndex(total - 1); }, [total, index]);
     const [finished, setFinished] = useState(false);
     const [showSave, setShowSave] = useState(false);
     const [targets, setTargets]   = useState(activity.targets ?? []);
@@ -86,7 +88,7 @@ export default function SpeakingActivityShell({
                         ) : (
                             <>
                                 <p className={`${LIGHT.eyebrow} sm:hidden`}>{itemNoun} {index + 1} of {total}</p>
-                                <div key={index} className="flex flex-col gap-5">{renderItem(items[index], index)}</div>
+                                <div key={index} className="flex flex-col gap-5">{items[index] && renderItem(items[index], index)}</div>
                                 <div className="flex flex-wrap items-center justify-end gap-3">
                                     {index > 0 && <button type="button" onClick={() => setIndex(i => i - 1)} className={LIGHT.secondary}>Back</button>}
                                     <button type="button" onClick={next} className={LIGHT.primary}>{index + 1 >= total ? 'Finish' : nextLabel}</button>
@@ -139,7 +141,7 @@ export default function SpeakingActivityShell({
                         </div>
                     ) : (
                         <>
-                            <div key={index} className="flex flex-col gap-5">{renderItem(items[index], index)}</div>
+                            <div key={index} className="flex flex-col gap-5">{items[index] && renderItem(items[index], index)}</div>
                             <div className="flex justify-center gap-3 pt-1">
                                 {index > 0 && (
                                     <button onClick={() => setIndex(i => i - 1)} className="bg-white/15 hover:bg-white/25 text-white font-semibold px-8 py-3 rounded-xl text-lg transition-colors cursor-pointer">Back</button>

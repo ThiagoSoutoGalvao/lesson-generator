@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import SpeakingActivityShell from '@/components/SpeakingActivityShell';
+import { EditableCard } from '@/lib/itemEdit';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useInkColor, useIsLightUi } from '@/lib/uiTheme';
 
@@ -21,7 +22,7 @@ export default function RolePlayActivity(props) {
             label="Role-play"
             itemNoun="Card"
             nextLabel="Next card"
-            renderItem={card => <RolePlayCard card={card} />}
+            renderItem={(card, i) => <EditableCard type="role_play" activity={props.activity} onEditItems={props.onEditItems} index={i}><RolePlayCard card={card} /></EditableCard>}
         />
     );
 }

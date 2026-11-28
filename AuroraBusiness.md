@@ -161,6 +161,16 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-28** — **✎ Edit inside the activity for 13 more templates** (his groups 1 + 2; gap-fills and Listening left out
+  on purpose: gap spacing is fragile, listening lines are recorded). Quiz, True/False, MC Reading, Odd One Out, Signs &
+  Notices, Flashcards, Unjumble, Error Correction, Role-play, Debate, Mini presentation: ✎ Edit on the item on screen,
+  fix its text / options / right answer, or **Remove** it. Match Pairs ("Edit pairs") and Categorise ("Edit words" — fix,
+  move or remove words; groups stay): the whole list in one form. `PATCH /api/activities/{id}/items`
+  (`ActivityItemsController`: text fields only, `_from` per item, can remove but not add, checks one right answer, odd one
+  among the words, no repeated words / pairs, the mistake must be in the sentence). Front end: `lib/itemEdit.jsx`
+  (specs + `useItemEdit` / `useListEdit` / `EditableCard`); `ActivityRenderer` keeps the edited copy (`live`) and passes
+  `onEditItems` only for saved activities (never the student app). Light screens only. Tests 4/4, QA `qa_items_edit.mjs`
+  18/18 (+ Discussion / Story QA still green). Next: edit Reading and Presentation inside the activity.
 - **2026-11-28** — **✎ Edit on Story Builder** (his review: some steps weren't questions, some answer words made no
   sense). On the question card (teacher only, saved activities): edit the step's "Ask", the optional full question
   (behind "Show the question") and the "Answer with" word (empty = none; the retell list follows). `story_builder`

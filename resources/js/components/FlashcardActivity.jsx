@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const WORD_SIZES    = ['text-4xl', 'text-5xl', 'text-6xl', 'text-7xl', 'text-8xl'];
 const PRON_SIZES     = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
@@ -15,7 +16,7 @@ const L_WORD_SIZES  = ['text-3xl', 'text-4xl', 'text-[40px] sm:text-5xl', 'text-
 const L_DEF_SIZES   = ['text-lg', 'text-xl', 'text-xl sm:text-2xl', 'text-2xl sm:text-3xl', 'text-3xl sm:text-4xl'];
 const L_EX_SIZES    = ['text-[15px]', 'text-base', 'text-[17px] sm:text-lg', 'text-lg sm:text-xl', 'text-xl sm:text-2xl'];
 
-export default function FlashcardActivity({ activity, onClose, onComplete, hideSave }) {
+export default function FlashcardActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const [index, setIndex] = useState(0);
     const [flipped, setFlipped] = useState(false);
     const [knownIds, setKnownIds] = useState(new Set());
@@ -36,6 +37,11 @@ export default function FlashcardActivity({ activity, onClose, onComplete, hideS
     const cardIndex = deck[index];
     const card = activity.cards[cardIndex];
     const total = activity.cards.length;
+    // ✎ Edit inside the activity (teacher, saved activity): edits the card on screen; removing one starts the deck again.
+    const ed = useItemEdit('flashcards', activity, onEditItems, cardIndex, {
+        onSaved: () => setFlipped(false),
+        onRemoved: n => { setDeck(Array.from({ length: n }, (_, i) => i)); setIndex(0); setKnownIds(new Set()); setFlipped(false); },
+    });
 
     useEffect(() => {
         Promise.all(
@@ -109,12 +115,13 @@ export default function FlashcardActivity({ activity, onClose, onComplete, hideS
             <LightFrame
                 eyebrow={finished ? 'Flashcards' : `Flashcards · card ${index + 1} of ${deck.length}${deck.length < total ? ' (again)' : ''} · learned ${knownIds.size} of ${total}`}
                 title={activity.topic}
-                extra={finished ? null : (
+                extra={finished ? null : (<>
+                    {ed.button}
                     <button type="button" onClick={toggleMode} aria-pressed={questionMode} title="Show the definition first"
                         className={`${LIGHT.iconBtn} ${questionMode ? 'bg-[#FDEEE7] border-[#E0521F] text-[#9A3412] hover:bg-[#FDEEE7]' : ''}`}>
                         {questionMode ? 'Definition → Word' : 'Word → Definition'}
                     </button>
-                )}
+                </>)}
                 onSave={hideSave ? null : () => setShowSave(true)} isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} onClose={onClose}
                 overlay={!hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null}
             >
@@ -141,6 +148,11 @@ export default function FlashcardActivity({ activity, onClose, onComplete, hideS
         const def  = <p className={`${L_DEF_SIZES[fontSizeIdx]} font-medium text-center leading-snug`}>{card.definition}</p>;
         const face = 'absolute inset-0 rounded-3xl bg-white border border-[#DDE1E8] shadow-[0_6px_24px_rgba(39,29,98,0.08)] flex flex-col items-center justify-center gap-3 px-6 sm:px-10 overflow-y-auto';
         const hint = (t) => <p className={LIGHT.eyebrow}>{t}</p>;
+        if (ed.editor) return frame(
+            <div className="max-w-[760px] mx-auto px-4 sm:px-8 py-6">
+                <section aria-label="Edit" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-3`}><p className="text-[15px] font-semibold text-[#4A5163]">Card: {card.word}</p>{ed.editor}</section>
+            </div>
+        );
         return frame(
             <div className="max-w-[1560px] mx-auto px-4 sm:px-8 py-4 sm:py-5 flex flex-col gap-4">
                 <div className="h-2 rounded bg-[#E6E9EE] overflow-hidden" aria-hidden="true">

@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const FONT_SIZES  = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 const LETTERS = ['A', 'B', 'C', 'D', 'E'];
@@ -24,7 +25,7 @@ function LightPassage({ passage, evidence }) {
 // Cambridge-style Multiple Choice Reading: a passage that stays visible while the
 // student works one comprehension question at a time. Same split-panel model as
 // TrueFalseActivity, with generic 4-option questions.
-export default function McReadingActivity({ activity, onClose, onComplete, hideSave }) {
+export default function McReadingActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const questions = activity.questions ?? [];
     const total = questions.length;
 
@@ -38,6 +39,11 @@ export default function McReadingActivity({ activity, onClose, onComplete, hideS
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const light = useIsLightUi(); // Aurora Business: the light layout below (text left, question right; no photo)
+    // ✎ Edit inside the activity (teacher, saved activity).
+    const ed = useItemEdit('mc_reading', activity, onEditItems, currentIndex, {
+        onSaved: () => { setChosen(null); setAnswers(a => { const n = [...a]; n[currentIndex] = undefined; return n; }); },
+        onRemoved: n => { setChosen(null); setAnswers([]); setCurrentIndex(i => Math.min(i, n - 1)); },
+    });
 
     const question  = questions[currentIndex];
     const answered  = chosen !== null;
@@ -117,7 +123,11 @@ export default function McReadingActivity({ activity, onClose, onComplete, hideS
                     </section>
 
                     <section aria-label="Question" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5 lg:sticky lg:top-6`}>
-                        <p className={LIGHT.chip}>Question {currentIndex + 1} of {total}<span className="sm:hidden"> · score {score}</span></p>
+                        <div className="flex items-start justify-between gap-3">
+                            <p className={LIGHT.chip}>Question {currentIndex + 1} of {total}<span className="sm:hidden"> · score {score}</span></p>
+                            {ed.button}
+                        </div>
+                        {ed.editor ?? <>
                         <h1 className={`font-display ${L_Q_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{question.text}</h1>
                         <div role="group" aria-label="Options" className="flex flex-col gap-3">
                             {question.options.map((opt, oi) => {
@@ -147,6 +157,7 @@ export default function McReadingActivity({ activity, onClose, onComplete, hideS
                                 {!answered ? 'Choose an answer' : currentIndex + 1 >= total ? 'See results' : 'Next question'}
                             </button>
                         </div>
+                        </>}
                     </section>
                 </div>
             </LightFrame>

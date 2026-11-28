@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import SpeakingActivityShell from '@/components/SpeakingActivityShell';
+import { EditableCard } from '@/lib/itemEdit';
 import { useDisplay } from '@/hooks/useDisplay';
 import { useInkColor } from '@/lib/uiTheme';
 
@@ -23,6 +24,7 @@ export default function MiniPresentationActivity(props) {
             itemNoun="Topic"
             nextLabel="Next topic"
             renderItem={(topic, i) => (
+                <EditableCard type="mini_presentation" activity={props.activity} onEditItems={props.onEditItems} index={i}>
                 <PresentationCard
                     topic={topic}
                     minutes={props.activity.minutes ?? 2}
@@ -32,6 +34,7 @@ export default function MiniPresentationActivity(props) {
                     setOrder={list => setOrders(o => ({ ...o, [i]: list }))}
                     topicIndex={i}
                 />
+                </EditableCard>
             )}
         />
     );

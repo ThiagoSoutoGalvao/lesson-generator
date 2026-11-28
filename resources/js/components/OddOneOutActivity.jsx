@@ -6,13 +6,14 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const FONT_SIZES = ['text-lg', 'text-xl', 'text-2xl', 'text-3xl', 'text-4xl'];
 // Light (Aurora Business) tile and reason text, indexed by the Display panel's size.
 const L_TILE_SIZES = ['text-[19px]', 'text-[21px] sm:text-[24px]', 'text-[23px] sm:text-[28px]', 'text-[26px] sm:text-[32px]', 'text-[29px] sm:text-[36px]'];
 const L_WHY_SIZES  = ['text-[16px]', 'text-[17px] sm:text-[19px]', 'text-[19px] sm:text-[21px]', 'text-[21px] sm:text-[24px]', 'text-[24px] sm:text-[27px]'];
 
-export default function OddOneOutActivity({ activity, onClose, onComplete, hideSave }) {
+export default function OddOneOutActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const [groupIndex, setGroupIndex] = useState(0);
     const [wrongIdx, setWrongIdx]     = useState(null);
     const [revealed, setRevealed]     = useState(false);
@@ -29,6 +30,11 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
     const groups = activity.groups;
     const group  = groups[groupIndex];
     const total  = groups.length;
+    // ✎ Edit inside the activity (teacher, saved activity): the group is played again after an edit.
+    const ed = useItemEdit('odd_one_out', activity, onEditItems, groupIndex, {
+        onSaved: () => { setTried([]); setRevealed(false); setWhyShown(false); setWrongIdx(null); },
+        onRemoved: n => { setTried([]); setRevealed(false); setWhyShown(false); setWrongIdx(null); setGroupIndex(i => Math.min(i, n - 1)); },
+    });
 
     useEffect(() => {
         if (light) return;
@@ -107,7 +113,11 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
             <LightFrame {...frame} extra={<span className="hidden sm:flex"><LightProgress index={groupIndex} total={total} label="Group" /></span>}>
                 <div className="max-w-3xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
                     <section aria-label="Words" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5`}>
-                        <p className={LIGHT.chip}><span className="sm:hidden">Group {groupIndex + 1} of {total} · </span>Which one doesn’t belong?</p>
+                        <div className="flex items-start justify-between gap-3">
+                            <p className={LIGHT.chip}><span className="sm:hidden">Group {groupIndex + 1} of {total} · </span>Which one doesn’t belong?</p>
+                            {ed.button}
+                        </div>
+                        {ed.editor ?? <>
                         <div className="grid grid-cols-2 gap-3 sm:gap-4">
                             {group.words.map((word, idx) => {
                                 const isOdd = word === group.odd_one;
@@ -126,6 +136,7 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
                             })}
                         </div>
                         {revealed && !whyShown && <p role="status" className="text-[17px] sm:text-[19px] text-[#14532D] font-semibold">“{group.odd_one}” is the odd one out. Why? Say it, then check.</p>}
+                        </>}
                     </section>
 
                     {revealed && whyShown && (

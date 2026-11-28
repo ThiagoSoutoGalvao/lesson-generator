@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightPhoto, LightProgress, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const LABELS = ['A', 'B', 'C', 'D'];
 const FONT_SIZES   = ['text-2xl', 'text-3xl', 'text-4xl', 'text-5xl', 'text-6xl'];
@@ -14,7 +15,7 @@ const OPTION_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl']
 const LIGHT_Q_SIZES   = ['text-[22px] sm:text-2xl', 'text-2xl sm:text-[28px]', 'text-[23px] sm:text-[34px]', 'text-[27px] sm:text-[40px]', 'text-[31px] sm:text-[48px]'];
 const LIGHT_OPT_SIZES = ['text-base', 'text-lg', 'text-[19px] sm:text-[22px]', 'text-[22px] sm:text-[26px]', 'text-[26px] sm:text-[30px]'];
 
-export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
+export default function QuizActivity({ quiz, onClose, onComplete, hideSave, onEditItems }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     // answers: { [questionIndex]: selectedAnswerIndex }
     const [answers, setAnswers]           = useState({});
@@ -24,6 +25,11 @@ export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
     const { isFullscreen, toggle: toggleFullscreen } = useFullscreen();
     const light = useIsLightUi(); // Aurora Business: the light layout below
+    // ✎ Edit inside the activity (teacher, saved activity): an edited question is answered again.
+    const ed = useItemEdit('quiz', quiz, onEditItems, currentIndex, {
+        onSaved: () => setAnswers(a => { const n = { ...a }; delete n[currentIndex]; return n; }),
+        onRemoved: n => { setAnswers({}); setCurrentIndex(i => Math.min(i, n - 1)); },
+    });
 
     const question       = quiz.questions[currentIndex];
     const total          = quiz.questions.length;
@@ -91,7 +97,7 @@ export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
                 selected={selectedAnswer} answered={answered} finished={finished} photo={bgUrl} sizeIdx={fontSizeIdx}
                 onAnswer={handleAnswer} onNext={handleNext} onPrev={handlePrev} onRestart={handleRestart} onClose={onClose}
                 onSave={hideSave ? null : () => setShowSave(true)} saving={!hideSave && showSave} onSaved={() => setShowSave(false)}
-                isFullscreen={isFullscreen} onFullscreen={toggleFullscreen}
+                isFullscreen={isFullscreen} onFullscreen={toggleFullscreen} ed={ed}
             />
         );
     }
@@ -198,7 +204,7 @@ export default function QuizActivity({ quiz, onClose, onComplete, hideSave }) {
 // Aurora Business light layout (AuroraBusiness.md §4, mockup "Activity · Quiz"): the photo in its own panel beside
 // the question (a band above it on a phone), the question on a white card, coral Next. Same state as the dark one.
 function LightQuiz({ quiz, question, index, total, score, selected, answered, finished, photo, sizeIdx,
-    onAnswer, onNext, onPrev, onRestart, onClose, onSave, saving, onSaved, isFullscreen, onFullscreen }) {
+    onAnswer, onNext, onPrev, onRestart, onClose, onSave, saving, onSaved, isFullscreen, onFullscreen, ed }) {
     const frame = {
         eyebrow: 'Quiz', title: quiz.topic || quiz.title || 'Choose the right answer',
         onSave, isFullscreen, onFullscreen, onClose,
@@ -232,7 +238,11 @@ function LightQuiz({ quiz, question, index, total, score, selected, answered, fi
                 <LightPhoto url={photo} className="h-[150px] sm:h-[220px] lg:h-auto lg:min-h-[480px] lg:w-[420px] lg:shrink-0" />
 
                 <section className={`${LIGHT.card} flex-1 min-w-0 p-5 sm:p-10 flex flex-col gap-5 sm:gap-6`} aria-label="Question">
-                    <p className={LIGHT.chip}><span className="sm:hidden">Question {index + 1} of {total} · </span>{quiz.instruction || 'Choose the right answer'}</p>
+                    <div className="flex items-start justify-between gap-3">
+                        <p className={LIGHT.chip}><span className="sm:hidden">Question {index + 1} of {total} · </span>{quiz.instruction || 'Choose the right answer'}</p>
+                        {ed?.button}
+                    </div>
+                    {ed?.editor ?? <>
                     <h1 className={`font-display ${LIGHT_Q_SIZES[sizeIdx]} font-semibold leading-snug`}>{question.question}</h1>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
@@ -265,6 +275,7 @@ function LightQuiz({ quiz, question, index, total, score, selected, answered, fi
                         </button>
                     </div>
                     <p className="sr-only" aria-live="polite">Score {score} of {total}</p>
+                    </>}
                 </section>
             </div>
         </LightFrame>

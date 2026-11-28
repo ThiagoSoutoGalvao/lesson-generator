@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LightPhoto, LIGHT } from '@/components/light/LightFrame';
+import { useItemEdit } from '@/lib/itemEdit';
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const L_SIZES = ['text-[15px]', 'text-base sm:text-[17px]', 'text-[17px] sm:text-xl', 'text-lg sm:text-2xl', 'text-xl sm:text-[28px]'];
@@ -23,7 +24,7 @@ function toTiles(words) {
     return words.map((word, i) => ({ word, id: i }));
 }
 
-export default function UnjumbleActivity({ activity, onClose, onComplete, hideSave }) {
+export default function UnjumbleActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const [currentIndex, setCurrentIndex] = useState(0);
     const [available, setAvailable] = useState(() => shuffle(toTiles(activity.sentences[0].words)));
     const [placed, setPlaced] = useState([]);
@@ -41,6 +42,20 @@ export default function UnjumbleActivity({ activity, onClose, onComplete, hideSa
     const sentence = activity.sentences[currentIndex];
     const total = activity.sentences.length;
     const allPlaced = available.length === 0;
+    // ✎ Edit inside the activity (teacher, saved activity); the tiles are dealt again from the edited sentence.
+    const ed = useItemEdit('unjumble', activity, onEditItems, currentIndex, {
+        onRemoved: n => setCurrentIndex(i => Math.min(i, n - 1)),
+    });
+    const sentenceKey = sentence?.words?.join(' ');
+    const firstDeal = useRef(true);
+    useEffect(() => {
+        if (firstDeal.current) { firstDeal.current = false; return; }
+        if (!sentence) return;
+        setAvailable(shuffle(toTiles(sentence.words)));
+        setPlaced([]);
+        setCheckStatus('idle');
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [sentenceKey, currentIndex]);
 
     useEffect(() => {
         Promise.all(
@@ -197,7 +212,11 @@ export default function UnjumbleActivity({ activity, onClose, onComplete, hideSa
             <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-6 grid grid-cols-1 md:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-4 sm:gap-6">
                 <LightPhoto url={bgUrl} className="h-[150px] sm:h-[220px] md:h-auto md:min-h-[360px]" />
                 <div className="flex flex-col gap-4 sm:gap-5 min-w-0">
-                    <p className={`${LIGHT.eyebrow} !normal-case !tracking-normal ${status[1]}`} role="status">{status[0]}</p>
+                    <div className="flex items-start justify-between gap-3">
+                        <p className={`${LIGHT.eyebrow} !normal-case !tracking-normal ${status[1]}`} role="status">{status[0]}</p>
+                        {ed.button}
+                    </div>
+                    {ed.editor ? <section aria-label="Edit" className={`${LIGHT.card} p-5 sm:p-6`}>{ed.editor}</section> : <>
                     <div onDragOver={(e) => e.preventDefault()} onDrop={onDropIntoPlaced}
                         className="min-h-[96px] bg-white border-2 border-dashed border-[#C6CCD6] rounded-2xl px-4 sm:px-5 py-4 flex flex-wrap gap-2.5 sm:gap-3 items-center" aria-label="Your sentence">
                         {placed.length === 0 && <span className={`${LIGHT.muted} text-[17px]`}>Your sentence goes here…</span>}
@@ -228,6 +247,7 @@ export default function UnjumbleActivity({ activity, onClose, onComplete, hideSa
                             <button type="button" onClick={handleNext} className={LIGHT.primary}>{currentIndex + 1 >= total ? 'See results' : 'Next sentence'}</button>
                         )}
                     </div>
+                    </>}
                 </div>
             </div>
         );

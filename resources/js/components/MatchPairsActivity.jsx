@@ -6,6 +6,7 @@ import { useDisplay } from '@/hooks/useDisplay';
 import { useFullscreen } from '@/hooks/useFullscreen';
 import { useIsLightUi } from '@/lib/uiTheme';
 import { LightFrame, LIGHT } from '@/components/light/LightFrame';
+import { useListEdit } from '@/lib/itemEdit';
 
 const FONT_SIZES = ['text-base', 'text-lg', 'text-xl', 'text-2xl', 'text-3xl'];
 const LIGHT_SIZES = ['text-[15px]', 'text-base sm:text-[17px]', 'text-[17px] sm:text-xl', 'text-lg sm:text-2xl', 'text-xl sm:text-[28px]'];
@@ -21,7 +22,7 @@ function shuffle(arr) {
 
 // Match Pairs — click an item on one side, then its partner on the other. Either side
 // can be picked first. Scored on the pairs matched without a wrong try.
-export default function MatchPairsActivity({ activity, onClose, onComplete, hideSave }) {
+export default function MatchPairsActivity({ activity, onClose, onComplete, hideSave, onEditItems }) {
     const pairs = activity.pairs;
     const total = pairs.length;
 
@@ -37,6 +38,17 @@ export default function MatchPairsActivity({ activity, onClose, onComplete, hide
     const wrongTimer = useRef(null);
     const light = useIsLightUi(); // Aurora Business: the light layout below
     const [order, setOrder] = useState({});     // pair index → the number it was matched as (light layout)
+
+    // ✎ Edit inside the activity (teacher, saved activity): all pairs in one form; the board is dealt again after.
+    const le = useListEdit('match_pairs', activity, onEditItems, { label: 'Edit pairs' });
+    const pairsKey = pairs.map(p => `${p.left}|${p.right}`).join('\n');
+    const firstDeal = useRef(true);
+    useEffect(() => {
+        if (firstDeal.current) { firstDeal.current = false; return; }
+        setRightOrder(shuffle(pairs.map((_, i) => i)));
+        setMatched({}); setMissed({}); setOrder({}); setSel(null); setWrong(null);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [pairsKey]);
 
     const matchedCount = Object.keys(matched).length;
     const finished     = matchedCount === total;
@@ -147,17 +159,21 @@ export default function MatchPairsActivity({ activity, onClose, onComplete, hide
             );
         };
         const rows = { gridTemplateRows: `repeat(${total}, minmax(52px, 1fr))` };
+        if (le.editor) return frame(<div className="max-w-[880px] mx-auto px-4 sm:px-8 py-6">{le.editor}</div>);
         return frame(
             <div className="min-h-full max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-6 flex flex-col gap-3 sm:gap-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className={LIGHT.chip}>{sel ? 'Now pick its partner' : 'Pick one, then pick its partner'}</p>
+                    <div className="flex items-center gap-3">
+                        <p className={LIGHT.chip}>{sel ? 'Now pick its partner' : 'Pick one, then pick its partner'}</p>
+                        {le.button}
+                    </div>
                     <div className="h-2 w-40 rounded bg-[#E6E9EE] overflow-hidden" aria-hidden="true">
                         <div className="h-2 bg-[#1E7A4C] transition-[width] duration-300" style={{ width: `${(matchedCount / total) * 100}%` }} />
                     </div>
                 </div>
                 <div className="flex-1 grid grid-cols-[minmax(0,2fr)_minmax(0,3fr)] gap-x-4 sm:gap-x-10 lg:gap-x-16" style={{ maxHeight: total * 110 }}>
                     <div className="grid gap-2 sm:gap-3" style={rows}>{pairs.map((p, i) => lightTile('left', i, p.left))}</div>
-                    <div className="grid gap-2 sm:gap-3" style={rows}>{rightOrder.map(i => lightTile('right', i, pairs[i].right))}</div>
+                    <div className="grid gap-2 sm:gap-3" style={rows}>{rightOrder.filter(i => pairs[i]).map(i => lightTile('right', i, pairs[i].right))}</div>
                 </div>
             </div>
         );
