@@ -33,7 +33,7 @@ function DebateCard({ card }) {
     return (
         <>
             <section className="rounded-2xl bg-ui-box border-2 border-ui-sel-line px-6 py-5">
-                <p className="text-ui-accent text-xs font-bold tracking-[0.12em] mb-2">DO YOU AGREE?</p>
+                <p className="text-ui-accent text-xs font-bold tracking-[0.12em] mb-2 ab-chip">DO YOU AGREE?</p>
                 <p className={`${STATEMENT_SIZES[sizeIdx]} font-bold leading-tight ${textColor}`}>{card.statement}</p>
             </section>
             <p className="text-ui-muted text-lg">Agree, disagree or partly? Give your reason first — then look at the ideas.</p>

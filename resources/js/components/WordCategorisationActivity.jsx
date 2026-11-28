@@ -177,9 +177,9 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
             <LightFrame {...frame}>
                 <div className="max-w-[1180px] mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
                     {checked ? (
-                        <section aria-label="Results" className={`${LIGHT.card} p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-4`}>
+                        <section aria-label="Results" className={`${LIGHT.glowCard} p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center gap-4`}>
                             <div className="flex-1">
-                                <p className={LIGHT.eyebrow}>All sorted</p>
+                                <p className={LIGHT.chip}>All sorted</p>
                                 <h1 className="font-display text-[26px] sm:text-[32px] font-semibold leading-tight">{score} of {allWords.length} right first time</h1>
                             </div>
                             <div className="flex flex-wrap gap-3">
@@ -189,7 +189,7 @@ export default function WordCategorisationActivity({ activity, onClose, onComple
                         </section>
                     ) : (
                         <section aria-label="Words" className={`${LIGHT.card} p-4 sm:p-6 flex flex-col gap-3`}>
-                            <p className={LIGHT.eyebrow}>{selected ? `“${selected}” — now choose its group` : 'Choose a word, then its group (or drag it)'}</p>
+                            <p className={LIGHT.chip}>{selected ? `“${selected}” — now choose its group` : 'Choose a word, then its group (or drag it)'}</p>
                             <div className="flex flex-wrap gap-2 sm:gap-3">
                                 {pool.map(w => {
                                     const isSel = selected === w;

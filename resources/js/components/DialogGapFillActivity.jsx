@@ -143,7 +143,7 @@ export default function DialogGapFillActivity({ activity, onClose, onComplete, h
         if (finished) {
             return frame(
                 <div className="max-w-[720px] mx-auto px-4 sm:px-8 py-8 sm:py-12 flex flex-col gap-5">
-                    <div className={`${LIGHT.card} px-6 py-8 text-center`}>
+                    <div className={`${LIGHT.glowCard} px-6 py-8 text-center`} aria-label="Results">
                         <h2 className="font-display text-3xl sm:text-4xl font-semibold">Dialogue complete!</h2>
                         <p className={`${LIGHT.muted} text-lg mt-2`}>{score} of {blanks.length} correct</p>
                     </div>

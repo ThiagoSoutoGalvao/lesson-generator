@@ -167,7 +167,10 @@ times, who writes the placement test, what happens when a group falls to 2, cert
   logo, pink→coral progress bar. Lesson page: glow title band (`.ab-hero`), glow on the selected 1A/1B/1C (`.ab-sel`),
   stage dots (`.ab-dot`), glowing "Student app" box — classes in app.css that only act under `data-ui="light"`, so
   Radiant / Glow / Lights are untouched. New `LIGHT.glowCard` / `LIGHT.chip`; Quiz uses them (question label chip, glow
-  score card). Text always stays on white. Next: the same chip + glow score on the other templates. QA `qa_warmth.mjs` 11/11.
+  score card). Text always stays on white. QA `qa_warmth.mjs` 11/11. **Same day, every other template:** glow label chip on the
+  question card (`LIGHT.chip`; `.ab-chip` for the speaking cards shared with the dark theme) and glow result cards
+  (`LIGHT.glowCard` + `LIGHT.chipCenter`). Reading / Presentation / Listening / Dialogue / Unjumble keep their own labels.
+  QA `qa_warmth_templates.mjs` 25/25 (12 types, laptop + phone).
 - **2026-11-28** — **Readings as a magazine page** (his pick: mockup option "A · Foto ao lado",
   https://claude.ai/artifact/WbHv5SHyEP9Ezv8a6oq8yH). Business readings only (`ReadingTextActivity` light branch): warm
   paper ground #FAF6F0; laptop = photo (4:5, capped at 56% of the screen) + caption + "Words in this text" in a sticky left

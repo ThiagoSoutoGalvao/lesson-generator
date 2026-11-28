@@ -146,8 +146,8 @@ export default function SignsNoticesActivity({ activity, onClose, onComplete, hi
             return (
                 <LightFrame {...frame}>
                     <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
-                        <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
-                            <p className={LIGHT.eyebrow}>All done</p>
+                        <section className={`${LIGHT.glowCard} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                            <p className={LIGHT.chipCenter}>All done</p>
                             <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">{firstTry} of {total} right first time</h1>
                             <div className="flex flex-wrap justify-center gap-3 mt-2">
                                 <button type="button" onClick={restart} className={LIGHT.primary}>Play again</button>
@@ -165,7 +165,7 @@ export default function SignsNoticesActivity({ activity, onClose, onComplete, hi
                         <LightTextCard item={item} sizeCls={L_TEXT_SIZES[fontSizeIdx]} />
                     </section>
                     <section aria-label="Question" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5`}>
-                        <p className={LIGHT.eyebrow}>Text {index + 1} of {total}</p>
+                        <p className={LIGHT.chip}>Text {index + 1} of {total}</p>
                         <h1 className={`font-display ${L_Q_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{item.question}</h1>
                         <div role="group" aria-label="Options" className="flex flex-col gap-3">
                             {item.options.map((opt, i) => {

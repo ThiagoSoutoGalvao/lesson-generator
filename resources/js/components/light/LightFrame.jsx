@@ -11,6 +11,7 @@ export const LIGHT = {
     // "B · Mais quente" (2026-11-28): the listening's soft glow, for highlights only (a score, a result) — never behind
     // running text — and a glow chip for a card's small label (the question label).
     glowCard: 'bg-[linear-gradient(135deg,#F6E3F2_0%,#FBE6EC_50%,#FDE9DF_100%)] border border-[#EBCFE3] rounded-2xl shadow-[0_10px_30px_-18px_rgba(160,40,110,0.35)]',
+    chipCenter: 'self-center inline-block rounded-full px-3 py-1 text-[12px] sm:text-[13px] font-semibold uppercase tracking-[0.05em] text-[#9A3412] bg-[linear-gradient(135deg,#F6E3F2_0%,#FBE6EC_50%,#FDE9DF_100%)] border border-[#EBCFE3]',
     chip: 'self-start inline-block rounded-full px-3 py-1 text-[12px] sm:text-[13px] font-semibold uppercase tracking-[0.05em] text-[#9A3412] bg-[linear-gradient(135deg,#F6E3F2_0%,#FBE6EC_50%,#FDE9DF_100%)] border border-[#EBCFE3]',
     eyebrow: 'text-[13px] sm:text-[15px] font-semibold text-[#4A5163] uppercase tracking-[0.05em]',
     primary: 'h-12 sm:h-14 px-7 sm:px-8 rounded-xl bg-[#E0521F] hover:bg-[#C9461A] text-white font-semibold text-[17px] sm:text-[19px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed',

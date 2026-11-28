@@ -109,7 +109,7 @@ export default function MatchPairsActivity({ activity, onClose, onComplete, hide
         if (finished) {
             return frame(
                 <div className="max-w-[880px] mx-auto px-4 sm:px-8 py-6 sm:py-10 flex flex-col gap-5">
-                    <div className={`${LIGHT.card} px-6 py-6 text-center`}>
+                    <div className={`${LIGHT.glowCard} px-6 py-6 text-center`} aria-label="Results">
                         <h2 className="font-display text-3xl sm:text-4xl font-semibold">All matched!</h2>
                         <p className={`${LIGHT.muted} text-lg mt-2`}>{score} of {total} matched first time</p>
                     </div>
@@ -150,7 +150,7 @@ export default function MatchPairsActivity({ activity, onClose, onComplete, hide
         return frame(
             <div className="min-h-full max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-6 flex flex-col gap-3 sm:gap-4">
                 <div className="flex flex-wrap items-center justify-between gap-3">
-                    <p className={`${LIGHT.eyebrow}`}>{sel ? 'Now pick its partner' : 'Pick one, then pick its partner'}</p>
+                    <p className={LIGHT.chip}>{sel ? 'Now pick its partner' : 'Pick one, then pick its partner'}</p>
                     <div className="h-2 w-40 rounded bg-[#E6E9EE] overflow-hidden" aria-hidden="true">
                         <div className="h-2 bg-[#1E7A4C] transition-[width] duration-300" style={{ width: `${(matchedCount / total) * 100}%` }} />
                     </div>

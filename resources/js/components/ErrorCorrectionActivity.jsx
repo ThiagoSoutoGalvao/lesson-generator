@@ -179,7 +179,7 @@ export default function ErrorCorrectionActivity({ activity, onClose, onComplete,
                 overlay={!hideSave && showSave ? <SavePanel activity={activity} onDone={() => setShowSave(false)} /> : null}
             >
                 <div className="max-w-4xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
-                    <p className={LIGHT.eyebrow}>{activity.instruction || (isPassage ? 'Find and correct the mistakes in the text' : 'Each sentence has one mistake. Find it and correct it.')}</p>
+                    <p className={LIGHT.chip}>{activity.instruction || (isPassage ? 'Find and correct the mistakes in the text' : 'Each sentence has one mistake. Find it and correct it.')}</p>
 
                     {isPassage ? (
                         <section aria-label="Text" className={`${LIGHT.card} p-5 sm:p-8`}>

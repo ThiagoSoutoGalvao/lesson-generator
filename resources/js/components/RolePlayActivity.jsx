@@ -55,7 +55,7 @@ function RolePlayCard({ card }) {
     return (
         <>
             <section className="rounded-2xl bg-ui-box border border-ui-line px-6 py-5">
-                <p className="text-ui-faint text-xs font-bold tracking-[0.12em] mb-2">THE SITUATION</p>
+                <p className="text-ui-faint text-xs font-bold tracking-[0.12em] mb-2 ab-chip">THE SITUATION</p>
                 <p className={`${SITUATION_SIZES[sizeIdx]} leading-snug ${textColor}`}>{card.situation}</p>
             </section>
             {group && (

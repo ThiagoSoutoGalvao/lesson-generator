@@ -688,3 +688,5 @@ body.tf-active main .text-xs:not(.fixed.inset-0 *) {
 :root[data-ui="light"] .ab-sel { background: var(--ab-glow); border-color: #E7A9C9; }
 :root[data-ui="light"] .ab-dot { display: inline-flex; align-items: center; gap: 8px; }
 :root[data-ui="light"] .ab-dot::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #C2408F, #E0521F); flex: none; }
+/* A card's main small label as a glow chip (speaking cards shared with the dark theme: plain text there). */
+:root[data-ui="light"] .ab-chip { align-self: flex-start; display: inline-block; width: fit-content; background: var(--ab-glow); border: 1px solid #EBCFE3; border-radius: 999px; padding: 4px 12px; color: #9A3412; }

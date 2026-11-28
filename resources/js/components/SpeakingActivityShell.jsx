@@ -74,8 +74,8 @@ export default function SpeakingActivityShell({
                 <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-7 flex flex-col md:flex-row gap-5 sm:gap-7">
                     <div className="flex-1 min-w-0 flex flex-col gap-5">
                         {finished ? (
-                            <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="All done">
-                                <p className={LIGHT.eyebrow}>{label}</p>
+                            <section className={`${LIGHT.glowCard} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="All done">
+                                <p className={LIGHT.chipCenter}>{label}</p>
                                 <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">All done!</h1>
                                 <p className="text-[19px] text-[#4A5163]">All {total} {total === 1 ? itemNoun.toLowerCase() : `${itemNoun.toLowerCase()}s`} done. Save the ticks before you close.</p>
                                 <div className="flex flex-wrap justify-center gap-3 mt-2">

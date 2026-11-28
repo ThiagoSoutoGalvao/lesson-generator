@@ -81,7 +81,7 @@ function PresentationCard({ topic, minutes, notes, setNote, order, setOrder, top
         <>
             <div className="flex flex-wrap items-end justify-between gap-3">
                 <div className="flex flex-col gap-1 min-w-0">
-                    <p className="text-ui-faint text-xs font-bold tracking-[0.12em]">PRESENT · ABOUT {minutes} {minutes === 1 ? 'MINUTE' : 'MINUTES'} · NO TIMER</p>
+                    <p className="text-ui-faint text-xs font-bold tracking-[0.12em] ab-chip">PRESENT · ABOUT {minutes} {minutes === 1 ? 'MINUTE' : 'MINUTES'} · NO TIMER</p>
                     <h2 className={`${TITLE_SIZES[sizeIdx]} font-bold leading-tight ${textColor}`}>{topic.title}</h2>
                 </div>
                 <div className="flex gap-1 bg-ui-box border border-ui-line rounded-xl p-1" role="group" aria-label="Mode">
@@ -108,7 +108,7 @@ function PresentationCard({ topic, minutes, notes, setNote, order, setOrder, top
                     </ol>
 
                     <div className="rounded-3xl bg-ui-box border border-ui-line px-6 sm:px-10 py-8 sm:py-10 flex flex-col gap-6 min-h-[16rem]">
-                        <p className="text-ui-faint text-sm font-bold tracking-[0.12em]">STEP {slide + 1} OF {steps.length}</p>
+                        <p className="text-ui-faint text-sm font-bold tracking-[0.12em] ab-chip">STEP {slide + 1} OF {steps.length}</p>
                         <h3 className={`${SLIDE_SIZES[sizeIdx]} font-bold leading-tight ${textColor}`}>{current.name}</h3>
                         {words.length > 0 ? (
                             <ul className="flex flex-wrap gap-3" aria-label="Key words">

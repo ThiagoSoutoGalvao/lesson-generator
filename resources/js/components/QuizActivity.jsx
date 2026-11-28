@@ -211,7 +211,7 @@ function LightQuiz({ quiz, question, index, total, score, selected, answered, fi
             <LightFrame {...frame}>
                 <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
                     <section className={`${LIGHT.glowCard} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
-                        <p className={LIGHT.chip.replace('self-start', '')}>Quiz complete</p>
+                        <p className={LIGHT.chipCenter}>Quiz complete</p>
                         <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">You scored {score} out of {total}</h1>
                         <p className="text-[20px] text-[#4A5163]">{pct}%</p>
                         <div className="flex flex-wrap justify-center gap-3 mt-2">

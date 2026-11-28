@@ -103,8 +103,8 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
             return (
                 <LightFrame {...frame}>
                     <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
-                        <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
-                            <p className={LIGHT.eyebrow}>All done</p>
+                        <section className={`${LIGHT.glowCard} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                            <p className={LIGHT.chipCenter}>All done</p>
                             <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">{score} of {total} correct</h1>
                             <div className="flex flex-wrap justify-center gap-3 mt-2">
                                 <button type="button" onClick={handleRestart} className={LIGHT.primary}>Play again</button>
@@ -126,7 +126,7 @@ export default function TrueFalseActivity({ activity, onClose, onComplete, hideS
                     </section>
 
                     <section aria-label="Statement" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5 lg:sticky lg:top-6`}>
-                        <p className={LIGHT.eyebrow}>Statement {currentIndex + 1} of {total}<span className="sm:hidden"> · score {score}</span></p>
+                        <p className={LIGHT.chip}>Statement {currentIndex + 1} of {total}<span className="sm:hidden"> · score {score}</span></p>
                         <h1 className={`font-display ${L_STATEMENT_SIZES[fontSizeIdx]} font-semibold leading-snug`}>{statement.text}</h1>
                         <div role="group" aria-label="Options" className={`grid gap-3 ${options.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-2'}`}>
                             {options.map(opt => {

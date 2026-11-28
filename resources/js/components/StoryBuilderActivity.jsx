@@ -36,7 +36,7 @@ function QuestionStory({ story }) {
     return (
         <>
             <div className="flex flex-col gap-1">
-                <p className="text-ui-faint text-xs font-bold tracking-[0.12em]">BUILD THE STORY TOGETHER</p>
+                <p className="text-ui-faint text-xs font-bold tracking-[0.12em] ab-chip">BUILD THE STORY TOGETHER</p>
                 <h2 className={`${TITLE_SIZES[sizeIdx]} font-bold leading-tight ${textColor}`}>{story.title}</h2>
                 {story.opening && <p className={`${PROMPT_SIZES[sizeIdx]} italic text-ui-muted leading-snug mt-1`}>{story.opening}</p>}
             </div>
@@ -51,7 +51,7 @@ function QuestionStory({ story }) {
                 </div>
             ) : (
                 <div className="rounded-2xl bg-ui-box border border-ui-line px-6 py-5 flex flex-col gap-4" data-testid="story-step">
-                    <p className="text-ui-faint text-xs font-bold tracking-[0.12em]">QUESTION {at + 1} OF {steps.length}</p>
+                    <p className="text-ui-faint text-xs font-bold tracking-[0.12em] ab-chip">QUESTION {at + 1} OF {steps.length}</p>
                     <div className="flex flex-col gap-1">
                         <p className="text-ui-muted text-sm font-semibold">{step.full ? 'MAKE THE QUESTION AND ASK IT' : 'ASK'}</p>
                         <p className={`${ASK_SIZES[sizeIdx]} font-semibold leading-snug ${textColor}`}>{step.ask}</p>
@@ -104,7 +104,7 @@ function StoryCard({ story }) {
     return (
         <>
             <div className="flex flex-col gap-1">
-                <p className="text-ui-faint text-xs font-bold tracking-[0.12em]">TELL THE STORY</p>
+                <p className="text-ui-faint text-xs font-bold tracking-[0.12em] ab-chip">TELL THE STORY</p>
                 <h2 className={`${TITLE_SIZES[sizeIdx]} font-bold leading-tight ${textColor}`}>{story.title}</h2>
             </div>
             {hidden ? (

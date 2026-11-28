@@ -111,9 +111,9 @@ export default function ClozeActivity({ activity, onClose, onComplete, hideSave 
                     {/* The bank stays in view while a long text scrolls under it. */}
                     <div className="sticky top-0 z-10 bg-[#F6F7F9] pt-4 sm:pt-8 pb-1">
                         {lightDone ? (
-                            <section aria-label="Results" className={`${LIGHT.card} p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4`}>
+                            <section aria-label="Results" className={`${LIGHT.glowCard} p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4`}>
                                 <div className="flex-1">
-                                    <p className={LIGHT.eyebrow}>All gaps done</p>
+                                    <p className={LIGHT.chip}>All gaps done</p>
                                     <h1 className="font-display text-[24px] sm:text-[30px] font-semibold leading-tight">{lightScore} of {totalBlanks} right first time</h1>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
@@ -123,7 +123,7 @@ export default function ClozeActivity({ activity, onClose, onComplete, hideSave 
                             </section>
                         ) : (
                             <section aria-label="Word bank" className={`${LIGHT.card} p-4 sm:p-5 flex flex-col gap-3`}>
-                                <p className={LIGHT.eyebrow}>{current ? `Gap ${current.blankIndex + 1}: choose the word` : 'Word bank'}</p>
+                                <p className={LIGHT.chip}>{current ? `Gap ${current.blankIndex + 1}: choose the word` : 'Word bank'}</p>
                                 <div className="flex flex-wrap gap-2 sm:gap-3">
                                     {wordBank.map((w, i) => {
                                         const used = chipUsed(i);

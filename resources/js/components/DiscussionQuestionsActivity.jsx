@@ -108,7 +108,7 @@ export default function DiscussionQuestionsActivity({ activity, onClose, onCompl
                         <LightPhoto url={bgUrl} className="h-[150px] sm:h-[200px]" />
                         <section className={`${LIGHT.card} p-5 sm:p-9 flex flex-col gap-5`} aria-label="Question">
                             <div className="flex items-start justify-between gap-3">
-                                <p className={LIGHT.eyebrow}><span className="sm:hidden">Question {index + 1} of {total} · </span>Discuss</p>
+                                <p className={LIGHT.chip}><span className="sm:hidden">Question {index + 1} of {total} · </span>Discuss</p>
                                 {canEdit && !editing && <EditItemButton onClick={() => setEditing(true)} />}
                             </div>
                             {editing ? <InlineItemEditor key={index} question={current.question} lines={current.follow_ups} linesLabel="Follow-up questions" onSave={saveItem} onCancel={() => setEditing(false)} /> : <>

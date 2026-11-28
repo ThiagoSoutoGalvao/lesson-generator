@@ -218,8 +218,8 @@ function LightPicturePrompts({ activity, current, index, total, photo, phrases, 
             <div className="max-w-[1280px] mx-auto px-4 sm:px-8 py-4 sm:py-7 flex flex-col md:flex-row gap-5 sm:gap-7">
                 <div className="flex-1 min-w-0 flex flex-col gap-4 sm:gap-5">
                     {finished ? (
-                        <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="All done">
-                            <p className={LIGHT.eyebrow}>Picture prompts</p>
+                        <section className={`${LIGHT.glowCard} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="All done">
+                            <p className={LIGHT.chipCenter}>Picture prompts</p>
                             <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">All done!</h1>
                             <p className="text-[19px] text-[#4A5163]">You described {total} {total === 1 ? 'picture' : 'pictures'}.</p>
                             <div className="flex flex-wrap justify-center gap-3 mt-2">
@@ -240,7 +240,7 @@ function LightPicturePrompts({ activity, current, index, total, photo, phrases, 
                             </div>
                             <section className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-4`} aria-label="Question">
                                 <div className="flex items-start justify-between gap-3">
-                                    <p className={LIGHT.eyebrow}><span className="sm:hidden">Picture {index + 1} of {total} · </span>Talk about the picture</p>
+                                    <p className={LIGHT.chip}><span className="sm:hidden">Picture {index + 1} of {total} · </span>Talk about the picture</p>
                                     {onEdit && !editor && <EditItemButton onClick={onEdit} />}
                                 </div>
                                 {editor ?? <>

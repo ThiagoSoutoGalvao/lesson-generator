@@ -128,9 +128,9 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
                 <div className="max-w-[1180px] mx-auto px-4 sm:px-8 pb-8 flex flex-col gap-4 sm:gap-5">
                     <div className="sticky top-0 z-10 bg-[#F6F7F9] pt-4 sm:pt-8 pb-1">
                         {finished ? (
-                            <section aria-label="Results" className={`${LIGHT.card} p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4`}>
+                            <section aria-label="Results" className={`${LIGHT.glowCard} p-5 sm:p-6 flex flex-col sm:flex-row sm:items-center gap-4`}>
                                 <div className="flex-1">
-                                    <p className={LIGHT.eyebrow}>All matched</p>
+                                    <p className={LIGHT.chip}>All matched</p>
                                     <h1 className="font-display text-[24px] sm:text-[30px] font-semibold leading-tight">{total - missed.length} of {total} right first time</h1>
                                 </div>
                                 <div className="flex flex-wrap gap-3">
@@ -140,7 +140,7 @@ export default function ImageVocabMatchActivity({ activity, onClose, onComplete,
                             </section>
                         ) : (
                             <section aria-label="Words" className={`${LIGHT.card} p-4 sm:p-5 flex flex-col gap-3`}>
-                                <p className={LIGHT.eyebrow}>{selWord ? `“${selWord}” — now tap its picture` : 'Choose a word, then its picture'}</p>
+                                <p className={LIGHT.chip}>{selWord ? `“${selWord}” — now tap its picture` : 'Choose a word, then its picture'}</p>
                                 <div className="flex flex-wrap gap-2 sm:gap-3">
                                     {wordOrder.map((originalIdx, orderIdx) => (
                                         <button key={originalIdx} type="button" onClick={() => handleWordClick(orderIdx)} aria-pressed={selected === orderIdx}

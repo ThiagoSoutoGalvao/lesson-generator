@@ -91,8 +91,8 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
             return (
                 <LightFrame {...frame}>
                     <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
-                        <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
-                            <p className={LIGHT.eyebrow}>All done</p>
+                        <section className={`${LIGHT.glowCard} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                            <p className={LIGHT.chipCenter}>All done</p>
                             <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">{total} groups finished</h1>
                             <div className="flex flex-wrap justify-center gap-3 mt-2">
                                 <button type="button" onClick={handleRestart} className={LIGHT.primary}>Start again</button>
@@ -107,7 +107,7 @@ export default function OddOneOutActivity({ activity, onClose, onComplete, hideS
             <LightFrame {...frame} extra={<span className="hidden sm:flex"><LightProgress index={groupIndex} total={total} label="Group" /></span>}>
                 <div className="max-w-3xl mx-auto px-4 sm:px-8 py-4 sm:py-8 flex flex-col gap-4 sm:gap-5">
                     <section aria-label="Words" className={`${LIGHT.card} p-5 sm:p-8 flex flex-col gap-5`}>
-                        <p className={LIGHT.eyebrow}><span className="sm:hidden">Group {groupIndex + 1} of {total} · </span>Which one doesn’t belong?</p>
+                        <p className={LIGHT.chip}><span className="sm:hidden">Group {groupIndex + 1} of {total} · </span>Which one doesn’t belong?</p>
                         <div className="grid grid-cols-2 gap-3 sm:gap-4">
                             {group.words.map((word, idx) => {
                                 const isOdd = word === group.odd_one;
