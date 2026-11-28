@@ -669,3 +669,22 @@ body.tf-active main .text-xs:not(.fixed.inset-0 *) {
 
 /* Magazine reading (Aurora Business, 2026-11-28): the italic serif for the intro line and the pulled quote. */
 .font-serif-text { font-family: 'Source Serif 4', Georgia, serif; }
+
+/* ── Aurora Business "B · Mais quente" (2026-11-28, mockup https://claude.ai/artifact/WWCaHUXKsNtrNN5Q8K3muf) ──
+   The reading's warm paper as the ground with a soft pink wash at the top, warm borders, and the listening's
+   "Soft glow" only on highlights (title band, selected lesson, score, the "Student app" box). Text stays on white.
+   These classes do nothing on the dark "Aurora Night" theme, so shared pages (the lesson pack) can carry them. */
+:root[data-ui="light"] {
+    --ui-line: #E9E1D6;
+    --ui-well: #F7F2EC; /* the activity cards inside a stage: warm, not cool grey */
+    --ab-glow: linear-gradient(135deg, #F6E3F2 0%, #FBE6EC 50%, #FDE9DF 100%);
+    --ab-wash: linear-gradient(180deg, #FBEFF3 0px, #FAF6F0 340px);
+}
+:root[data-ui="light"] body { background: #FAF6F0; }
+:root[data-ui="light"] .ui-card,
+:root[data-ui="light"] .ui-chip { border-color: #E9E1D6; }
+:root[data-ui="light"] .ab-hero { background: var(--ab-glow); border: 1px solid #EBCFE3; border-radius: 20px; padding: 20px 22px; box-shadow: 0 10px 30px -18px rgba(160, 40, 110, .35); }
+:root[data-ui="light"] .ab-glow { background: var(--ab-glow); border-color: #EBCFE3; }
+:root[data-ui="light"] .ab-sel { background: var(--ab-glow); border-color: #E7A9C9; }
+:root[data-ui="light"] .ab-dot { display: inline-flex; align-items: center; gap: 8px; }
+:root[data-ui="light"] .ab-dot::before { content: ""; width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg, #C2408F, #E0521F); flex: none; }

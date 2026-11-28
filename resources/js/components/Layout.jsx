@@ -21,7 +21,7 @@ export default function Layout({ children }) {
     const location = useLocation();
     const light    = useIsLightUi();
     const bgStyle  = light
-        ? { background: '#F6F7F9' }
+        ? { background: 'linear-gradient(180deg, #FBEFF3 0px, #FAF6F0 340px) #FAF6F0' } // warm paper + pink wash (2026-11-28, "B")
         : { backgroundImage: AURORA_GRADIENT, backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' };
 
     return (
@@ -38,7 +38,7 @@ export default function Layout({ children }) {
                 />
             )}
 
-            <header className={`relative z-10 border-b px-6 py-3.5 sticky top-0 ${light ? 'bg-white border-[#DDE1E8]' : 'bg-[#160c33]/55 backdrop-blur-xl border-white/10'}`}>
+            <header className={`relative z-10 border-b px-6 py-3.5 sticky top-0 ${light ? 'bg-white border-[#E9E1D6]' : 'bg-[#160c33]/55 backdrop-blur-xl border-white/10'}`}>
                 <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-between gap-y-2">
                     <Link to="/" className="flex items-center transition-opacity hover:opacity-80">
                         <img src={light ? '/brand/aurora-logo-horizontal.png' : '/brand/aurora-logo-horizontal-white.png'} alt="Aurora" className="h-10 sm:h-11 w-auto" />

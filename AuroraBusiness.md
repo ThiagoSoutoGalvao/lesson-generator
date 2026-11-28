@@ -161,6 +161,13 @@ times, who writes the placement test, what happens when a group falls to 2, cert
 ---
 
 ## 7. Done so far (newest first)
+- **2026-11-28** — **Warmer light theme, "B · Mais quente"** (his pick, mockup https://claude.ai/artifact/WWCaHUXKsNtrNN5Q8K3muf;
+  for the marketing videos too). Business screens only: warm paper ground with a soft pink wash at the top (Layout +
+  LightFrame default), warm borders (`--ui-line` #E9E1D6, `--ui-well` #F7F2EC), the listening's glow behind the activity
+  logo, pink→coral progress bar. Lesson page: glow title band (`.ab-hero`), glow on the selected 1A/1B/1C (`.ab-sel`),
+  stage dots (`.ab-dot`), glowing "Student app" box — classes in app.css that only act under `data-ui="light"`, so
+  Radiant / Glow / Lights are untouched. New `LIGHT.glowCard` / `LIGHT.chip`; Quiz uses them (question label chip, glow
+  score card). Text always stays on white. Next: the same chip + glow score on the other templates. QA `qa_warmth.mjs` 11/11.
 - **2026-11-28** — **Readings as a magazine page** (his pick: mockup option "A · Foto ao lado",
   https://claude.ai/artifact/WbHv5SHyEP9Ezv8a6oq8yH). Business readings only (`ReadingTextActivity` light branch): warm
   paper ground #FAF6F0; laptop = photo (4:5, capped at 56% of the screen) + caption + "Words in this text" in a sticky left

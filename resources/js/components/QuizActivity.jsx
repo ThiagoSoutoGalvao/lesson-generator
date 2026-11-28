@@ -210,8 +210,8 @@ function LightQuiz({ quiz, question, index, total, score, selected, answered, fi
         return (
             <LightFrame {...frame}>
                 <div className="max-w-xl mx-auto px-4 py-10 sm:py-16">
-                    <section className={`${LIGHT.card} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
-                        <p className={LIGHT.eyebrow}>Quiz complete</p>
+                    <section className={`${LIGHT.glowCard} p-8 sm:p-10 flex flex-col items-center text-center gap-4`} aria-label="Results">
+                        <p className={LIGHT.chip.replace('self-start', '')}>Quiz complete</p>
                         <h1 className="font-display text-[32px] sm:text-[40px] font-semibold leading-tight">You scored {score} out of {total}</h1>
                         <p className="text-[20px] text-[#4A5163]">{pct}%</p>
                         <div className="flex flex-wrap justify-center gap-3 mt-2">
@@ -232,7 +232,7 @@ function LightQuiz({ quiz, question, index, total, score, selected, answered, fi
                 <LightPhoto url={photo} className="h-[150px] sm:h-[220px] lg:h-auto lg:min-h-[480px] lg:w-[420px] lg:shrink-0" />
 
                 <section className={`${LIGHT.card} flex-1 min-w-0 p-5 sm:p-10 flex flex-col gap-5 sm:gap-6`} aria-label="Question">
-                    <p className={LIGHT.eyebrow}><span className="sm:hidden">Question {index + 1} of {total} · </span>{quiz.instruction || 'Choose the right answer'}</p>
+                    <p className={LIGHT.chip}><span className="sm:hidden">Question {index + 1} of {total} · </span>{quiz.instruction || 'Choose the right answer'}</p>
                     <h1 className={`font-display ${LIGHT_Q_SIZES[sizeIdx]} font-semibold leading-snug`}>{question.question}</h1>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">

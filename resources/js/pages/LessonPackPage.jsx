@@ -278,7 +278,7 @@ export default function LessonPackPage() {
 
     return (
         <div className="flex flex-col gap-6">
-            <div className="flex flex-wrap items-end gap-4">
+            <div className="flex flex-wrap items-end gap-4 ab-hero">
                 <div className="flex-1 min-w-0">
                     <Link to={`/lessons?trilha=${trilha}`} className="ui-shell-text text-ui-muted hover:text-ui-ink text-sm">← All {config.label} {part ? 'units' : 'lessons'}</Link>
                     <h2 className="font-display ui-shell-text text-3xl font-bold text-ui-ink mt-1">{config.label} · {part ? 'Unit' : 'Lesson'} {lesson}</h2>
@@ -323,7 +323,7 @@ export default function LessonPackPage() {
                         const selected = p === part;
                         return (
                             <button key={p} type="button" aria-pressed={selected} onClick={() => pickPart(p)} data-testid="part-tab"
-                                className={`text-left rounded-2xl px-4 py-3 border-2 cursor-pointer text-ui-ink ${selected ? 'bg-ui-sel border-ui-sel-line' : 'ui-card hover:border-ui-faint'}`}>
+                                className={`text-left rounded-2xl px-4 py-3 border-2 cursor-pointer text-ui-ink ${selected ? 'bg-ui-sel border-ui-sel-line ab-sel' : 'ui-card hover:border-ui-faint'}`}>
                                 <span className="flex items-baseline justify-between gap-2">
                                     <span className="font-display text-xl font-bold">{lesson}{p}</span>
                                     <span className="text-ui-muted text-sm">{count} {count === 1 ? 'activity' : 'activities'}</span>
@@ -388,7 +388,7 @@ export default function LessonPackPage() {
                                     <div className="flex flex-wrap items-start gap-3">
                                         <span className="shrink-0 w-8 h-8 rounded-full bg-ui-sel text-ui-accent font-bold grid place-items-center">{i + 1}</span>
                                         <div className="flex-1 min-w-0">
-                                            <h3 className="font-display text-lg font-semibold text-ui-ink">{st.label} <span className="text-ui-faint text-sm font-normal">· {items.length}</span></h3>
+                                            <h3 className="font-display text-lg font-semibold text-ui-ink ab-dot">{st.label} <span className="text-ui-faint text-sm font-normal">· {items.length}</span></h3>
                                             <p className="text-ui-muted text-sm">{STAGE_HINTS[st.key]}</p>
                                         </div>
                                         <AddButtons stage={st.key} onAdd={add} onPick={() => setPicking(st.key)} />

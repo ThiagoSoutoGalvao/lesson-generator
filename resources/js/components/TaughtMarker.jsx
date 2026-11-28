@@ -52,7 +52,7 @@ export default function TaughtMarker({ trilha, lesson, part }) {
     }
 
     return (
-        <section className="ui-card border rounded-2xl px-4 py-3 flex flex-col gap-2" aria-label="Student app" data-testid="taught-marker">
+        <section className="ui-card ab-glow border rounded-2xl px-4 py-3 flex flex-col gap-2" aria-label="Student app" data-testid="taught-marker">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
                 <span className="text-ui-ink text-sm font-semibold">Student app</span>
                 <span className="text-ui-muted text-sm flex-1 min-w-[12rem]">
