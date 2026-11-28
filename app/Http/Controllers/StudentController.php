@@ -142,6 +142,9 @@ class StudentController extends Controller
             // Explicit rather than relying on the foreign keys' ON DELETE CASCADE.
             ActivityAttempt::where('student_id', $student->id)->delete();
             StudentAssignment::where('student_id', $student->id)->delete();
+            if (Schema::hasTable('writing_submissions')) {
+                DB::table('writing_submissions')->where('student_id', $student->id)->delete();
+            }
             if (Schema::hasTable('sessions')) {
                 DB::table('sessions')->where('user_id', $student->id)->delete();
             }

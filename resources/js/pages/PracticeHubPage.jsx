@@ -153,8 +153,11 @@ function CambridgePracticeLauncher() {
                     </button>
                 </div>
 
-                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Writing — the student writes on paper or their own doc, no capture, no auto-checking</p>
+                <p className="lg-shell-text text-white/75 text-xs font-semibold uppercase tracking-wide mt-2">Writing — Essay / Genre Choice: prompts to write on paper; Exam mode: timed, typed in the app, handed in to the teacher (Students page)</p>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <button onClick={() => navigate('/cambridge/practice/writing-exam')} className={drillButtonCls}>
+                        Exam mode — 80 minutes
+                    </button>
                     <button onClick={() => navigate('/cambridge/practice/essay')} className={drillButtonCls}>
                         Essay
                     </button>

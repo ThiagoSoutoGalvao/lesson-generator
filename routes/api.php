@@ -33,6 +33,7 @@ Route::middleware('auth:web')->group(function () {
         Route::post('/attempts', [StudentContentController::class, 'storeAttempt']);
         Route::get('/progress', [StudentContentController::class, 'progress']);
         Route::get('/homework', [StudentContentController::class, 'homework']);
+        Route::post('/writing', [\App\Http\Controllers\WritingSubmissionController::class, 'store']); // Cambridge Writing exam mode
     });
 
     // Everything else is teacher-only.
@@ -43,6 +44,7 @@ Route::middleware('auth:web')->group(function () {
         Route::patch('/students/{student}', [StudentController::class, 'update']);
         Route::delete('/students/{student}', [StudentController::class, 'destroy']);
         Route::get('/students/{student}/progress', [StudentController::class, 'progress']);
+        Route::get('/students/{student}/writing', [\App\Http\Controllers\WritingSubmissionController::class, 'index']);
         Route::post('/students/{student}/speaking-checks', [StudentController::class, 'recordSpeaking']);
         Route::patch('/students/{student}/speaking-checks/{attempt}', [StudentController::class, 'updateSpeaking']);
         Route::get('/students/{student}/assignments', [StudentController::class, 'assignments']);

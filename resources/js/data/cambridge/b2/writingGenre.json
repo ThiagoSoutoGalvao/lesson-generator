@@ -4,9 +4,18 @@
     "genre": "Article",
     "description": "An engaging piece for a magazine or website — informal to semi-formal tone, aims to interest the reader.",
     "items": [
-      { "id": "article-b2-1", "prompt": "You see this notice on an international website:\n\nWe're looking for articles about a place you love visiting. Write about the place, what makes it special, and why other people should visit it.\n\nWrite your article." },
-      { "id": "article-b2-2", "prompt": "Your local magazine has asked readers to write an article about a skill that changed their life. Write about the skill, how you learned it, and how it has helped you." },
-      { "id": "article-b2-3", "prompt": "An online magazine is collecting articles about memorable meals. Write about a meal you will never forget and why it was so memorable." }
+      {
+        "id": "article-b2-1",
+        "prompt": "You see this notice on an international website:\n\nWe're looking for articles about a place you love visiting. Write about the place, what makes it special, and why other people should visit it.\n\nWrite your article."
+      },
+      {
+        "id": "article-b2-2",
+        "prompt": "Your local magazine has asked readers to write an article about a skill that changed their life. Write about the skill, how you learned it, and how it has helped you."
+      },
+      {
+        "id": "article-b2-3",
+        "prompt": "An online magazine is collecting articles about memorable meals. Write about a meal you will never forget and why it was so memorable."
+      }
     ]
   },
   {
@@ -14,9 +23,53 @@
     "genre": "Email / Letter",
     "description": "A semi-formal or formal response to a specific situation — clear structure, appropriate register.",
     "items": [
-      { "id": "email-b2-1", "prompt": "You recently stayed at a hotel and had a problem with your room. Write an email to the hotel manager explaining what happened and what you would like them to do about it." },
-      { "id": "email-b2-2", "prompt": "A friend is planning to visit your country for the first time. Write an email giving them advice about what to bring, where to go, and what to avoid." },
-      { "id": "email-b2-3", "prompt": "You have seen a job advertisement for a part-time position that interests you. Write an email applying for the job, explaining your skills and why you are suitable." }
+      {
+        "id": "email-b2-1",
+        "prompt": "You recently stayed at a hotel and had a problem with your room. Write an email to the hotel manager explaining what happened and what you would like them to do about it."
+      },
+      {
+        "id": "email-b2-2",
+        "prompt": "A friend is planning to visit your country for the first time. Write an email giving them advice about what to bring, where to go, and what to avoid."
+      },
+      {
+        "id": "email-b2-3",
+        "prompt": "You have seen a job advertisement for a part-time position that interests you. Write an email applying for the job, explaining your skills and why you are suitable."
+      }
+    ]
+  },
+  {
+    "id": "report",
+    "genre": "Report",
+    "description": "A clear, organised report for a teacher, manager or club — neutral to formal tone, with headings and a recommendation.",
+    "tips": [
+      "Give it a title, then short sections with headings: Introduction … Recommendation.",
+      "Say the aim first: “The aim of this report is to…” / “This report looks at…”.",
+      "Answer every point in the task — one section for each.",
+      "Neutral or formal tone: no “Dear…”, no chatty questions to the reader.",
+      "Report what people said or did: “According to…”, “Most of the people I asked…”, “The majority of…”.",
+      "End with a clear recommendation: “I would recommend…”, “It would be a good idea to…”, “The company should…”."
+    ],
+    "items": [
+      {
+        "id": "report-b2-1",
+        "prompt": "Your English teacher has asked you to write a report on the sports and leisure facilities in your town. In your report you should:\n\n• describe the facilities that are available\n• say which ones are most popular with young people\n• suggest one improvement and explain why it is needed.\n\nWrite your report.",
+        "model": "Sports and Leisure Facilities in Riverton\n\nIntroduction\nThe aim of this report is to describe the sports and leisure facilities in our town, explain which ones are most popular with young people and suggest one improvement.\n\nCurrent facilities\nRiverton has a public swimming pool, two football pitches, a small gym and a park with a skateboarding area. There is also a cinema in the shopping centre. Most facilities are reasonably priced, although the gym is quite expensive for students.\n\nPopular with young people\nAccording to a short survey I carried out among my classmates, the skate park and the football pitches are by far the most popular. They are free, and young people can meet their friends there after school. The swimming pool, on the other hand, is mainly used by families and older people.\n\nRecommendation\nThe main problem is that the football pitches have no lights, so they cannot be used on winter evenings. I would therefore recommend installing floodlights. This would allow young people to play sport all year round."
+      },
+      {
+        "id": "report-b2-2",
+        "prompt": "The director of your language school wants to improve the social programme for students. She has asked you to write a report. In your report you should:\n\n• describe the activities the school organised last term\n• say which activities were the most successful\n• recommend changes for next term.\n\nWrite your report.",
+        "model": "Review of the School’s Social Programme\n\nIntroduction\nThis report looks at the social activities our school organised last term, considers which were most successful and recommends some changes for next term.\n\nLast term’s activities\nStudents could take part in a weekly film night, a cooking evening, a city walking tour and a trip to the coast. Around thirty students joined at least one activity.\n\nSuccesses\nThe cooking evening was clearly the highlight. Students prepared dishes from their own countries and practised their English in a relaxed atmosphere. The walking tour was also popular, as it helped new students to find their way around the city.\n\nLess successful activities\nAttendance at the film nights was disappointing. Several students said the films were too long and that they were too tired after a full day of classes.\n\nRecommendations\nI would suggest replacing the weekly film night with a monthly quiz night, which would be shorter and more interactive. It would also be a good idea to organise a second cooking evening."
+      },
+      {
+        "id": "report-b2-3",
+        "prompt": "Your manager is worried that too many employees drive to work alone. She has asked you to write a report. In your report you should:\n\n• describe how staff travel to work at the moment\n• explain the main problems they have\n• recommend ways of encouraging greener travel.\n\nWrite your report.",
+        "model": "How Staff Travel to Work\n\nIntroduction\nThe purpose of this report is to describe how employees at our office travel to work, to outline the main problems and to recommend ways of encouraging greener travel.\n\nCurrent situation\nI asked twenty colleagues how they get to work. More than half come by car, usually alone. About a quarter use the bus, and only a few cycle or walk.\n\nMain problems\nMany colleagues say that the bus service is unreliable in the morning and that buses are often crowded. Those who would like to cycle complain that there is nowhere safe to leave a bike and no shower in the building. As a result, the car park is full by nine o’clock.\n\nRecommendations\nFirstly, the company should provide a secure bike shelter and a changing room with a shower. Secondly, it could pay part of the cost of a monthly bus pass. Finally, a car-sharing scheme organised through the company intranet would reduce the number of cars at very little cost."
+      },
+      {
+        "id": "report-b2-4",
+        "prompt": "Your English club recently visited a museum. The club leader has asked you to write a report for the club website. In your report you should:\n\n• describe the museum\n• say what members enjoyed and what they found less interesting\n• recommend whether the club should go there again.\n\nWrite your report.",
+        "model": "English Club Trip to the Maritime Museum\n\nIntroduction\nThis report describes the English club’s recent visit to the Maritime Museum, explains what members enjoyed and what they found less interesting, and recommends whether the club should return.\n\nThe museum\nThe museum is in an old warehouse by the harbour. It has three floors of exhibitions about ships, trade and the lives of sailors, as well as a café with a view of the sea.\n\nWhat members enjoyed\nMost members agreed that the interactive section was the best part of the visit. They could steer a model ship and listen to recorded stories from sailors. The guided tour in English was also useful, as the guide spoke clearly and answered all our questions.\n\nLess interesting parts\nHowever, some members felt that the top floor, which is mainly about old maps, was rather dull. A few people also thought the entrance fee was high for students.\n\nRecommendation\nOn the whole, the trip was a success. I would recommend going again next year, but booking a cheaper group ticket in advance."
+      }
     ]
   },
   {
@@ -24,19 +77,37 @@
     "genre": "Review",
     "description": "An opinion piece evaluating something for other readers — description plus a clear recommendation.",
     "items": [
-      { "id": "review-b2-1", "prompt": "Write a review of a restaurant you have visited recently for a local website. Say what the food and service were like, and whether you would recommend it." },
-      { "id": "review-b2-2", "prompt": "An online magazine has asked readers to review a book they have read recently. Write a review saying what the book was about and whether you would recommend it." },
-      { "id": "review-b2-3", "prompt": "Write a review of an app or piece of software you use regularly. Say what it does, what you like and dislike about it, and whether you would recommend it." }
+      {
+        "id": "review-b2-1",
+        "prompt": "Write a review of a restaurant you have visited recently for a local website. Say what the food and service were like, and whether you would recommend it."
+      },
+      {
+        "id": "review-b2-2",
+        "prompt": "An online magazine has asked readers to review a book they have read recently. Write a review saying what the book was about and whether you would recommend it."
+      },
+      {
+        "id": "review-b2-3",
+        "prompt": "Write a review of an app or piece of software you use regularly. Say what it does, what you like and dislike about it, and whether you would recommend it."
+      }
     ]
   },
   {
     "id": "story",
     "genre": "Story",
-    "description": "A short narrative — clear sequence of events, often built around a given opening or closing line.",
+    "description": "A short narrative — clear sequence of events, often built around a given opening or closing line. (Not a B2 First task since the 2015 update — extra practice only; it never appears in exam mode.)",
     "items": [
-      { "id": "story-b2-1", "prompt": "Your English teacher has asked you to write a story. Your story must begin with this sentence:\n\n\"As soon as I opened the door, I knew something was wrong.\"" },
-      { "id": "story-b2-2", "prompt": "You have been asked to write a story for a competition. Your story must end with this sentence:\n\n\"From that day on, everything was different.\"" },
-      { "id": "story-b2-3", "prompt": "Your English teacher has asked you to write a story. Your story must include:\n\na lost object and an unexpected phone call." }
+      {
+        "id": "story-b2-1",
+        "prompt": "Your English teacher has asked you to write a story. Your story must begin with this sentence:\n\n\"As soon as I opened the door, I knew something was wrong.\""
+      },
+      {
+        "id": "story-b2-2",
+        "prompt": "You have been asked to write a story for a competition. Your story must end with this sentence:\n\n\"From that day on, everything was different.\""
+      },
+      {
+        "id": "story-b2-3",
+        "prompt": "Your English teacher has asked you to write a story. Your story must include:\n\na lost object and an unexpected phone call."
+      }
     ]
   }
 ]

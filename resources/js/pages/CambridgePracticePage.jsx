@@ -15,6 +15,7 @@ import CollaborativeDrill from '@/components/cambridge/CollaborativeDrill';
 import DiscussionDrill from '@/components/cambridge/DiscussionDrill';
 import EssayDrill from '@/components/cambridge/EssayDrill';
 import GenreDrill from '@/components/cambridge/GenreDrill';
+import WritingExamDrill from '@/components/cambridge/WritingExamDrill';
 
 function BackButton({ onClick }) {
     return (
@@ -42,6 +43,7 @@ const DRILLS = {
     'discussion': DiscussionDrill,
     'essay': EssayDrill,
     'genre': GenreDrill,
+    'writing-exam': WritingExamDrill, // timed, hands in to the teacher (2026-11-28)
 };
 
 const DEFAULT_BACK_TO = { path: '/practice', state: { tab: 'cambridge' } };
@@ -66,7 +68,7 @@ export default function CambridgePracticePage({ backTo = DEFAULT_BACK_TO, level 
             <div className="max-w-xl mx-auto mt-4 flex flex-col gap-4">
                 <h2 className="text-3xl font-bold text-white">Unknown practice type</h2>
                 <p className="text-white/60 text-sm">
-                    "{type}" isn't a recognised Cambridge practice type. Expected one of: word-formation, key-word-transformation, mc-cloze, open-cloze, mc-reading, multiple-matching, gapped-text, cross-text-matching, interview, long-turn, collaborative, discussion, essay, genre.
+                    "{type}" isn't a recognised Cambridge practice type. Expected one of: word-formation, key-word-transformation, mc-cloze, open-cloze, mc-reading, multiple-matching, gapped-text, cross-text-matching, interview, long-turn, collaborative, discussion, essay, genre, writing-exam.
                 </p>
                 <BackButton onClick={backToCambridgeTab} />
             </div>

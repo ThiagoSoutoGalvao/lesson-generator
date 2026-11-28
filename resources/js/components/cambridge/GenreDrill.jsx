@@ -17,6 +17,7 @@ export default function GenreDrill() {
     const navigate = useNavigate();
     const [genre, setGenre] = useState(null);
     const [index, setIndex] = useState(0);
+    const [showModel, setShowModel] = useState(false); // a model answer (reports have one, 2026-11-28)
     const { sizeIdx: fontSizeIdx, textColor } = useDisplay();
 
     const backTo = usePracticeBack({ path: '/practice', state: { tab: 'cambridge' } });
@@ -27,7 +28,9 @@ export default function GenreDrill() {
     function chooseGenre(g) {
         setGenre(g);
         setIndex(0);
+        setShowModel(false);
     }
+    function go(i) { setIndex(i); setShowModel(false); }
 
     if (!genre) {
         return (
@@ -67,16 +70,40 @@ export default function GenreDrill() {
             progressLabel={`Prompt ${index + 1} of ${total}`}
             onBack={() => setGenre(null)}
         >
-            <div key={index} className="flex-1 flex flex-col items-center justify-center gap-8 px-8 overflow-y-auto py-8">
+            <div key={index} className="flex-1 min-h-0 flex flex-col items-center gap-8 px-4 sm:px-8 overflow-y-auto py-8">
                 <div className="max-w-2xl w-full flex flex-col gap-6 items-center text-center">
                     <p className="text-amber-300/80 text-xs font-semibold uppercase tracking-wide">{genre.genre}</p>
                     <p className={`${PROMPT_SIZES[fontSizeIdx]} font-semibold leading-relaxed whitespace-pre-line ${textColor}`}>{item.prompt}</p>
                     <p className="text-white/40 text-sm">Write about 140–190 words.</p>
+                    {genre.tips?.length > 0 && (
+                        <div className="rounded-2xl bg-black/30 border border-white/15 px-6 py-5 text-left w-full" data-testid="genre-tips">
+                            <p className="text-amber-300/80 text-xs font-semibold uppercase tracking-wide mb-2">How to write a {genre.genre.toLowerCase()}</p>
+                            <ul className="list-disc pl-5 flex flex-col gap-1.5 text-white/80 text-sm leading-relaxed">
+                                {genre.tips.map(t => <li key={t}>{t}</li>)}
+                            </ul>
+                        </div>
+                    )}
+                    {item.model && (showModel ? (
+                        <div className="rounded-2xl bg-white/95 text-[#1c1540] px-6 py-5 text-left w-full" data-testid="model-answer">
+                            <div className="flex items-center justify-between gap-3 mb-3">
+                                <p className="text-xs font-bold uppercase tracking-wide text-[#9A3412]">Model answer</p>
+                                <button type="button" onClick={() => setShowModel(false)} className="text-sm font-semibold underline cursor-pointer">Hide</button>
+                            </div>
+                            {item.model.split(/\n\n/).map((block, i) => {
+                                const [head, ...rest] = block.split(/\n/);
+                                return i === 0 && rest.length === 0
+                                    ? <p key={i} className="font-bold text-lg mb-3">{head}</p>
+                                    : <div key={i} className="mb-3">{rest.length ? <><p className="font-bold">{head}</p><p className="leading-relaxed">{rest.join(' ')}</p></> : <p className="leading-relaxed">{head}</p>}</div>;
+                            })}
+                        </div>
+                    ) : (
+                        <button type="button" onClick={() => setShowModel(true)} className={navBtnCls}>Show a model answer</button>
+                    ))}
                 </div>
 
                 <div className="flex justify-center gap-4">
-                    <button onClick={() => setIndex(i => Math.max(0, i - 1))} disabled={index === 0} className={navBtnCls}>← Prev</button>
-                    <button onClick={() => setIndex(i => Math.min(total - 1, i + 1))} disabled={index === total - 1} className={navBtnCls}>Next →</button>
+                    <button onClick={() => go(Math.max(0, index - 1))} disabled={index === 0} className={navBtnCls}>← Prev</button>
+                    <button onClick={() => go(Math.min(total - 1, index + 1))} disabled={index === total - 1} className={navBtnCls}>Next →</button>
                 </div>
             </div>
         </PracticeSessionShell>

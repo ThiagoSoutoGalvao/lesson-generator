@@ -45,10 +45,11 @@ const CAMBRIDGE_SECTIONS = [
     },
     {
         label: 'Writing',
-        note: 'Write on paper or your own doc — nothing to submit here.',
+        note: 'Essay and Genre Choice: practise on paper, untimed. Exam mode: 80 minutes, you type in the app and hand it in to your teacher.',
         items: [
+            { type: 'writing-exam', label: 'Exam mode — 80 minutes' },
             { type: 'essay', label: 'Essay' },
-            { type: 'genre', label: 'Genre Choice' },
+            { type: 'genre', label: 'Genre Choice (incl. Report)' },
         ],
     },
     {

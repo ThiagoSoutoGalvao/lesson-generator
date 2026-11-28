@@ -423,6 +423,50 @@ function HomeworkPanel({ studentId }) {
     );
 }
 
+// Cambridge Writing exam mode (2026-11-28): what the student handed in, to read and correct together in class.
+// Read-only and never marked by AI — the teacher's call.
+function WritingPanel({ studentId }) {
+    const [items, setItems] = useState(null);
+    const [error, setError] = useState('');
+    const [open, setOpen] = useState(null);
+    useEffect(() => {
+        let alive = true;
+        axios.get(`/api/students/${studentId}/writing`)
+            .then(({ data }) => { if (alive) setItems(data.writing ?? []); })
+            .catch(() => { if (alive) setError('Could not load the writing.'); });
+        return () => { alive = false; };
+    }, [studentId]);
+    const mins = s => (s == null ? '' : `${Math.floor(s / 60)} min`);
+    if (error) return <p className="text-white/50 text-sm">{error}</p>;
+    if (!items) return <p className="text-white/40 text-sm">Loading…</p>;
+    if (items.length === 0) return <p className="text-white/40 text-sm">Nothing handed in yet. Practice → Cambridge → Writing → Exam mode.</p>;
+    return (
+        <ul className="flex flex-col gap-2" data-testid="writing-list">
+            {items.map(w => (
+                <li key={w.id} className="rounded-xl bg-black/20 border border-white/10">
+                    <button type="button" onClick={() => setOpen(open === w.id ? null : w.id)} className="w-full text-left px-3 py-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white cursor-pointer">
+                        <span className="font-semibold">{new Date(w.created_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short' })}</span>
+                        <span className="text-white/60">{w.parts.map(p => `${p.genre} ${p.words}w`).join(' · ')}</span>
+                        <span className="text-white/40">{mins(w.seconds_used)}{w.timed_out ? ' · time ran out' : ''}</span>
+                        <span className="ml-auto text-white/50">{open === w.id ? 'Hide' : 'Read'}</span>
+                    </button>
+                    {open === w.id && (
+                        <div className="px-3 pb-3 flex flex-col gap-3">
+                            {w.parts.map(p => (
+                                <div key={p.part} className="rounded-lg bg-white text-[#1c1540] px-4 py-3" data-testid="writing-part">
+                                    <p className="text-xs font-bold uppercase tracking-wide text-[#9A3412]">Part {p.part} · {p.genre} · {p.words} words</p>
+                                    <details className="mt-1"><summary className="text-xs text-[#4A5163] cursor-pointer">The task</summary><p className="text-sm text-[#4A5163] whitespace-pre-line mt-1">{p.prompt}</p></details>
+                                    <p className="mt-2 whitespace-pre-wrap leading-relaxed text-[15px]">{p.text || '(nothing written)'}</p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+                </li>
+            ))}
+        </ul>
+    );
+}
+
 function StudentRow({ s, onChange, onRemoved }) {
     const [busy, setBusy]       = useState(false);
     const [expanded, setExpanded] = useState(false);
@@ -570,6 +614,10 @@ function StudentRow({ s, onChange, onRemoved }) {
                     <div className="border-t border-white/10 pt-4">
                         <p className="font-display font-semibold text-[11px] tracking-wide uppercase text-white/40 mb-2.5">Homework — assigned directly, outside the trilha</p>
                         <HomeworkPanel studentId={s.id} />
+                    </div>
+                    <div className="border-t border-white/10 pt-4">
+                        <p className="font-display font-semibold text-[11px] tracking-wide uppercase text-white/40 mb-2.5">Writing — handed in from Cambridge exam mode</p>
+                        <WritingPanel studentId={s.id} />
                     </div>
                 </div>
             )}
